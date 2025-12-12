@@ -108,20 +108,6 @@ step_volcano <- function() {
   )
 }
 
-step_heatmap <- function() {
-  step(
-    id = "heatmap",
-    label = "Heatmap",
-    run = function(ctx) {
-      p <- .run_function(glyvis::plot_heatmap, ctx$exp, ctx$group_col, ctx$dots)
-      ctx_add_plot(ctx, "heatmap", p, "Heatmap plot.")
-    },
-    outputs = list(plots = "heatmap"),
-    require = character(0),
-    generate = character(0)
-  )
-}
-
 step_enrich_go <- function() {
   step_enrich("go")
 }
