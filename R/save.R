@@ -53,13 +53,13 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
     ggsave_formals <- names(formals(ggplot2::ggsave))
     if ("verbose" %in% ggsave_formals) ggsave_args$verbose <- FALSE
     if ("quiet" %in% ggsave_formals) ggsave_args$quiet <- TRUE
-    suppressMessages(suppressWarnings(do.call(ggplot2::ggsave, ggsave_args)))
+    .quietly(do.call(ggplot2::ggsave, ggsave_args))
   }
 
   for (table in names(x$tables)) {
     file_path <- fs::path(dir, "tables", paste0(table, ".", table_ext))
     writer <- switch(table_ext, "csv" = readr::write_csv, "tsv" = readr::write_tsv)
-    suppressMessages(writer(cast_table(x, table), file_path))
+    .quietly(writer(cast_table(x, table), file_path))
   }
 
   readr::write_rds(x$exp, fs::path(dir, "experiment.rds"))
@@ -152,5 +152,26 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   }
 
   writeLines(lines, fs::path(dir, "README.md"), useBytes = TRUE)
+  invisible(NULL)
+}
+
+.quietly <- function(expr) {
+  # Silence stdout/stderr output for clean interactive console.
+  expr <- substitute(expr)
+  tmp <- tempfile("glysmith-quiet-")
+  con <- file(tmp, open = "wt")
+  out0 <- sink.number()
+  msg0 <- sink.number(type = "message")
+  sink(con)
+  sink(con, type = "message")
+  on.exit({
+    # Restore sinks created in this helper only.
+    while (sink.number(type = "message") > msg0) sink(type = "message")
+    while (sink.number() > out0) sink()
+    close(con)
+    unlink(tmp)
+  }, add = TRUE)
+
+  eval(expr, envir = parent.frame())
   invisible(NULL)
 }
