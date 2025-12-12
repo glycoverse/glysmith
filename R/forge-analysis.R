@@ -67,7 +67,7 @@ forge_analysis <- function(exp, group_col = "group", ...) {
     step_dta()
   )
 
-  ctx <- run_recipe(ctx, steps)
+  ctx <- run_blueprint(ctx, steps)
 
   glysmith_result(exp = ctx$exp, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta)
 }

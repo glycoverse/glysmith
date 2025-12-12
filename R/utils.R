@@ -135,7 +135,7 @@ ctx_add_table <- function(ctx, id, t, explanation = NULL) {
 #'
 #' @returns Updated context.
 #' @noRd
-run_recipe <- function(ctx, steps, quiet = FALSE) {
+run_blueprint <- function(ctx, steps, quiet = FALSE) {
   for (s in steps) {
     if (!inherits(s, "glysmith_step")) {
       cli::cli_abort("Invalid step object.")
