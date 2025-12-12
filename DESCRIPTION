@@ -30,6 +30,8 @@ Imports:
     clusterProfiler,
     EnhancedVolcano,
     factoextra,
+    fs,
+    ggplot2,
     glyclean (>= 0.9.1),
     glydet (>= 0.6.5),
     glyexp (>= 0.10.4),
