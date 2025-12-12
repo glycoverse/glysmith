@@ -158,6 +158,8 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   invisible(NULL)
 }
 
+# This mysterious function is written by gpt-5.2
+# to silence stdout/stderr output for clean interactive console.
 .quietly <- function(expr) {
   # Silence stdout/stderr output for clean interactive console.
   expr <- substitute(expr)
