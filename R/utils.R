@@ -126,26 +126,3 @@ ctx_add_table <- function(ctx, id, t, explanation = NULL) {
   }
   ctx
 }
-
-#' Run a list of steps
-#'
-#' @param ctx Context list.
-#' @param steps A list of `glysmith_step`.
-#' @param quiet Whether to suppress progress output.
-#'
-#' @returns Updated context.
-#' @noRd
-run_blueprint <- function(ctx, steps, quiet = FALSE) {
-  for (s in steps) {
-    if (!inherits(s, "glysmith_step")) {
-      cli::cli_abort("Invalid step object.")
-    }
-    if (!is.null(s$condition) && !isTRUE(s$condition(ctx))) {
-      next
-    }
-    if (!quiet) cli::cli_progress_step(s$label)
-    ctx <- s$run(ctx)
-    ctx$meta$steps <- c(ctx$meta$steps, s$id)
-  }
-  ctx
-}
