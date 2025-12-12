@@ -55,17 +55,29 @@
 #' @param label Human-readable label for progress output.
 #' @param run A function(ctx) that returns updated ctx.
 #' @param outputs A list describing declared outputs (tables/plots/meta).
+#' @param require Character vector of required `ctx$data` keys.
+#' @param generate Character vector of generated `ctx$data` keys.
 #' @param condition Optional function(ctx) returning TRUE/FALSE to decide execution.
 #'
 #' @returns A `glysmith_step` object.
 #' @noRd
-step <- function(id, label, run, outputs = list(), condition = NULL) {
+step <- function(
+  id,
+  label,
+  run,
+  outputs = list(),
+  require = character(0),
+  generate = character(0),
+  condition = NULL
+) {
   structure(
     list(
       id = id,
       label = label,
       run = run,
       outputs = outputs,
+      require = require,
+      generate = generate,
       condition = condition
     ),
     class = "glysmith_step"
