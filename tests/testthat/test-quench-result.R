@@ -20,7 +20,10 @@ test_that("quench_result writes README.md based on meta", {
   out_dir <- tempfile(pattern = "glysmith-result-")
   if (fs::dir_exists(out_dir)) fs::dir_delete(out_dir)
 
-  quench_result(x, out_dir, plot_ext = "png", table_ext = "csv")
+  expect_snapshot(
+    quench_result(x, out_dir, plot_ext = "png", table_ext = "csv"),
+    transform = function(x) stringr::str_replace(x, "'.*'", "'<DIR_PATH>'")
+  )
 
   expect_true(fs::file_exists(fs::path(out_dir, "README.md")))
   expect_true(fs::file_exists(fs::path(out_dir, "experiment.rds")))

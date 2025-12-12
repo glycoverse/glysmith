@@ -26,9 +26,8 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   checkmate::assert_choice(table_ext, c("csv", "tsv"))
 
   if (fs::dir_exists(dir)) {
-    cli::cli_alert_info("Directory already exists. Overwrite? [y/N]")
-    ans <- readline()
-    ans <- tolower(ans)
+    ans <- .ask_overwrite_dir()
+    ans <- tolower(trimws(ans))
     if (ans == "n") {
       cli::cli_abort("Operation cancelled. Result not saved.")
     } else if (ans == "y" || ans == "") {
@@ -44,16 +43,7 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
 
   for (plot in names(x$plots)) {
     file_path <- fs::path(dir, "plots", paste0(plot, ".", plot_ext))
-    ggsave_args <- list(
-      filename = file_path,
-      plot = cast_plot(x, plot),
-      width = plot_width,
-      height = plot_height
-    )
-    ggsave_formals <- names(formals(ggplot2::ggsave))
-    if ("verbose" %in% ggsave_formals) ggsave_args$verbose <- FALSE
-    if ("quiet" %in% ggsave_formals) ggsave_args$quiet <- TRUE
-    .quietly(do.call(ggplot2::ggsave, ggsave_args))
+    .quietly(ggplot2::ggsave(file_path, cast_plot(x, plot), width = plot_width, height = plot_height))
   }
 
   for (table in names(x$tables)) {
@@ -68,6 +58,19 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   .write_result_readme(x, dir, plot_ext = plot_ext, table_ext = table_ext)
 
   cli::cli_alert_success("Result saved to {.path {dir}}")
+}
+
+#' Ask if user wants to overwrite an existing directory
+#'
+#' This helper exists to keep the prompt and input on the same line (via
+#' `readline(prompt = ...)`) and to make the interactive behavior testable.
+#'
+#' @returns User input string.
+#' @noRd
+.ask_overwrite_dir <- function() {
+  # Use readline prompt to keep user input on the same line.
+  prompt <- paste0("\u2139 ", "Directory already exists. Overwrite? [y/N] ")
+  readline(prompt = prompt)
 }
 
 #' Write README.md for GlySmith Result
