@@ -60,9 +60,9 @@ forge_analysis <- function(exp, group_col = "group", ...) {
     step_pca(),
     step_dea(),
     step_volcano(),
-    step_enrich("go"),
-    step_enrich("kegg"),
-    step_enrich("reactome"),
+    step_enrich_go(),
+    step_enrich_kegg(),
+    step_enrich_reactome(),
     step_derive_traits(),
     step_dta()
   )

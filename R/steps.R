@@ -1,4 +1,3 @@
-#' @noRd
 step_preprocess <- function() {
   step(
     id = "preprocessing",
@@ -11,7 +10,6 @@ step_preprocess <- function() {
   )
 }
 
-#' @noRd
 step_ident_overview <- function() {
   step(
     id = "identification_overview",
@@ -24,7 +22,6 @@ step_ident_overview <- function() {
   )
 }
 
-#' @noRd
 step_pca <- function() {
   step(
     id = "pca",
@@ -59,7 +56,6 @@ step_pca <- function() {
   )
 }
 
-#' @noRd
 step_dea <- function() {
   step(
     id = "dea",
@@ -78,7 +74,6 @@ step_dea <- function() {
   )
 }
 
-#' @noRd
 step_volcano <- function() {
   step(
     id = "volcano",
@@ -99,7 +94,28 @@ step_volcano <- function() {
   )
 }
 
-#' @noRd
+step_heatmap <- function() {
+  step(
+    id = "heatmap",
+    label = "Heatmap",
+    run = function(ctx) {
+      heatmap_res <- .run_function(glyvis::plot_heatmap, ctx$exp, ctx$group_col, ctx$dots)
+    },
+  )
+}
+
+step_enrich_go <- function() {
+  step_enrich("go")
+}
+
+step_enrich_kegg <- function() {
+  step_enrich("kegg")
+}
+
+step_enrich_reactome <- function() {
+  step_enrich("reactome")
+}
+
 step_enrich <- function(kind = c("go", "kegg", "reactome")) {
   kind <- match.arg(kind)
   f <- switch(
@@ -129,7 +145,6 @@ step_enrich <- function(kind = c("go", "kegg", "reactome")) {
   )
 }
 
-#' @noRd
 step_derive_traits <- function() {
   step(
     id = "derive_traits",
@@ -144,7 +159,6 @@ step_derive_traits <- function() {
   )
 }
 
-#' @noRd
 step_dta <- function() {
   step(
     id = "dta",
