@@ -38,6 +38,7 @@ Imports:
     glystats (>= 0.5.3),
     glyvis (>= 0.4.0),
     org.Hs.eg.db,
+    readr,
     rlang,
     stringr,
     tibble
