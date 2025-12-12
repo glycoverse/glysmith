@@ -12,7 +12,7 @@ test_that("quench_result writes README.md based on meta", {
       "plots$scatter" = "Scatter plot of mtcars mpg vs wt.",
       "tables$summary" = "A tiny summary table for testing."
     ),
-    steps = c("preprocessing", "pca analysis")
+    steps = c("preprocessing", "pca")
   )
 
   x <- glysmith_result(exp = list(dummy = TRUE), plots = plots, tables = tables, meta = meta)
@@ -39,5 +39,5 @@ test_that("quench_result writes README.md based on meta", {
   expect_true(any(grepl("`tables/summary.csv`: A tiny summary table for testing.", readme, fixed = TRUE)))
   expect_true(any(grepl("`tables/summary2.csv`: Table output.", readme, fixed = TRUE)))
   expect_true(any(grepl("- preprocessing", readme, fixed = TRUE)))
-  expect_true(any(grepl("- pca analysis", readme, fixed = TRUE)))
+  expect_true(any(grepl("- pca", readme, fixed = TRUE)))
 })

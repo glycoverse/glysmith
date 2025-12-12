@@ -27,8 +27,8 @@ A \code{glysmith_result} object, with the following components:
 \item \code{tables}: a named list of tibbles.
 \item \code{meta}: a named list of metadata. Currently two elements:
 \itemize{
-\item \code{explanation}: a character vector of the explanation of each plot and table,
-with the same names as \code{plots} and \code{tables}.
+\item \code{explanation}: a named character vector or list of explanations for each plot and table,
+with keys like \code{tables$summary} and \code{plots$pca}.
 \item \code{steps}: a character vector of the steps of the analysis.
 }
 }

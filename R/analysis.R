@@ -33,8 +33,8 @@
 #'   - `plots`: a named list of ggplot objects.
 #'   - `tables`: a named list of tibbles.
 #'   - `meta`: a named list of metadata. Currently two elements:
-#'     - `explanation`: a character vector of the explanation of each plot and table,
-#'        with the same names as `plots` and `tables`.
+#'     - `explanation`: a named character vector or list of explanations for each plot and table,
+#'        with keys like `tables$summary` and `plots$pca`.
 #'     - `steps`: a character vector of the steps of the analysis.
 #'
 #' @examples
@@ -51,91 +51,190 @@ forge_analysis <- function(exp, group_col = "group", ...) {
   }
   exp$sample_info[[group_col]] <- droplevels(as.factor(exp$sample_info[[group_col]]))
 
-  n_groups <- length(levels(exp$sample_info[[group_col]]))
-  has_structure <- "glycan_structure" %in% colnames(exp$var_info)
-  is_gp <- glyexp::get_exp_type(exp) == "glycoproteomics"
-
   dots <- rlang::list2(...)
+  ctx <- new_ctx(exp, group_col, dots)
 
-  plots <- list()
-  tables <- list()
-  meta <- list(explanation = character(0), steps = character(0))
+  steps <- list(
+    step_preprocess(),
+    step_ident_overview(),
+    step_pca(),
+    step_dea(),
+    step_volcano(),
+    step_enrich("go"),
+    step_enrich("kegg"),
+    step_enrich("reactome"),
+    step_derive_traits(),
+    step_dta()
+  )
 
-  # ========== Preprocessing ==========
-  cli::cli_progress_step("Preprocessing")
-  exp <- .run_function(glyclean::auto_clean, exp, group_col, dots, "group_col")
-  meta$steps <- c(meta$steps, "preprocessing")
+  ctx <- run_recipe(ctx, steps)
 
-  # ========== Identification overview ==========
-  cli::cli_progress_step("Identification overview")
-  tables$summary <- .run_function(glyexp::summarize_experiment, exp, group_col, dots)
-  meta$explanation[["tables$summary"]] <- "Identification overview of the experiment."
-  meta$steps <- c(meta$steps, "identification overview")
+  glysmith_result(exp = ctx$exp, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta)
+}
 
-  # ========== Principal component analysis ==========
-  cli::cli_progress_step("Principal component analysis")
-  pca_res <- .run_function(glystats::gly_pca, exp, group_col, dots)
-  tables$pca_samples <- glystats::get_tidy_result(pca_res, "samples")
-  tables$pca_variables <- glystats::get_tidy_result(pca_res, "variables")
-  tables$pca_eigenvalues <- glystats::get_tidy_result(pca_res, "eigenvalues")
-  plots$pca <- .run_function(glyvis::plot_pca, pca_res, group_col, dots, "group_col")
-  meta$explanation[["tables$pca_samples"]] <- "PCA scores for each sample."
-  meta$explanation[["tables$pca_variables"]] <- "PCA loadings for each variable."
-  meta$explanation[["tables$pca_eigenvalues"]] <- "PCA eigenvalues."
-  meta$steps <- c(meta$steps, "pca analysis")
+# --- Steps --------------------------------------------------------------------
 
-  # ========== Differential expression analysis ==========
-  cli::cli_progress_step("Differential expression analysis")
-  dea_res <- .run_function(glystats::gly_limma, exp, group_col, dots)
-  tables$dea <- glystats::get_tidy_result(dea_res)
-  meta$explanation[["tables$dea"]] <- "Differential expression analysis results of all comparisons for all variables."
-  meta$steps <- c(meta$steps, "differential expression analysis")
-  if (n_groups == 2) {
-    plots$volcano <- .run_function(glyvis::plot_volcano, dea_res, group_col, dots)
-    meta$explanation[["plots$volcano"]] <- "Volcano plot for the comparison of the two groups."
-    meta$steps <- c(meta$steps, "volcano plot")
-  }
+#' @noRd
+step_preprocess <- function() {
+  step(
+    id = "preprocessing",
+    label = "Preprocessing",
+    run = function(ctx) {
+      ctx$exp <- .run_function(glyclean::auto_clean, ctx$exp, ctx$group_col, ctx$dots, "group_col")
+      ctx
+    },
+    outputs = list()
+  )
+}
 
-  if (is_gp) {
-    cli::cli_progress_step("GO enrichment analysis")
-    go_res <- .run_function(glystats::gly_enrich_go, exp, group_col, dots)
-    tables$go <- glystats::get_tidy_result(go_res)
-    plots$go <- .run_function(glyvis::plot_enrich, go_res, group_col, dots)
-    meta$explanation[["tables$go"]] <- "GO enrichment analysis results."
-    meta$explanation[["plots$go"]] <- "GO enrichment analysis plot."
-    meta$steps <- c(meta$steps, "go enrichment analysis")
+#' @noRd
+step_ident_overview <- function() {
+  step(
+    id = "identification_overview",
+    label = "Identification overview",
+    run = function(ctx) {
+      tbl <- .run_function(glyexp::summarize_experiment, ctx$exp, ctx$group_col, ctx$dots)
+      ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
+    },
+    outputs = list(tables = "summary")
+  )
+}
 
-    cli::cli_progress_step("KEGG enrichment analysis")
-    kegg_res <- .run_function(glystats::gly_enrich_kegg, exp, group_col, dots)
-    tables$kegg <- glystats::get_tidy_result(kegg_res)
-    plots$kegg <- .run_function(glyvis::plot_enrich, kegg_res, group_col, dots)
-    meta$explanation[["tables$kegg"]] <- "KEGG enrichment analysis results."
-    meta$explanation[["plots$kegg"]] <- "KEGG enrichment analysis plot."
-    meta$steps <- c(meta$steps, "kegg enrichment analysis")
+#' @noRd
+step_pca <- function() {
+  step(
+    id = "pca",
+    label = "Principal component analysis",
+    run = function(ctx) {
+      pca_res <- .run_function(glystats::gly_pca, ctx$exp, ctx$group_col, ctx$dots)
+      ctx <- ctx_add_table(
+        ctx,
+        "pca_samples",
+        glystats::get_tidy_result(pca_res, "samples"),
+        "PCA scores for each sample."
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        "pca_variables",
+        glystats::get_tidy_result(pca_res, "variables"),
+        "PCA loadings for each variable."
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        "pca_eigenvalues",
+        glystats::get_tidy_result(pca_res, "eigenvalues"),
+        "PCA eigenvalues."
+      )
+      p <- .run_function(glyvis::plot_pca, pca_res, ctx$group_col, ctx$dots, "group_col")
+      ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
+    },
+    outputs = list(
+      tables = c("pca_samples", "pca_variables", "pca_eigenvalues"),
+      plots = "pca"
+    )
+  )
+}
 
-    cli::cli_progress_step("Reactome enrichment analysis")
-    reactome_res <- .run_function(glystats::gly_enrich_reactome, exp, group_col, dots)
-    tables$reactome <- glystats::get_tidy_result(reactome_res)
-    plots$reactome <- .run_function(glyvis::plot_enrich, reactome_res, group_col, dots)
-    meta$explanation[["tables$reactome"]] <- "Reactome enrichment analysis results."
-    meta$explanation[["plots$reactome"]] <- "Reactome enrichment analysis plot."
-    meta$steps <- c(meta$steps, "reactome enrichment analysis")
-  }
+#' @noRd
+step_dea <- function() {
+  step(
+    id = "dea",
+    label = "Differential expression analysis",
+    run = function(ctx) {
+      dea_res <- .run_function(glystats::gly_limma, ctx$exp, ctx$group_col, ctx$dots, "group_col")
+      ctx$data$dea_res <- dea_res
+      ctx_add_table(
+        ctx,
+        "dea",
+        glystats::get_tidy_result(dea_res),
+        "Differential expression analysis results of all comparisons for all variables."
+      )
+    },
+    outputs = list(tables = "dea")
+  )
+}
 
-  if (has_structure) {
-    cli::cli_progress_step("Derived trait calculation")
-    trait_exp <- .run_function(glydet::derive_traits, exp, group_col, dots)
-    tables$derived_traits <- tibble::as_tibble(trait_exp)
-    meta$explanation[["tables$derived_traits"]] <- "Derived trait calculation results."
-    meta$steps <- c(meta$steps, "derived trait calculation")
+#' @noRd
+step_volcano <- function() {
+  step(
+    id = "volcano",
+    label = "Volcano plot",
+    condition = function(ctx) {
+      g <- ctx$exp$sample_info[[ctx$group_col]]
+      length(levels(g)) == 2
+    },
+    run = function(ctx) {
+      dea_res <- rlang::`%||%`(
+        ctx$data$dea_res,
+        .run_function(glystats::gly_limma, ctx$exp, ctx$group_col, ctx$dots, "group_col")
+      )
+      p <- .run_function(glyvis::plot_volcano, dea_res, ctx$group_col, ctx$dots)
+      ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
+    },
+    outputs = list(plots = "volcano")
+  )
+}
 
-    cli::cli_progress_step("Differential trait analysis")
-    suppressMessages(filtered_trait_exp <- glyclean::remove_constant(trait_exp))
-    dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, group_col, dots)
-    tables$dta <- glystats::get_tidy_result(dta_res)
-    meta$explanation[["tables$dta"]] <- "Differential trait analysis results."
-    meta$steps <- c(meta$steps, "differential trait analysis")
-  }
+#' @noRd
+step_enrich <- function(kind = c("go", "kegg", "reactome")) {
+  kind <- match.arg(kind)
+  f <- switch(
+    kind,
+    go = glystats::gly_enrich_go,
+    kegg = glystats::gly_enrich_kegg,
+    reactome = glystats::gly_enrich_reactome
+  )
+  label <- paste0(toupper(kind), " enrichment analysis")
 
-  glysmith_result(exp = exp, plots = plots, tables = tables, meta = meta)
+  step(
+    id = paste0("enrich_", kind),
+    label = label,
+    condition = function(ctx) glyexp::get_exp_type(ctx$exp) == "glycoproteomics",
+    run = function(ctx) {
+      enrich_res <- .run_function(f, ctx$exp, ctx$group_col, ctx$dots)
+      ctx <- ctx_add_table(
+        ctx,
+        kind,
+        glystats::get_tidy_result(enrich_res),
+        paste0(toupper(kind), " enrichment analysis results.")
+      )
+      p <- .run_function(glyvis::plot_enrich, enrich_res, ctx$group_col, ctx$dots)
+      ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
+    },
+    outputs = list(tables = kind, plots = kind)
+  )
+}
+
+#' @noRd
+step_derive_traits <- function() {
+  step(
+    id = "derive_traits",
+    label = "Derived trait calculation",
+    condition = function(ctx) "glycan_structure" %in% colnames(ctx$exp$var_info),
+    run = function(ctx) {
+      trait_exp <- .run_function(glydet::derive_traits, ctx$exp, ctx$group_col, ctx$dots)
+      ctx$data$trait_exp <- trait_exp
+      ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
+    },
+    outputs = list(tables = "derived_traits")
+  )
+}
+
+#' @noRd
+step_dta <- function() {
+  step(
+    id = "dta",
+    label = "Differential trait analysis",
+    condition = function(ctx) "glycan_structure" %in% colnames(ctx$exp$var_info),
+    run = function(ctx) {
+      trait_exp <- rlang::`%||%`(
+        ctx$data$trait_exp,
+        .run_function(glydet::derive_traits, ctx$exp, ctx$group_col, ctx$dots)
+      )
+      suppressMessages(filtered_trait_exp <- glyclean::remove_constant(trait_exp))
+      dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$group_col, ctx$dots, "group_col")
+      ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
+    },
+    outputs = list(tables = "dta")
+  )
 }
