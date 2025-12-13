@@ -135,6 +135,7 @@ step_enrich <- function(kind = c("go", "kegg", "reactome")) {
     label = label,
     condition = function(ctx) glyexp::get_exp_type(ctx$exp) == "glycoproteomics",
     run = function(ctx) {
+      sig_exp <- glystats::filter_sig_vars(ctx$exp, ctx$data$dea_res)
       enrich_res <- .run_function(f, ctx$exp, ctx$group_col, ctx$dots)
       ctx <- ctx_add_table(
         ctx,
@@ -146,7 +147,7 @@ step_enrich <- function(kind = c("go", "kegg", "reactome")) {
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
     outputs = list(tables = kind, plots = kind),
-    require = character(0),
+    require = "dea_res",
     generate = character(0)
   )
 }
