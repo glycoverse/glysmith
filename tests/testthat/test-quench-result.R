@@ -14,8 +14,12 @@ test_that("quench_result writes README.md based on meta", {
     ),
     steps = c("preprocessing", "pca")
   )
+  blueprint <- new_blueprint(list(
+    step_preprocess(),
+    step_pca()
+  ))
 
-  x <- glysmith_result(exp = list(dummy = TRUE), plots = plots, tables = tables, meta = meta)
+  x <- glysmith_result(exp = list(dummy = TRUE), plots = plots, tables = tables, meta = meta, blueprint = blueprint)
 
   out_dir <- tempfile(pattern = "glysmith-result-")
   if (fs::dir_exists(out_dir)) fs::dir_delete(out_dir)

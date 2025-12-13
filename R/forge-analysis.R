@@ -54,7 +54,7 @@ forge_analysis <- function(exp, group_col = "group", ...) {
   dots <- rlang::list2(...)
   ctx <- new_ctx(exp, group_col, dots)
 
-  steps <- new_blueprint(list(
+  blueprint <- new_blueprint(list(
     step_preprocess(),
     step_ident_overview(),
     step_pca(),
@@ -67,7 +67,7 @@ forge_analysis <- function(exp, group_col = "group", ...) {
     step_dta()
   ))
 
-  ctx <- run_blueprint(steps, ctx)
+  ctx <- run_blueprint(blueprint, ctx)
 
-  glysmith_result(exp = ctx$exp, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta)
+  glysmith_result(exp = ctx$exp, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta, blueprint = blueprint)
 }

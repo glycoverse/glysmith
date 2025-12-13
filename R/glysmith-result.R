@@ -1,6 +1,6 @@
-glysmith_result <- function(exp, plots, tables, meta) {
+glysmith_result <- function(exp, plots, tables, meta, blueprint) {
   structure(
-    list(exp = exp, plots = plots, tables = tables, meta = meta),
+    list(exp = exp, plots = plots, tables = tables, meta = meta, blueprint = blueprint),
     class = "glysmith_result"
   )
 }

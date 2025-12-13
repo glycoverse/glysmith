@@ -73,25 +73,9 @@ polish_report <- function(
   if (!is.null(x$meta) && is.list(x$meta) && !is.null(x$meta$steps)) {
     steps_executed <- x$meta$steps
   }
-  if (is.null(steps_executed)) steps_executed <- character(0)
 
-  # Match forge_analysis() default blueprint.
-  bp <- list(
-    step_preprocess(),
-    step_ident_overview(),
-    step_pca(),
-    step_dea(),
-    step_volcano(),
-    step_enrich_go(),
-    step_enrich_kegg(),
-    step_enrich_reactome(),
-    step_derive_traits(),
-    step_dta()
-  )
-  step_map <- purrr::set_names(bp, purrr::map_chr(bp, "id"))
-
+  step_map <- rlang::set_names(x$blueprint, purrr::map_chr(x$blueprint, "id"))
   ids <- steps_executed
-  if (length(ids) == 0) ids <- names(step_map)
 
   purrr::map(ids, function(id) {
     s <- step_map[[id]]
