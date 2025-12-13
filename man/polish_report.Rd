@@ -22,3 +22,10 @@ The normalized path to the generated HTML file.
 Generate a self-contained HTML report for a \code{glysmith_result} object.
 The report is rendered via \code{rmarkdown::render()} using an internal R Markdown template.
 }
+\examples{
+library(glyexp)
+exp <- real_experiment2
+result <- forge_analysis(exp)
+polish_report(result, tempfile(fileext = ".html"), open = FALSE)
+
+}

@@ -24,10 +24,9 @@ print.glysmith_result <- function(x, ...) {
 #' @returns A glyexp_experiment object, a ggplot object or a tibble.
 #' @examples
 #' library(glyexp)
-#' exp <- real_experiment
+#' exp <- real_experiment2
 #' result <- forge_analysis(exp)
 #' cast_exp(result)
-#' cast_plot(result, "pca")
 #' cast_table(result, "summary")
 #'
 #' @export

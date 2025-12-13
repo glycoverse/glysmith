@@ -27,10 +27,9 @@ elements of a glysmith result object, respectively.
 }
 \examples{
 library(glyexp)
-exp <- real_experiment
+exp <- real_experiment2
 result <- forge_analysis(exp)
 cast_exp(result)
-cast_plot(result, "pca")
 cast_table(result, "summary")
 
 }

@@ -38,7 +38,7 @@
 #'     - `steps`: a character vector of the steps of the analysis.
 #'
 #' @examples
-#' exp <- glyexp::real_experiment
+#' exp <- glyexp::real_experiment2
 #' result <- forge_analysis(exp)
 #' print(result)
 #'

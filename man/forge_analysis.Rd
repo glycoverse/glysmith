@@ -58,7 +58,7 @@ the pipeline will also include:
 }
 }
 \examples{
-exp <- glyexp::real_experiment
+exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 print(result)
 

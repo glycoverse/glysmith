@@ -36,7 +36,7 @@ based on metadata in \code{x$meta}.
 }
 \examples{
 library(glyexp)
-exp <- real_experiment
+exp <- real_experiment2
 result <- forge_analysis(exp)
 quench_result(result, tempdir())
 

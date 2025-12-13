@@ -9,6 +9,12 @@
 #' @param open Whether to open the report in a browser after rendering.
 #'
 #' @returns The normalized path to the generated HTML file.
+#' @examples
+#' library(glyexp)
+#' exp <- real_experiment2
+#' result <- forge_analysis(exp)
+#' polish_report(result, tempfile(fileext = ".html"), open = FALSE)
+#'
 #' @export
 polish_report <- function(
   x,
