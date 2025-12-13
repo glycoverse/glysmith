@@ -60,19 +60,6 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   cli::cli_alert_success("Result saved to {.path {dir}}")
 }
 
-#' Ask if user wants to overwrite an existing directory
-#'
-#' This helper exists to keep the prompt and input on the same line (via
-#' `readline(prompt = ...)`) and to make the interactive behavior testable.
-#'
-#' @returns User input string.
-#' @noRd
-.ask_overwrite_dir <- function() {
-  # Use readline prompt to keep user input on the same line.
-  prompt <- paste0("\u2139 ", "Directory already exists. Overwrite? [y/N] ")
-  readline(prompt = prompt)
-}
-
 #' Write README.md for GlySmith Result
 #'
 #' Write a README.md file to describe the saved outputs,

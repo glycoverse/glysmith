@@ -46,3 +46,29 @@
   }
   suppressMessages(rlang::exec(f, exp, !!!args))
 }
+
+#' Ask if user wants to overwrite an existing directory
+#'
+#' This helper exists to keep the prompt and input on the same line (via
+#' `readline(prompt = ...)`) and to make the interactive behavior testable.
+#'
+#' @returns User input string.
+#' @noRd
+.ask_overwrite_dir <- function() {
+  # Use readline prompt to keep user input on the same line.
+  prompt <- paste0("\u2139 ", "Directory already exists. Overwrite? [y/N] ")
+  readline(prompt = prompt)
+}
+
+#' Ask if user wants to overwrite an existing file
+#'
+#' This helper exists to keep the prompt and input on the same line (via
+#' `readline(prompt = ...)`) and to make the interactive behavior testable.
+#'
+#' @returns User input string.
+#' @noRd
+.ask_overwrite_file <- function() {
+  # Use readline prompt to keep user input on the same line.
+  prompt <- paste0("\u2139 ", "File already exists. Overwrite? [y/N] ")
+  readline(prompt = prompt)
+}

@@ -1,0 +1,121 @@
+---
+title: "`r params$title`"
+output:
+  rmarkdown::html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+    self_contained: true
+params:
+  title: "GlySmith report"
+  x: ~
+  step_reports: ~
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
+x <- params$x
+step_reports <- params$step_reports
+if (is.null(step_reports)) step_reports <- list()
+
+.explain <- function(key, default = NULL) {
+  # Safely get explanation text by key.
+  explanation <- NULL
+  if (!is.null(x$meta) && is.list(x$meta)) explanation <- x$meta$explanation
+  if (is.null(explanation)) return(default)
+
+  if (is.list(explanation)) {
+    if (key %in% names(explanation)) {
+      val <- explanation[[key]]
+      if (!is.null(val) && !is.na(val) && nzchar(val)) return(val)
+    }
+    return(default)
+  }
+
+  val <- explanation[key]
+  if (length(val) == 1 && !is.na(val) && nzchar(val)) return(unname(val))
+  default
+}
+```
+
+## Overview
+
+```{r}
+plots_n <- if (is.null(x$plots)) 0L else length(x$plots)
+tables_n <- if (is.null(x$tables)) 0L else length(x$tables)
+
+knitr::kable(
+  data.frame(
+    item = c("Generated", "Plots", "Tables"),
+    value = c(as.character(Sys.time()), plots_n, tables_n)
+  ),
+  format = "html"
+)
+```
+
+## Analysis narrative
+
+```{r, results = "asis"}
+if (length(step_reports) == 0) {
+  cat("_No step report available._\n")
+} else {
+  for (s in step_reports) {
+    label <- s$label %||% s$id
+    cat("### ", label, "\n\n", sep = "")
+    if (!is.null(s$content) && is.character(s$content) && length(s$content) == 1 && nzchar(s$content)) {
+      cat(s$content, "\n\n", sep = "")
+    } else {
+      cat("_No report content for this step._\n\n")
+    }
+  }
+}
+```
+
+## Plots
+
+```{r, results = "asis"}
+plots <- x$plots
+if (is.null(plots)) plots <- list()
+
+if (length(plots) == 0) {
+  cat("_No plots._\n")
+} else {
+  for (nm in names(plots)) {
+    cat("### ", nm, "\n\n", sep = "")
+    desc <- .explain(paste0("plots$", nm), default = NULL)
+    if (!is.null(desc)) cat(desc, "\n\n", sep = "")
+    print(plots[[nm]])
+    cat("\n\n")
+  }
+}
+```
+
+## Available tables
+
+```{r, results = "asis"}
+tables <- x$tables
+if (is.null(tables)) tables <- list()
+
+if (length(tables) == 0) {
+  cat("_No tables._\n")
+} else {
+  for (nm in names(tables)) {
+    desc <- .explain(paste0("tables$", nm), default = NULL)
+    if (is.null(desc)) desc <- ""
+    if (nzchar(desc)) {
+      cat("- `", nm, "`: ", desc, "\n", sep = "")
+    } else {
+      cat("- `", nm, "`\n", sep = "")
+    }
+  }
+}
+```
+
+## Session info
+
+```{r}
+utils::sessionInfo()
+```

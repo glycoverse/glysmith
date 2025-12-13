@@ -5,6 +5,7 @@
 #' @param id Step id.
 #' @param label Human-readable label for progress output.
 #' @param run A function(ctx) that returns updated ctx.
+#' @param report A function(x) that returns a markdown string for reporting, or NULL.
 #' @param outputs A list describing declared outputs (tables/plots/meta).
 #' @param require Character vector of required `ctx$data` keys.
 #' @param generate Character vector of generated `ctx$data` keys.
@@ -16,6 +17,7 @@ step <- function(
   id,
   label,
   run,
+  report = NULL,
   outputs = list(),
   require = character(0),
   generate = character(0),
@@ -26,6 +28,7 @@ step <- function(
       id = id,
       label = label,
       run = run,
+      report = report,
       outputs = outputs,
       require = require,
       generate = generate,
@@ -43,6 +46,7 @@ step_preprocess <- function() {
       ctx$exp <- .run_function(glyclean::auto_clean, ctx$exp, ctx$group_col, ctx$dots, "group_col")
       ctx
     },
+    report = NULL,
     outputs = list(),
     require = character(0),
     generate = character(0)
@@ -56,6 +60,15 @@ step_ident_overview <- function() {
     run = function(ctx) {
       tbl <- .run_function(glyexp::summarize_experiment, ctx$exp, ctx$group_col, ctx$dots)
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
+    },
+    report = function(x) {
+      tbl <- x$tables[["summary"]]
+      parts <- paste0(tbl$n, " ", tbl$item, "s")
+      paste0(
+        "In total, ",
+        glue::glue_collapse(parts, sep = ", ", last = ", and "),
+        " were identified."
+      )
     },
     outputs = list(tables = "summary"),
     require = character(0),
@@ -90,6 +103,10 @@ step_pca <- function() {
       p <- .run_function(glyvis::plot_pca, pca_res, ctx$group_col, ctx$dots, "group_col")
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
     },
+    report = function(x) {
+      eig <- x$tables[["pca_eigenvalues"]]
+      "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
+    },
     outputs = list(
       tables = c("pca_samples", "pca_variables", "pca_eigenvalues"),
       plots = "pca"
@@ -112,6 +129,17 @@ step_dea <- function() {
         glystats::get_tidy_result(dea_res),
         "Differential expression analysis results of all comparisons for all variables."
       )
+    },
+    report = function(x) {
+      tbl <- x$tables[["dea"]]
+      sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
+      msg <- "Differential expression analysis was performed and the results were saved in `tables$dea`. "
+      if (sig > 0) {
+        msg <- paste0(msg, "Number of significant items (FDR/adjusted p < 0.05): ", sig, ".\n")
+      } else {
+        msg <- paste0(msg, "No significant items (FDR/adjusted p < 0.05). \n")
+      }
+      msg
     },
     outputs = list(tables = "dea"),
     require = character(0),
@@ -138,6 +166,9 @@ step_volcano <- function() {
       }
       p <- .run_function(glyvis::plot_volcano, dea_res, ctx$group_col, ctx$dots)
       ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
+    },
+    report = function(x) {
+      "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
     },
     outputs = list(plots = "volcano"),
     require = "dea_res",
@@ -183,6 +214,18 @@ step_enrich <- function(kind = c("go", "kegg", "reactome")) {
       p <- .run_function(glyvis::plot_enrich, enrich_res, ctx$group_col, ctx$dots)
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
+    report = function(x) {
+      tbl <- x$tables[[kind]]
+      n_sig <- sum(tbl$p_adj < 0.05)
+      msg <- paste0("Enrichment analysis was performed on differentially expressed variables and the results were saved in `tables$", kind, "` and `plots$", kind, "`.")
+      if (n_sig > 0) {
+        msg <- paste0(msg, " Number of significant items (FDR/adjusted p < 0.05): ", n_sig, ".\n\n")
+        msg <- paste0(msg, "Top terms: \n\n", paste("- ", tbl$description[1:min(5, n_sig)], collapse = "\n"), "\n")
+      } else {
+        msg <- paste0(msg, " No significant items (FDR/adjusted p < 0.05).\n")
+      }
+      msg
+    },
     outputs = list(tables = kind, plots = kind),
     require = "dea_res",
     generate = character(0)
@@ -198,6 +241,18 @@ step_derive_traits <- function() {
       trait_exp <- .run_function(glydet::derive_traits, ctx$exp, ctx$group_col, ctx$dots)
       ctx$data$trait_exp <- trait_exp
       ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
+    },
+    report = function(x) {
+      tbl <- x$tables[["derived_traits"]]
+      if (glyexp::get_exp_type(x$exp) == "glycomics") {
+        item_name <- "Derived traits"
+      } else {
+        item_name <- "Site-specific derived traits"
+      }
+      paste0(
+        "Derived traits were calculated and the results were saved in `tables$derived_traits`. ",
+        "Number of derived traits: ", length(unique(tbl$trait)), "."
+      )
     },
     outputs = list(tables = "derived_traits"),
     require = character(0),
@@ -222,6 +277,22 @@ step_dta <- function() {
       suppressMessages(filtered_trait_exp <- glyclean::remove_constant(trait_exp))
       dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$group_col, ctx$dots, "group_col")
       ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
+    },
+    report = function(x) {
+      tbl <- x$tables[["dta"]]
+      sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
+      msg <- "Differential trait analysis was performed and the results were saved in `tables$dta`. "
+      if (glyexp::get_exp_type(x$exp) == "glycomics") {
+        item_name <- "traits"
+      } else {
+        item_name <- "site-specific traits"
+      }
+      if (sig > 0) {
+        msg <- paste0(msg, "Number of significant ", item_name, " (FDR/adjusted p < 0.05): ", sig, ".\n")
+      } else {
+        msg <- paste0(msg, "No significant ", item_name, " (FDR/adjusted p < 0.05).\n")
+      }
+      msg
     },
     outputs = list(tables = "dta"),
     require = "trait_exp",

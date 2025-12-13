@@ -32,14 +32,17 @@ Imports:
     factoextra,
     fs,
     ggplot2,
+    glue,
     glyclean (>= 0.9.1),
     glydet (>= 0.6.5),
     glyexp (>= 0.10.4),
     glystats (>= 0.5.3),
     glyvis (>= 0.4.0),
+    knitr,
     org.Hs.eg.db,
     readr,
     rlang,
+    rmarkdown,
     stringr,
     tibble
 Remotes: 
