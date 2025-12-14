@@ -7,6 +7,24 @@
 <url><loc>https://glycoverse.github.io/glysmith/SUPPORT.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/authors.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/blueprint.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/blueprint_default.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/cast_exp.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/forge_analysis.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/glysmith-package.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/index.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/polish_report.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/quench_result.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_dea.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_derive_traits.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_dta.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_enrich.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_enrich_go.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_enrich_kegg.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_enrich_reactome.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_ident_overview.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_pca.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_preprocess.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_volcano.html</loc></url>
 </urlset>
 

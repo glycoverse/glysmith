@@ -18,5 +18,44 @@ pak::pak("glycoverse/glysmith")
 
 Coming soon!
 
-# 
+# Package index
+
+## All functions
+
+- [`blueprint()`](https://glycoverse.github.io/glysmith/reference/blueprint.md)
+  : Create a Blueprint
+- [`blueprint_default()`](https://glycoverse.github.io/glysmith/reference/blueprint_default.md)
+  : Default blueprint
+- [`cast_exp()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
+  [`cast_plot()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
+  [`cast_table()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
+  : Get Plots or Tables from GlySmith Result
+- [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md)
+  : Forge an Analysis for Group Comparison
+- [`polish_report()`](https://glycoverse.github.io/glysmith/reference/polish_report.md)
+  : Render a HTML Report for GlySmith Results
+- [`quench_result()`](https://glycoverse.github.io/glysmith/reference/quench_result.md)
+  : Save GlySmith Result
+- [`step_dea()`](https://glycoverse.github.io/glysmith/reference/step_dea.md)
+  : Step: Differential Expression Analysis (DEA)
+- [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md)
+  : Step: Derived Trait Calculation
+- [`step_dta()`](https://glycoverse.github.io/glysmith/reference/step_dta.md)
+  : Step: Differential Trait Analysis (DTA)
+- [`step_enrich()`](https://glycoverse.github.io/glysmith/reference/step_enrich.md)
+  : Step: Enrichment Analysis
+- [`step_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_enrich_go.md)
+  : Step: GO Enrichment Analysis
+- [`step_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_enrich_kegg.md)
+  : Step: KEGG Enrichment Analysis
+- [`step_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_enrich_reactome.md)
+  : Step: Reactome Enrichment Analysis
+- [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md)
+  : Step: Identification Overview
+- [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)
+  : Step: Principal Component Analysis (PCA)
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
+  : Step: Preprocessing
+- [`step_volcano()`](https://glycoverse.github.io/glysmith/reference/step_volcano.md)
+  : Step: Volcano Plot
 
