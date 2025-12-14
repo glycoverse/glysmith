@@ -47,11 +47,7 @@ step_preprocess <- function() {
     run = function(ctx) {
       ctx$exp <- .run_function(glyclean::auto_clean, ctx$exp, ctx$group_col, ctx$dots, "group_col")
       ctx
-    },
-    report = NULL,
-    outputs = list(),
-    require = character(0),
-    generate = character(0)
+    }
   )
 }
 
@@ -72,9 +68,7 @@ step_ident_overview <- function() {
         " were identified."
       )
     },
-    outputs = list(tables = "summary"),
-    require = character(0),
-    generate = character(0)
+    outputs = list(tables = "summary")
   )
 }
 
@@ -112,9 +106,7 @@ step_pca <- function() {
     outputs = list(
       tables = c("pca_samples", "pca_variables", "pca_eigenvalues"),
       plots = "pca"
-    ),
-    require = character(0),
-    generate = character(0)
+    )
   )
 }
 
@@ -144,7 +136,6 @@ step_dea <- function() {
       msg
     },
     outputs = list(tables = "dea"),
-    require = character(0),
     generate = "dea_res"
   )
 }
@@ -173,8 +164,7 @@ step_volcano <- function() {
       "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
     },
     outputs = list(plots = "volcano"),
-    require = "dea_res",
-    generate = character(0)
+    require = "dea_res"
   )
 }
 
@@ -230,7 +220,6 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
     },
     outputs = list(tables = kind, plots = kind),
     require = "dea_res",
-    generate = character(0),
     retry = retry
   )
 }
@@ -258,7 +247,6 @@ step_derive_traits <- function() {
       )
     },
     outputs = list(tables = "derived_traits"),
-    require = character(0),
     generate = "trait_exp"
   )
 }
@@ -298,7 +286,6 @@ step_dta <- function() {
       msg
     },
     outputs = list(tables = "dta"),
-    require = "trait_exp",
-    generate = character(0)
+    require = "trait_exp"
   )
 }
