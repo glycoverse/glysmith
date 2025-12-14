@@ -79,8 +79,24 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
     if (!is.null(s$condition) && !isTRUE(s$condition(ctx))) {
       next
     }
-    if (!quiet) cli::cli_progress_step(s$label)
-    ctx <- s$run(ctx)
+    retries_left <- s$retry
+    while (TRUE) {
+      if (!quiet) cli::cli_progress_step(s$label)
+      tryCatch(
+        {
+          ctx <- s$run(ctx)
+          break
+        },
+        error = function(e) {
+          if (retries_left > 0) {
+            retries_left <<- retries_left - 1  # `retries_left` is defined outside the function scope
+            if (!quiet) cli::cli_alert_warning("Step '{s$id}' failed. Retrying... ({retries_left + 1} attempts left)")
+          } else {
+            stop(e)
+          }
+        }
+      )
+    }
     ctx$meta$steps <- c(ctx$meta$steps, s$id)
   }
   ctx

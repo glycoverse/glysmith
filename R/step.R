@@ -21,7 +21,8 @@ step <- function(
   outputs = list(),
   require = character(0),
   generate = character(0),
-  condition = NULL
+  condition = NULL,
+  retry = 0L
 ) {
   structure(
     list(
@@ -32,7 +33,8 @@ step <- function(
       outputs = outputs,
       require = require,
       generate = generate,
-      condition = condition
+      condition = condition,
+      retry = retry
     ),
     class = "glysmith_step"
   )
@@ -181,14 +183,14 @@ step_enrich_go <- function() {
 }
 
 step_enrich_kegg <- function() {
-  step_enrich("kegg")
+  step_enrich("kegg", retry = 2L)
 }
 
 step_enrich_reactome <- function() {
-  step_enrich("reactome")
+  step_enrich("reactome", retry = 2L)
 }
 
-step_enrich <- function(kind = c("go", "kegg", "reactome")) {
+step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
   kind <- match.arg(kind)
   f <- switch(
     kind,
@@ -228,7 +230,8 @@ step_enrich <- function(kind = c("go", "kegg", "reactome")) {
     },
     outputs = list(tables = kind, plots = kind),
     require = "dea_res",
-    generate = character(0)
+    generate = character(0),
+    retry = retry
   )
 }
 
