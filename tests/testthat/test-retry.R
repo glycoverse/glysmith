@@ -6,7 +6,9 @@ test_that("retry=0 fails immediately", {
     retry = 0L
   )
   bp <- new_blueprint(list(fail_step))
-  expect_error(run_blueprint(bp, list(meta = list(steps = character(0))), quiet = TRUE), "Intentional failure")
+  expect_no_error(res <- run_blueprint(bp, list(meta = list(steps = character(0))), quiet = TRUE))
+  expect_true(!is.null(res$meta$logs$fail$error))
+  expect_match(res$meta$logs$fail$error, "Intentional failure")
 })
 
 test_that("retry=1 succeeds if it fails once then succeeds", {
@@ -38,6 +40,7 @@ test_that("retry=1 fails if it fails twice", {
     retry = 1L
   )
   bp <- new_blueprint(list(fail_on_retry))
-  expect_error(run_blueprint(bp, list(meta = list(steps = character(0))), quiet = TRUE), "Always failure")
+  expect_no_error(res <- run_blueprint(bp, list(meta = list(steps = character(0))), quiet = TRUE))
+  expect_match(res$meta$logs$retry_fail$error, "Always failure")
   expect_equal(count2, 2)
 })

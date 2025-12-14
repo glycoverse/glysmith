@@ -93,31 +93,56 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
     if (!is.null(s$condition) && !isTRUE(s$condition(ctx))) {
       next
     }
+    if (!is.null(s$require)) {
+      missing_deps <- setdiff(s$require, names(ctx$data))
+      if (length(missing_deps) > 0) {
+        if (!quiet) cli::cli_alert_warning("Skipping Step '{s$id}' due to missing ctx$data keys: {.field {missing_deps}}.")
+        next
+      }
+    }
+
     retries_left <- s$retry
     while (TRUE) {
       if (!quiet) cli::cli_progress_step(s$label)
-      tryCatch(
+
+      step_res <- tryCatch(
         {
+          # Success path
+          new_ctx <- NULL
           logs_output <- utils::capture.output({
             logs_message <- utils::capture.output({
-              ctx <- s$run(ctx)
+              new_ctx <- s$run(ctx)
             }, type = "message")
           }, type = "output")
 
-          ctx$meta$logs[[s$id]] <- list(output = logs_output, message = logs_message)
-          break
+          list(status = "success", new_ctx = new_ctx, logs = list(output = logs_output, message = logs_message))
         },
         error = function(e) {
-          if (retries_left > 0) {
-            retries_left <<- retries_left - 1  # `retries_left` is defined outside the function scope
-            if (!quiet) cli::cli_alert_warning("Step '{s$id}' failed. Retrying... ({retries_left + 1} attempts left)")
-          } else {
-            stop(e)
-          }
+          # Error path
+          list(status = "error", error = e)
         }
       )
+
+      if (step_res$status == "success") {
+        ctx <- step_res$new_ctx
+        ctx$meta$logs[[s$id]] <- step_res$logs
+        ctx$meta$steps <- c(ctx$meta$steps, s$id)
+        break
+      } else {
+        # Error
+        e <- step_res$error
+        if (retries_left > 0) {
+          retries_left <- retries_left - 1
+          if (!quiet) cli::cli_alert_warning("Step '{s$id}' failed. Retrying... ({retries_left + 1} attempts left)")
+          # Loop continues
+        } else {
+          # Failed and skip
+          if (!quiet) cli::cli_alert_warning("Step '{s$id}' failed. Skipping... Error: {e$message}")
+          ctx$meta$logs[[s$id]] <- list(error = e$message)
+          break
+        }
+      }
     }
-    ctx$meta$steps <- c(ctx$meta$steps, s$id)
   }
   ctx
 }
