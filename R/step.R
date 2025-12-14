@@ -40,6 +40,14 @@ step <- function(
   )
 }
 
+#' Step: Preprocessing
+#'
+#' Preprocess the experiment using `glyclean::auto_clean()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_preprocess()
+#' @export
 step_preprocess <- function() {
   step(
     id = "preprocessing",
@@ -51,6 +59,14 @@ step_preprocess <- function() {
   )
 }
 
+#' Step: Identification Overview
+#'
+#' Summarize the experiment using `glyexp::summarize_experiment()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_ident_overview()
+#' @export
 step_ident_overview <- function() {
   step(
     id = "identification_overview",
@@ -72,6 +88,14 @@ step_ident_overview <- function() {
   )
 }
 
+#' Step: Principal Component Analysis (PCA)
+#'
+#' Run PCA using `glystats::gly_pca()` and plot it with `glyvis::plot_pca()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_pca()
+#' @export
 step_pca <- function() {
   step(
     id = "pca",
@@ -110,6 +134,14 @@ step_pca <- function() {
   )
 }
 
+#' Step: Differential Expression Analysis (DEA)
+#'
+#' Run differential analysis using `glystats::gly_limma()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_dea()
+#' @export
 step_dea <- function() {
   step(
     id = "dea",
@@ -140,6 +172,15 @@ step_dea <- function() {
   )
 }
 
+#' Step: Volcano Plot
+#'
+#' Create a volcano plot from DEA results using `glyvis::plot_volcano()`.
+#' This step requires [step_dea()].
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_volcano()
+#' @export
 step_volcano <- function() {
   step(
     id = "volcano",
@@ -168,18 +209,64 @@ step_volcano <- function() {
   )
 }
 
+#' Step: GO Enrichment Analysis
+#'
+#' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
+#' This step requires [step_dea()].
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_enrich_go()
+#' @export
 step_enrich_go <- function() {
   step_enrich("go")
 }
 
+#' Step: KEGG Enrichment Analysis
+#'
+#' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
+#' This step requires [step_dea()].
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_enrich_kegg()
+#' @export
 step_enrich_kegg <- function() {
   step_enrich("kegg", retry = 2L)
 }
 
+#' Step: Reactome Enrichment Analysis
+#'
+#' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
+#' This step requires [step_dea()].
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_enrich_reactome()
+#' @export
 step_enrich_reactome <- function() {
   step_enrich("reactome", retry = 2L)
 }
 
+#' Step: Enrichment Analysis
+#'
+#' @description
+#' Run functional enrichment analysis on differentially expressed variables using one of:
+#' - `glystats::gly_enrich_go()`
+#' - `glystats::gly_enrich_kegg()`
+#' - `glystats::gly_enrich_reactome()`
+#'
+#' This step requires [step_dea()].
+#'
+#' @return A `glysmith_step` object.
+#'
+#' @param kind Enrichment type: `"go"`, `"kegg"`, or `"reactome"`.
+#' @param retry Number of retries if the step errors.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_enrich("go")
+#' @export
 step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
   kind <- match.arg(kind)
   f <- switch(
@@ -224,6 +311,14 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
   )
 }
 
+#' Step: Derived Trait Calculation
+#'
+#' Calculate glycan derived traits using `glydet::derive_traits()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_derive_traits()
+#' @export
 step_derive_traits <- function() {
   step(
     id = "derive_traits",
@@ -251,6 +346,15 @@ step_derive_traits <- function() {
   )
 }
 
+#' Step: Differential Trait Analysis (DTA)
+#'
+#' Run differential analysis on derived traits using `glystats::gly_limma()`.
+#' This step requires [step_derive_traits()].
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_dta()
+#' @export
 step_dta <- function() {
   step(
     id = "dta",
