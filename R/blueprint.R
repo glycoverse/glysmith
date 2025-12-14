@@ -69,6 +69,14 @@ validate_blueprint <- function(blueprint) {
   invisible(blueprint)
 }
 
+#' @export
+print.glysmith_blueprint <- function(x, ...) {
+  cli::cli_h2("Blueprint ({.val {length(x)}} steps)")
+  for (s in x) {
+    cli::cli_ul(s$id)
+  }
+}
+
 #' Run a list of steps
 #'
 #' @param blueprint A `glysmith_blueprint` object.
