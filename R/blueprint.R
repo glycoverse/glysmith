@@ -98,7 +98,13 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
       if (!quiet) cli::cli_progress_step(s$label)
       tryCatch(
         {
-          ctx <- s$run(ctx)
+          logs_output <- utils::capture.output({
+            logs_message <- utils::capture.output({
+              ctx <- s$run(ctx)
+            }, type = "message")
+          }, type = "output")
+
+          ctx$meta$logs[[s$id]] <- list(output = logs_output, message = logs_message)
           break
         },
         error = function(e) {

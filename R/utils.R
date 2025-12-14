@@ -44,7 +44,7 @@
   if (!is.null(group_arg)) {
     args[[group_arg]] <- group_col
   }
-  suppressMessages(rlang::exec(f, exp, !!!args))
+  rlang::exec(f, exp, !!!args)
 }
 
 #' Ask if user wants to overwrite an existing directory

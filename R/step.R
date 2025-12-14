@@ -265,7 +265,7 @@ step_dta <- function() {
           "i" = "Add {.fn step_derive_traits} before {.fn step_dta} in the blueprint."
         ))
       }
-      suppressMessages(filtered_trait_exp <- glyclean::remove_constant(trait_exp))
+      filtered_trait_exp <- glyclean::remove_constant(trait_exp)
       dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$group_col, ctx$dots, "group_col")
       ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
     },
