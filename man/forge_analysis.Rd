@@ -4,10 +4,12 @@
 \alias{forge_analysis}
 \title{Forge an Analysis for Group Comparison}
 \usage{
-forge_analysis(exp, group_col = "group", ...)
+forge_analysis(exp, blueprint = blueprint_default(), group_col = "group", ...)
 }
 \arguments{
 \item{exp}{A \code{glyexp::experiment()} object.}
+
+\item{blueprint}{A \code{glysmith_blueprint} object. Default is \code{\link[=blueprint_default]{blueprint_default()}}.}
 
 \item{group_col}{Column name of group information in the sample information.
 Used for various analyses. Default is "group".}

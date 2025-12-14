@@ -115,3 +115,38 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
   }
   ctx
 }
+
+# ---------- Blueprints ------------------------------------
+#' Default blueprint
+#'
+#' This blueprint contains the following steps:
+#' - step_preprocess(): Preprocess the data using `glyclean::auto_clean()`.
+#' - step_ident_overview(): Summarize the experiment using `glyexp::summarize_experiment()`.
+#' - step_pca(): Principal component analysis using `glystats::gly_pca()`,
+#'   and plot the PCA using `glyvis::plot_pca()`.
+#' - step_dea(): Differential analysis using `glystats::gly_dea()`.
+#' - step_volcano(): Plot a volcano plot using `glyvis::plot_volcano()`.
+#' - step_enrich_go(): Perform GO enrichment analysis using `glystats::gly_enrich_go()`.
+#' - step_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
+#' - step_enrich_reactome(): Perform Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
+#' - step_derive_traits(): Derive traits using `glydet::derive_traits()`.
+#' - step_dta(): Differential trait analysis using `glystats::gly_limma()`.
+#'
+#' @returns A `glysmith_blueprint` object.
+#' @examples
+#' blueprint_default()
+#' @export
+blueprint_default <- function() {
+  new_blueprint(list(
+    step_preprocess(),
+    step_ident_overview(),
+    step_pca(),
+    step_dea(),
+    step_volcano(),
+    step_enrich_go(),
+    step_enrich_kegg(),
+    step_enrich_reactome(),
+    step_derive_traits(),
+    step_dta()
+  ))
+}

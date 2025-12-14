@@ -19,6 +19,7 @@
 #' - Differential trait analysis (DTA) with `glystats::gly_limma()`
 #'
 #' @param exp A `glyexp::experiment()` object.
+#' @param blueprint A `glysmith_blueprint` object. Default is [blueprint_default()].
 #' @param group_col Column name of group information in the sample information.
 #'   Used for various analyses. Default is "group".
 #' @param ... Additional arguments passed to the functions.
@@ -43,7 +44,7 @@
 #' print(result)
 #'
 #' @export
-forge_analysis <- function(exp, group_col = "group", ...) {
+forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "group", ...) {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col)
   if (!group_col %in% colnames(exp$sample_info)) {
@@ -53,20 +54,6 @@ forge_analysis <- function(exp, group_col = "group", ...) {
 
   dots <- rlang::list2(...)
   ctx <- new_ctx(exp, group_col, dots)
-
-  blueprint <- new_blueprint(list(
-    step_preprocess(),
-    step_ident_overview(),
-    step_pca(),
-    step_dea(),
-    step_volcano(),
-    step_enrich_go(),
-    step_enrich_kegg(),
-    step_enrich_reactome(),
-    step_derive_traits(),
-    step_dta()
-  ))
-
   ctx <- run_blueprint(blueprint, ctx)
 
   glysmith_result(exp = ctx$exp, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta, blueprint = blueprint)
