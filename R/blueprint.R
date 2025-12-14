@@ -2,12 +2,18 @@
 #'
 #' A blueprint is a list of steps that are executed in order.
 #'
-#' @param steps A list of steps.
+#' @param ... One or more step objects.
 #'
 #' @returns A blueprint object.
-#' @noRd
-blueprint <- function(steps) {
-  bp <- new_blueprint(steps)
+#' @examples
+#' blueprint(
+#'   step_preprocess(),
+#'   step_pca(),
+#'   step_dea(),  # this comma is ok
+#' )
+#' @export
+blueprint <- function(...) {
+  bp <- new_blueprint(as.list(rlang::list2(...)))
   validate_blueprint(bp)
 }
 
