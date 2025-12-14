@@ -86,65 +86,96 @@ print.glysmith_blueprint <- function(x, ...) {
 #' @returns Updated context.
 #' @noRd
 run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
-  for (s in blueprint) {
-    if (!inherits(s, "glysmith_step")) {
-      cli::cli_abort("Invalid step object.")
+  ctx <- .run_blueprint_ensure_ctx(ctx)
+
+  for (step in blueprint) {
+    if (.run_blueprint_should_skip(step, ctx, quiet = quiet)) next
+
+    step_run <- .run_blueprint_run_with_retry(step, ctx, quiet = quiet)
+    ctx <- step_run$ctx
+  }
+
+  ctx
+}
+
+.run_blueprint_ensure_ctx <- function(ctx) {
+  ctx$meta <- ctx$meta %||% list()
+  ctx$meta$steps <- ctx$meta$steps %||% character(0)
+  ctx$meta$logs <- ctx$meta$logs %||% list()
+
+  ctx$data <- ctx$data %||% list()
+  ctx
+}
+
+.run_blueprint_should_skip <- function(step, ctx, quiet = FALSE) {
+  if (!is.null(step$condition) && !isTRUE(step$condition(ctx))) return(TRUE)
+
+  required <- step$require %||% character(0)
+  if (length(required) == 0) return(FALSE)
+
+  missing_deps <- setdiff(required, names(ctx$data))
+  if (length(missing_deps) == 0) return(FALSE)
+
+  if (!quiet) {
+    cli::cli_alert_warning(
+      "Skipping Step '{step$id}' due to missing ctx$data keys: {.field {missing_deps}}."
+    )
+  }
+  TRUE
+}
+
+.run_blueprint_run_with_retry <- function(step, ctx, quiet = FALSE) {
+  retries_left <- as.integer(step$retry %||% 0L)
+
+  while (TRUE) {
+    if (!quiet) cli::cli_progress_step(step$label)
+
+    attempt <- .run_blueprint_run_once(step, ctx)
+
+    if (attempt$status == "success") {
+      ctx <- .run_blueprint_ensure_ctx(attempt$new_ctx)
+      ctx$meta$logs[[step$id]] <- attempt$logs
+      ctx$meta$steps <- c(ctx$meta$steps, step$id)
+      return(list(ctx = ctx))
     }
-    if (!is.null(s$condition) && !isTRUE(s$condition(ctx))) {
+
+    e <- attempt$error
+    if (retries_left > 0) {
+      retries_left <- retries_left - 1
+      if (!quiet) {
+        cli::cli_alert_warning(
+          "Step '{step$id}' failed. Retrying... ({retries_left + 1} attempts left)"
+        )
+      }
       next
     }
-    if (!is.null(s$require)) {
-      missing_deps <- setdiff(s$require, names(ctx$data))
-      if (length(missing_deps) > 0) {
-        if (!quiet) cli::cli_alert_warning("Skipping Step '{s$id}' due to missing ctx$data keys: {.field {missing_deps}}.")
-        next
-      }
-    }
 
-    retries_left <- s$retry
-    while (TRUE) {
-      if (!quiet) cli::cli_progress_step(s$label)
-
-      step_res <- tryCatch(
-        {
-          # Success path
-          new_ctx <- NULL
-          logs_output <- utils::capture.output({
-            logs_message <- utils::capture.output({
-              new_ctx <- s$run(ctx)
-            }, type = "message")
-          }, type = "output")
-
-          list(status = "success", new_ctx = new_ctx, logs = list(output = logs_output, message = logs_message))
-        },
-        error = function(e) {
-          # Error path
-          list(status = "error", error = e)
-        }
-      )
-
-      if (step_res$status == "success") {
-        ctx <- step_res$new_ctx
-        ctx$meta$logs[[s$id]] <- step_res$logs
-        ctx$meta$steps <- c(ctx$meta$steps, s$id)
-        break
-      } else {
-        # Error
-        e <- step_res$error
-        if (retries_left > 0) {
-          retries_left <- retries_left - 1
-          if (!quiet) cli::cli_alert_warning("Step '{s$id}' failed. Retrying... ({retries_left + 1} attempts left)")
-          # Loop continues
-        } else {
-          # Failed and skip
-          if (!quiet) cli::cli_alert_warning("Step '{s$id}' failed. Skipping... Error: {e$message}")
-          ctx$meta$logs[[s$id]] <- list(error = e$message)
-          break
-        }
-      }
-    }
+    if (!quiet) cli::cli_alert_warning("Step '{step$id}' failed. Skipping... Error: {e$message}")
+    ctx$meta$logs[[step$id]] <- list(error = e$message)
+    return(list(ctx = ctx))
   }
-  ctx
+}
+
+.run_blueprint_run_once <- function(step, ctx) {
+  tryCatch(
+    {
+      new_ctx <- NULL
+      logs_output <- utils::capture.output({
+        logs_message <- utils::capture.output({
+          new_ctx <- step$run(ctx)
+        }, type = "message")
+      }, type = "output")
+
+      list(
+        status = "success",
+        new_ctx = new_ctx,
+        logs = list(output = logs_output, message = logs_message)
+      )
+    },
+    error = function(e) {
+      list(status = "error", error = e)
+    }
+  )
 }
 
 # ---------- Blueprints ------------------------------------
