@@ -82,7 +82,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! Step 'preprocessing' failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [147ms]
+#> ✔ Preprocessing [170ms]
 #> 
 #> ℹ Identification overview
 #> ✔ Identification overview [117ms]
@@ -100,10 +100,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [219ms]
+#> ✔ Differential expression analysis [215ms]
 #> 
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [7.3s]
+#> ✔ Derived trait calculation [7.4s]
 #> 
 #> ℹ Differential trait analysis
 #> ℹ Number of groups: 4

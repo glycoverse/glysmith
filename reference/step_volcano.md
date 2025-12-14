@@ -38,16 +38,16 @@ step_volcano()
 #>         ctx$dots)
 #>     ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
 #> }
-#> <bytecode: 0x559158ac7730>
-#> <environment: 0x559153a7f128>
+#> <bytecode: 0x55ada35c9bf0>
+#> <environment: 0x55ad9e527680>
 #> 
 #> $report
 #> function (x) 
 #> {
 #>     "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
 #> }
-#> <bytecode: 0x559158aca5a0>
-#> <environment: 0x559153a7f128>
+#> <bytecode: 0x55ada35cca60>
+#> <environment: 0x55ad9e527680>
 #> 
 #> $outputs
 #> $outputs$plots
@@ -66,8 +66,8 @@ step_volcano()
 #>     g <- ctx$exp$sample_info[[ctx$group_col]]
 #>     length(levels(g)) == 2
 #> }
-#> <bytecode: 0x559158ac7e30>
-#> <environment: 0x559153a7f128>
+#> <bytecode: 0x55ada35ca2f0>
+#> <environment: 0x55ad9e527680>
 #> 
 #> $retry
 #> [1] 0

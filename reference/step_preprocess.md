@@ -30,8 +30,8 @@ step_preprocess()
 #>         ctx$dots, "group_col")
 #>     ctx
 #> }
-#> <bytecode: 0x5591523a88d0>
-#> <environment: 0x5591584edeb8>
+#> <bytecode: 0x55ad9ce91cb8>
+#> <environment: 0x55ada0966248>
 #> 
 #> $report
 #> NULL

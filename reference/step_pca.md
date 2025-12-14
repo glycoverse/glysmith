@@ -40,8 +40,8 @@ step_pca()
 #>         ctx$dots, "group_col")
 #>     ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
 #> }
-#> <bytecode: 0x5591523b7d80>
-#> <environment: 0x559159553708>
+#> <bytecode: 0x55ad9ceb9fa0>
+#> <environment: 0x55ada4035848>
 #> 
 #> $report
 #> function (x) 
@@ -49,8 +49,8 @@ step_pca()
 #>     eig <- x$tables[["pca_eigenvalues"]]
 #>     "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
 #> }
-#> <bytecode: 0x5591523bb728>
-#> <environment: 0x559159553708>
+#> <bytecode: 0x55ad9cebde28>
+#> <environment: 0x55ada4035848>
 #> 
 #> $outputs
 #> $outputs$tables

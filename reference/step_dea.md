@@ -32,8 +32,8 @@ step_dea()
 #>     ctx_add_table(ctx, "dea", glystats::get_tidy_result(dea_res), 
 #>         "Differential expression analysis results of all comparisons for all variables.")
 #> }
-#> <bytecode: 0x5591523e7058>
-#> <environment: 0x5591574dae70>
+#> <bytecode: 0x55ad9cec51b0>
+#> <environment: 0x55ada1bb2dc0>
 #> 
 #> $report
 #> function (x) 
@@ -50,8 +50,8 @@ step_dea()
 #>     }
 #>     msg
 #> }
-#> <bytecode: 0x5591523e9870>
-#> <environment: 0x5591574dae70>
+#> <bytecode: 0x55ad9cec7b88>
+#> <environment: 0x55ada1bb2dc0>
 #> 
 #> $outputs
 #> $outputs$tables

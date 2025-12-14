@@ -39,8 +39,8 @@ step_dta()
 #>     ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), 
 #>         "Differential trait analysis results.")
 #> }
-#> <bytecode: 0x559158b13cf8>
-#> <environment: 0x5591594f6770>
+#> <bytecode: 0x55ada36161b8>
+#> <environment: 0x55ada3048d08>
 #> 
 #> $report
 #> function (x) 
@@ -63,8 +63,8 @@ step_dta()
 #>     }
 #>     msg
 #> }
-#> <bytecode: 0x559158b12910>
-#> <environment: 0x5591594f6770>
+#> <bytecode: 0x55ada3614dd0>
+#> <environment: 0x55ada3048d08>
 #> 
 #> $outputs
 #> $outputs$tables
@@ -80,8 +80,8 @@ step_dta()
 #> $condition
 #> function (ctx) 
 #> "glycan_structure" %in% colnames(ctx$exp$var_info)
-#> <bytecode: 0x559158b14158>
-#> <environment: 0x5591594f6770>
+#> <bytecode: 0x55ada3616618>
+#> <environment: 0x55ada3048d08>
 #> 
 #> $retry
 #> [1] 0

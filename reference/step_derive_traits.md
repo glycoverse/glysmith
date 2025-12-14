@@ -32,8 +32,8 @@ step_derive_traits()
 #>     ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), 
 #>         "Derived trait calculation results.")
 #> }
-#> <bytecode: 0x559158aff3a0>
-#> <environment: 0x55915685e058>
+#> <bytecode: 0x55ada3601860>
+#> <environment: 0x55ada1175410>
 #> 
 #> $report
 #> function (x) 
@@ -49,8 +49,8 @@ step_derive_traits()
 #>         "Number of derived traits: ", length(unique(tbl$trait)), 
 #>         ".")
 #> }
-#> <bytecode: 0x559158b02018>
-#> <environment: 0x55915685e058>
+#> <bytecode: 0x55ada36044d8>
+#> <environment: 0x55ada1175410>
 #> 
 #> $outputs
 #> $outputs$tables
@@ -66,8 +66,8 @@ step_derive_traits()
 #> $condition
 #> function (ctx) 
 #> "glycan_structure" %in% colnames(ctx$exp$var_info)
-#> <bytecode: 0x559158aff800>
-#> <environment: 0x55915685e058>
+#> <bytecode: 0x55ada3601cc0>
+#> <environment: 0x55ada1175410>
 #> 
 #> $retry
 #> [1] 0

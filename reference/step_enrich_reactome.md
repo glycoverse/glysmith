@@ -37,8 +37,8 @@ step_enrich_reactome()
 #>         ctx$dots)
 #>     ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
 #> }
-#> <bytecode: 0x559158adb7e0>
-#> <environment: 0x5591588ac7f0>
+#> <bytecode: 0x55ada35ddca0>
+#> <environment: 0x55ada4dda8e0>
 #> 
 #> $report
 #> function (x) 
@@ -58,8 +58,8 @@ step_enrich_reactome()
 #>     }
 #>     msg
 #> }
-#> <bytecode: 0x559158adf888>
-#> <environment: 0x5591588ac7f0>
+#> <bytecode: 0x55ada35e1d48>
+#> <environment: 0x55ada4dda8e0>
 #> 
 #> $outputs
 #> $outputs$tables
@@ -78,8 +78,8 @@ step_enrich_reactome()
 #> $condition
 #> function (ctx) 
 #> glyexp::get_exp_type(ctx$exp) == "glycoproteomics"
-#> <bytecode: 0x559158adbbd0>
-#> <environment: 0x5591588ac7f0>
+#> <bytecode: 0x55ada35de090>
+#> <environment: 0x55ada4dda8e0>
 #> 
 #> $retry
 #> [1] 2
