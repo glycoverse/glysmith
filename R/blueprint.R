@@ -194,21 +194,27 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' - step_derive_traits(): Derive traits using `glydet::derive_traits()`.
 #' - step_dta(): Differential trait analysis using `glystats::gly_limma()`.
 #'
+#' @param preprocess Whether to include [step_preprocess()].
+#' @param enrich Whether to include the enrichment steps,
+#'   i.e. [step_enrich_go()], [step_enrich_kegg()], and [step_enrich_reactome()].
+#' @param traits Whether to include the derived trait analysis steps,
+#'   i.e. [step_derive_traits()] and [step_dta()].
+#'
 #' @returns A `glysmith_blueprint` object.
 #' @examples
 #' blueprint_default()
 #' @export
-blueprint_default <- function() {
-  new_blueprint(list(
-    step_preprocess(),
-    step_ident_overview(),
-    step_pca(),
-    step_dea(),
-    step_volcano(),
-    step_enrich_go(),
-    step_enrich_kegg(),
-    step_enrich_reactome(),
-    step_derive_traits(),
-    step_dta()
-  ))
+blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
+  steps <- list()
+  if (preprocess) {
+    steps <- append(steps, list(step_preprocess()))
+  }
+  steps <- append(steps, list(step_ident_overview(), step_pca(), step_dea(), step_volcano()))
+  if (enrich) {
+    steps <- append(steps, list(step_enrich_go(), step_enrich_kegg(), step_enrich_reactome()))
+  }
+  if (traits) {
+    steps <- append(steps, list(step_derive_traits(), step_dta()))
+  }
+  new_blueprint(steps)
 }
