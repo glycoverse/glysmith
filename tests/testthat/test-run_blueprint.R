@@ -49,7 +49,7 @@ test_that("run_blueprint handles step failure", {
   
   # Should not error
   expect_no_error({
-    ctx_result <- glysmith:::run_blueprint(bp, ctx)
+    ctx_result <- glysmith:::run_blueprint(bp, ctx, quiet = TRUE)
   })
   
   # Check logs
