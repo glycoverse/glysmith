@@ -82,15 +82,15 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! Step 'preprocess' failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [192ms]
+#> ✔ Preprocessing [179ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [134ms]
+#> ✔ Identification overview [120ms]
 #> 
 #> ℹ Principal component analysis
 #> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [16ms]
+#> ✔ Principal component analysis [14ms]
 #> 
 #> ℹ Differential expression analysis
 #> ℹ Number of groups: 4
@@ -100,10 +100,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [257ms]
+#> ✔ Differential expression analysis [268ms]
 #> 
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8.4s]
+#> ✔ Derived trait calculation [7.8s]
 #> 
 #> ℹ Differential trait analysis
 #> ℹ Number of groups: 4
@@ -112,7 +112,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [60ms]
+#> ✔ Differential trait analysis [56ms]
 #> 
 cast_exp(result)
 #> 

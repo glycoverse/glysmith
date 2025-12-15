@@ -1,7 +1,8 @@
 # glysmith
 
-> One Ring to rule them all.  
-> — *The Lord of the Rings*
+> **One Ring to rule them all.** — *The Lord of the Rings*
+
+![](reference/figures/ring.png)
 
 Be overwhelmed by the complexity of glycoverse?
 

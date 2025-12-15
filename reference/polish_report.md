@@ -86,15 +86,15 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! Step 'preprocess' failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [128ms]
+#> ✔ Preprocessing [118ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [138ms]
+#> ✔ Identification overview [120ms]
 #> 
 #> ℹ Principal component analysis
 #> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [14ms]
+#> ✔ Principal component analysis [13ms]
 #> 
 #> ℹ Differential expression analysis
 #> ℹ Number of groups: 4
@@ -104,10 +104,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [96ms]
+#> ✔ Differential expression analysis [83ms]
 #> 
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.8s]
+#> ✔ Derived trait calculation [2.6s]
 #> 
 #> ℹ Differential trait analysis
 #> ℹ Number of groups: 4
@@ -116,8 +116,8 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [93ms]
+#> ✔ Differential trait analysis [80ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpBAjEvI/file1a5c4490d45b.html"
+#> [1] "/tmp/Rtmpc2Gx39/file1a6258037a15.html"
 ```
