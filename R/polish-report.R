@@ -80,7 +80,7 @@ polish_report <- function(
     steps_executed <- x$meta$steps
   }
 
-  step_map <- rlang::set_names(x$blueprint, purrr::map_chr(x$blueprint, "id"))
+  step_map <- x$blueprint
   ids <- steps_executed
 
   purrr::map(ids, function(id) {

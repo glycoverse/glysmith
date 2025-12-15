@@ -13,7 +13,9 @@
 #' )
 #' @export
 blueprint <- function(...) {
-  bp <- new_blueprint(as.list(rlang::list2(...)))
+  steps <- as.list(rlang::list2(...))
+  names(steps) <- purrr::map_chr(steps, "id")
+  bp <- new_blueprint(steps)
   validate_blueprint(bp)
 }
 
@@ -216,5 +218,6 @@ blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
   if (traits) {
     steps <- append(steps, list(step_derive_traits(), step_dta()))
   }
+  names(steps) <- purrr::map_chr(steps, "id")
   new_blueprint(steps)
 }
