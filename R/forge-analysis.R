@@ -1,31 +1,15 @@
 #' Forge an Analysis for Group Comparison
 #'
-#' @description
-#' This function performs comprehensive analysis for group comparison.
-#'
-#' The pipeline includes:
-#' - Preprocessing using `glyclean::auto_clean()`
-#' - Identification overview using `glyexp::summarize_experiment()`
-#' - Principal component analysis (PCA) with `glystats::gly_pca()` and `glyvis::plot_pca()`
-#' - Differential expression analysis (DEA) with `glystats::gly_limma()` and `glyvis::plot_volcano()`
-#'
-#' If experiment type is "glycoproteomics", the pipeline will also include:
-#' - Functional enrichment analysis using `glystats::gly_enrich_go()`, `glystats::gly_enrich_kegg()`,
-#'   and `glystats::gly_enrich_reactome()`, as well as plotting with `glyvis::plot_enrich()`
-#'
-#' If glycan structure is available and glycan type is "N",
-#' the pipeline will also include:
-#' - Derived trait calculation using `glydet::derive_traits()`
-#' - Differential trait analysis (DTA) with `glystats::gly_limma()`
+#' This function performs a comprehensive analysis for group comparison.
 #'
 #' @param exp A `glyexp::experiment()` object.
 #' @param blueprint A `glysmith_blueprint` object. Default is [blueprint_default()].
 #' @param group_col Column name of group information in the sample information.
 #'   Used for various analyses. Default is "group".
-#' @param ... Additional arguments passed to the functions.
-#'   Use the format `pkg.func.arg` to pass arguments to the functions.
-#'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`,
-#'   set `glystats.gly_limma.p_adj_method = "BH"`.
+#' @param ... Additional arguments passed to the underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`
+#'   in [step_dea()], set `glystats.gly_limma.p_adj_method = "BH"`.
 #'   Note that arguments about group column specification is controlled by `group_col` argument,
 #'   and should not be passed to `...`.
 #'

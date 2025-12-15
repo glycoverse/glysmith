@@ -14,10 +14,10 @@ forge_analysis(exp, blueprint = blueprint_default(), group_col = "group", ...)
 \item{group_col}{Column name of group information in the sample information.
 Used for various analyses. Default is "group".}
 
-\item{...}{Additional arguments passed to the functions.
-Use the format \code{pkg.func.arg} to pass arguments to the functions.
-For example, if you want to pass argument \code{p_adj_method = "BH"} to \code{glystats::gly_limma()},
-set \code{glystats.gly_limma.p_adj_method = "BH"}.
+\item{...}{Additional arguments passed to the underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, if you want to pass argument \code{p_adj_method = "BH"} to \code{glystats::gly_limma()}
+in \code{\link[=step_dea]{step_dea()}}, set \code{glystats.gly_limma.p_adj_method = "BH"}.
 Note that arguments about group column specification is controlled by \code{group_col} argument,
 and should not be passed to \code{...}.}
 }
@@ -36,28 +36,7 @@ with keys like \code{tables$summary} and \code{plots$pca}.
 }
 }
 \description{
-This function performs comprehensive analysis for group comparison.
-
-The pipeline includes:
-\itemize{
-\item Preprocessing using \code{glyclean::auto_clean()}
-\item Identification overview using \code{glyexp::summarize_experiment()}
-\item Principal component analysis (PCA) with \code{glystats::gly_pca()} and \code{glyvis::plot_pca()}
-\item Differential expression analysis (DEA) with \code{glystats::gly_limma()} and \code{glyvis::plot_volcano()}
-}
-
-If experiment type is "glycoproteomics", the pipeline will also include:
-\itemize{
-\item Functional enrichment analysis using \code{glystats::gly_enrich_go()}, \code{glystats::gly_enrich_kegg()},
-and \code{glystats::gly_enrich_reactome()}, as well as plotting with \code{glyvis::plot_enrich()}
-}
-
-If glycan structure is available and glycan type is "N",
-the pipeline will also include:
-\itemize{
-\item Derived trait calculation using \code{glydet::derive_traits()}
-\item Differential trait analysis (DTA) with \code{glystats::gly_limma()}
-}
+This function performs a comprehensive analysis for group comparison.
 }
 \examples{
 exp <- glyexp::real_experiment2
