@@ -16,8 +16,7 @@ coverage](https://codecov.io/gh/glycoverse/glysmith/graph/badge.svg)](https://ap
 
 <div align="center">
 
-> One Ring to rule them all.  
-> — *The Lord of the Rings*
+**One Ring to rule them all.** — *The Lord of the Rings*
 
 <img src="man/figures/ring.png" style="width:25.0%" />
 

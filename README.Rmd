@@ -24,8 +24,7 @@ knitr::opts_chunk$set(
 
 <div align="center">
 
-> One Ring to rule them all.  
-> — *The Lord of the Rings*
+**One Ring to rule them all.**  — *The Lord of the Rings*
 
 ![](man/figures/ring.png){width=25%}
 
