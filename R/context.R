@@ -13,7 +13,7 @@ new_ctx <- function(exp, group_col, dots) {
     plots = list(),
     tables = list(),
     meta = list(explanation = list(), steps = character(0)),
-    data = list(raw_exp = exp)
+    data = list(exp = exp)
   )
 }
 
@@ -82,4 +82,16 @@ ctx_get_data <- function(ctx, id) {
     cli::cli_abort("Data {.val {id}} not found in context.")
   }
   ctx$data[[id]]
+}
+
+#' Delete data from context
+#'
+#' @param ctx Context list.
+#' @param id Data id.
+#'
+#' @returns Updated context.
+#' @noRd
+ctx_delete_data <- function(ctx, id) {
+  ctx$data[[id]] <- NULL
+  ctx
 }

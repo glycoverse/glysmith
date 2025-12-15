@@ -56,11 +56,17 @@ step_preprocess <- function() {
     id = "preprocess",
     label = "Preprocessing",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "raw_exp")
+      # Here we use a bit of a hack to overwrite the exp data with the preprocessed exp.
+      # This ensures the "active" experiment is always under the key "exp",
+      # no matter if preprocessing is performed or not.
+      exp <- ctx_get_data(ctx, "exp")
       clean_exp <- .run_function(glyclean::auto_clean, exp, ctx$dots)
-      ctx_add_data(ctx, "clean_exp", clean_exp)
+      ctx <- ctx_add_data(ctx, "exp", clean_exp)  # overwrite exp with preprocessed exp
+      ctx <- ctx_add_data(ctx, "raw_exp", exp)  # keep raw exp for reference
+      ctx
     },
-    generate = "clean_exp"
+    require = "exp",
+    generate = "raw_exp"
   )
 }
 
@@ -77,7 +83,7 @@ step_ident_overview <- function() {
     id = "ident_overview",
     label = "Identification overview",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "clean_exp")
+      exp <- ctx_get_data(ctx, "exp")
       tbl <- .run_function(glyexp::summarize_experiment, exp, ctx$dots)
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
     },
@@ -90,7 +96,7 @@ step_ident_overview <- function() {
         " were identified."
       )
     },
-    require = "clean_exp"
+    require = "exp"
   )
 }
 
@@ -107,7 +113,7 @@ step_pca <- function() {
     id = "pca",
     label = "Principal component analysis",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "clean_exp")
+      exp <- ctx_get_data(ctx, "exp")
       pca_res <- .run_function(glystats::gly_pca, exp, ctx$dots)
       ctx <- ctx_add_table(
         ctx,
@@ -134,7 +140,7 @@ step_pca <- function() {
       eig <- x$tables[["pca_eigenvalues"]]
       "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
     },
-    require = "clean_exp"
+    require = "exp"
   )
 }
 
@@ -151,7 +157,7 @@ step_dea <- function() {
     id = "dea",
     label = "Differential expression analysis",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "clean_exp")
+      exp <- ctx_get_data(ctx, "exp")
       dea_res <- .run_function(glystats::gly_limma, exp, ctx$dots)
       ctx$data$dea_res <- dea_res
       ctx_add_table(
@@ -173,7 +179,7 @@ step_dea <- function() {
       msg
     },
     generate = "dea_res",
-    require = "clean_exp"
+    require = "exp"
   )
 }
 
@@ -191,7 +197,7 @@ step_volcano <- function() {
     id = "volcano",
     label = "Volcano plot",
     condition = function(ctx) {
-      exp <- ctx_get_data(ctx, "clean_exp")
+      exp <- ctx_get_data(ctx, "exp")
       g <- exp$sample_info[[ctx$group_col]]
       length(levels(g)) == 2
     },
@@ -210,7 +216,7 @@ step_volcano <- function() {
     report = function(x) {
       "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
     },
-    require = c("dea_res", "clean_exp")
+    require = c("dea_res", "exp")
   )
 }
 
@@ -285,9 +291,9 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
   step(
     id = paste0("enrich_", kind),
     label = label,
-    condition = function(ctx) glyexp::get_exp_type(ctx_get_data(ctx, "clean_exp")) == "glycoproteomics",
+    condition = function(ctx) glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "clean_exp")
+      exp <- ctx_get_data(ctx, "exp")
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
       enrich_res <- .run_function(f, exp, ctx$dots)
       ctx <- ctx_add_table(
@@ -311,7 +317,7 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
       }
       msg
     },
-    require = c("dea_res", "clean_exp"),
+    require = c("dea_res", "exp"),
     retry = retry
   )
 }
@@ -328,9 +334,9 @@ step_derive_traits <- function() {
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
-    condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "clean_exp")$var_info),
+    condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "clean_exp")
+      exp <- ctx_get_data(ctx, "exp")
       trait_exp <- .run_function(glydet::derive_traits, exp, ctx$dots)
       ctx$data$trait_exp <- trait_exp
       ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
@@ -348,7 +354,7 @@ step_derive_traits <- function() {
       )
     },
     generate = "trait_exp",
-    require = "clean_exp"
+    require = "exp"
   )
 }
 
@@ -365,7 +371,7 @@ step_dta <- function() {
   step(
     id = "dta",
     label = "Differential trait analysis",
-    condition = function(ctx) "glycan_structure" %in% colnames(ctx$exp$var_info),
+    condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info),
     run = function(ctx) {
       trait_exp <- ctx$data$trait_exp
       if (is.null(trait_exp)) {
@@ -383,7 +389,7 @@ step_dta <- function() {
       tbl <- x$tables[["dta"]]
       sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
       msg <- "Differential trait analysis was performed and the results were saved in `tables$dta`. "
-      if (glyexp::get_exp_type(x$exp) == "glycomics") {
+      if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycomics") {
         item_name <- "traits"
       } else {
         item_name <- "site-specific traits"

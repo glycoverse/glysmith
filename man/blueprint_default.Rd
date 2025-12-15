@@ -4,7 +4,16 @@
 \alias{blueprint_default}
 \title{Default blueprint}
 \usage{
-blueprint_default()
+blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
+}
+\arguments{
+\item{preprocess}{Whether to include \code{\link[=step_preprocess]{step_preprocess()}}.}
+
+\item{enrich}{Whether to include the enrichment steps,
+i.e. \code{\link[=step_enrich_go]{step_enrich_go()}}, \code{\link[=step_enrich_kegg]{step_enrich_kegg()}}, and \code{\link[=step_enrich_reactome]{step_enrich_reactome()}}.}
+
+\item{traits}{Whether to include the derived trait analysis steps,
+i.e. \code{\link[=step_derive_traits]{step_derive_traits()}} and \code{\link[=step_dta]{step_dta()}}.}
 }
 \value{
 A \code{glysmith_blueprint} object.

@@ -90,10 +90,6 @@ print.glysmith_blueprint <- function(x, ...) {
 run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
   ctx <- .run_blueprint_ensure_ctx(ctx)
 
-  if (!"preprocess" %in% names(blueprint) && "raw_exp" %in% names(ctx$data)) {
-    ctx <- ctx_add_data(ctx, "clean_exp", ctx_get_data(ctx, "raw_exp"))
-  }
-
   for (step in blueprint) {
     if (.run_blueprint_should_skip(step, ctx, quiet = quiet)) next
 

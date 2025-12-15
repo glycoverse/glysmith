@@ -40,6 +40,6 @@ forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "gr
   ctx <- new_ctx(exp, group_col, dots)
   ctx <- run_blueprint(blueprint, ctx)
 
-  exp <- ctx_get_data(ctx, "clean_exp")
+  exp <- ctx_get_data(ctx, "exp")
   glysmith_result(exp = exp, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta, blueprint = blueprint)
 }
