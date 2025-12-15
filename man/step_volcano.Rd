@@ -12,7 +12,23 @@ A \code{glysmith_step} object.
 \description{
 Create a volcano plot from DEA results using \code{glyvis::plot_volcano()}.
 This step requires \code{\link[=step_dea]{step_dea()}}.
+Currently only supports experiments with two groups.
+}
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to create a volcano plot for
+\item \code{dea_res}: The DEA results from \code{glystats::gly_limma()}
+}
+
+Plots generated:
+\itemize{
+\item \code{volcano}: A volcano plot
+}
 }
 \examples{
 step_volcano()
+}
+\seealso{
+\code{\link[glyvis:plot_volcano]{glyvis::plot_volcano()}}
 }

@@ -13,6 +13,20 @@ A \code{glysmith_step} object.
 Run differential analysis on derived traits using \code{glystats::gly_limma()}.
 This step requires \code{\link[=step_derive_traits]{step_derive_traits()}}.
 }
+\details{
+Data required:
+\itemize{
+\item \code{trait_exp}: The experiment with derived traits
+}
+
+Tables generated:
+\itemize{
+\item \code{dta_res}: A table containing the differential trait analysis results.
+}
+}
 \examples{
 step_dta()
+}
+\seealso{
+\code{\link[glystats:gly_limma]{glystats::gly_limma()}}
 }

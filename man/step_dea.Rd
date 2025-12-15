@@ -12,6 +12,25 @@ A \code{glysmith_step} object.
 \description{
 Run differential analysis using \code{glystats::gly_limma()}.
 }
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to run DEA on
+}
+
+Data generated:
+\itemize{
+\item \code{dea_res}: The DEA results from \code{glystats::gly_limma()}
+}
+
+Tables generated:
+\itemize{
+\item \code{dea}: A table containing the DEA results
+}
+}
 \examples{
 step_dea()
+}
+\seealso{
+\code{\link[glystats:gly_limma]{glystats::gly_limma()}}
 }

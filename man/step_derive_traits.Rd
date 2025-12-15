@@ -12,6 +12,25 @@ A \code{glysmith_step} object.
 \description{
 Calculate glycan derived traits using \code{glydet::derive_traits()}.
 }
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to calculate derived traits for
+}
+
+Data generated:
+\itemize{
+\item \code{trait_exp}: The experiment with derived traits
+}
+
+Tables generated:
+\itemize{
+\item \code{derived_traits}: A table containing the derived traits.
+}
+}
 \examples{
 step_derive_traits()
+}
+\seealso{
+\code{\link[glydet:derive_traits]{glydet::derive_traits()}}
 }

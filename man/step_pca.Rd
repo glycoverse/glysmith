@@ -12,6 +12,27 @@ A \code{glysmith_step} object.
 \description{
 Run PCA using \code{glystats::gly_pca()} and plot it with \code{glyvis::plot_pca()}.
 }
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to run PCA on
+}
+
+Tables generated:
+\itemize{
+\item \code{pca_samples}: A table containing the PCA scores for each sample
+\item \code{pca_variables}: A table containing the PCA loadings for each variable
+\item \code{pca_eigenvalues}: A table containing the PCA eigenvalues
+}
+
+Plots generated:
+\itemize{
+\item \code{pca}: A PCA plot colored by group
+}
+}
 \examples{
 step_pca()
+}
+\seealso{
+\code{\link[glystats:gly_pca]{glystats::gly_pca()}}, \code{\link[glyvis:plot_pca]{glyvis::plot_pca()}}
 }

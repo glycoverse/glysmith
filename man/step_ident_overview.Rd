@@ -11,7 +11,22 @@ A \code{glysmith_step} object.
 }
 \description{
 Summarize the experiment using \code{glyexp::summarize_experiment()}.
+This step can be run at any time, but is usually run before or right after preprocessing.
+}
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to summarize
+}
+
+Tables generated:
+\itemize{
+\item \code{summary}: A table containing the identification overview of the experiment
+}
 }
 \examples{
 step_ident_overview()
+}
+\seealso{
+\code{\link[glyexp:count_compositions]{glyexp::summarize_experiment()}}
 }

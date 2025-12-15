@@ -67,10 +67,24 @@ all_steps <- function() {
 #' Step: Preprocessing
 #'
 #' Preprocess the experiment using `glyclean::auto_clean()`.
+#' This is usually the first step, but can be omitted if the experiment is already preprocessed.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to preprocess
+#'
+#' Data generated:
+#' - `raw_exp`: The raw experiment (previous `exp`, saved for reference)
+#'
+#' This step is special in that it silently overwrites the `exp` data with the preprocessed experiment.
+#' This ensures that no matter if preprocessing is performed or not,
+#' the "active" experiment is always under the key `exp`.
+#' The previous `exp` is saved as `raw_exp` for reference.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_preprocess()
+#' @seealso [glyclean::auto_clean()]
 #' @export
 step_preprocess <- function() {
   step(
@@ -94,10 +108,19 @@ step_preprocess <- function() {
 #' Step: Identification Overview
 #'
 #' Summarize the experiment using `glyexp::summarize_experiment()`.
+#' This step can be run at any time, but is usually run before or right after preprocessing.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to summarize
+#'
+#' Tables generated:
+#' - `summary`: A table containing the identification overview of the experiment
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_ident_overview()
+#' @seealso [glyexp::summarize_experiment()]
 #' @export
 step_ident_overview <- function() {
   step(
@@ -125,9 +148,22 @@ step_ident_overview <- function() {
 #'
 #' Run PCA using `glystats::gly_pca()` and plot it with `glyvis::plot_pca()`.
 #'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to run PCA on
+#'
+#' Tables generated:
+#' - `pca_samples`: A table containing the PCA scores for each sample
+#' - `pca_variables`: A table containing the PCA loadings for each variable
+#' - `pca_eigenvalues`: A table containing the PCA eigenvalues
+#'
+#' Plots generated:
+#' - `pca`: A PCA plot colored by group
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_pca()
+#' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
 step_pca <- function() {
   step(
@@ -169,9 +205,20 @@ step_pca <- function() {
 #'
 #' Run differential analysis using `glystats::gly_limma()`.
 #'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to run DEA on
+#'
+#' Data generated:
+#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#'
+#' Tables generated:
+#' - `dea`: A table containing the DEA results
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea()
+#' @seealso [glystats::gly_limma()]
 #' @export
 step_dea <- function() {
   step(
@@ -208,10 +255,20 @@ step_dea <- function() {
 #'
 #' Create a volcano plot from DEA results using `glyvis::plot_volcano()`.
 #' This step requires [step_dea()].
+#' Currently only supports experiments with two groups.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to create a volcano plot for
+#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#'
+#' Plots generated:
+#' - `volcano`: A volcano plot
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_volcano()
+#' @seealso [glyvis::plot_volcano()]
 #' @export
 step_volcano <- function() {
   step(
@@ -245,10 +302,21 @@ step_volcano <- function() {
 #'
 #' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
 #' This step requires [step_dea()].
+#' Only execute for glycoproteomics experiments.
+#' Use all genes in OrgDb as the background.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform GO enrichment analysis for
+#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#'
+#' Tables generated:
+#' - `go_enrich`: A table containing the GO enrichment results.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_enrich_go()
+#' @seealso [glystats::gly_enrich_go()]
 #' @export
 step_enrich_go <- function() {
   step_enrich("go")
@@ -258,10 +326,21 @@ step_enrich_go <- function() {
 #'
 #' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
 #' This step requires [step_dea()].
+#' Only execute for glycoproteomics experiments.
+#' Use all genes in OrgDb as the background.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform KEGG enrichment analysis for
+#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#'
+#' Tables generated:
+#' - `kegg_enrich`: A table containing the KEGG enrichment results.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_enrich_kegg()
+#' @seealso [glystats::gly_enrich_kegg()]
 #' @export
 step_enrich_kegg <- function() {
   step_enrich("kegg", retry = 2L)
@@ -271,10 +350,21 @@ step_enrich_kegg <- function() {
 #'
 #' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
 #' This step requires [step_dea()].
+#' Only execute for glycoproteomics experiments.
+#' Use all genes in OrgDb as the background.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform Reactome enrichment analysis for
+#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#'
+#' Tables generated:
+#' - `reactome_enrich`: A table containing the Reactome enrichment results.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_enrich_reactome()
+#' @seealso [glystats::gly_enrich_reactome()]
 #' @export
 step_enrich_reactome <- function() {
   step_enrich("reactome", retry = 2L)
@@ -289,16 +379,12 @@ step_enrich_reactome <- function() {
 #' - `glystats::gly_enrich_reactome()`
 #'
 #' This step requires [step_dea()].
-#'
-#' @return A `glysmith_step` object.
+#' Only execute for glycoproteomics experiments.
+#' Use all genes in OrgDb as the background.
 #'
 #' @param kind Enrichment type: `"go"`, `"kegg"`, or `"reactome"`.
 #' @param retry Number of retries if the step errors.
-#'
-#' @return A `glysmith_step` object.
-#' @examples
-#' step_enrich("go")
-#' @export
+#' @noRd
 step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
   kind <- match.arg(kind)
   f <- switch(
@@ -347,9 +433,20 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
 #'
 #' Calculate glycan derived traits using `glydet::derive_traits()`.
 #'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to calculate derived traits for
+#'
+#' Data generated:
+#' - `trait_exp`: The experiment with derived traits
+#'
+#' Tables generated:
+#' - `derived_traits`: A table containing the derived traits.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_derive_traits()
+#' @seealso [glydet::derive_traits()]
 #' @export
 step_derive_traits <- function() {
   step(
@@ -359,8 +456,9 @@ step_derive_traits <- function() {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       trait_exp <- .run_function(glydet::derive_traits, exp, ctx$dots)
-      ctx$data$trait_exp <- trait_exp
-      ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
+      ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
+      ctx <- ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
+      ctx
     },
     report = function(x) {
       tbl <- x$tables[["derived_traits"]]
@@ -384,9 +482,17 @@ step_derive_traits <- function() {
 #' Run differential analysis on derived traits using `glystats::gly_limma()`.
 #' This step requires [step_derive_traits()].
 #'
+#' @details
+#' Data required:
+#' - `trait_exp`: The experiment with derived traits
+#'
+#' Tables generated:
+#' - `dta_res`: A table containing the differential trait analysis results.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dta()
+#' @seealso [glystats::gly_limma()]
 #' @export
 step_dta <- function() {
   step(

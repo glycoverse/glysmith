@@ -11,7 +11,27 @@ A \code{glysmith_step} object.
 }
 \description{
 Preprocess the experiment using \code{glyclean::auto_clean()}.
+This is usually the first step, but can be omitted if the experiment is already preprocessed.
+}
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to preprocess
+}
+
+Data generated:
+\itemize{
+\item \code{raw_exp}: The raw experiment (previous \code{exp}, saved for reference)
+}
+
+This step is special in that it silently overwrites the \code{exp} data with the preprocessed experiment.
+This ensures that no matter if preprocessing is performed or not,
+the "active" experiment is always under the key \code{exp}.
+The previous \code{exp} is saved as \code{raw_exp} for reference.
 }
 \examples{
 step_preprocess()
+}
+\seealso{
+\code{\link[glyclean:auto_clean]{glyclean::auto_clean()}}
 }

@@ -12,7 +12,24 @@ A \code{glysmith_step} object.
 \description{
 Perform Reactome enrichment analysis on differentially expressed variables using \code{glystats::gly_enrich_reactome()}.
 This step requires \code{\link[=step_dea]{step_dea()}}.
+Only execute for glycoproteomics experiments.
+Use all genes in OrgDb as the background.
+}
+\details{
+Data required:
+\itemize{
+\item \code{exp}: The experiment to perform Reactome enrichment analysis for
+\item \code{dea_res}: The DEA results from \code{glystats::gly_limma()}
+}
+
+Tables generated:
+\itemize{
+\item \code{reactome_enrich}: A table containing the Reactome enrichment results.
+}
 }
 \examples{
 step_enrich_reactome()
+}
+\seealso{
+\code{\link[glystats:gly_enrich_go]{glystats::gly_enrich_reactome()}}
 }
