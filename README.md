@@ -14,10 +14,14 @@ status](https://www.r-pkg.org/badges/version/glysmith)](https://CRAN.R-project.o
 coverage](https://codecov.io/gh/glycoverse/glysmith/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glysmith)
 <!-- badges: end -->
 
+<p align="center">
+
 > One Ring to rule them all.  
 > — *The Lord of the Rings*
 
 <img src="man/figures/ring.png" style="width:25.0%" />
+
+</p>
 
 Be overwhelmed by the complexity of glycoverse?
 
