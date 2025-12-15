@@ -14,8 +14,7 @@ new_ctx <- function(exp, group_col, dots) {
     plots = list(),
     tables = list(),
     meta = list(explanation = list(), steps = character(0)),
-    data = list(),
-    cache = list()
+    data = list()
   )
 }
 

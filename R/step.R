@@ -6,7 +6,6 @@
 #' @param label Human-readable label for progress output.
 #' @param run A function(ctx) that returns updated ctx.
 #' @param report A function(x) that returns a markdown string for reporting, or NULL.
-#' @param outputs A list describing declared outputs (tables/plots/meta).
 #' @param require Character vector of required `ctx$data` keys.
 #' @param generate Character vector of generated `ctx$data` keys.
 #' @param condition Optional function(ctx) returning TRUE/FALSE to decide execution.
@@ -30,7 +29,6 @@ step <- function(
       label = label,
       run = run,
       report = report,
-      outputs = outputs,
       require = require,
       generate = generate,
       condition = condition,
@@ -83,8 +81,7 @@ step_ident_overview <- function() {
         glue::glue_collapse(parts, sep = ", ", last = ", and "),
         " were identified."
       )
-    },
-    outputs = list(tables = "summary")
+    }
   )
 }
 
@@ -126,11 +123,7 @@ step_pca <- function() {
     report = function(x) {
       eig <- x$tables[["pca_eigenvalues"]]
       "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
-    },
-    outputs = list(
-      tables = c("pca_samples", "pca_variables", "pca_eigenvalues"),
-      plots = "pca"
-    )
+    }
   )
 }
 
@@ -167,7 +160,6 @@ step_dea <- function() {
       }
       msg
     },
-    outputs = list(tables = "dea"),
     generate = "dea_res"
   )
 }
@@ -204,7 +196,6 @@ step_volcano <- function() {
     report = function(x) {
       "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
     },
-    outputs = list(plots = "volcano"),
     require = "dea_res"
   )
 }
@@ -305,7 +296,6 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
       }
       msg
     },
-    outputs = list(tables = kind, plots = kind),
     require = "dea_res",
     retry = retry
   )
@@ -341,7 +331,6 @@ step_derive_traits <- function() {
         "Number of derived traits: ", length(unique(tbl$trait)), "."
       )
     },
-    outputs = list(tables = "derived_traits"),
     generate = "trait_exp"
   )
 }
@@ -389,7 +378,6 @@ step_dta <- function() {
       }
       msg
     },
-    outputs = list(tables = "dta"),
     require = "trait_exp"
   )
 }
