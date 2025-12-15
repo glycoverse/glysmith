@@ -100,17 +100,17 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! Step 'preprocessing' failed. Skipping... Error: 
+#> ! Step 'preprocess' failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [113ms]
+#> ✔ Preprocessing [134ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [111ms]
+#> ✔ Identification overview [135ms]
 #> 
 #> ℹ Principal component analysis
 #> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [13ms]
+#> ✔ Principal component analysis [14ms]
 #> 
 #> ℹ Differential expression analysis
 #> ℹ Number of groups: 4
@@ -120,10 +120,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [58ms]
+#> ✔ Differential expression analysis [62ms]
 #> 
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.5s]
+#> ✔ Derived trait calculation [2.9s]
 #> 
 #> ℹ Differential trait analysis
 #> ℹ Number of groups: 4
@@ -132,9 +132,9 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [57ms]
+#> ✔ Differential trait analysis [55ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmpXWL5b0
+#> ✔ Result saved to /tmp/RtmpBAjEvI
 ```

@@ -26,4 +26,10 @@ blueprint(
   step_pca(),
   step_dea(),  # this comma is ok
 )
+#> 
+#> ── Blueprint (3 steps) ──
+#> 
+#> • preprocess
+#> • pca
+#> • dea
 ```

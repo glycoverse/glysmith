@@ -36,8 +36,30 @@ This blueprint contains the following steps:
 ## Usage
 
 ``` r
-blueprint_default()
+blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 ```
+
+## Arguments
+
+- preprocess:
+
+  Whether to include
+  [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md).
+
+- enrich:
+
+  Whether to include the enrichment steps, i.e.
+  [`step_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_enrich_go.md),
+  [`step_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_enrich_kegg.md),
+  and
+  [`step_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_enrich_reactome.md).
+
+- traits:
+
+  Whether to include the derived trait analysis steps, i.e.
+  [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md)
+  and
+  [`step_dta()`](https://glycoverse.github.io/glysmith/reference/step_dta.md).
 
 ## Value
 
@@ -50,8 +72,8 @@ blueprint_default()
 #> 
 #> ── Blueprint (10 steps) ──
 #> 
-#> • preprocessing
-#> • identification_overview
+#> • preprocess
+#> • ident_overview
 #> • pca
 #> • dea
 #> • volcano

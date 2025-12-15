@@ -17,50 +17,5 @@ A `glysmith_step` object.
 
 ``` r
 step_ident_overview()
-#> $id
-#> [1] "identification_overview"
-#> 
-#> $label
-#> [1] "Identification overview"
-#> 
-#> $run
-#> function (ctx) 
-#> {
-#>     tbl <- .run_function(glyexp::summarize_experiment, ctx$exp, 
-#>         ctx$group_col, ctx$dots)
-#>     ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
-#> }
-#> <bytecode: 0x55ada35b97e8>
-#> <environment: 0x55ada04986e8>
-#> 
-#> $report
-#> function (x) 
-#> {
-#>     tbl <- x$tables[["summary"]]
-#>     parts <- paste0(tbl$n, " ", tbl$item, "s")
-#>     paste0("In total, ", glue::glue_collapse(parts, sep = ", ", 
-#>         last = ", and "), " were identified.")
-#> }
-#> <bytecode: 0x55ada35bcc40>
-#> <environment: 0x55ada04986e8>
-#> 
-#> $outputs
-#> $outputs$tables
-#> [1] "summary"
-#> 
-#> 
-#> $require
-#> character(0)
-#> 
-#> $generate
-#> character(0)
-#> 
-#> $condition
-#> NULL
-#> 
-#> $retry
-#> [1] 0
-#> 
-#> attr(,"class")
-#> [1] "glysmith_step"
+#> <step "ident_overview"> Identification overview
 ```

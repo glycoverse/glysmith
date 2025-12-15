@@ -72,9 +72,27 @@ and plot the PCA using <code><a href="https://glycoverse.github.io/glyvis/refere
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">blueprint_default</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">blueprint_default</span><span class="op">(</span>preprocess <span class="op">=</span> <span class="cn">TRUE</span>, enrich <span class="op">=</span> <span class="cn">TRUE</span>, traits <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-preprocess">preprocess<a class="anchor" aria-label="anchor" href="#arg-preprocess"></a></dt>
+<dd><p>Whether to include <code><a href="step_preprocess.html">step_preprocess()</a></code>.</p></dd>
+
+
+<dt id="arg-enrich">enrich<a class="anchor" aria-label="anchor" href="#arg-enrich"></a></dt>
+<dd><p>Whether to include the enrichment steps,
+i.e. <code><a href="step_enrich_go.html">step_enrich_go()</a></code>, <code><a href="step_enrich_kegg.html">step_enrich_kegg()</a></code>, and <code><a href="step_enrich_reactome.html">step_enrich_reactome()</a></code>.</p></dd>
+
+
+<dt id="arg-traits">traits<a class="anchor" aria-label="anchor" href="#arg-traits"></a></dt>
+<dd><p>Whether to include the derived trait analysis steps,
+i.e. <code><a href="step_derive_traits.html">step_derive_traits()</a></code> and <code><a href="step_dta.html">step_dta()</a></code>.</p></dd>
+
+</dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>glysmith_blueprint</code> object.</p>
@@ -86,8 +104,8 @@ and plot the PCA using <code><a href="https://glycoverse.github.io/glyvis/refere
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">10</span><span style="font-weight: bold;"> steps)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • preprocessing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • identification_overview</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • preprocess</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • ident_overview</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • pca</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • dea</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • volcano</span>

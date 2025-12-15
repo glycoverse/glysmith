@@ -50,75 +50,7 @@ This step requires <code><a href="step_derive_traits.html">step_derive_traits()<
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">step_dta</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dta"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Differential trait analysis"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $run</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (ctx) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     trait_exp &lt;- ctx$data$trait_exp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (is.null(trait_exp)) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         cli::cli_abort(c("Missing required ctx$data for this step.", </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             x = "Step 'dta' requires {.field trait_exp}.", i = "Add {.fn step_derive_traits} before {.fn step_dta} in the blueprint."))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     filtered_trait_exp &lt;- glyclean::remove_constant(trait_exp)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     dta_res &lt;- .run_function(glystats::gly_limma, filtered_trait_exp, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         ctx$group_col, ctx$dots, "group_col")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "Differential trait analysis results.")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada36161b8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada3048d08&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $report</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (x) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     tbl &lt;- x$tables[["dta"]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     sig &lt;- length(unique(tbl$variable[tbl$p_adj &lt; 0.05]))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     msg &lt;- "Differential trait analysis was performed and the results were saved in `tables$dta`. "</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (glyexp::get_exp_type(x$exp) == "glycomics") {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         item_name &lt;- "traits"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     else {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         item_name &lt;- "site-specific traits"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (sig &gt; 0) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         msg &lt;- paste0(msg, "Number of significant ", item_name, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             " (FDR/adjusted p &lt; 0.05): ", sig, ".\n")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     else {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         msg &lt;- paste0(msg, "No significant ", item_name, " (FDR/adjusted p &lt; 0.05).\n")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     msg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada3614dd0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada3048d08&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs$tables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dta"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $require</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "trait_exp"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $generate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $condition</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (ctx) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "glycan_structure" %in% colnames(ctx$exp$var_info)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada3616618&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada3048d08&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $retry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "glysmith_step"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"dta"</span>&gt; <span style="font-style: italic;">Differential trait analysis</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

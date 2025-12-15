@@ -84,17 +84,17 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! Step 'preprocessing' failed. Skipping... Error: 
+#> ! Step 'preprocess' failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [106ms]
+#> ✔ Preprocessing [128ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [110ms]
+#> ✔ Identification overview [138ms]
 #> 
 #> ℹ Principal component analysis
 #> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [13ms]
+#> ✔ Principal component analysis [14ms]
 #> 
 #> ℹ Differential expression analysis
 #> ℹ Number of groups: 4
@@ -104,10 +104,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [73ms]
+#> ✔ Differential expression analysis [96ms]
 #> 
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.4s]
+#> ✔ Derived trait calculation [2.8s]
 #> 
 #> ℹ Differential trait analysis
 #> ℹ Number of groups: 4
@@ -116,8 +116,8 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [56ms]
+#> ✔ Differential trait analysis [93ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpXWL5b0/file1a46492d216e.html"
+#> [1] "/tmp/RtmpBAjEvI/file1a5c4490d45b.html"
 ```

@@ -1,43 +1,6 @@
 # Forge an Analysis for Group Comparison
 
-This function performs comprehensive analysis for group comparison.
-
-The pipeline includes:
-
-- Preprocessing using
-  [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html)
-
-- Identification overview using
-  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/count_compositions.html)
-
-- Principal component analysis (PCA) with
-  [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html)
-  and
-  [`glyvis::plot_pca()`](https://glycoverse.github.io/glyvis/reference/plot_pca.html)
-
-- Differential expression analysis (DEA) with
-  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
-  and
-  [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html)
-
-If experiment type is "glycoproteomics", the pipeline will also include:
-
-- Functional enrichment analysis using
-  [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html),
-  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html),
-  and
-  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html),
-  as well as plotting with
-  [`glyvis::plot_enrich()`](https://glycoverse.github.io/glyvis/reference/plot_enrich.html)
-
-If glycan structure is available and glycan type is "N", the pipeline
-will also include:
-
-- Derived trait calculation using
-  [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html)
-
-- Differential trait analysis (DTA) with
-  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
+This function performs a comprehensive analysis for group comparison.
 
 ## Usage
 
@@ -65,10 +28,12 @@ forge_analysis(exp, blueprint = blueprint_default(), group_col = "group", ...)
 
 - ...:
 
-  Additional arguments passed to the functions. Use the format
-  `pkg.func.arg` to pass arguments to the functions. For example, if you
-  want to pass argument `p_adj_method = "BH"` to
-  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html),
+  Additional arguments passed to the underlying functions. Use the
+  format `pkg.func.arg`. For example, if you want to pass argument
+  `p_adj_method = "BH"` to
+  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
+  in
+  [`step_dea()`](https://glycoverse.github.io/glysmith/reference/step_dea.md),
   set `glystats.gly_limma.p_adj_method = "BH"`. Note that arguments
   about group column specification is controlled by `group_col`
   argument, and should not be passed to `...`.
@@ -141,17 +106,17 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! Step 'preprocessing' failed. Skipping... Error: 
+#> ! Step 'preprocess' failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [107ms]
+#> ✔ Preprocessing [127ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [107ms]
+#> ✔ Identification overview [127ms]
 #> 
 #> ℹ Principal component analysis
 #> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [13ms]
+#> ✔ Principal component analysis [14ms]
 #> 
 #> ℹ Differential expression analysis
 #> ℹ Number of groups: 4
@@ -161,10 +126,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [67ms]
+#> ✔ Differential expression analysis [60ms]
 #> 
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.4s]
+#> ✔ Derived trait calculation [2.8s]
 #> 
 #> ℹ Differential trait analysis
 #> ℹ Number of groups: 4
@@ -173,7 +138,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [68ms]
+#> ✔ Differential trait analysis [59ms]
 #> 
 print(result)
 #> 

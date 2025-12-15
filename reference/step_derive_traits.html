@@ -47,63 +47,7 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">step_derive_traits</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "derive_traits"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Derived trait calculation"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $run</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (ctx) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     trait_exp &lt;- .run_function(glydet::derive_traits, ctx$exp, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         ctx$group_col, ctx$dots)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ctx$data$trait_exp &lt;- trait_exp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "Derived trait calculation results.")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada3601860&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada1175410&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $report</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (x) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     tbl &lt;- x$tables[["derived_traits"]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (glyexp::get_exp_type(x$exp) == "glycomics") {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         item_name &lt;- "Derived traits"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     else {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         item_name &lt;- "Site-specific derived traits"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     paste0("Derived traits were calculated and the results were saved in `tables$derived_traits`. ", </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         "Number of derived traits: ", length(unique(tbl$trait)), </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         ".")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada36044d8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada1175410&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs$tables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "derived_traits"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $require</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $generate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "trait_exp"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $condition</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (ctx) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "glycan_structure" %in% colnames(ctx$exp$var_info)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada3601cc0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada1175410&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $retry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "glysmith_step"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"derive_traits"</span>&gt; <span style="font-style: italic;">Derived trait calculation</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

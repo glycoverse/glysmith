@@ -50,72 +50,7 @@ This step requires <code><a href="step_dea.html">step_dea()</a></code>.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">step_enrich_reactome</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "enrich_reactome"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "REACTOME enrichment analysis"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $run</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (ctx) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     sig_exp &lt;- glystats::filter_sig_vars(ctx$exp, ctx$data$dea_res)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     enrich_res &lt;- .run_function(f, ctx$exp, ctx$group_col, ctx$dots)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ctx &lt;- ctx_add_table(ctx, kind, glystats::get_tidy_result(enrich_res), </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         paste0(toupper(kind), " enrichment analysis results."))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     p &lt;- .run_function(glyvis::plot_enrich, enrich_res, ctx$group_col, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         ctx$dots)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada35ddca0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada4dda8e0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $report</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (x) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     tbl &lt;- x$tables[[kind]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     n_sig &lt;- sum(tbl$p_adj &lt; 0.05)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     msg &lt;- paste0("Enrichment analysis was performed on differentially expressed variables and the results were saved in `tables$", </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         kind, "` and `plots$", kind, "`.")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     if (n_sig &gt; 0) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         msg &lt;- paste0(msg, " Number of significant items (FDR/adjusted p &lt; 0.05): ", </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             n_sig, ".\n\n")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         msg &lt;- paste0(msg, "Top terms: \n\n", paste("- ", tbl$description[1:min(5, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             n_sig)], collapse = "\n"), "\n")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     else {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         msg &lt;- paste0(msg, " No significant items (FDR/adjusted p &lt; 0.05).\n")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     msg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada35e1d48&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada4dda8e0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs$tables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "reactome"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $outputs$plots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "reactome"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $require</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dea_res"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $generate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $condition</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (ctx) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> glyexp::get_exp_type(ctx$exp) == "glycoproteomics"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ada35de090&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ada4dda8e0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $retry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "glysmith_step"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"enrich_reactome"</span>&gt; <span style="font-style: italic;">REACTOME enrichment analysis</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

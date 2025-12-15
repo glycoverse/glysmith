@@ -53,7 +53,12 @@
 </div>
 <!-- badges: start -->
 
-<p>Be overwhelmed by the complexity of glycoverse? Try glysmith! Perform the comprehensive analysis pipeline with one function call. Even better, you can get a polished report directly in your browser.</p>
+<blockquote>
+<p>One Ring to rule them all.<br>
+— <em>The Lord of the Rings</em></p>
+</blockquote>
+<p>Be overwhelmed by the complexity of glycoverse?</p>
+<p>Try glysmith! Perform the comprehensive analysis pipeline with one function call.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -65,7 +70,20 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>Coming soon!</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">glyread</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glysmith/">glysmith</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="fu">read_pglyco3</span><span class="op">(</span><span class="st">"pglyco3_result.txt"</span>, sample_info <span class="op">=</span> <span class="st">"sample_info.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># One line of code for the comprehensive analysis pipeline</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># One line of code to save the results</span></span>
+<span><span class="fu"><a href="reference/quench_result.html">quench_result</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"path/to/save"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># One line of code to generate a report</span></span>
+<span><span class="fu"><a href="reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"report.html"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
