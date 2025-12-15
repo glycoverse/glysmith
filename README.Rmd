@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 > One Ring to rule them all.  
 > — *The Lord of the Rings*
 
+![](man/figures/ring.png){width=25%}
+
 Be overwhelmed by the complexity of glycoverse?
 
 Try glysmith! Perform the comprehensive analysis pipeline with one function call.

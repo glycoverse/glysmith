@@ -17,6 +17,8 @@ coverage](https://codecov.io/gh/glycoverse/glysmith/graph/badge.svg)](https://ap
 > One Ring to rule them all.  
 > — *The Lord of the Rings*
 
+<img src="man/figures/ring.png" style="width:25.0%" />
+
 Be overwhelmed by the complexity of glycoverse?
 
 Try glysmith! Perform the comprehensive analysis pipeline with one
