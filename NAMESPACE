@@ -2,6 +2,7 @@
 
 S3method(print,glysmith_blueprint)
 S3method(print,glysmith_result)
+S3method(print,glysmith_step)
 export(blueprint)
 export(blueprint_default)
 export(cast_exp)

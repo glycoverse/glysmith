@@ -38,6 +38,11 @@ step <- function(
   )
 }
 
+#' @export
+print.glysmith_step <- function(x, ...) {
+  cli::cli_text("<step {.val {x$id}}> {.emph {x$label}}")
+}
+
 #' Step: Preprocessing
 #'
 #' Preprocess the experiment using `glyclean::auto_clean()`.
