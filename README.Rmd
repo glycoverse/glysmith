@@ -22,13 +22,14 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/glycoverse/glysmith/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glysmith)
 <!-- badges: end -->
 
-<p align="center">
+<div align="center">
+
 > One Ring to rule them all.  
 > — *The Lord of the Rings*
 
 ![](man/figures/ring.png){width=25%}
 
-</p>
+</div>
 
 Be overwhelmed by the complexity of glycoverse?
 
