@@ -24,3 +24,12 @@
       * step1
       * step2
 
+# blueprint check duplicated steps
+
+    Code
+      blueprint(step_dea(), step_dea(), step_volcano(), step_volcano())
+    Condition
+      Error in `.validate_blueprint_duplicates()`:
+      ! Blueprint cannot contain duplicated steps.
+      x `step_dea()` and `step_volcano()` are duplicated.
+

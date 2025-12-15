@@ -13,3 +13,15 @@ test_that("blueprint checks overwrites", {
   )
   expect_snapshot(blueprint(!!!steps))
 })
+
+test_that("blueprint check duplicated steps", {
+  expect_snapshot(
+    blueprint(
+      step_dea(),
+      step_dea(),
+      step_volcano(),
+      step_volcano()
+    ),
+    error = TRUE
+  )
+})

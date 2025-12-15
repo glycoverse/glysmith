@@ -39,9 +39,28 @@ validate_blueprint <- function(blueprint) {
     cli::cli_abort("Invalid blueprint object.")
   }
 
+  .validate_blueprint_duplicates(blueprint)
   .validate_blueprint_dependencies(blueprint)
   .validate_blueprint_overwrite(blueprint)
   invisible(blueprint)
+}
+
+#' Check any duplicated steps in the blueprint.
+#'
+#' @param blueprint A `glysmith_blueprint` object.
+#'
+#' @returns NULL. Raises an error if the blueprint is not valid.
+#' @noRd
+.validate_blueprint_duplicates <- function(blueprint) {
+  steps <- names(blueprint)
+  duplicated_steps <- names(table(steps))[table(steps) > 1]
+  if (length(duplicated_steps) > 0) {
+    fn_names <- paste0("step_", duplicated_steps)
+    cli::cli_abort(c(
+      "Blueprint cannot contain duplicated steps.",
+      "x" = "{.fn {fn_names}} {?is/are} duplicated."
+    ))
+  }
 }
 
 #' Check any missing dependencies in the blueprint.
