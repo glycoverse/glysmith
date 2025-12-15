@@ -53,7 +53,7 @@ print.glysmith_step <- function(x, ...) {
 #' @export
 step_preprocess <- function() {
   step(
-    id = "preprocessing",
+    id = "preprocess",
     label = "Preprocessing",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "raw_exp")
@@ -74,7 +74,7 @@ step_preprocess <- function() {
 #' @export
 step_ident_overview <- function() {
   step(
-    id = "identification_overview",
+    id = "ident_overview",
     label = "Identification overview",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "clean_exp")
