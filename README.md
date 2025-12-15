@@ -14,7 +14,8 @@ status](https://www.r-pkg.org/badges/version/glysmith)](https://CRAN.R-project.o
 coverage](https://codecov.io/gh/glycoverse/glysmith/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glysmith)
 <!-- badges: end -->
 
-> One Ring to rule them all. – The Lord of the Rings
+> One Ring to rule them all.  
+> — *The Lord of the Rings*
 
 Be overwhelmed by the complexity of glycoverse? Try glysmith! Perform
 the comprehensive analysis pipeline with one function call. Even better,
