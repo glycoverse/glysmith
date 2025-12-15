@@ -43,6 +43,27 @@ print.glysmith_step <- function(x, ...) {
   cli::cli_text("<step {.val {x$id}}> {.emph {x$label}}")
 }
 
+#' All steps in GlySmith
+#'
+#' @return A list of `glysmith_step` objects.
+#' @noRd
+all_steps <- function() {
+  steps <- list(
+    step_preprocess(),
+    step_ident_overview(),
+    step_pca(),
+    step_dea(),
+    step_volcano(),
+    step_enrich_go(),
+    step_enrich_kegg(),
+    step_enrich_reactome(),
+    step_derive_traits(),
+    step_dta()
+  )
+  names(steps) <- purrr::map_chr(steps, "id")
+  steps
+}
+
 #' Step: Preprocessing
 #'
 #' Preprocess the experiment using `glyclean::auto_clean()`.
