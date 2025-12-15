@@ -52,7 +52,7 @@ step_preprocess <- function() {
     label = "Preprocessing",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "raw_exp")
-      clean_exp <- .run_function(glyclean::auto_clean, exp, ctx$group_col, ctx$dots, "group_col")
+      clean_exp <- .run_function(glyclean::auto_clean, exp, ctx$dots)
       ctx_add_data(ctx, "clean_exp", clean_exp)
     },
     generate = "clean_exp"
@@ -73,7 +73,7 @@ step_ident_overview <- function() {
     label = "Identification overview",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "clean_exp")
-      tbl <- .run_function(glyexp::summarize_experiment, exp, ctx$group_col, ctx$dots)
+      tbl <- .run_function(glyexp::summarize_experiment, exp, ctx$dots)
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
     },
     report = function(x) {
@@ -103,7 +103,7 @@ step_pca <- function() {
     label = "Principal component analysis",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "clean_exp")
-      pca_res <- .run_function(glystats::gly_pca, exp, ctx$group_col, ctx$dots)
+      pca_res <- .run_function(glystats::gly_pca, exp, ctx$dots)
       ctx <- ctx_add_table(
         ctx,
         "pca_samples",
@@ -122,7 +122,7 @@ step_pca <- function() {
         glystats::get_tidy_result(pca_res, "eigenvalues"),
         "PCA eigenvalues."
       )
-      p <- .run_function(glyvis::plot_pca, pca_res, ctx$group_col, ctx$dots, "group_col")
+      p <- .run_function(glyvis::plot_pca, pca_res, ctx$dots)
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
     },
     report = function(x) {
@@ -147,7 +147,7 @@ step_dea <- function() {
     label = "Differential expression analysis",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "clean_exp")
-      dea_res <- .run_function(glystats::gly_limma, exp, ctx$group_col, ctx$dots, "group_col")
+      dea_res <- .run_function(glystats::gly_limma, exp, ctx$dots)
       ctx$data$dea_res <- dea_res
       ctx_add_table(
         ctx,
@@ -199,7 +199,7 @@ step_volcano <- function() {
           "i" = "Add {.fn step_dea} before {.fn step_volcano} in the blueprint."
         ))
       }
-      p <- .run_function(glyvis::plot_volcano, dea_res, ctx$group_col, ctx$dots)
+      p <- .run_function(glyvis::plot_volcano, dea_res, ctx$dots)
       ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
     },
     report = function(x) {
@@ -284,14 +284,14 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "clean_exp")
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
-      enrich_res <- .run_function(f, exp, ctx$group_col, ctx$dots)
+      enrich_res <- .run_function(f, exp, ctx$dots)
       ctx <- ctx_add_table(
         ctx,
         kind,
         glystats::get_tidy_result(enrich_res),
         paste0(toupper(kind), " enrichment analysis results.")
       )
-      p <- .run_function(glyvis::plot_enrich, enrich_res, ctx$group_col, ctx$dots)
+      p <- .run_function(glyvis::plot_enrich, enrich_res, ctx$dots)
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
     report = function(x) {
@@ -326,7 +326,7 @@ step_derive_traits <- function() {
     condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "clean_exp")$var_info),
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "clean_exp")
-      trait_exp <- .run_function(glydet::derive_traits, exp, ctx$group_col, ctx$dots)
+      trait_exp <- .run_function(glydet::derive_traits, exp, ctx$dots)
       ctx$data$trait_exp <- trait_exp
       ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
     },
@@ -371,7 +371,7 @@ step_dta <- function() {
         ))
       }
       filtered_trait_exp <- glyclean::remove_constant(trait_exp)
-      dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$group_col, ctx$dots, "group_col")
+      dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$dots)
       ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
     },
     report = function(x) {

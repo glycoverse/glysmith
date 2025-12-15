@@ -24,26 +24,20 @@
 #'
 #' The function is a syntactic sugar for `rlang::exec(f, exp, !!!.get_args(pkg, func, dots))`,
 #' with special handling for group column specification argument.
-#' For example, `.run_function(pkg::f, exp, group_col, dots, "group_col")`
-#' is the same as `rlang::exec(pkg::f, exp, group_col = group_col, !!!.get_args(pkg, func, dots))`.
+#' For example, `.run_function(pkg::f, exp, dots)`
+#' is the same as `rlang::exec(pkg::f, exp, !!!.get_args(pkg, func, dots))`.
 #'
 #' @param f The function to run.
 #' @param exp The experiment object.
-#' @param group_col The group column name.
 #' @param dots The list of arguments.
-#' @param group_arg The name of the group column specification argument.
-#'   NULL if the function does not need group column specification.
 #'
 #' @returns The result of the function.
 #' @noRd
-.run_function <- function(f, exp, group_col, dots, group_arg = NULL) {
+.run_function <- function(f, exp, dots) {
   f_str <- rlang::as_label(rlang::enexpr(f))
   pkg <- stringr::str_split_i(f_str, stringr::fixed("::"), 1)
   func <- stringr::str_split_i(f_str, stringr::fixed("::"), 2)
   args <- .get_args(pkg, func, dots)
-  if (!is.null(group_arg)) {
-    args[[group_arg]] <- group_col
-  }
   rlang::exec(f, exp, !!!args)
 }
 

@@ -50,7 +50,7 @@ forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "gr
   if (!group_col %in% colnames(exp$sample_info)) {
     cli::cli_abort("Column name '{group_col}' is not found in the sample information.")
   }
-  exp$sample_info[[group_col]] <- droplevels(as.factor(exp$sample_info[[group_col]]))
+  exp$sample_info[["group"]] <- droplevels(as.factor(exp$sample_info[[group_col]]))
 
   dots <- rlang::list2(...)
   ctx <- new_ctx(exp, group_col, dots)
