@@ -297,15 +297,15 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #'   and plot the PCA using `glyvis::plot_pca()`.
 #' - step_dea(): Differential analysis using `glystats::gly_dea()`.
 #' - step_volcano(): Plot a volcano plot using `glyvis::plot_volcano()`.
-#' - step_enrich_go(): Perform GO enrichment analysis using `glystats::gly_enrich_go()`.
-#' - step_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
-#' - step_enrich_reactome(): Perform Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
+#' - step_sig_enrich_go(): Perform GO enrichment analysis using `glystats::gly_enrich_go()`.
+#' - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
+#' - step_sig_enrich_reactome(): Perform Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
 #' - step_derive_traits(): Derive traits using `glydet::derive_traits()`.
 #' - step_dta(): Differential trait analysis using `glystats::gly_limma()`.
 #'
 #' @param preprocess Whether to include [step_preprocess()].
 #' @param enrich Whether to include the enrichment steps,
-#'   i.e. [step_enrich_go()], [step_enrich_kegg()], and [step_enrich_reactome()].
+#'   i.e. [step_sig_enrich_go()], [step_sig_enrich_kegg()], and [step_sig_enrich_reactome()].
 #' @param traits Whether to include the derived trait analysis steps,
 #'   i.e. [step_derive_traits()] and [step_dta()].
 #'
@@ -320,7 +320,7 @@ blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
   }
   steps <- append(steps, list(step_ident_overview(), step_pca(), step_dea(), step_volcano()))
   if (enrich) {
-    steps <- append(steps, list(step_enrich_go(), step_enrich_kegg(), step_enrich_reactome()))
+    steps <- append(steps, list(step_sig_enrich_go(), step_sig_enrich_kegg(), step_sig_enrich_reactome()))
   }
   if (traits) {
     steps <- append(steps, list(step_derive_traits(), step_dta()))

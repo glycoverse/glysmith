@@ -54,9 +54,9 @@ all_steps <- function() {
     step_pca(),
     step_dea(),
     step_volcano(),
-    step_enrich_go(),
-    step_enrich_kegg(),
-    step_enrich_reactome(),
+    step_sig_enrich_go(),
+    step_sig_enrich_kegg(),
+    step_sig_enrich_reactome(),
     step_derive_traits(),
     step_dta()
   )
@@ -298,7 +298,7 @@ step_volcano <- function() {
   )
 }
 
-#' Step: GO Enrichment Analysis
+#' Step: GO Enrichment Analysis on Differentially Expressed Variables
 #'
 #' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
 #' This step requires [step_dea()].
@@ -313,16 +313,19 @@ step_volcano <- function() {
 #' Tables generated:
 #' - `go_enrich`: A table containing the GO enrichment results.
 #'
+#' @param universe The universe (background) to use for enrichment analysis.
+#'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#'
 #' @return A `glysmith_step` object.
 #' @examples
-#' step_enrich_go()
+#' step_sig_enrich_go()
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
-step_enrich_go <- function() {
-  step_enrich("go")
+step_sig_enrich_go <- function(universe = "all") {
+  step_sig_enrich("go", universe = universe)
 }
 
-#' Step: KEGG Enrichment Analysis
+#' Step: KEGG Enrichment Analysis on Differentially Expressed Variables
 #'
 #' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
 #' This step requires [step_dea()].
@@ -337,16 +340,19 @@ step_enrich_go <- function() {
 #' Tables generated:
 #' - `kegg_enrich`: A table containing the KEGG enrichment results.
 #'
+#' @param universe The universe (background) to use for enrichment analysis.
+#'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#'
 #' @return A `glysmith_step` object.
 #' @examples
-#' step_enrich_kegg()
+#' step_sig_enrich_kegg()
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
-step_enrich_kegg <- function() {
-  step_enrich("kegg", retry = 2L)
+step_sig_enrich_kegg <- function(universe = "all") {
+  step_sig_enrich("kegg", universe = universe, retry = 2L)
 }
 
-#' Step: Reactome Enrichment Analysis
+#' Step: Reactome Enrichment Analysis on Differentially Expressed Variables
 #'
 #' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
 #' This step requires [step_dea()].
@@ -361,16 +367,19 @@ step_enrich_kegg <- function() {
 #' Tables generated:
 #' - `reactome_enrich`: A table containing the Reactome enrichment results.
 #'
+#' @param universe The universe (background) to use for enrichment analysis.
+#'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#'
 #' @return A `glysmith_step` object.
 #' @examples
-#' step_enrich_reactome()
+#' step_sig_enrich_reactome()
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
-step_enrich_reactome <- function() {
-  step_enrich("reactome", retry = 2L)
+step_sig_enrich_reactome <- function(universe = "all") {
+  step_sig_enrich("reactome", universe = universe, retry = 2L)
 }
 
-#' Step: Enrichment Analysis
+#' Step: Enrichment Analysis on Differentially Expressed Variables
 #'
 #' @description
 #' Run functional enrichment analysis on differentially expressed variables using one of:
@@ -383,10 +392,13 @@ step_enrich_reactome <- function() {
 #' Use all genes in OrgDb as the background.
 #'
 #' @param kind Enrichment type: `"go"`, `"kegg"`, or `"reactome"`.
+#' @param universe The universe (background) to use for enrichment analysis.
+#'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param retry Number of retries if the step errors.
 #' @noRd
-step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
-  kind <- match.arg(kind)
+step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L) {
+  kind <- rlang::arg_match(kind)
+  universe <- rlang::arg_match(universe)
   f <- switch(
     kind,
     go = glystats::gly_enrich_go,
@@ -402,7 +414,19 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
-      enrich_res <- .run_function(f, exp, ctx$dots)
+      if (universe == "detected") {
+        args <- ctx$dots
+        universe_arg_name <- switch(
+          kind,
+          go = "glystats.gly_enrich_go.universe",
+          kegg = "glystats.gly_enrich_kegg.universe",
+          reactome = "glystats.gly_enrich_reactome.universe"
+        )
+        args[[universe_arg_name]] <- ctx_get_data(ctx, "exp")
+        enrich_res <- .run_function(f, sig_exp, args)
+      } else {
+        enrich_res <- .run_function(f, sig_exp, ctx$dots)
+      }
       ctx <- ctx_add_table(
         ctx,
         kind,

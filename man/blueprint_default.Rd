@@ -10,7 +10,7 @@ blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 \item{preprocess}{Whether to include \code{\link[=step_preprocess]{step_preprocess()}}.}
 
 \item{enrich}{Whether to include the enrichment steps,
-i.e. \code{\link[=step_enrich_go]{step_enrich_go()}}, \code{\link[=step_enrich_kegg]{step_enrich_kegg()}}, and \code{\link[=step_enrich_reactome]{step_enrich_reactome()}}.}
+i.e. \code{\link[=step_sig_enrich_go]{step_sig_enrich_go()}}, \code{\link[=step_sig_enrich_kegg]{step_sig_enrich_kegg()}}, and \code{\link[=step_sig_enrich_reactome]{step_sig_enrich_reactome()}}.}
 
 \item{traits}{Whether to include the derived trait analysis steps,
 i.e. \code{\link[=step_derive_traits]{step_derive_traits()}} and \code{\link[=step_dta]{step_dta()}}.}
@@ -27,9 +27,9 @@ This blueprint contains the following steps:
 and plot the PCA using \code{glyvis::plot_pca()}.
 \item step_dea(): Differential analysis using \code{glystats::gly_dea()}.
 \item step_volcano(): Plot a volcano plot using \code{glyvis::plot_volcano()}.
-\item step_enrich_go(): Perform GO enrichment analysis using \code{glystats::gly_enrich_go()}.
-\item step_enrich_kegg(): Perform KEGG enrichment analysis using \code{glystats::gly_enrich_kegg()}.
-\item step_enrich_reactome(): Perform Reactome enrichment analysis using \code{glystats::gly_enrich_reactome()}.
+\item step_sig_enrich_go(): Perform GO enrichment analysis using \code{glystats::gly_enrich_go()}.
+\item step_sig_enrich_kegg(): Perform KEGG enrichment analysis using \code{glystats::gly_enrich_kegg()}.
+\item step_sig_enrich_reactome(): Perform Reactome enrichment analysis using \code{glystats::gly_enrich_reactome()}.
 \item step_derive_traits(): Derive traits using \code{glydet::derive_traits()}.
 \item step_dta(): Differential trait analysis using \code{glystats::gly_limma()}.
 }
