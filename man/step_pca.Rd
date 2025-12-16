@@ -4,7 +4,12 @@
 \alias{step_pca}
 \title{Step: Principal Component Analysis (PCA)}
 \usage{
-step_pca()
+step_pca(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_pca(glystats.gly_pca.center = FALSE)}.}
 }
 \value{
 A \code{glysmith_step} object.

@@ -4,7 +4,12 @@
 \alias{step_dea}
 \title{Step: Differential Expression Analysis (DEA)}
 \usage{
-step_dea()
+step_dea(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_dea(glystats.gly_limma.p_adj_method = "BH")}.}
 }
 \value{
 A \code{glysmith_step} object.

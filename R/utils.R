@@ -20,6 +20,49 @@
   out
 }
 
+#' Get step-scoped arguments from forge_analysis dots
+#'
+#' Extract arguments from `rlang::list2(...)` by step-scoped prefix.
+#' For example, `preprocess.glyclean.auto_clean.batch_col = "x"` will be picked up
+#' when `step_id = "preprocess"`, `pkg = "glyclean"`, and `func = "auto_clean"`.
+#'
+#' @param step_id Step id.
+#' @param pkg The package name.
+#' @param func The function name.
+#' @param dots The list of arguments from `forge_analysis(...)`.
+#'
+#' @returns A list of arguments.
+#' @noRd
+.get_step_args <- function(step_id, pkg, func, dots) {
+  prefix <- paste0(step_id, ".", pkg, ".", func, ".")
+  if (is.null(names(dots))) return(list())
+  idx <- startsWith(names(dots), prefix)
+  if (!any(idx)) return(list())
+  out <- dots[idx]
+  names(out) <- substring(names(out), nchar(prefix) + 1)
+  out
+}
+
+#' Collect arguments for a function call from global and step dots
+#'
+#' `global_dots` comes from `forge_analysis(...)` using keys like
+#' `step_id.pkg.func.arg` (step-scoped). `step_dots` comes from step construction
+#' using keys like `pkg.func.arg` (step-local). Global dots take precedence.
+#'
+#' @param pkg The package name.
+#' @param func The function name.
+#' @param step_id The step id.
+#' @param global_dots Dots from `forge_analysis(...)`.
+#' @param step_dots Dots from step construction.
+#'
+#' @returns A list of arguments to splice into `rlang::exec()`.
+#' @noRd
+.collect_step_dots <- function(pkg, func, step_id, global_dots, step_dots) {
+  args_step <- .get_args(pkg, func, step_dots)
+  args_global <- .get_step_args(step_id, pkg, func, global_dots)
+  utils::modifyList(args_step, args_global)
+}
+
 #' Run a glycoverse function with arguments from dots
 #'
 #' The function is a syntactic sugar for `rlang::exec(f, exp, !!!.get_args(pkg, func, dots))`,
@@ -29,15 +72,17 @@
 #'
 #' @param f The function to run.
 #' @param exp The experiment object.
-#' @param dots The list of arguments.
+#' @param step_id The step id.
+#' @param global_dots The list of arguments from `forge_analysis(...)`.
+#' @param step_dots The list of arguments from step construction.
 #'
 #' @returns The result of the function.
 #' @noRd
-.run_function <- function(f, exp, dots) {
+.run_function <- function(f, exp, step_id, global_dots, step_dots) {
   f_str <- rlang::as_label(rlang::enexpr(f))
   pkg <- stringr::str_split_i(f_str, stringr::fixed("::"), 1)
   func <- stringr::str_split_i(f_str, stringr::fixed("::"), 2)
-  args <- .get_args(pkg, func, dots)
+  args <- .collect_step_dots(pkg, func, step_id, global_dots = global_dots, step_dots = step_dots)
   rlang::exec(f, exp, !!!args)
 }
 

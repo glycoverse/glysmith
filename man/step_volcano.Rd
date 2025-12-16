@@ -4,7 +4,12 @@
 \alias{step_volcano}
 \title{Step: Volcano Plot}
 \usage{
-step_volcano()
+step_volcano(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_volcano(glyvis.plot_volcano.log2fc_cutoff = 2)}.}
 }
 \value{
 A \code{glysmith_step} object.

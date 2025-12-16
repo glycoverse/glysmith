@@ -81,12 +81,17 @@ all_steps <- function() {
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `raw_exp` for reference.
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_preprocess(glyclean.auto_clean.remove_preset = "discovery")`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_preprocess()
 #' @seealso [glyclean::auto_clean()]
 #' @export
-step_preprocess <- function() {
+step_preprocess <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "preprocess",
     label = "Preprocessing",
@@ -95,7 +100,13 @@ step_preprocess <- function() {
       # This ensures the "active" experiment is always under the key "exp",
       # no matter if preprocessing is performed or not.
       exp <- ctx_get_data(ctx, "exp")
-      clean_exp <- .run_function(glyclean::auto_clean, exp, ctx$dots)
+      clean_exp <- .run_function(
+        glyclean::auto_clean,
+        exp,
+        step_id = "preprocess",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx <- ctx_add_data(ctx, "exp", clean_exp)  # overwrite exp with preprocessed exp
       ctx <- ctx_add_data(ctx, "raw_exp", exp)  # keep raw exp for reference
       ctx
@@ -117,18 +128,29 @@ step_preprocess <- function() {
 #' Tables generated:
 #' - `summary`: A table containing the identification overview of the experiment
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_ident_overview(glyexp.summarize_experiment.count_struct = FALSE)`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_ident_overview()
 #' @seealso [glyexp::summarize_experiment()]
 #' @export
-step_ident_overview <- function() {
+step_ident_overview <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "ident_overview",
     label = "Identification overview",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      tbl <- .run_function(glyexp::summarize_experiment, exp, ctx$dots)
+      tbl <- .run_function(
+        glyexp::summarize_experiment,
+        exp,
+        step_id = "ident_overview",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
     },
     report = function(x) {
@@ -160,18 +182,29 @@ step_ident_overview <- function() {
 #' Plots generated:
 #' - `pca`: A PCA plot colored by group
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_pca(glystats.gly_pca.center = FALSE)`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_pca()
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
-step_pca <- function() {
+step_pca <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "pca",
     label = "Principal component analysis",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      pca_res <- .run_function(glystats::gly_pca, exp, ctx$dots)
+      pca_res <- .run_function(
+        glystats::gly_pca,
+        exp,
+        step_id = "pca",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx <- ctx_add_table(
         ctx,
         "pca_samples",
@@ -190,7 +223,13 @@ step_pca <- function() {
         glystats::get_tidy_result(pca_res, "eigenvalues"),
         "PCA eigenvalues."
       )
-      p <- .run_function(glyvis::plot_pca, pca_res, ctx$dots)
+      p <- .run_function(
+        glyvis::plot_pca,
+        pca_res,
+        step_id = "pca",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
     },
     report = function(x) {
@@ -215,18 +254,29 @@ step_pca <- function() {
 #' Tables generated:
 #' - `dea`: A table containing the DEA results
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_dea(glystats.gly_limma.p_adj_method = "BH")`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea()
 #' @seealso [glystats::gly_limma()]
 #' @export
-step_dea <- function() {
+step_dea <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "dea",
     label = "Differential expression analysis",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      dea_res <- .run_function(glystats::gly_limma, exp, ctx$dots)
+      dea_res <- .run_function(
+        glystats::gly_limma,
+        exp,
+        step_id = "dea",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx$data$dea_res <- dea_res
       ctx_add_table(
         ctx,
@@ -265,12 +315,17 @@ step_dea <- function() {
 #' Plots generated:
 #' - `volcano`: A volcano plot
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_volcano(glyvis.plot_volcano.log2fc_cutoff = 2)`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_volcano()
 #' @seealso [glyvis::plot_volcano()]
 #' @export
-step_volcano <- function() {
+step_volcano <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "volcano",
     label = "Volcano plot",
@@ -288,7 +343,13 @@ step_volcano <- function() {
           "i" = "Add {.fn step_dea} before {.fn step_volcano} in the blueprint."
         ))
       }
-      p <- .run_function(glyvis::plot_volcano, dea_res, ctx$dots)
+      p <- .run_function(
+        glyvis::plot_volcano,
+        dea_res,
+        step_id = "volcano",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
     },
     report = function(x) {
@@ -315,14 +376,17 @@ step_volcano <- function() {
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_sig_enrich_go(glystats.gly_enrich_go.p_adj_method = "BH")`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_sig_enrich_go()
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
-step_sig_enrich_go <- function(universe = "all") {
-  step_sig_enrich("go", universe = universe)
+step_sig_enrich_go <- function(universe = "all", ...) {
+  step_sig_enrich("go", universe = universe, ...)
 }
 
 #' Step: KEGG Enrichment Analysis on Differentially Expressed Variables
@@ -342,14 +406,17 @@ step_sig_enrich_go <- function(universe = "all") {
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = "BH")`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_sig_enrich_kegg()
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
-step_sig_enrich_kegg <- function(universe = "all") {
-  step_sig_enrich("kegg", universe = universe, retry = 2L)
+step_sig_enrich_kegg <- function(universe = "all", ...) {
+  step_sig_enrich("kegg", universe = universe, retry = 2L, ...)
 }
 
 #' Step: Reactome Enrichment Analysis on Differentially Expressed Variables
@@ -369,14 +436,17 @@ step_sig_enrich_kegg <- function(universe = "all") {
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_sig_enrich_reactome(glystats.gly_enrich_reactome.OrgDb = "org.Mm.eg.db")`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_sig_enrich_reactome()
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
-step_sig_enrich_reactome <- function(universe = "all") {
-  step_sig_enrich("reactome", universe = universe, retry = 2L)
+step_sig_enrich_reactome <- function(universe = "all", ...) {
+  step_sig_enrich("reactome", universe = universe, retry = 2L, ...)
 }
 
 #' Step: Enrichment Analysis on Differentially Expressed Variables
@@ -396,35 +466,34 @@ step_sig_enrich_reactome <- function(universe = "all") {
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param retry Number of retries if the step errors.
 #' @noRd
-step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L) {
+step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L, ...) {
   kind <- rlang::arg_match(kind)
   universe <- rlang::arg_match(universe)
   label <- paste0(toupper(kind), " enrichment analysis")
+  step_id <- paste0("enrich_", kind)
+  step_dots <- rlang::list2(...)
+  func <- switch(kind,
+    go = "gly_enrich_go",
+    kegg = "gly_enrich_kegg",
+    reactome = "gly_enrich_reactome"
+  )
 
   step(
-    id = paste0("enrich_", kind),
+    id = step_id,
     label = label,
     condition = function(ctx) glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
       if (universe == "detected") {
-        args <- ctx$dots
-        universe_arg_name <- switch(
-          kind,
-          go = "glystats.gly_enrich_go.universe",
-          kegg = "glystats.gly_enrich_kegg.universe",
-          reactome = "glystats.gly_enrich_reactome.universe"
-        )
-        args[[universe_arg_name]] <- ctx_get_data(ctx, "exp")
-      } else {
-        args <- ctx$dots
+        # Force universe to be the detected experiment, overriding any dots.
+        step_dots[[paste("glystats", func, "universe", sep = ".")]] <- ctx_get_data(ctx, "exp")
       }
       enrich_res <- switch(
         kind,
-        go = .run_function(glystats::gly_enrich_go, sig_exp, args),
-        kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, args),
-        reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, args)
+        go = .run_function(glystats::gly_enrich_go, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
+        kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
+        reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots)
       )
       ctx <- ctx_add_table(
         ctx,
@@ -432,7 +501,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
         glystats::get_tidy_result(enrich_res),
         paste0(toupper(kind), " enrichment analysis results.")
       )
-      p <- .run_function(glyvis::plot_enrich, enrich_res, ctx$dots)
+      p <- .run_function(glyvis::plot_enrich, enrich_res, step_id, global_dots = ctx$dots, step_dots = step_dots)
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
     report = function(x) {
@@ -466,19 +535,29 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
 #' Tables generated:
 #' - `derived_traits`: A table containing the derived traits.
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_derive_traits()
 #' @seealso [glydet::derive_traits()]
 #' @export
-step_derive_traits <- function() {
+step_derive_traits <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
     condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info),
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      trait_exp <- .run_function(glydet::derive_traits, exp, ctx$dots)
+      trait_exp <- .run_function(
+        glydet::derive_traits,
+        exp,
+        step_id = "derive_traits",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
       ctx <- ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
       ctx
@@ -512,12 +591,17 @@ step_derive_traits <- function() {
 #' Tables generated:
 #' - `dta_res`: A table containing the differential trait analysis results.
 #'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_dta(glystats.gly_limma.p_adj_method = "BH")`.
+#'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dta()
 #' @seealso [glystats::gly_limma()]
 #' @export
-step_dta <- function() {
+step_dta <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "dta",
     label = "Differential trait analysis",
@@ -532,7 +616,13 @@ step_dta <- function() {
         ))
       }
       filtered_trait_exp <- glyclean::remove_constant(trait_exp)
-      dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$dots)
+      dta_res <- .run_function(
+        glystats::gly_limma,
+        filtered_trait_exp,
+        step_id = "dta",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
       ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
     },
     report = function(x) {

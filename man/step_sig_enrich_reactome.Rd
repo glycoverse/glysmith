@@ -4,11 +4,15 @@
 \alias{step_sig_enrich_reactome}
 \title{Step: Reactome Enrichment Analysis on Differentially Expressed Variables}
 \usage{
-step_sig_enrich_reactome(universe = "all")
+step_sig_enrich_reactome(universe = "all", ...)
 }
 \arguments{
 \item{universe}{The universe (background) to use for enrichment analysis.
 One of "all" (all genes in OrgDb), "detected" (detected variables in \code{exp}).}
+
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_sig_enrich_reactome(glystats.gly_enrich_reactome.OrgDb = "org.Mm.eg.db")}.}
 }
 \value{
 A \code{glysmith_step} object.

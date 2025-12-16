@@ -4,7 +4,11 @@
 \alias{step_derive_traits}
 \title{Step: Derived Trait Calculation}
 \usage{
-step_derive_traits()
+step_derive_traits(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.}
 }
 \value{
 A \code{glysmith_step} object.

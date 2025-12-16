@@ -7,9 +7,11 @@
 #' @param group_col Column name of group information in the sample information.
 #'   Used for various analyses. Default is "group".
 #' @param ... Additional arguments passed to the underlying functions.
-#'   Use the format `pkg.func.arg`.
+#'   Use the format `step_id.pkg.func.arg` (step-scoped).
 #'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`
-#'   in [step_dea()], set `glystats.gly_limma.p_adj_method = "BH"`.
+#'   in [step_dea()], set `dea.glystats.gly_limma.p_adj_method = "BH"`.
+#'   To pass `batch_col` to `glyclean::auto_clean()` in [step_preprocess()],
+#'   set `preprocess.glyclean.auto_clean.batch_col = "batch"`.
 #'   Note that arguments about group column specification is controlled by `group_col` argument,
 #'   and should not be passed to `...`.
 #'

@@ -4,7 +4,12 @@
 \alias{step_ident_overview}
 \title{Step: Identification Overview}
 \usage{
-step_ident_overview()
+step_ident_overview(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_ident_overview(glyexp.summarize_experiment.count_struct = FALSE)}.}
 }
 \value{
 A \code{glysmith_step} object.

@@ -4,7 +4,12 @@
 \alias{step_dta}
 \title{Step: Differential Trait Analysis (DTA)}
 \usage{
-step_dta()
+step_dta(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_dta(glystats.gly_limma.p_adj_method = "BH")}.}
 }
 \value{
 A \code{glysmith_step} object.

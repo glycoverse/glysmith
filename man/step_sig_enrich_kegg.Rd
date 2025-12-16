@@ -4,11 +4,15 @@
 \alias{step_sig_enrich_kegg}
 \title{Step: KEGG Enrichment Analysis on Differentially Expressed Variables}
 \usage{
-step_sig_enrich_kegg(universe = "all")
+step_sig_enrich_kegg(universe = "all", ...)
 }
 \arguments{
 \item{universe}{The universe (background) to use for enrichment analysis.
 One of "all" (all genes in OrgDb), "detected" (detected variables in \code{exp}).}
+
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = "BH")}.}
 }
 \value{
 A \code{glysmith_step} object.

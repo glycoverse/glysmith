@@ -4,7 +4,12 @@
 \alias{step_preprocess}
 \title{Step: Preprocessing}
 \usage{
-step_preprocess()
+step_preprocess(...)
+}
+\arguments{
+\item{...}{Step-specific arguments passed to underlying functions.
+Use the format \code{pkg.func.arg}.
+For example, \code{step_preprocess(glyclean.auto_clean.remove_preset = "discovery")}.}
 }
 \value{
 A \code{glysmith_step} object.
