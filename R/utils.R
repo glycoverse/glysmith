@@ -20,6 +20,32 @@
   out
 }
 
+#' Collect dots for a step
+#'
+#' Combine step-level dots (from blueprint construction) and dots passed through
+#' `forge_analysis()` using the `step_id.pkg.fun.arg` convention. The latter has
+#' higher priority when both are supplied.
+#'
+#' @param step_id Step identifier.
+#' @param ctx_dots A dots list captured by `forge_analysis()`.
+#' @param step_dots A dots list captured by the step constructor.
+#'
+#' @returns A merged dots list for the step.
+#' @noRd
+.collect_step_dots <- function(step_id, ctx_dots, step_dots = list()) {
+  ctx_dots <- ctx_dots %||% list()
+  step_dots <- step_dots %||% list()
+
+  step_prefix <- paste0(step_id, ".")
+  from_forge <- ctx_dots[startsWith(names(ctx_dots), step_prefix)]
+  names(from_forge) <- substring(names(from_forge), nchar(step_prefix) + 1)
+
+  ctx_general <- ctx_dots[!startsWith(names(ctx_dots), step_prefix)]
+
+  merged <- utils::modifyList(step_dots, ctx_general)
+  utils::modifyList(merged, from_forge)
+}
+
 #' Run a glycoverse function with arguments from dots
 #'
 #' The function is a syntactic sugar for `rlang::exec(f, exp, !!!.get_args(pkg, func, dots))`,

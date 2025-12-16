@@ -7,9 +7,12 @@
 #' @param group_col Column name of group information in the sample information.
 #'   Used for various analyses. Default is "group".
 #' @param ... Additional arguments passed to the underlying functions.
-#'   Use the format `pkg.func.arg`.
+#'   Two formats are supported:
+#'   - `step_id.pkg.func.arg` to target a specific step in the blueprint (highest priority).
+#'   - `pkg.func.arg` to provide defaults via the blueprint step constructor.
 #'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`
-#'   in [step_dea()], set `glystats.gly_limma.p_adj_method = "BH"`.
+#'   in [step_dea()], set `dea.glystats.gly_limma.p_adj_method = "BH"` in `forge_analysis()`
+#'   or `step_dea(glystats.gly_limma.p_adj_method = "BH")` when building the blueprint.
 #'   Note that arguments about group column specification is controlled by `group_col` argument,
 #'   and should not be passed to `...`.
 #'

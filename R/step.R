@@ -21,7 +21,8 @@ step <- function(
   require = character(0),
   generate = character(0),
   condition = NULL,
-  retry = 0L
+  retry = 0L,
+  dots = list()
 ) {
   structure(
     list(
@@ -32,7 +33,8 @@ step <- function(
       require = require,
       generate = generate,
       condition = condition,
-      retry = retry
+      retry = retry,
+      dots = dots
     ),
     class = "glysmith_step"
   )
@@ -72,7 +74,8 @@ all_steps <- function() {
 #' @examples
 #' step_preprocess()
 #' @export
-step_preprocess <- function() {
+step_preprocess <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "preprocess",
     label = "Preprocessing",
@@ -81,13 +84,15 @@ step_preprocess <- function() {
       # This ensures the "active" experiment is always under the key "exp",
       # no matter if preprocessing is performed or not.
       exp <- ctx_get_data(ctx, "exp")
-      clean_exp <- .run_function(glyclean::auto_clean, exp, ctx$dots)
+      dots <- .collect_step_dots("preprocess", ctx$dots, step_dots)
+      clean_exp <- .run_function(glyclean::auto_clean, exp, dots)
       ctx <- ctx_add_data(ctx, "exp", clean_exp)  # overwrite exp with preprocessed exp
       ctx <- ctx_add_data(ctx, "raw_exp", exp)  # keep raw exp for reference
       ctx
     },
     require = "exp",
-    generate = "raw_exp"
+    generate = "raw_exp",
+    dots = step_dots
   )
 }
 
@@ -99,13 +104,15 @@ step_preprocess <- function() {
 #' @examples
 #' step_ident_overview()
 #' @export
-step_ident_overview <- function() {
+step_ident_overview <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "ident_overview",
     label = "Identification overview",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      tbl <- .run_function(glyexp::summarize_experiment, exp, ctx$dots)
+      dots <- .collect_step_dots("ident_overview", ctx$dots, step_dots)
+      tbl <- .run_function(glyexp::summarize_experiment, exp, dots)
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
     },
     report = function(x) {
@@ -117,7 +124,8 @@ step_ident_overview <- function() {
         " were identified."
       )
     },
-    require = "exp"
+    require = "exp",
+    dots = step_dots
   )
 }
 
@@ -129,13 +137,15 @@ step_ident_overview <- function() {
 #' @examples
 #' step_pca()
 #' @export
-step_pca <- function() {
+step_pca <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "pca",
     label = "Principal component analysis",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      pca_res <- .run_function(glystats::gly_pca, exp, ctx$dots)
+      dots <- .collect_step_dots("pca", ctx$dots, step_dots)
+      pca_res <- .run_function(glystats::gly_pca, exp, dots)
       ctx <- ctx_add_table(
         ctx,
         "pca_samples",
@@ -154,14 +164,15 @@ step_pca <- function() {
         glystats::get_tidy_result(pca_res, "eigenvalues"),
         "PCA eigenvalues."
       )
-      p <- .run_function(glyvis::plot_pca, pca_res, ctx$dots)
+      p <- .run_function(glyvis::plot_pca, pca_res, dots)
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
     },
     report = function(x) {
       eig <- x$tables[["pca_eigenvalues"]]
       "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
     },
-    require = "exp"
+    require = "exp",
+    dots = step_dots
   )
 }
 
@@ -173,13 +184,15 @@ step_pca <- function() {
 #' @examples
 #' step_dea()
 #' @export
-step_dea <- function() {
+step_dea <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "dea",
     label = "Differential expression analysis",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      dea_res <- .run_function(glystats::gly_limma, exp, ctx$dots)
+      dots <- .collect_step_dots("dea", ctx$dots, step_dots)
+      dea_res <- .run_function(glystats::gly_limma, exp, dots)
       ctx$data$dea_res <- dea_res
       ctx_add_table(
         ctx,
@@ -200,7 +213,8 @@ step_dea <- function() {
       msg
     },
     generate = "dea_res",
-    require = "exp"
+    require = "exp",
+    dots = step_dots
   )
 }
 
@@ -213,7 +227,8 @@ step_dea <- function() {
 #' @examples
 #' step_volcano()
 #' @export
-step_volcano <- function() {
+step_volcano <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "volcano",
     label = "Volcano plot",
@@ -231,13 +246,15 @@ step_volcano <- function() {
           "i" = "Add {.fn step_dea} before {.fn step_volcano} in the blueprint."
         ))
       }
-      p <- .run_function(glyvis::plot_volcano, dea_res, ctx$dots)
+      dots <- .collect_step_dots("volcano", ctx$dots, step_dots)
+      p <- .run_function(glyvis::plot_volcano, dea_res, dots)
       ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
     },
     report = function(x) {
       "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
     },
-    require = c("dea_res", "exp")
+    require = c("dea_res", "exp"),
+    dots = step_dots
   )
 }
 
@@ -299,8 +316,9 @@ step_enrich_reactome <- function() {
 #' @examples
 #' step_enrich("go")
 #' @export
-step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
+step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L, ...) {
   kind <- match.arg(kind)
+  step_dots <- rlang::list2(...)
   f <- switch(
     kind,
     go = glystats::gly_enrich_go,
@@ -316,14 +334,15 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
-      enrich_res <- .run_function(f, exp, ctx$dots)
+      dots <- .collect_step_dots(paste0("enrich_", kind), ctx$dots, step_dots)
+      enrich_res <- .run_function(f, exp, dots)
       ctx <- ctx_add_table(
         ctx,
         kind,
         glystats::get_tidy_result(enrich_res),
         paste0(toupper(kind), " enrichment analysis results.")
       )
-      p <- .run_function(glyvis::plot_enrich, enrich_res, ctx$dots)
+      p <- .run_function(glyvis::plot_enrich, enrich_res, dots)
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
     report = function(x) {
@@ -339,7 +358,8 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
       msg
     },
     require = c("dea_res", "exp"),
-    retry = retry
+    retry = retry,
+    dots = step_dots
   )
 }
 
@@ -351,14 +371,16 @@ step_enrich <- function(kind = c("go", "kegg", "reactome"), retry = 0L) {
 #' @examples
 #' step_derive_traits()
 #' @export
-step_derive_traits <- function() {
+step_derive_traits <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
     condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info),
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      trait_exp <- .run_function(glydet::derive_traits, exp, ctx$dots)
+      dots <- .collect_step_dots("derive_traits", ctx$dots, step_dots)
+      trait_exp <- .run_function(glydet::derive_traits, exp, dots)
       ctx$data$trait_exp <- trait_exp
       ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
     },
@@ -375,7 +397,8 @@ step_derive_traits <- function() {
       )
     },
     generate = "trait_exp",
-    require = "exp"
+    require = "exp",
+    dots = step_dots
   )
 }
 
@@ -388,7 +411,8 @@ step_derive_traits <- function() {
 #' @examples
 #' step_dta()
 #' @export
-step_dta <- function() {
+step_dta <- function(...) {
+  step_dots <- rlang::list2(...)
   step(
     id = "dta",
     label = "Differential trait analysis",
@@ -403,7 +427,8 @@ step_dta <- function() {
         ))
       }
       filtered_trait_exp <- glyclean::remove_constant(trait_exp)
-      dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, ctx$dots)
+      dots <- .collect_step_dots("dta", ctx$dots, step_dots)
+      dta_res <- .run_function(glystats::gly_limma, filtered_trait_exp, dots)
       ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
     },
     report = function(x) {
@@ -422,6 +447,7 @@ step_dta <- function() {
       }
       msg
     },
-    require = "trait_exp"
+    require = "trait_exp",
+    dots = step_dots
   )
 }
