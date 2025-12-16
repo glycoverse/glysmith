@@ -399,12 +399,6 @@ step_sig_enrich_reactome <- function(universe = "all") {
 step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L) {
   kind <- rlang::arg_match(kind)
   universe <- rlang::arg_match(universe)
-  f <- switch(
-    kind,
-    go = glystats::gly_enrich_go,
-    kegg = glystats::gly_enrich_kegg,
-    reactome = glystats::gly_enrich_reactome
-  )
   label <- paste0(toupper(kind), " enrichment analysis")
 
   step(
@@ -423,10 +417,15 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
           reactome = "glystats.gly_enrich_reactome.universe"
         )
         args[[universe_arg_name]] <- ctx_get_data(ctx, "exp")
-        enrich_res <- .run_function(f, sig_exp, args)
       } else {
-        enrich_res <- .run_function(f, sig_exp, ctx$dots)
+        args <- ctx$dots
       }
+      enrich_res <- switch(
+        kind,
+        go = .run_function(glystats::gly_enrich_go, sig_exp, args),
+        kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, args),
+        reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, args)
+      )
       ctx <- ctx_add_table(
         ctx,
         kind,
