@@ -473,7 +473,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
   kind <- rlang::arg_match(kind)
   universe <- rlang::arg_match(universe)
   label <- paste0(toupper(kind), " enrichment analysis")
-  step_id <- paste0("enrich_", kind)
+  step_id <- paste0("sig_enrich_", kind)
   step_dots <- rlang::list2(...)
   func <- switch(kind,
     go = "gly_enrich_go",
