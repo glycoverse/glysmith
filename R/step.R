@@ -329,34 +329,37 @@ step_volcano <- function(...) {
   step(
     id = "volcano",
     label = "Volcano plot",
-    condition = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      g <- exp$sample_info[[ctx$group_col]]
-      length(levels(g)) == 2
-    },
     run = function(ctx) {
-      dea_res <- ctx$data$dea_res
-      if (is.null(dea_res)) {
-        cli::cli_abort(c(
-          "Missing required ctx$data for this step.",
-          "x" = "Step 'volcano' requires {.field dea_res}.",
-          "i" = "Add {.fn step_dea} before {.fn step_volcano} in the blueprint."
-        ))
+      dea_res <- ctx_get_data(ctx, "dea_res")
+      contrasts <- .get_unique_contrasts(dea_res)
+      for (cont in contrasts) {
+        plot_name <- paste0("volcano_", cont)
+        p <- .run_function(
+          glyvis::plot_volcano,
+          dea_res,
+          step_id = "volcano",
+          global_dots = ctx$dots,
+          step_dots = step_dots,
+          holy_args = list(contrast = cont)
+        )
+        ctx <- ctx_add_plot(ctx, plot_name, p, paste0("Volcano plot for the comparison of ", cont, "."))
       }
-      p <- .run_function(
-        glyvis::plot_volcano,
-        dea_res,
-        step_id = "volcano",
-        global_dots = ctx$dots,
-        step_dots = step_dots
-      )
-      ctx_add_plot(ctx, "volcano", p, "Volcano plot for the comparison of the two groups.")
+      ctx
     },
     report = function(x) {
-      "When the comparison only contains two groups, this step will generate a volcano plot in `plots$volcano`."
+      "This step will generate a volcano plot for each contrast in the DEA results."
     },
-    require = c("dea_res", "exp")
+    require = "dea_res"
   )
+}
+
+#' Get unique contrasts from DEA results
+#' @param dea_res DEA results from `glystats::gly_limma()`
+#' @noRd
+.get_unique_contrasts <- function(dea_res) {
+  checkmate::assert_class(dea_res, "glystats_limma_res")
+  tidy_res <- glystats::get_tidy_result(dea_res)
+  unique(paste0(tidy_res$ref_group, "_vs_", tidy_res$test_group))
 }
 
 #' Step: GO Enrichment Analysis on Differentially Expressed Variables
