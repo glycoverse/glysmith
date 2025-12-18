@@ -25,3 +25,13 @@ test_that("blueprint check duplicated steps", {
     error = TRUE
   )
 })
+
+test_that("writing and loading blueprint works", {
+  bp <- blueprint(
+    step_dea(),
+    step_volcano()
+  )
+  file <- tempfile(fileext = ".rds")
+  write_blueprint(bp, file)
+  expect_s3_class(read_blueprint(file), "glysmith_blueprint")
+})

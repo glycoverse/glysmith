@@ -20,7 +20,40 @@ blueprint <- function(...) {
   bp
 }
 
-#' @noRd
+#' Save or Load a Blueprint
+#'
+#' - `write_blueprint()` saves a blueprint to a RDS file.
+#' - `read_blueprint()` loads a blueprint from a RDS file.
+#'
+#' @param bp A [blueprint()].
+#' @param file A character string giving the name of the file to save to or load from.
+#'
+#' @returns Invisibly returns the blueprint object.
+#' @examples
+#' bp <- blueprint(
+#'   step_preprocess(),
+#'   step_pca(),
+#'   step_dea(),
+#' )
+#' write_blueprint(bp, tempfile(fileext = ".rds"))
+#' @export
+write_blueprint <- function(bp, file) {
+  saveRDS(bp, file)
+}
+
+#' @rdname write_blueprint
+#' @export
+read_blueprint <- function(file) {
+  x <- readRDS(file)
+  if (!inherits(x, "glysmith_blueprint")) {
+    cli::cli_abort(c(
+      "Must be of type {.cls glysmith_blueprint}.",
+      "x" = "Got {.cls {class(x)}}"
+    ))
+  }
+  x
+}
+
 new_blueprint <- function(steps) {
   structure(steps, class = "glysmith_blueprint")
 }
