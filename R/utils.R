@@ -65,25 +65,25 @@
 
 #' Run a glycoverse function with arguments from dots
 #'
-#' The function is a syntactic sugar for `rlang::exec(f, exp, !!!.get_args(pkg, func, dots))`,
+#' The function is a syntactic sugar for `rlang::exec(f, x, !!!.get_args(pkg, func, dots))`,
 #' with special handling for group column specification argument.
-#' For example, `.run_function(pkg::f, exp, dots)`
-#' is the same as `rlang::exec(pkg::f, exp, !!!.get_args(pkg, func, dots))`.
+#' For example, `.run_function(pkg::f, x, dots)`
+#' is the same as `rlang::exec(pkg::f, x, !!!.get_args(pkg, func, dots))`.
 #'
 #' @param f The function to run.
-#' @param exp The experiment object.
+#' @param x The first argument to the function.
 #' @param step_id The step id.
 #' @param global_dots The list of arguments from `forge_analysis(...)`.
 #' @param step_dots The list of arguments from step construction.
 #'
 #' @returns The result of the function.
 #' @noRd
-.run_function <- function(f, exp, step_id, global_dots, step_dots) {
+.run_function <- function(f, x, step_id, global_dots, step_dots) {
   f_str <- rlang::as_label(rlang::enexpr(f))
   pkg <- stringr::str_split_i(f_str, stringr::fixed("::"), 1)
   func <- stringr::str_split_i(f_str, stringr::fixed("::"), 2)
   args <- .collect_step_dots(pkg, func, step_id, global_dots = global_dots, step_dots = step_dots)
-  rlang::exec(f, exp, !!!args)
+  rlang::exec(f, x, !!!args)
 }
 
 #' Ask if user wants to overwrite an existing directory
