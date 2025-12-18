@@ -16,8 +16,14 @@ A \code{glysmith_step} object.
 }
 \description{
 Create a volcano plot from DEA results using \code{glyvis::plot_volcano()}.
-This step requires \code{\link[=step_dea]{step_dea()}}.
-Currently only supports experiments with two groups.
+This step requires one of the DEA steps to be run:
+\itemize{
+\item \code{\link[=step_dea_limma]{step_dea_limma()}}
+\item \code{\link[=step_dea_ttest]{step_dea_ttest()}}
+\item \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}
+\item \code{\link[=step_dea_anova]{step_dea_anova()}}
+\item \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}
+}
 }
 \details{
 Data required:

@@ -9,7 +9,7 @@
 #' @param ... Additional arguments passed to the underlying functions.
 #'   Use the format `step_id.pkg.func.arg` (step-scoped).
 #'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`
-#'   in [step_dea()], set `dea.glystats.gly_limma.p_adj_method = "BH"`.
+#'   in [step_dea_limma()], set `dea.glystats.gly_limma.p_adj_method = "BH"`.
 #'   To pass `batch_col` to `glyclean::auto_clean()` in [step_preprocess()],
 #'   set `preprocess.glyclean.auto_clean.batch_col = "batch"`.
 #'   Note that arguments about group column specification is controlled by `group_col` argument,

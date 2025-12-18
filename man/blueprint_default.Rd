@@ -25,7 +25,7 @@ This blueprint contains the following steps:
 \item step_ident_overview(): Summarize the experiment using \code{glyexp::summarize_experiment()}.
 \item step_pca(): Principal component analysis using \code{glystats::gly_pca()},
 and plot the PCA using \code{glyvis::plot_pca()}.
-\item step_dea(): Differential analysis using \code{glystats::gly_dea()}.
+\item step_dea_limma(): Differential analysis using \code{glystats::gly_limma()}.
 \item step_volcano(): Plot a volcano plot using \code{glyvis::plot_volcano()}.
 \item step_sig_enrich_go(): Perform GO enrichment analysis using \code{glystats::gly_enrich_go()}.
 \item step_sig_enrich_kegg(): Perform KEGG enrichment analysis using \code{glystats::gly_enrich_kegg()}.

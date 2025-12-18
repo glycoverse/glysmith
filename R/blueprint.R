@@ -9,7 +9,7 @@
 #' blueprint(
 #'   step_preprocess(),
 #'   step_pca(),
-#'   step_dea(),  # this comma is ok
+#'   step_dea_limma(),  # this comma is ok
 #' )
 #' @export
 blueprint <- function(...) {
@@ -33,7 +33,7 @@ blueprint <- function(...) {
 #' bp <- blueprint(
 #'   step_preprocess(),
 #'   step_pca(),
-#'   step_dea(),
+#'   step_dea_limma(),
 #' )
 #' write_blueprint(bp, tempfile(fileext = ".rds"))
 #' @export
@@ -328,7 +328,7 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' - step_ident_overview(): Summarize the experiment using `glyexp::summarize_experiment()`.
 #' - step_pca(): Principal component analysis using `glystats::gly_pca()`,
 #'   and plot the PCA using `glyvis::plot_pca()`.
-#' - step_dea(): Differential analysis using `glystats::gly_dea()`.
+#' - step_dea_limma(): Differential analysis using `glystats::gly_limma()`.
 #' - step_volcano(): Plot a volcano plot using `glyvis::plot_volcano()`.
 #' - step_sig_enrich_go(): Perform GO enrichment analysis using `glystats::gly_enrich_go()`.
 #' - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
@@ -351,7 +351,7 @@ blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
   if (preprocess) {
     steps <- append(steps, list(step_preprocess()))
   }
-  steps <- append(steps, list(step_ident_overview(), step_pca(), step_dea(), step_volcano()))
+  steps <- append(steps, list(step_ident_overview(), step_pca(), step_dea_limma(), step_volcano()))
   if (enrich) {
     steps <- append(steps, list(step_sig_enrich_go(), step_sig_enrich_kegg(), step_sig_enrich_reactome()))
   }

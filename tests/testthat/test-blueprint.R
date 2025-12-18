@@ -1,6 +1,6 @@
 test_that("blueprint checks ctx$data dependencies", {
   expect_no_error(blueprint(
-    step_dea(),
+    step_dea_limma(),
     step_volcano()
   ))
   expect_snapshot(blueprint(step_volcano()), error = TRUE)
@@ -17,8 +17,8 @@ test_that("blueprint checks overwrites", {
 test_that("blueprint check duplicated steps", {
   expect_snapshot(
     blueprint(
-      step_dea(),
-      step_dea(),
+      step_dea_limma(),
+      step_dea_limma(),
       step_volcano(),
       step_volcano()
     ),
@@ -28,7 +28,7 @@ test_that("blueprint check duplicated steps", {
 
 test_that("writing and loading blueprint works", {
   bp <- blueprint(
-    step_dea(),
+    step_dea_limma(),
     step_volcano()
   )
   file <- tempfile(fileext = ".rds")

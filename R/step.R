@@ -52,7 +52,11 @@ all_steps <- function() {
     step_preprocess(),
     step_ident_overview(),
     step_pca(),
-    step_dea(),
+    step_dea_limma(),
+    step_dea_ttest(),
+    step_dea_wilcox(),
+    step_dea_anova(),
+    step_dea_kruskal(),
     step_volcano(),
     step_sig_enrich_go(),
     step_sig_enrich_kegg(),
@@ -240,9 +244,9 @@ step_pca <- function(...) {
   )
 }
 
-#' Step: Differential Expression Analysis (DEA)
+#' Step: Differential Expression Analysis (DEA) using Limma
 #'
-#' Run differential analysis using `glystats::gly_limma()`.
+#' Run differential analysis using linear model-based analysis via `glystats::gly_limma()`.
 #'
 #' @details
 #' Data required:
@@ -252,43 +256,176 @@ step_pca <- function(...) {
 #' - `dea_res`: The DEA results from `glystats::gly_limma()`
 #'
 #' Tables generated:
-#' - `dea`: A table containing the DEA results
+#' - `dea`: A table containing the DEA result
 #'
-#' @param ... Step-specific arguments passed to underlying functions.
+#' @param ... Step-specific arguments passed to `glystats::gly_limma()`.
 #'   Use the format `pkg.func.arg`.
-#'   For example, `step_dea(glystats.gly_limma.p_adj_method = "BH")`.
+#'   For example, `step_dea_limma(glystats.gly_limma.p_adj_method = "BH")`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
-#' step_dea()
+#' step_dea_limma()
 #' @seealso [glystats::gly_limma()]
 #' @export
-step_dea <- function(...) {
+step_dea_limma <- function(...) {
+  .step_dea(method = "limma", label = "Differential expression analysis (limma)", ...)
+}
+
+#' Step: Differential Expression Analysis (DEA) using t-test
+#'
+#' Run differential analysis using t-test via `glystats::gly_ttest()`.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to run DEA on
+#'
+#' Data generated:
+#' - `dea_res`: The DEA results from `glystats::gly_ttest()`
+#'
+#' Tables generated:
+#' - `dea`: A table containing the DEA result
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_ttest()`.
+#'   Use the format `pkg.func.arg`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_dea_ttest()
+#' @seealso [glystats::gly_ttest()]
+#' @export
+step_dea_ttest <- function(...) {
+  .step_dea(method = "ttest", label = "Differential expression analysis (t-test)", ...)
+}
+
+#' Step: Differential Expression Analysis (DEA) using ANOVA
+#'
+#' Run differential analysis using ANOVA via `glystats::gly_anova()`.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to run DEA on
+#'
+#' Data generated:
+#' - `dea_res`: The DEA results from `glystats::gly_anova()`
+#'
+#' Tables generated:
+#' - `dea_main_test`: A table containing the main test result
+#' - `dea_post_hoc_test`: A table containing the post-hoc test result
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_anova()`.
+#'   Use the format `pkg.func.arg`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_dea_anova()
+#' @seealso [glystats::gly_anova()]
+#' @export
+step_dea_anova <- function(...) {
+  .step_dea(method = "anova", label = "Differential expression analysis (ANOVA)", ...)
+}
+
+#' Step: Differential Expression Analysis (DEA) using Wilcoxon test
+#'
+#' Run differential analysis using Wilcoxon analysis via `glystats::gly_wilcox()`.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to run DEA on
+#'
+#' Data generated:
+#' - `dea_res`: The DEA results from `glystats::gly_wilcox()`
+#'
+#' Tables generated:
+#' - `dea`: A table containing the DEA result
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_wilcox()`.
+#'   Use the format `pkg.func.arg`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_dea_wilcox()
+#' @seealso [glystats::gly_wilcox()]
+#' @export
+step_dea_wilcox <- function(...) {
+  .step_dea(method = "wilcox", label = "Differential expression analysis (Wilcoxon)", ...)
+}
+
+#' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
+#'
+#' Run differential analysis using Kruskal-Wallis analysis via `glystats::gly_kruskal()`.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to run DEA on
+#'
+#' Data generated:
+#' - `dea_res`: The DEA results from `glystats::gly_kruskal()`
+#'
+#' Tables generated:
+#' - `dea_main_test`: A table containing the main test result
+#' - `dea_post_hoc_test`: A table containing the post-hoc test result
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_kruskal()`.
+#'   Use the format `pkg.func.arg`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_dea_kruskal()
+#' @seealso [glystats::gly_kruskal()]
+#' @export
+step_dea_kruskal <- function(...) {
+  .step_dea(method = "kruskal", label = "Differential expression analysis (Kruskal-Wallis)", ...)
+}
+
+#' Internal helper for DEA steps
+#' @noRd
+.step_dea <- function(method, label, ...) {
   step_dots <- rlang::list2(...)
   step(
-    id = "dea",
-    label = "Differential expression analysis",
+    id = paste0("dea_", method),
+    label = label,
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      dea_res <- .run_function(
-        glystats::gly_limma,
-        exp,
-        step_id = "dea",
-        global_dots = ctx$dots,
-        step_dots = step_dots
+      dea_res <- switch(
+        method,
+        "limma" = .run_function(glystats::gly_limma, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
+        "ttest" = .run_function(glystats::gly_ttest, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
+        "anova" = .run_function(glystats::gly_anova, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
+        "wilcox" = .run_function(glystats::gly_wilcox, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
+        "kruskal" = .run_function(glystats::gly_kruskal, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots)
       )
-      ctx$data$dea_res <- dea_res
-      ctx_add_table(
-        ctx,
-        "dea",
-        glystats::get_tidy_result(dea_res),
-        "Differential expression analysis results of all comparisons for all variables."
-      )
+      ctx <- ctx_add_data(ctx, "dea_res", dea_res)
+      if (method %in% c("anova", "kruskal")) {
+        ctx <- ctx_add_table(
+          ctx,
+          "dea_main_test",
+          glystats::get_tidy_result(dea_res, "main_test"),
+          "Main test results of ANOVA or Kruskal-Wallis test."
+        )
+        ctx <- ctx_add_table(
+          ctx,
+          "dea_post_hoc_test",
+          glystats::get_tidy_result(dea_res, "post_hoc_test"),
+          "Post-hoc test results of ANOVA or Kruskal-Wallis test."
+        )
+      } else {
+        ctx <- ctx_add_table(
+          ctx,
+          "dea",
+          glystats::get_tidy_result(dea_res),
+          "Differential expression analysis results of all comparisons for all variables."
+        )
+      }
+      ctx
     },
     report = function(x) {
-      tbl <- x$tables[["dea"]]
+      if (method %in% c("anova", "kruskal")) {
+        tbl <- x$tables[["dea_main_test"]]
+      } else {
+        tbl <- x$tables[["dea"]]
+      }
       sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
-      msg <- "Differential expression analysis was performed and the results were saved in `tables$dea`. "
+      msg <- "Differential expression analysis was performed and the results were saved in `tables$dea*`. "
       if (sig > 0) {
         msg <- paste0(msg, "Number of significant items (FDR/adjusted p < 0.05): ", sig, ".\n")
       } else {
@@ -304,8 +441,12 @@ step_dea <- function(...) {
 #' Step: Volcano Plot
 #'
 #' Create a volcano plot from DEA results using `glyvis::plot_volcano()`.
-#' This step requires [step_dea()].
-#' Currently only supports experiments with two groups.
+#' This step requires one of the DEA steps to be run:
+#' - [step_dea_limma()]
+#' - [step_dea_ttest()]
+#' - [step_dea_wilcox()]
+#' - [step_dea_anova()]
+#' - [step_dea_kruskal()]
 #'
 #' @details
 #' Data required:
@@ -365,7 +506,7 @@ step_volcano <- function(...) {
 #' Step: GO Enrichment Analysis on Differentially Expressed Variables
 #'
 #' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
-#' This step requires [step_dea()].
+#' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments.
 #' Use all genes in OrgDb as the background.
 #'
@@ -395,7 +536,7 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' Step: KEGG Enrichment Analysis on Differentially Expressed Variables
 #'
 #' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
-#' This step requires [step_dea()].
+#' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments.
 #' Use all genes in OrgDb as the background.
 #'
@@ -425,7 +566,7 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #' Step: Reactome Enrichment Analysis on Differentially Expressed Variables
 #'
 #' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
-#' This step requires [step_dea()].
+#' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments.
 #' Use all genes in OrgDb as the background.
 #'
@@ -460,7 +601,7 @@ step_sig_enrich_reactome <- function(universe = "all", ...) {
 #' - `glystats::gly_sig_enrich_kegg()`
 #' - `glystats::gly_sig_enrich_reactome()`
 #'
-#' This step requires [step_dea()].
+#' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments.
 #' Use all genes in OrgDb as the background.
 #'

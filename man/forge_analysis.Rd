@@ -17,7 +17,7 @@ Used for various analyses. Default is "group".}
 \item{...}{Additional arguments passed to the underlying functions.
 Use the format \code{step_id.pkg.func.arg} (step-scoped).
 For example, if you want to pass argument \code{p_adj_method = "BH"} to \code{glystats::gly_limma()}
-in \code{\link[=step_dea]{step_dea()}}, set \code{dea.glystats.gly_limma.p_adj_method = "BH"}.
+in \code{\link[=step_dea_limma]{step_dea_limma()}}, set \code{dea.glystats.gly_limma.p_adj_method = "BH"}.
 To pass \code{batch_col} to \code{glyclean::auto_clean()} in \code{\link[=step_preprocess]{step_preprocess()}},
 set \code{preprocess.glyclean.auto_clean.batch_col = "batch"}.
 Note that arguments about group column specification is controlled by \code{group_col} argument,

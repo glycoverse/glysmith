@@ -19,6 +19,6 @@ A blueprint is a list of steps that are executed in order.
 blueprint(
   step_preprocess(),
   step_pca(),
-  step_dea(),  # this comma is ok
+  step_dea_limma(),  # this comma is ok
 )
 }
