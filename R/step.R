@@ -487,14 +487,21 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
       if (universe == "detected") {
         # Force universe to be the detected experiment, overriding any dots.
-        step_dots[[paste("glystats", func, "universe", sep = ".")]] <- ctx_get_data(ctx, "exp")
+        uni_arg <- ctx_get_data(ctx, "exp")
+        enrich_res <- switch(
+          kind,
+          go = .run_function(glystats::gly_enrich_go, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots, holy_args = list(universe = uni_arg)),
+          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots, holy_args = list(universe = uni_arg)),
+          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots, holy_args = list(universe = uni_arg))
+        )
+      } else {
+        enrich_res <- switch(
+          kind,
+          go = .run_function(glystats::gly_enrich_go, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
+          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
+          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots)
+        )
       }
-      enrich_res <- switch(
-        kind,
-        go = .run_function(glystats::gly_enrich_go, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
-        kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
-        reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots)
-      )
       ctx <- ctx_add_table(
         ctx,
         kind,

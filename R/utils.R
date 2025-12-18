@@ -54,13 +54,23 @@
 #' @param step_id The step id.
 #' @param global_dots Dots from `forge_analysis(...)`.
 #' @param step_dots Dots from step construction.
+#' @param holy_args A list of arguments that overwrite global and step dots.
 #'
 #' @returns A list of arguments to splice into `rlang::exec()`.
 #' @noRd
-.collect_step_dots <- function(pkg, func, step_id, global_dots, step_dots) {
+.collect_step_dots <- function(pkg, func, step_id, global_dots, step_dots, holy_args) {
   args_step <- .get_args(pkg, func, step_dots)
   args_global <- .get_step_args(step_id, pkg, func, global_dots)
-  utils::modifyList(args_step, args_global)
+  args <- utils::modifyList(args_step, args_global)
+  if (any(names(holy_args) %in% names(args))) {
+    conflict_args <- names(holy_args)[names(holy_args) %in% names(args)]
+    cli::cli_alert_warning(c(
+      "Arguments {.arg {conflict_args}} of {.fn {func}} are ignored for step {.val {step_id}}.",
+      "i" = "These arguments are controlled by glysmith and cannot be overwritten."
+    ))
+  }
+  args <- utils::modifyList(args, holy_args)
+  args
 }
 
 #' Run a glycoverse function with arguments from dots
@@ -75,14 +85,20 @@
 #' @param step_id The step id.
 #' @param global_dots The list of arguments from `forge_analysis(...)`.
 #' @param step_dots The list of arguments from step construction.
+#' @param holy_args A list of arguments that overwrite global and step dots.
+#'   This argument is used by internal functions to force some arguments.
+#'   Default is an empty list.
 #'
 #' @returns The result of the function.
 #' @noRd
-.run_function <- function(f, x, step_id, global_dots, step_dots) {
+.run_function <- function(f, x, step_id, global_dots, step_dots, holy_args = list()) {
   f_str <- rlang::as_label(rlang::enexpr(f))
   pkg <- stringr::str_split_i(f_str, stringr::fixed("::"), 1)
   func <- stringr::str_split_i(f_str, stringr::fixed("::"), 2)
-  args <- .collect_step_dots(pkg, func, step_id, global_dots = global_dots, step_dots = step_dots)
+  args <- .collect_step_dots(
+    pkg, func, step_id,
+    global_dots = global_dots, step_dots = step_dots, holy_args = holy_args
+  )
   rlang::exec(f, x, !!!args)
 }
 
