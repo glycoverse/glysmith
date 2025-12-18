@@ -456,9 +456,9 @@ step_sig_enrich_reactome <- function(universe = "all", ...) {
 #'
 #' @description
 #' Run functional enrichment analysis on differentially expressed variables using one of:
-#' - `glystats::gly_enrich_go()`
-#' - `glystats::gly_enrich_kegg()`
-#' - `glystats::gly_enrich_reactome()`
+#' - `glystats::gly_sig_enrich_go()`
+#' - `glystats::gly_sig_enrich_kegg()`
+#' - `glystats::gly_sig_enrich_reactome()`
 #'
 #' This step requires [step_dea()].
 #' Only execute for glycoproteomics experiments.
