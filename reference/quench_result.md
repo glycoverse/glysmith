@@ -102,10 +102,10 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [92ms]
+#> ✔ Preprocessing [115ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [121ms]
+#> ✔ Identification overview [94ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -120,16 +120,16 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [65ms]
+#> ✔ Differential expression analysis (limma) [85ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [564ms]
+#> ✔ Volcano plot [558ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.6s]
+#> ✔ Derived trait calculation [2.5s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -138,9 +138,9 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [89ms]
+#> ✔ Differential trait analysis (limma) [58ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmppFvsQm
+#> ✔ Result saved to /tmp/Rtmp4QEdZM
 ```

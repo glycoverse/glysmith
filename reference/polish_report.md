@@ -86,10 +86,10 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [120ms]
+#> ✔ Preprocessing [119ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [126ms]
+#> ✔ Identification overview [121ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -104,10 +104,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [94ms]
+#> ✔ Differential expression analysis (limma) [93ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [861ms]
+#> ✔ Volcano plot [828ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
@@ -125,5 +125,5 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [59ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmppFvsQm/file20477f9445c3.html"
+#> [1] "/tmp/Rtmp4QEdZM/file1c93608df6c3.html"
 ```

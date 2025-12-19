@@ -1,7 +1,10 @@
 # Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
 
 Run differential analysis using Kruskal-Wallis analysis via
-[`glystats::gly_kruskal()`](https://glycoverse.github.io/glystats/reference/gly_kruskal.html).
+[`glystats::gly_kruskal()`](https://glycoverse.github.io/glystats/reference/gly_kruskal.html),
+then filter the experiment to keep only the differentially expressed
+variables using
+[`glystats::filter_sig_vars()`](https://glycoverse.github.io/glystats/reference/filter_sig_vars.html).
 By default, this runs DEA on the main experiment (`exp`), but can be
 configured to run on derived traits (`trait_exp`) or other experiment
 objects.
@@ -41,6 +44,10 @@ Data generated:
 - `dea_res`: The DEA results (if `on = "exp"`, default)
 
 - `dta_res`: The DTA results (if `on = "trait_exp"`)
+
+- `sig_exp`: The filtered experiment (if `on = "exp"`, default)
+
+- `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 
 Tables generated:
 

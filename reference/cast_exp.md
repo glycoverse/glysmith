@@ -82,10 +82,10 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [286ms]
+#> ✔ Preprocessing [300ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [123ms]
+#> ✔ Identification overview [122ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -100,7 +100,7 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [229ms]
+#> ✔ Differential expression analysis (limma) [232ms]
 #> 
 #> ℹ Volcano plot
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
@@ -111,13 +111,13 @@ result <- forge_analysis(exp)
 #> ℹ Please use the `linewidth` argument instead.
 #> ℹ The deprecated feature was likely used in the EnhancedVolcano package.
 #>   Please report the issue to the authors.
-#> ✔ Volcano plot [746ms]
+#> ✔ Volcano plot [713ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8.3s]
+#> ✔ Derived trait calculation [8.1s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,7 +126,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [85ms]
+#> ✔ Differential trait analysis (limma) [86ms]
 #> 
 cast_exp(result)
 #> 

@@ -32,8 +32,6 @@ A `glysmith_step` object.
 
 Data required:
 
-- `exp`: The experiment to create a volcano plot for
-
 - `dea_res`: The DEA results from
   [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
 
