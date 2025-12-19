@@ -8,7 +8,9 @@
 #' @param report A function(x) that returns a markdown string for reporting, or NULL.
 #' @param require Character vector of required `ctx$data` keys.
 #' @param generate Character vector of generated `ctx$data` keys.
-#' @param condition Optional function(ctx) returning TRUE/FALSE to decide execution.
+#' @param condition Optional function(ctx) returning a list of `check` and `reason`.
+#'   - `check` is TRUE/FALSE to decide execution.
+#'   - `reason` is a human-readable string to explain why `check` is FALSE.
 #'
 #' @returns A `glysmith_step` object.
 #' @noRd
@@ -557,8 +559,10 @@ step_volcano <- function(...) {
     id = "volcano",
     label = "Volcano plot",
     condition = function(ctx) {
-      !inherits(ctx_get_data(ctx, "dea_res"), "glystats_anova_res") ||
+      check <- !inherits(ctx_get_data(ctx, "dea_res"), "glystats_anova_res") ||
         !inherits(ctx_get_data(ctx, "dea_res"), "glystats_kruskal_res")
+      reason <- "volcano plot is not supported for ANOVA or Kruskal-Wallis DEA results."
+      list(check = check, reason = reason)
     },
     run = function(ctx) {
       dea_res <- ctx_get_data(ctx, "dea_res")
@@ -736,7 +740,11 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
   step(
     id = step_id,
     label = label,
-    condition = function(ctx) glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics",
+    condition = function(ctx) {
+      check <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics"
+      reason <- "input is not a glycoproteomics experiment"
+      list(check = check, reason = reason)
+    },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
@@ -810,7 +818,11 @@ step_derive_traits <- function(...) {
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
-    condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info),
+    condition = function(ctx) {
+      check <- "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info)
+      reason <- "glycan structures are not available in the experiment"
+      list(check = check, reason = reason)
+    },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       trait_exp <- .run_function(

@@ -250,7 +250,17 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 }
 
 .run_blueprint_should_skip <- function(step, ctx, quiet = FALSE) {
-  if (!is.null(step$condition) && !isTRUE(step$condition(ctx))) return(TRUE)
+  if (!is.null(step$condition)) {
+    condition_res <- step$condition(ctx)
+    if (isFALSE(condition_res$check)) {
+      if (!quiet) {
+        cli::cli_alert_info(
+          "Skipping Step '{step$id}' because {condition_res$reason}."
+        )
+      }
+      return(TRUE)
+    }
+  }
 
   required <- step$require %||% character(0)
   if (length(required) == 0) return(FALSE)
