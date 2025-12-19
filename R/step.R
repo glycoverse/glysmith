@@ -256,7 +256,8 @@ step_pca <- function(...) {
 
 #' Step: Differential Expression Analysis (DEA) using Limma
 #'
-#' Run differential analysis using linear model-based analysis via `glystats::gly_limma()`.
+#' Run differential analysis using linear model-based analysis via `glystats::gly_limma()`,
+#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
@@ -267,6 +268,8 @@ step_pca <- function(...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
+#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
@@ -292,7 +295,8 @@ step_dea_limma <- function(on = "exp", ...) {
 
 #' Step: Differential Expression Analysis (DEA) using t-test
 #'
-#' Run differential analysis using t-test via `glystats::gly_ttest()`.
+#' Run differential analysis using t-test via `glystats::gly_ttest()`,
+#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
@@ -303,6 +307,8 @@ step_dea_limma <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
+#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
@@ -327,7 +333,8 @@ step_dea_ttest <- function(on = "exp", ...) {
 
 #' Step: Differential Expression Analysis (DEA) using ANOVA
 #'
-#' Run differential analysis using ANOVA via `glystats::gly_anova()`.
+#' Run differential analysis using ANOVA via `glystats::gly_anova()`,
+#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
@@ -338,6 +345,8 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
+#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #'
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
@@ -362,7 +371,8 @@ step_dea_anova <- function(on = "exp", ...) {
 
 #' Step: Differential Expression Analysis (DEA) using Wilcoxon test
 #'
-#' Run differential analysis using Wilcoxon analysis via `glystats::gly_wilcox()`.
+#' Run differential analysis using Wilcoxon analysis via `glystats::gly_wilcox()`,
+#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
@@ -373,6 +383,8 @@ step_dea_anova <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
+#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
@@ -397,7 +409,8 @@ step_dea_wilcox <- function(on = "exp", ...) {
 
 #' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
 #'
-#' Run differential analysis using Kruskal-Wallis analysis via `glystats::gly_kruskal()`.
+#' Run differential analysis using Kruskal-Wallis analysis via `glystats::gly_kruskal()`,
+#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
@@ -408,6 +421,8 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
+#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #'
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
@@ -433,19 +448,21 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' Get metadata for DEA analysis based on the target experiment
 #'
 #' @param on Name of the experiment data in ctx$data to run DEA on.
-#' @returns A list with prefix, label, and require fields.
+#' @returns A list with prefix, label, require, and name fields.
 #' @noRd
 .get_dea_meta <- function(on) {
   mapping <- list(
     exp = list(
       prefix = "dea",
       label = "Differential expression",
-      require = "exp"
+      require = "exp",
+      name = "variable"
     ),
     trait_exp = list(
       prefix = "dta",
       label = "Differential trait",
-      require = "trait_exp"
+      require = "trait_exp",
+      name = "trait"
     )
   )
 
@@ -456,7 +473,8 @@ step_dea_kruskal <- function(on = "exp", ...) {
     list(
       prefix = paste0("d_", on),
       label = paste("Differential", on),
-      require = on
+      require = on,
+      name = "variable"
     )
   }
 }
@@ -508,6 +526,20 @@ step_dea_kruskal <- function(on = "exp", ...) {
           paste0(meta$label, " analysis results of all comparisons for all variables.")
         )
       }
+      sig_exp <- .run_function(
+        glystats::filter_sig_vars,
+        exp,
+        step_id = meta$prefix,
+        global_dots = ctx$dots,
+        step_dots = step_dots,
+        holy_args = list(res = dea_res)
+      )
+      ctx <- ctx_add_data(
+        ctx,
+        paste0("sig_", meta$require),
+        sig_exp,
+        glue::glue("Experiment with only significant {meta$name}s.")
+      )
       ctx
     },
     report = function(x) {
@@ -553,7 +585,6 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to create a volcano plot for
 #' - `dea_res`: The DEA results from `glystats::gly_limma()`
 #'
 #' Plots generated:
@@ -645,7 +676,7 @@ step_volcano <- function(...) {
 #' @details
 #' Data required:
 #' - `exp`: The experiment to perform GO enrichment analysis for
-#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#' - `sig_exp`: The filtered experiment from DEA, generated by `step_dea_xxx()`.
 #'
 #' Tables generated:
 #' - `go_enrich`: A table containing the GO enrichment results.
@@ -676,7 +707,7 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' @details
 #' Data required:
 #' - `exp`: The experiment to perform KEGG enrichment analysis for
-#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#' - `sig_exp`: The filtered experiment from DEA, generated by `step_dea_xxx()`.
 #'
 #' Tables generated:
 #' - `kegg_enrich`: A table containing the KEGG enrichment results.
@@ -707,7 +738,7 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #' @details
 #' Data required:
 #' - `exp`: The experiment to perform Reactome enrichment analysis for
-#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#' - `sig_exp`: The filtered experiment from DEA, generated by `step_dea_xxx()`.
 #'
 #' Tables generated:
 #' - `reactome_enrich`: A table containing the Reactome enrichment results.
@@ -767,7 +798,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
     },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      sig_exp <- glystats::filter_sig_vars(exp, ctx$data$dea_res)
+      sig_exp <- ctx_get_data(ctx, "sig_exp")
       if (universe == "detected") {
         # Force universe to be the detected experiment, overriding any dots.
         uni_arg <- ctx_get_data(ctx, "exp")
