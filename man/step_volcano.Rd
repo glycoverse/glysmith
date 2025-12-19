@@ -21,8 +21,6 @@ This step requires one of the DEA steps to be run:
 \item \code{\link[=step_dea_limma]{step_dea_limma()}}
 \item \code{\link[=step_dea_ttest]{step_dea_ttest()}}
 \item \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}
-\item \code{\link[=step_dea_anova]{step_dea_anova()}}
-\item \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}
 }
 }
 \details{

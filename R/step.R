@@ -445,8 +445,6 @@ step_dea_kruskal <- function(...) {
 #' - [step_dea_limma()]
 #' - [step_dea_ttest()]
 #' - [step_dea_wilcox()]
-#' - [step_dea_anova()]
-#' - [step_dea_kruskal()]
 #'
 #' @details
 #' Data required:
@@ -470,28 +468,53 @@ step_volcano <- function(...) {
   step(
     id = "volcano",
     label = "Volcano plot",
+    condition = function(ctx) {
+      !inherits(ctx_get_data(ctx, "dea_res"), "glystats_anova_res") ||
+        !inherits(ctx_get_data(ctx, "dea_res"), "glystats_kruskal_res")
+    },
     run = function(ctx) {
       dea_res <- ctx_get_data(ctx, "dea_res")
-      contrasts <- .get_unique_contrasts(dea_res)
-      for (cont in contrasts) {
-        plot_name <- paste0("volcano_", cont)
-        p <- .run_function(
-          glyvis::plot_volcano,
-          dea_res,
-          step_id = "volcano",
-          global_dots = ctx$dots,
-          step_dots = step_dots,
-          holy_args = list(contrast = cont)
-        )
-        ctx <- ctx_add_plot(ctx, plot_name, p, paste0("Volcano plot for the comparison of ", cont, "."))
+      if (inherits(dea_res, "glystats_limma_res")) {
+        .run_step_volcano_limma(ctx, step_dots)
+      } else {
+        .run_step_volcano_ttest_wilcox(ctx, step_dots)
       }
-      ctx
     },
     report = function(x) {
       "This step will generate a volcano plot for each contrast in the DEA results."
     },
     require = "dea_res"
   )
+}
+
+.run_step_volcano_limma <- function(ctx, step_dots) {
+  dea_res <- ctx_get_data(ctx, "dea_res")
+  contrasts <- .get_unique_contrasts(dea_res)
+  for (cont in contrasts) {
+    plot_name <- paste0("volcano_", cont)
+    p <- .run_function(
+      glyvis::plot_volcano,
+      dea_res,
+      step_id = "volcano",
+      global_dots = ctx$dots,
+      step_dots = step_dots,
+      holy_args = list(contrast = cont)
+    )
+    ctx <- ctx_add_plot(ctx, plot_name, p, paste0("Volcano plot for the comparison of ", cont, "."))
+  }
+  ctx
+}
+
+.run_step_volcano_ttest_wilcox <- function(ctx, step_dots) {
+  dea_res <- ctx_get_data(ctx, "dea_res")
+  p <- .run_function(
+    glyvis::plot_volcano,
+    dea_res,
+    step_id = "volcano",
+    global_dots = ctx$dots,
+    step_dots = step_dots
+  )
+  ctx_add_plot(ctx, "volcano", p, "Volcano plot")
 }
 
 #' Get unique contrasts from DEA results
