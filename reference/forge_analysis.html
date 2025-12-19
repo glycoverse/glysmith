@@ -58,9 +58,11 @@ Used for various analyses. Default is "group".</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to the underlying functions.
-Use the format <code>pkg.func.arg</code>.
+Use the format <code>step_id.pkg.func.arg</code> (step-scoped).
 For example, if you want to pass argument <code>p_adj_method = "BH"</code> to <code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">glystats::gly_limma()</a></code>
-in <code><a href="step_dea.html">step_dea()</a></code>, set <code>glystats.gly_limma.p_adj_method = "BH"</code>.
+in <code><a href="step_dea_limma.html">step_dea_limma()</a></code>, set <code>dea.glystats.gly_limma.p_adj_method = "BH"</code>.
+To pass <code>batch_col</code> to <code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code> in <code><a href="step_preprocess.html">step_preprocess()</a></code>,
+set <code>preprocess.glyclean.auto_clean.batch_col = "batch"</code>.
 Note that arguments about group column specification is controlled by <code>group_col</code> argument,
 and should not be passed to <code>...</code>.</p></dd>
 
@@ -125,44 +127,50 @@ with keys like <code>tables$summary</code> and <code>plots$pca</code>.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Preprocessing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Sample size &gt; 100, using `impute_miss_forest()`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Preprocessing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Step 'preprocess' failed. Skipping... Error: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `step_preprocess()` failed. Skipping... Error: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Preprocessing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Preprocessing <span style="color: #B2B2B2;">[113ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Preprocessing <span style="color: #B2B2B2;">[117ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Identification overview</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Identification overview <span style="color: #B2B2B2;">[119ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Identification overview <span style="color: #B2B2B2;">[122ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Principal component analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Principal component analysis</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Principal component analysis <span style="color: #B2B2B2;">[13ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Number of groups: <span style="color: #0000BB;">4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Groups: <span style="color: #0000BB;">"H"</span>, <span style="color: #0000BB;">"M"</span>, <span style="color: #0000BB;">"Y"</span>, and <span style="color: #0000BB;">"C"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Pairwise comparisons will be performed, with levels coming first as reference groups.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis (limma)</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Partial NA coefficients for 7 probe(s)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential expression analysis <span style="color: #B2B2B2;">[59ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential expression analysis (limma) <span style="color: #B2B2B2;">[87ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Volcano plot</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Volcano plot <span style="color: #B2B2B2;">[617ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Derived trait calculation</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Derived trait calculation <span style="color: #B2B2B2;">[2.6s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Derived trait calculation <span style="color: #B2B2B2;">[2.9s]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Number of groups: <span style="color: #0000BB;">4</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Groups: <span style="color: #0000BB;">"H"</span>, <span style="color: #0000BB;">"M"</span>, <span style="color: #0000BB;">"Y"</span>, and <span style="color: #0000BB;">"C"</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Pairwise comparisons will be performed, with levels coming first as reference groups.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential trait analysis <span style="color: #B2B2B2;">[55ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential trait analysis (limma) <span style="color: #B2B2B2;">[60ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── GlySmith Analysis Result </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Plots: <span style="color: #0000BB;">0</span>, Tables: <span style="color: #0000BB;">4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Plots: <span style="color: #0000BB;">6</span>, Tables: <span style="color: #0000BB;">4</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -24,12 +24,12 @@ A blueprint object.
 blueprint(
   step_preprocess(),
   step_pca(),
-  step_dea(),  # this comma is ok
+  step_dea_limma(),  # this comma is ok
 )
 #> 
 #> ── Blueprint (3 steps) ──
 #> 
-#> • preprocess
-#> • pca
-#> • dea
+#> • step_preprocess()
+#> • step_pca()
+#> • step_dea_limma()
 ```

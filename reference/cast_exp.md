@@ -80,39 +80,53 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! Step 'preprocess' failed. Skipping... Error: 
+#> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [179ms]
+#> ✔ Preprocessing [286ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [120ms]
+#> ✔ Identification overview [123ms]
 #> 
 #> ℹ Principal component analysis
-#> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
+#> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
 #> ✔ Principal component analysis [14ms]
 #> 
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [268ms]
+#> ✔ Differential expression analysis (limma) [229ms]
 #> 
+#> ℹ Volcano plot
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+#> ℹ The deprecated feature was likely used in the EnhancedVolcano package.
+#>   Please report the issue to the authors.
+#> Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
+#> ℹ Please use the `linewidth` argument instead.
+#> ℹ The deprecated feature was likely used in the EnhancedVolcano package.
+#>   Please report the issue to the authors.
+#> ✔ Volcano plot [746ms]
+#> 
+#> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [7.8s]
+#> ✔ Derived trait calculation [8.3s]
 #> 
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [56ms]
+#> ℹ Differential trait analysis (limma)
+#> ✔ Differential trait analysis (limma) [85ms]
 #> 
 cast_exp(result)
 #> 

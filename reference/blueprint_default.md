@@ -13,24 +13,25 @@ This blueprint contains the following steps:
   and plot the PCA using
   [`glyvis::plot_pca()`](https://glycoverse.github.io/glyvis/reference/plot_pca.html).
 
-- step_dea(): Differential analysis using `glystats::gly_dea()`.
+- step_dea_limma(): Differential analysis using
+  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
 
 - step_volcano(): Plot a volcano plot using
   [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html).
 
-- step_enrich_go(): Perform GO enrichment analysis using
+- step_sig_enrich_go(): Perform GO enrichment analysis using
   [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 
-- step_enrich_kegg(): Perform KEGG enrichment analysis using
+- step_sig_enrich_kegg(): Perform KEGG enrichment analysis using
   [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 
-- step_enrich_reactome(): Perform Reactome enrichment analysis using
+- step_sig_enrich_reactome(): Perform Reactome enrichment analysis using
   [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 
 - step_derive_traits(): Derive traits using
   [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).
 
-- step_dta(): Differential trait analysis using
+- step_dea_limma(on = "trait_exp"): Differential trait analysis using
   [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
 
 ## Usage
@@ -49,17 +50,16 @@ blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 - enrich:
 
   Whether to include the enrichment steps, i.e.
-  [`step_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_enrich_go.md),
-  [`step_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_enrich_kegg.md),
+  [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md),
+  [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md),
   and
-  [`step_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_enrich_reactome.md).
+  [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md).
 
 - traits:
 
   Whether to include the derived trait analysis steps, i.e.
   [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md)
-  and
-  [`step_dta()`](https://glycoverse.github.io/glysmith/reference/step_dta.md).
+  and `step_dea_limma(on = "trait_exp")`.
 
 ## Value
 
@@ -72,14 +72,14 @@ blueprint_default()
 #> 
 #> ── Blueprint (10 steps) ──
 #> 
-#> • preprocess
-#> • ident_overview
-#> • pca
-#> • dea
-#> • volcano
-#> • enrich_go
-#> • enrich_kegg
-#> • enrich_reactome
-#> • derive_traits
-#> • dta
+#> • step_preprocess()
+#> • step_ident_overview()
+#> • step_pca()
+#> • step_dea_limma()
+#> • step_volcano()
+#> • step_sig_enrich_go()
+#> • step_sig_enrich_kegg()
+#> • step_sig_enrich_reactome()
+#> • step_derive_traits()
+#> • step_dea_limma(on = "trait_exp")
 ```

@@ -84,40 +84,46 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! Step 'preprocess' failed. Skipping... Error: 
+#> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [118ms]
+#> ✔ Preprocessing [120ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [120ms]
+#> ✔ Identification overview [126ms]
 #> 
 #> ℹ Principal component analysis
-#> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
+#> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
 #> ✔ Principal component analysis [13ms]
 #> 
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [83ms]
+#> ✔ Differential expression analysis (limma) [94ms]
 #> 
+#> ℹ Volcano plot
+#> ✔ Volcano plot [861ms]
+#> 
+#> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.6s]
+#> ✔ Derived trait calculation [2.4s]
 #> 
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [80ms]
+#> ℹ Differential trait analysis (limma)
+#> ✔ Differential trait analysis (limma) [59ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/Rtmpc2Gx39/file1a6258037a15.html"
+#> [1] "/tmp/RtmppFvsQm/file20477f9445c3.html"
 ```

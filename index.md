@@ -6,10 +6,16 @@
 
 Be overwhelmed by the complexity of glycoverse?
 
+Imagine a package, performing all analysis you need, PCA, DEA,
+enrichment, or even advanced glycan derived trait analysis, in just one
+line of code.
+
 Try glysmith! Perform the comprehensive analysis pipeline with one
 function call.
 
 ## Installation
+
+> \[!NOTE\] This package is still in development and may not be stable.
 
 You can install the development version of glysmith from
 [GitHub](https://github.com/) with:

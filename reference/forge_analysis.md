@@ -29,14 +29,19 @@ forge_analysis(exp, blueprint = blueprint_default(), group_col = "group", ...)
 - ...:
 
   Additional arguments passed to the underlying functions. Use the
-  format `pkg.func.arg`. For example, if you want to pass argument
-  `p_adj_method = "BH"` to
+  format `step_id.pkg.func.arg` (step-scoped). For example, if you want
+  to pass argument `p_adj_method = "BH"` to
   [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
   in
-  [`step_dea()`](https://glycoverse.github.io/glysmith/reference/step_dea.md),
-  set `glystats.gly_limma.p_adj_method = "BH"`. Note that arguments
-  about group column specification is controlled by `group_col`
-  argument, and should not be passed to `...`.
+  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
+  set `dea.glystats.gly_limma.p_adj_method = "BH"`. To pass `batch_col`
+  to
+  [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html)
+  in
+  [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md),
+  set `preprocess.glyclean.auto_clean.batch_col = "batch"`. Note that
+  arguments about group column specification is controlled by
+  `group_col` argument, and should not be passed to `...`.
 
 ## Value
 
@@ -106,42 +111,48 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! Step 'preprocess' failed. Skipping... Error: 
+#> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [113ms]
+#> ✔ Preprocessing [117ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [119ms]
+#> ✔ Identification overview [122ms]
 #> 
 #> ℹ Principal component analysis
-#> ! Step 'pca' failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
+#> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
 #> ✔ Principal component analysis [13ms]
 #> 
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential expression analysis
+#> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis [59ms]
+#> ✔ Differential expression analysis (limma) [87ms]
 #> 
+#> ℹ Volcano plot
+#> ✔ Volcano plot [617ms]
+#> 
+#> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.6s]
+#> ✔ Derived trait calculation [2.9s]
 #> 
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential trait analysis
+#> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential trait analysis
-#> ✔ Differential trait analysis [55ms]
+#> ℹ Differential trait analysis (limma)
+#> ✔ Differential trait analysis (limma) [60ms]
 #> 
 print(result)
 #> 
 #> ── GlySmith Analysis Result 
-#> Plots: 0, Tables: 4
+#> Plots: 6, Tables: 4
 ```

@@ -8,16 +8,47 @@ and plot it with
 ## Usage
 
 ``` r
-step_pca()
+step_pca(...)
 ```
+
+## Arguments
+
+- ...:
+
+  Step-specific arguments passed to underlying functions. Use the format
+  `pkg.func.arg`. For example,
+  `step_pca(glystats.gly_pca.center = FALSE)`.
 
 ## Value
 
 A `glysmith_step` object.
 
+## Details
+
+Data required:
+
+- `exp`: The experiment to run PCA on
+
+Tables generated:
+
+- `pca_samples`: A table containing the PCA scores for each sample
+
+- `pca_variables`: A table containing the PCA loadings for each variable
+
+- `pca_eigenvalues`: A table containing the PCA eigenvalues
+
+Plots generated:
+
+- `pca`: A PCA plot colored by group
+
+## See also
+
+[`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html),
+[`glyvis::plot_pca()`](https://glycoverse.github.io/glyvis/reference/plot_pca.html)
+
 ## Examples
 
 ``` r
 step_pca()
-#> <step "pca"> Principal component analysis
+#> <step "step_pca()"> Principal component analysis
 ```
