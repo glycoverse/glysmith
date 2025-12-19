@@ -11,6 +11,7 @@
 #' @param condition Optional function(ctx) returning a list of `check` and `reason`.
 #'   - `check` is TRUE/FALSE to decide execution.
 #'   - `reason` is a human-readable string to explain why `check` is FALSE.
+#' @param signature The original call signature for display in messages.
 #'
 #' @returns A `glysmith_step` object.
 #' @noRd
@@ -23,7 +24,8 @@ step <- function(
   require = character(0),
   generate = character(0),
   condition = NULL,
-  retry = 0L
+  retry = 0L,
+  signature = NULL
 ) {
   structure(
     list(
@@ -34,7 +36,8 @@ step <- function(
       require = require,
       generate = generate,
       condition = condition,
-      retry = retry
+      retry = retry,
+      signature = signature %||% paste0("step_", id, "()")
     ),
     class = "glysmith_step"
   )
@@ -42,7 +45,7 @@ step <- function(
 
 #' @export
 print.glysmith_step <- function(x, ...) {
-  cli::cli_text("<step {.val {x$id}}> {.emph {x$label}}")
+  cli::cli_text("<step {.val {x$signature}}> {.emph {x$label}}")
 }
 
 #' All steps in GlySmith
@@ -96,6 +99,7 @@ all_steps <- function() {
 #' @seealso [glyclean::auto_clean()]
 #' @export
 step_preprocess <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   step(
     id = "preprocess",
@@ -117,7 +121,8 @@ step_preprocess <- function(...) {
       ctx
     },
     require = "exp",
-    generate = "raw_exp"
+    generate = "raw_exp",
+    signature = signature
   )
 }
 
@@ -143,6 +148,7 @@ step_preprocess <- function(...) {
 #' @seealso [glyexp::summarize_experiment()]
 #' @export
 step_ident_overview <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   step(
     id = "ident_overview",
@@ -167,7 +173,8 @@ step_ident_overview <- function(...) {
         " were identified."
       )
     },
-    require = "exp"
+    require = "exp",
+    signature = signature
   )
 }
 
@@ -197,6 +204,7 @@ step_ident_overview <- function(...) {
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
 step_pca <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   step(
     id = "pca",
@@ -241,7 +249,8 @@ step_pca <- function(...) {
       eig <- x$tables[["pca_eigenvalues"]]
       "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
     },
-    require = "exp"
+    require = "exp",
+    signature = signature
   )
 }
 
@@ -277,7 +286,8 @@ step_pca <- function(...) {
 #' @seealso [glystats::gly_limma()]
 #' @export
 step_dea_limma <- function(on = "exp", ...) {
-  .step_dea(method = "limma", label = "Differential expression analysis (limma)", on = on, ...)
+  signature <- rlang::expr_deparse(match.call())
+  .step_dea(method = "limma", label = "Differential expression analysis (limma)", on = on, signature = signature, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using t-test
@@ -311,7 +321,8 @@ step_dea_limma <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_ttest()]
 #' @export
 step_dea_ttest <- function(on = "exp", ...) {
-  .step_dea(method = "ttest", label = "Differential expression analysis (t-test)", on = on, ...)
+  signature <- rlang::expr_deparse(match.call())
+  .step_dea(method = "ttest", label = "Differential expression analysis (t-test)", on = on, signature = signature, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using ANOVA
@@ -345,7 +356,8 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_anova()]
 #' @export
 step_dea_anova <- function(on = "exp", ...) {
-  .step_dea(method = "anova", label = "Differential expression analysis (ANOVA)", on = on, ...)
+  signature <- rlang::expr_deparse(match.call())
+  .step_dea(method = "anova", label = "Differential expression analysis (ANOVA)", on = on, signature = signature, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using Wilcoxon test
@@ -379,7 +391,8 @@ step_dea_anova <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_wilcox()]
 #' @export
 step_dea_wilcox <- function(on = "exp", ...) {
-  .step_dea(method = "wilcox", label = "Differential expression analysis (Wilcoxon)", on = on, ...)
+  signature <- rlang::expr_deparse(match.call())
+  .step_dea(method = "wilcox", label = "Differential expression analysis (Wilcoxon)", on = on, signature = signature, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
@@ -413,7 +426,8 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_kruskal()]
 #' @export
 step_dea_kruskal <- function(on = "exp", ...) {
-  .step_dea(method = "kruskal", label = "Differential expression analysis (Kruskal-Wallis)", on = on, ...)
+  signature <- rlang::expr_deparse(match.call())
+  .step_dea(method = "kruskal", label = "Differential expression analysis (Kruskal-Wallis)", on = on, signature = signature, ...)
 }
 
 #' Get metadata for DEA analysis based on the target experiment
@@ -449,7 +463,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 
 #' Internal helper for DEA steps
 #' @noRd
-.step_dea <- function(method, label, on = "exp", ...) {
+.step_dea <- function(method, label, on = "exp", signature = NULL, ...) {
   step_dots <- rlang::list2(...)
   meta <- .get_dea_meta(on)
 
@@ -524,7 +538,8 @@ step_dea_kruskal <- function(on = "exp", ...) {
       msg
     },
     generate = paste0(meta$prefix, "_res"),
-    require = meta$require
+    require = meta$require,
+    signature = signature
   )
 }
 
@@ -554,6 +569,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' @seealso [glyvis::plot_volcano()]
 #' @export
 step_volcano <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   step(
     id = "volcano",
@@ -575,7 +591,8 @@ step_volcano <- function(...) {
     report = function(x) {
       "This step will generate a volcano plot for each contrast in the DEA results."
     },
-    require = "dea_res"
+    require = "dea_res",
+    signature = signature
   )
 }
 
@@ -645,7 +662,8 @@ step_volcano <- function(...) {
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
 step_sig_enrich_go <- function(universe = "all", ...) {
-  step_sig_enrich("go", universe = universe, ...)
+  signature <- rlang::expr_deparse(match.call())
+  step_sig_enrich("go", universe = universe, signature = signature, ...)
 }
 
 #' Step: KEGG Enrichment Analysis on Differentially Expressed Variables
@@ -675,7 +693,8 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
 step_sig_enrich_kegg <- function(universe = "all", ...) {
-  step_sig_enrich("kegg", universe = universe, retry = 2L, ...)
+  signature <- rlang::expr_deparse(match.call())
+  step_sig_enrich("kegg", universe = universe, retry = 2L, signature = signature, ...)
 }
 
 #' Step: Reactome Enrichment Analysis on Differentially Expressed Variables
@@ -705,7 +724,8 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
 step_sig_enrich_reactome <- function(universe = "all", ...) {
-  step_sig_enrich("reactome", universe = universe, retry = 2L, ...)
+  signature <- rlang::expr_deparse(match.call())
+  step_sig_enrich("reactome", universe = universe, retry = 2L, signature = signature, ...)
 }
 
 #' Step: Enrichment Analysis on Differentially Expressed Variables
@@ -725,7 +745,7 @@ step_sig_enrich_reactome <- function(universe = "all", ...) {
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param retry Number of retries if the step errors.
 #' @noRd
-step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L, ...) {
+step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L, signature = NULL, ...) {
   kind <- rlang::arg_match(kind)
   universe <- rlang::arg_match(universe)
   label <- paste0(toupper(kind), " enrichment analysis")
@@ -787,7 +807,8 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
       msg
     },
     require = c("dea_res", "exp"),
-    retry = retry
+    retry = retry,
+    signature = signature
   )
 }
 
@@ -814,6 +835,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
 #' @seealso [glydet::derive_traits()]
 #' @export
 step_derive_traits <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   step(
     id = "derive_traits",
@@ -849,6 +871,7 @@ step_derive_traits <- function(...) {
       )
     },
     generate = "trait_exp",
-    require = "exp"
+    require = "exp",
+    signature = signature
   )
 }

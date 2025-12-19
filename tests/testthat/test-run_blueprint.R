@@ -5,7 +5,8 @@ test_that("run_blueprint handles missing dependencies", {
       label = "Require Step",
       require = "missing_data",
       run = function(ctx) ctx,
-      retry = 0
+      retry = 0,
+      signature = "step_req()"
     ),
     class = "glysmith_step"
   )
@@ -15,7 +16,7 @@ test_that("run_blueprint handles missing dependencies", {
   
   expect_message({
     ctx_result <- glysmith:::run_blueprint(bp_req, ctx)
-  }, "Skipping Step .* due to missing ctx\\$data keys")
+  }, "Skipping .* due to missing ctx\\$data keys")
   
   expect_false("step_req" %in% ctx_result$meta$steps)
 })
@@ -26,7 +27,8 @@ test_that("run_blueprint handles step failure", {
       id = "step_fail",
       label = "Failing Step",
       run = function(ctx) stop("intentionally failed"),
-      retry = 0
+      retry = 0,
+      signature = "step_fail()"
     ),
     class = "glysmith_step"
   )
@@ -39,7 +41,8 @@ test_that("run_blueprint handles step failure", {
         ctx$data$ok <- TRUE
         ctx
       },
-      retry = 0
+      retry = 0,
+      signature = "step_ok()"
     ),
     class = "glysmith_step"
   )

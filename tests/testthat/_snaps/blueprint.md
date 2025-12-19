@@ -21,8 +21,8 @@
       
       -- Blueprint (2 steps) --
       
-      * step1
-      * step2
+      * step_step1()
+      * step_step2()
 
 # blueprint check duplicated steps
 
