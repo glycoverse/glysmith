@@ -334,13 +334,13 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
 #' - step_sig_enrich_reactome(): Perform Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
 #' - step_derive_traits(): Derive traits using `glydet::derive_traits()`.
-#' - step_dta(): Differential trait analysis using `glystats::gly_limma()`.
+#' - step_dea_limma(on = "trait_exp"): Differential trait analysis using `glystats::gly_limma()`.
 #'
 #' @param preprocess Whether to include [step_preprocess()].
 #' @param enrich Whether to include the enrichment steps,
 #'   i.e. [step_sig_enrich_go()], [step_sig_enrich_kegg()], and [step_sig_enrich_reactome()].
 #' @param traits Whether to include the derived trait analysis steps,
-#'   i.e. [step_derive_traits()] and [step_dta()].
+#'   i.e. [step_derive_traits()] and `step_dea_limma(on = "trait_exp")`.
 #'
 #' @returns A `glysmith_blueprint` object.
 #' @examples
@@ -356,7 +356,7 @@ blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
     steps <- append(steps, list(step_sig_enrich_go(), step_sig_enrich_kegg(), step_sig_enrich_reactome()))
   }
   if (traits) {
-    steps <- append(steps, list(step_derive_traits(), step_dta()))
+    steps <- append(steps, list(step_derive_traits(), step_dea_limma(on = "trait_exp")))
   }
   names(steps) <- purrr::map_chr(steps, "id")
   new_blueprint(steps)

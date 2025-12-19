@@ -4,9 +4,13 @@
 \alias{step_dea_anova}
 \title{Step: Differential Expression Analysis (DEA) using ANOVA}
 \usage{
-step_dea_anova(...)
+step_dea_anova(on = "exp", ...)
 }
 \arguments{
+\item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
+Default is \code{"exp"} for differential expression analysis.
+Use \code{"trait_exp"} for differential trait analysis.}
+
 \item{...}{Step-specific arguments passed to \code{glystats::gly_anova()}.
 Use the format \code{pkg.func.arg}.}
 }
@@ -15,26 +19,30 @@ A \code{glysmith_step} object.
 }
 \description{
 Run differential analysis using ANOVA via \code{glystats::gly_anova()}.
+By default, this runs DEA on the main experiment (\code{exp}), but can be configured
+to run on derived traits (\code{trait_exp}) or other experiment objects.
 }
 \details{
 Data required:
 \itemize{
-\item \code{exp}: The experiment to run DEA on
+\item Depends on \code{on} parameter (default: \code{exp})
 }
 
 Data generated:
 \itemize{
-\item \code{dea_res}: The DEA results from \code{glystats::gly_anova()}
+\item \code{dea_res}: The DEA results (if \code{on = "exp"}, default)
+\item \code{dta_res}: The DTA results (if \code{on = "trait_exp"})
 }
 
 Tables generated:
 \itemize{
-\item \code{dea_main_test}: A table containing the main test result
-\item \code{dea_post_hoc_test}: A table containing the post-hoc test result
+\item \code{dea_main_test}, \code{dea_post_hoc_test}: Tables containing the results (if \code{on = "exp"}, default)
+\item \code{dta_main_test}, \code{dta_post_hoc_test}: Tables containing the results (if \code{on = "trait_exp"})
 }
 }
 \examples{
 step_dea_anova()
+step_dea_anova(on = "trait_exp")  # Differential trait analysis
 }
 \seealso{
 \code{\link[glystats:gly_anova]{glystats::gly_anova()}}

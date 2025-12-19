@@ -13,7 +13,7 @@ blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 i.e. \code{\link[=step_sig_enrich_go]{step_sig_enrich_go()}}, \code{\link[=step_sig_enrich_kegg]{step_sig_enrich_kegg()}}, and \code{\link[=step_sig_enrich_reactome]{step_sig_enrich_reactome()}}.}
 
 \item{traits}{Whether to include the derived trait analysis steps,
-i.e. \code{\link[=step_derive_traits]{step_derive_traits()}} and \code{\link[=step_dta]{step_dta()}}.}
+i.e. \code{\link[=step_derive_traits]{step_derive_traits()}} and \code{step_dea_limma(on = "trait_exp")}.}
 }
 \value{
 A \code{glysmith_blueprint} object.
@@ -31,7 +31,7 @@ and plot the PCA using \code{glyvis::plot_pca()}.
 \item step_sig_enrich_kegg(): Perform KEGG enrichment analysis using \code{glystats::gly_enrich_kegg()}.
 \item step_sig_enrich_reactome(): Perform Reactome enrichment analysis using \code{glystats::gly_enrich_reactome()}.
 \item step_derive_traits(): Derive traits using \code{glydet::derive_traits()}.
-\item step_dta(): Differential trait analysis using \code{glystats::gly_limma()}.
+\item step_dea_limma(on = "trait_exp"): Differential trait analysis using \code{glystats::gly_limma()}.
 }
 }
 \examples{

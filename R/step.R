@@ -61,8 +61,7 @@ all_steps <- function() {
     step_sig_enrich_go(),
     step_sig_enrich_kegg(),
     step_sig_enrich_reactome(),
-    step_derive_traits(),
-    step_dta()
+    step_derive_traits()
   )
   names(steps) <- purrr::map_chr(steps, "id")
   steps
@@ -247,17 +246,24 @@ step_pca <- function(...) {
 #' Step: Differential Expression Analysis (DEA) using Limma
 #'
 #' Run differential analysis using linear model-based analysis via `glystats::gly_limma()`.
+#' By default, this runs DEA on the main experiment (`exp`), but can be configured
+#' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to run DEA on
+#' - Depends on `on` parameter (default: `exp`)
 #'
 #' Data generated:
-#' - `dea_res`: The DEA results from `glystats::gly_limma()`
+#' - `dea_res`: The DEA results (if `on = "exp"`, default)
+#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
 #'
 #' Tables generated:
-#' - `dea`: A table containing the DEA result
+#' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
+#' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #'
+#' @param on Name of the experiment data in `ctx$data` to run analysis on.
+#'   Default is `"exp"` for differential expression analysis.
+#'   Use `"trait_exp"` for differential trait analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_limma()`.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_dea_limma(glystats.gly_limma.p_adj_method = "BH")`.
@@ -265,176 +271,258 @@ step_pca <- function(...) {
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea_limma()
+#' step_dea_limma(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_limma()]
 #' @export
-step_dea_limma <- function(...) {
-  .step_dea(method = "limma", label = "Differential expression analysis (limma)", ...)
+step_dea_limma <- function(on = "exp", ...) {
+  .step_dea(method = "limma", label = "Differential expression analysis (limma)", on = on, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using t-test
 #'
 #' Run differential analysis using t-test via `glystats::gly_ttest()`.
+#' By default, this runs DEA on the main experiment (`exp`), but can be configured
+#' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to run DEA on
+#' - Depends on `on` parameter (default: `exp`)
 #'
 #' Data generated:
-#' - `dea_res`: The DEA results from `glystats::gly_ttest()`
+#' - `dea_res`: The DEA results (if `on = "exp"`, default)
+#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
 #'
 #' Tables generated:
-#' - `dea`: A table containing the DEA result
+#' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
+#' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #'
+#' @param on Name of the experiment data in `ctx$data` to run analysis on.
+#'   Default is `"exp"` for differential expression analysis.
+#'   Use `"trait_exp"` for differential trait analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_ttest()`.
 #'   Use the format `pkg.func.arg`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea_ttest()
+#' step_dea_ttest(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_ttest()]
 #' @export
-step_dea_ttest <- function(...) {
-  .step_dea(method = "ttest", label = "Differential expression analysis (t-test)", ...)
+step_dea_ttest <- function(on = "exp", ...) {
+  .step_dea(method = "ttest", label = "Differential expression analysis (t-test)", on = on, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using ANOVA
 #'
 #' Run differential analysis using ANOVA via `glystats::gly_anova()`.
+#' By default, this runs DEA on the main experiment (`exp`), but can be configured
+#' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to run DEA on
+#' - Depends on `on` parameter (default: `exp`)
 #'
 #' Data generated:
-#' - `dea_res`: The DEA results from `glystats::gly_anova()`
+#' - `dea_res`: The DEA results (if `on = "exp"`, default)
+#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
 #'
 #' Tables generated:
-#' - `dea_main_test`: A table containing the main test result
-#' - `dea_post_hoc_test`: A table containing the post-hoc test result
+#' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
+#' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #'
+#' @param on Name of the experiment data in `ctx$data` to run analysis on.
+#'   Default is `"exp"` for differential expression analysis.
+#'   Use `"trait_exp"` for differential trait analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_anova()`.
 #'   Use the format `pkg.func.arg`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea_anova()
+#' step_dea_anova(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_anova()]
 #' @export
-step_dea_anova <- function(...) {
-  .step_dea(method = "anova", label = "Differential expression analysis (ANOVA)", ...)
+step_dea_anova <- function(on = "exp", ...) {
+  .step_dea(method = "anova", label = "Differential expression analysis (ANOVA)", on = on, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using Wilcoxon test
 #'
 #' Run differential analysis using Wilcoxon analysis via `glystats::gly_wilcox()`.
+#' By default, this runs DEA on the main experiment (`exp`), but can be configured
+#' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to run DEA on
+#' - Depends on `on` parameter (default: `exp`)
 #'
 #' Data generated:
-#' - `dea_res`: The DEA results from `glystats::gly_wilcox()`
+#' - `dea_res`: The DEA results (if `on = "exp"`, default)
+#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
 #'
 #' Tables generated:
-#' - `dea`: A table containing the DEA result
+#' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
+#' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #'
+#' @param on Name of the experiment data in `ctx$data` to run analysis on.
+#'   Default is `"exp"` for differential expression analysis.
+#'   Use `"trait_exp"` for differential trait analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_wilcox()`.
 #'   Use the format `pkg.func.arg`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea_wilcox()
+#' step_dea_wilcox(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_wilcox()]
 #' @export
-step_dea_wilcox <- function(...) {
-  .step_dea(method = "wilcox", label = "Differential expression analysis (Wilcoxon)", ...)
+step_dea_wilcox <- function(on = "exp", ...) {
+  .step_dea(method = "wilcox", label = "Differential expression analysis (Wilcoxon)", on = on, ...)
 }
 
 #' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
 #'
 #' Run differential analysis using Kruskal-Wallis analysis via `glystats::gly_kruskal()`.
+#' By default, this runs DEA on the main experiment (`exp`), but can be configured
+#' to run on derived traits (`trait_exp`) or other experiment objects.
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to run DEA on
+#' - Depends on `on` parameter (default: `exp`)
 #'
 #' Data generated:
-#' - `dea_res`: The DEA results from `glystats::gly_kruskal()`
+#' - `dea_res`: The DEA results (if `on = "exp"`, default)
+#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
 #'
 #' Tables generated:
-#' - `dea_main_test`: A table containing the main test result
-#' - `dea_post_hoc_test`: A table containing the post-hoc test result
+#' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
+#' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #'
+#' @param on Name of the experiment data in `ctx$data` to run analysis on.
+#'   Default is `"exp"` for differential expression analysis.
+#'   Use `"trait_exp"` for differential trait analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_kruskal()`.
 #'   Use the format `pkg.func.arg`.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea_kruskal()
+#' step_dea_kruskal(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_kruskal()]
 #' @export
-step_dea_kruskal <- function(...) {
-  .step_dea(method = "kruskal", label = "Differential expression analysis (Kruskal-Wallis)", ...)
+step_dea_kruskal <- function(on = "exp", ...) {
+  .step_dea(method = "kruskal", label = "Differential expression analysis (Kruskal-Wallis)", on = on, ...)
+}
+
+#' Get metadata for DEA analysis based on the target experiment
+#'
+#' @param on Name of the experiment data in ctx$data to run DEA on.
+#' @returns A list with prefix, label, and require fields.
+#' @noRd
+.get_dea_meta <- function(on) {
+  mapping <- list(
+    exp = list(
+      prefix = "dea",
+      label = "Differential expression",
+      require = "exp"
+    ),
+    trait_exp = list(
+      prefix = "dta",
+      label = "Differential trait",
+      require = "trait_exp"
+    )
+  )
+
+  # Return the mapping or create a default one for unknown types
+  if (on %in% names(mapping)) {
+    mapping[[on]]
+  } else {
+    list(
+      prefix = paste0("d_", on),
+      label = paste("Differential", on),
+      require = on
+    )
+  }
 }
 
 #' Internal helper for DEA steps
 #' @noRd
-.step_dea <- function(method, label, ...) {
+.step_dea <- function(method, label, on = "exp", ...) {
   step_dots <- rlang::list2(...)
+  meta <- .get_dea_meta(on)
+
   step(
-    id = paste0("dea_", method),
-    label = label,
+    id = paste0(meta$prefix, "_", method),
+    label = paste0(meta$label, " analysis (", method, ")"),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
+      exp <- ctx_get_data(ctx, on)
+      # Apply filtering for trait_exp if needed
+      if (on == "trait_exp") {
+        exp <- glyclean::remove_constant(exp)
+      }
+
       dea_res <- switch(
         method,
-        "limma" = .run_function(glystats::gly_limma, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
-        "ttest" = .run_function(glystats::gly_ttest, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
-        "anova" = .run_function(glystats::gly_anova, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
-        "wilcox" = .run_function(glystats::gly_wilcox, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots),
-        "kruskal" = .run_function(glystats::gly_kruskal, exp, step_id = "dea", global_dots = ctx$dots, step_dots = step_dots)
+        "limma" = .run_function(glystats::gly_limma, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
+        "ttest" = .run_function(glystats::gly_ttest, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
+        "anova" = .run_function(glystats::gly_anova, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
+        "wilcox" = .run_function(glystats::gly_wilcox, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
+        "kruskal" = .run_function(glystats::gly_kruskal, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots)
       )
-      ctx <- ctx_add_data(ctx, "dea_res", dea_res)
+      ctx <- ctx_add_data(ctx, paste0(meta$prefix, "_res"), dea_res)
+
       if (method %in% c("anova", "kruskal")) {
         ctx <- ctx_add_table(
           ctx,
-          "dea_main_test",
+          paste0(meta$prefix, "_main_test"),
           glystats::get_tidy_result(dea_res, "main_test"),
-          "Main test results of ANOVA or Kruskal-Wallis test."
+          paste0("Main test results of ANOVA or Kruskal-Wallis test for ", meta$label, " analysis.")
         )
         ctx <- ctx_add_table(
           ctx,
-          "dea_post_hoc_test",
+          paste0(meta$prefix, "_post_hoc_test"),
           glystats::get_tidy_result(dea_res, "post_hoc_test"),
-          "Post-hoc test results of ANOVA or Kruskal-Wallis test."
+          paste0("Post-hoc test results of ANOVA or Kruskal-Wallis test for ", meta$label, " analysis.")
         )
       } else {
         ctx <- ctx_add_table(
           ctx,
-          "dea",
+          meta$prefix,
           glystats::get_tidy_result(dea_res),
-          "Differential expression analysis results of all comparisons for all variables."
+          paste0(meta$label, " analysis results of all comparisons for all variables.")
         )
       }
       ctx
     },
     report = function(x) {
       if (method %in% c("anova", "kruskal")) {
-        tbl <- x$tables[["dea_main_test"]]
+        tbl <- x$tables[[paste0(meta$prefix, "_main_test")]]
       } else {
-        tbl <- x$tables[["dea"]]
+        tbl <- x$tables[[meta$prefix]]
       }
       sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
-      msg <- "Differential expression analysis was performed and the results were saved in `tables$dea*`. "
-      if (sig > 0) {
-        msg <- paste0(msg, "Number of significant items (FDR/adjusted p < 0.05): ", sig, ".\n")
+
+      # Determine item name based on analysis type
+      if (on == "trait_exp") {
+        if (glyexp::get_exp_type(x$exp) == "glycomics") {
+          item_name <- "traits"
+        } else {
+          item_name <- "site-specific traits"
+        }
       } else {
-        msg <- paste0(msg, "No significant items (FDR/adjusted p < 0.05). \n")
+        item_name <- "items"
+      }
+
+      msg <- paste0(meta$label, " analysis was performed and the results were saved in `tables$", meta$prefix, "*`. ")
+      if (sig > 0) {
+        msg <- paste0(msg, "Number of significant ", item_name, " (FDR/adjusted p < 0.05): ", sig, ".\n")
+      } else {
+        msg <- paste0(msg, "No significant ", item_name, " (FDR/adjusted p < 0.05).\n")
       }
       msg
     },
-    generate = "dea_res",
-    require = "exp"
+    generate = paste0(meta$prefix, "_res"),
+    require = meta$require
   )
 }
 
@@ -750,71 +838,5 @@ step_derive_traits <- function(...) {
     },
     generate = "trait_exp",
     require = "exp"
-  )
-}
-
-#' Step: Differential Trait Analysis (DTA)
-#'
-#' Run differential analysis on derived traits using `glystats::gly_limma()`.
-#' This step requires [step_derive_traits()].
-#'
-#' @details
-#' Data required:
-#' - `trait_exp`: The experiment with derived traits
-#'
-#' Tables generated:
-#' - `dta_res`: A table containing the differential trait analysis results.
-#'
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_dta(glystats.gly_limma.p_adj_method = "BH")`.
-#'
-#' @return A `glysmith_step` object.
-#' @examples
-#' step_dta()
-#' @seealso [glystats::gly_limma()]
-#' @export
-step_dta <- function(...) {
-  step_dots <- rlang::list2(...)
-  step(
-    id = "dta",
-    label = "Differential trait analysis",
-    condition = function(ctx) "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info),
-    run = function(ctx) {
-      trait_exp <- ctx$data$trait_exp
-      if (is.null(trait_exp)) {
-        cli::cli_abort(c(
-          "Missing required ctx$data for this step.",
-          "x" = "Step 'dta' requires {.field trait_exp}.",
-          "i" = "Add {.fn step_derive_traits} before {.fn step_dta} in the blueprint."
-        ))
-      }
-      filtered_trait_exp <- glyclean::remove_constant(trait_exp)
-      dta_res <- .run_function(
-        glystats::gly_limma,
-        filtered_trait_exp,
-        step_id = "dta",
-        global_dots = ctx$dots,
-        step_dots = step_dots
-      )
-      ctx_add_table(ctx, "dta", glystats::get_tidy_result(dta_res), "Differential trait analysis results.")
-    },
-    report = function(x) {
-      tbl <- x$tables[["dta"]]
-      sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
-      msg <- "Differential trait analysis was performed and the results were saved in `tables$dta`. "
-      if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycomics") {
-        item_name <- "traits"
-      } else {
-        item_name <- "site-specific traits"
-      }
-      if (sig > 0) {
-        msg <- paste0(msg, "Number of significant ", item_name, " (FDR/adjusted p < 0.05): ", sig, ".\n")
-      } else {
-        msg <- paste0(msg, "No significant ", item_name, " (FDR/adjusted p < 0.05).\n")
-      }
-      msg
-    },
-    require = "trait_exp"
   )
 }

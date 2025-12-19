@@ -4,9 +4,13 @@
 \alias{step_dea_limma}
 \title{Step: Differential Expression Analysis (DEA) using Limma}
 \usage{
-step_dea_limma(...)
+step_dea_limma(on = "exp", ...)
 }
 \arguments{
+\item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
+Default is \code{"exp"} for differential expression analysis.
+Use \code{"trait_exp"} for differential trait analysis.}
+
 \item{...}{Step-specific arguments passed to \code{glystats::gly_limma()}.
 Use the format \code{pkg.func.arg}.
 For example, \code{step_dea_limma(glystats.gly_limma.p_adj_method = "BH")}.}
@@ -16,25 +20,30 @@ A \code{glysmith_step} object.
 }
 \description{
 Run differential analysis using linear model-based analysis via \code{glystats::gly_limma()}.
+By default, this runs DEA on the main experiment (\code{exp}), but can be configured
+to run on derived traits (\code{trait_exp}) or other experiment objects.
 }
 \details{
 Data required:
 \itemize{
-\item \code{exp}: The experiment to run DEA on
+\item Depends on \code{on} parameter (default: \code{exp})
 }
 
 Data generated:
 \itemize{
-\item \code{dea_res}: The DEA results from \code{glystats::gly_limma()}
+\item \code{dea_res}: The DEA results (if \code{on = "exp"}, default)
+\item \code{dta_res}: The DTA results (if \code{on = "trait_exp"})
 }
 
 Tables generated:
 \itemize{
-\item \code{dea}: A table containing the DEA result
+\item \code{dea}: A table containing the DEA result (if \code{on = "exp"}, default)
+\item \code{dta}: A table containing the DTA result (if \code{on = "trait_exp"})
 }
 }
 \examples{
 step_dea_limma()
+step_dea_limma(on = "trait_exp")  # Differential trait analysis
 }
 \seealso{
 \code{\link[glystats:gly_limma]{glystats::gly_limma()}}
