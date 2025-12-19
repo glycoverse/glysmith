@@ -19,7 +19,8 @@ For example, \code{step_dea_limma(glystats.gly_limma.p_adj_method = "BH")}.}
 A \code{glysmith_step} object.
 }
 \description{
-Run differential analysis using linear model-based analysis via \code{glystats::gly_limma()}.
+Run differential analysis using linear model-based analysis via \code{glystats::gly_limma()},
+then filter the experiment to keep only the differentially expressed variables using \code{glystats::filter_sig_vars()}.
 By default, this runs DEA on the main experiment (\code{exp}), but can be configured
 to run on derived traits (\code{trait_exp}) or other experiment objects.
 }
@@ -33,6 +34,8 @@ Data generated:
 \itemize{
 \item \code{dea_res}: The DEA results (if \code{on = "exp"}, default)
 \item \code{dta_res}: The DTA results (if \code{on = "trait_exp"})
+\item \code{sig_exp}: The filtered experiment (if \code{on = "exp"}, default)
+\item \code{sig_trait_exp}: The filtered trait experiment (if \code{on = "trait_exp"})
 }
 
 Tables generated:

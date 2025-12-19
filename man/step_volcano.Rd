@@ -26,7 +26,6 @@ This step requires one of the DEA steps to be run:
 \details{
 Data required:
 \itemize{
-\item \code{exp}: The experiment to create a volcano plot for
 \item \code{dea_res}: The DEA results from \code{glystats::gly_limma()}
 }
 
