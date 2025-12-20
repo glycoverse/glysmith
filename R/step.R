@@ -121,6 +121,14 @@ step_preprocess <- function(...) {
       ctx <- ctx_add_data(ctx, "raw_exp", exp)  # keep raw exp for reference
       ctx
     },
+    report = function(x) {
+      text <- paste(x$meta$logs$preprocess, collapse = "\n")
+      text <- stringr::str_replace_all(text, "gf", "glycoform")
+      text <- stringr::str_replace_all(text, "gfs", "glycoform (with structure)")
+      text <- stringr::str_replace_all(text, "gp", "glycopeptide")
+      text <- stringr::str_replace_all(text, "gps", "glycopeptide (with structure)")
+      text
+    },
     require = "exp",
     generate = "raw_exp",
     signature = signature
