@@ -14,6 +14,7 @@ A blueprint object.
 }
 \description{
 A blueprint is a list of steps that are executed in order.
+Type \code{step_} and TAB in RStudio to see all available steps.
 }
 \examples{
 blueprint(

@@ -2,14 +2,18 @@
 #'
 #' Generate a self-contained HTML report for a `glysmith_result` object.
 #' The report is rendered via `rmarkdown::render()` using an internal R Markdown template.
+#' If `ai_polish` is TRUE, the report text will be polished using LLM (deepseek-chat).
+#' To use this feature, you have to provide an API key and set it in the environment variable `DEEPSEEK_API_KEY`,
+#' or provide it directly in the `ai_api_key` argument.
+#' You can apply the API key on https://platform.deepseek.com.
 #'
 #' @param x A `glysmith_result` object.
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
 #' @param ai_polish Whether to polish the report text using AI (deepseek-chat). Default is FALSE.
-#' @param ai_api_key API key for the AI model. If NULL, uses the environment
-#'   variable `DEEPSEEK_API_KEY`.
+#' @param ai_api_key API key for the AI model.
+#'   If NULL, uses the environment variable `DEEPSEEK_API_KEY`.
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples

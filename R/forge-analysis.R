@@ -1,4 +1,4 @@
-#' Forge an Analysis for Group Comparison
+#' Perform the Whole Analysis Pipeline
 #'
 #' This function performs a comprehensive analysis for group comparison.
 #'
@@ -9,7 +9,7 @@
 #' @param ... Additional arguments passed to the underlying functions.
 #'   Use the format `step_id.pkg.func.arg` (step-scoped).
 #'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`
-#'   in [step_dea_limma()], set `dea.glystats.gly_limma.p_adj_method = "BH"`.
+#'   in [step_dea_limma()], set `dea_limma.glystats.gly_limma.p_adj_method = "BH"`.
 #'   To pass `batch_col` to `glyclean::auto_clean()` in [step_preprocess()],
 #'   set `preprocess.glyclean.auto_clean.batch_col = "batch"`.
 #'   Note that arguments about group column specification is controlled by `group_col` argument,
@@ -19,10 +19,12 @@
 #'   - `exp`: the experiment after preprocessing.
 #'   - `plots`: a named list of ggplot objects.
 #'   - `tables`: a named list of tibbles.
-#'   - `meta`: a named list of metadata. Currently two elements:
+#'   - `meta`: a named list of metadata, containing:
 #'     - `explanation`: a named character vector or list of explanations for each plot and table,
 #'        with keys like `tables$summary` and `plots$pca`.
 #'     - `steps`: a character vector of the steps of the analysis.
+#'     - `log`: the messages and outputs from each step.
+#'   - `blueprint`: the blueprint used for the analysis.
 #'
 #' @examples
 #' exp <- glyexp::real_experiment2

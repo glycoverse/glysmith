@@ -1,8 +1,7 @@
 #' Save GlySmith Result
 #'
 #' Save processed experiment, plots and tables of a glysmith result object to a directory.
-#' A `README.md` file will also be generated to describe the saved outputs,
-#' based on metadata in `x$meta`.
+#' A `README.md` file will also be generated to describe the saved outputs.
 #'
 #' @param x A glysmith result object.
 #' @param dir The directory to save the result.
@@ -11,7 +10,6 @@
 #' @param plot_width The width of the plot in inches. Default is 5.
 #' @param plot_height The height of the plot in inches. Default is 5.
 #'
-#' @returns A glysmith result object.
 #' @examples
 #' library(glyexp)
 #' exp <- real_experiment2

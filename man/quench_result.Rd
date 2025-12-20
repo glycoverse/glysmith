@@ -26,13 +26,9 @@ quench_result(
 
 \item{plot_height}{The height of the plot in inches. Default is 5.}
 }
-\value{
-A glysmith result object.
-}
 \description{
 Save processed experiment, plots and tables of a glysmith result object to a directory.
-A \code{README.md} file will also be generated to describe the saved outputs,
-based on metadata in \code{x$meta}.
+A \code{README.md} file will also be generated to describe the saved outputs.
 }
 \examples{
 library(glyexp)
