@@ -185,8 +185,10 @@ polish_report <- function(
     }
 
     # Apply AI polishing if enabled and content is not empty
-    if (isTRUE(ai_polish) && !is.null(content) && nzchar(content)) {
+    if (isTRUE(ai_polish)) {
       content <- .polish_text(content, model = "deepseek-chat", api_key = ai_api_key)
+    } else {
+      content <- stringr::str_remove_all(content, "<AI>[\\s\\S]*?</AI>")
     }
 
     list(id = s$id, label = s$label, content = content)

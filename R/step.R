@@ -6,6 +6,9 @@
 #' @param label Human-readable label for progress output.
 #' @param run A function(ctx) that returns updated ctx.
 #' @param report A function(x) that returns a markdown string for reporting, or NULL.
+#'   The string can contain additional information surrounded by "<AI>" and "</AI>" tags,
+#'   which will be fed to AI for polishing.
+#'   If AI polishing is turned off, the content in "<AI>" and "</AI>" tags will be removed.
 #' @param require Character vector of required `ctx$data` keys.
 #' @param generate Character vector of generated `ctx$data` keys.
 #' @param condition Optional function(ctx) returning a list of `check` and `reason`.
@@ -127,7 +130,7 @@ step_preprocess <- function(...) {
       text <- stringr::str_replace_all(text, "gfs", "glycoform (with structure)")
       text <- stringr::str_replace_all(text, "gp", "glycopeptide")
       text <- stringr::str_replace_all(text, "gps", "glycopeptide (with structure)")
-      text
+      paste0("<AI>", text, "</AI>")
     },
     require = "exp",
     generate = "raw_exp",
