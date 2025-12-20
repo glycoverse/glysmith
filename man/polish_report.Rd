@@ -10,7 +10,6 @@ polish_report(
   title = "GlySmith report",
   open = interactive(),
   ai_polish = FALSE,
-  ai_model = "deepseek-chat",
   ai_api_key = NULL
 )
 }
@@ -23,9 +22,7 @@ polish_report(
 
 \item{open}{Whether to open the report in a browser after rendering.}
 
-\item{ai_polish}{Whether to polish the report text using AI (default: FALSE).}
-
-\item{ai_model}{The AI model to use for polishing (default: "deepseek-chat").}
+\item{ai_polish}{Whether to polish the report text using AI (deepseek-chat). Default is FALSE.}
 
 \item{ai_api_key}{API key for the AI model. If NULL, uses the environment
 variable \code{DEEPSEEK_API_KEY}.}

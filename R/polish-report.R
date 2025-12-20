@@ -7,8 +7,7 @@
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
-#' @param ai_polish Whether to polish the report text using AI (default: FALSE).
-#' @param ai_model The AI model to use for polishing (default: "deepseek-chat").
+#' @param ai_polish Whether to polish the report text using AI (deepseek-chat). Default is FALSE.
 #' @param ai_api_key API key for the AI model. If NULL, uses the environment
 #'   variable `DEEPSEEK_API_KEY`.
 #'
@@ -26,7 +25,6 @@ polish_report <- function(
   title = "GlySmith report",
   open = interactive(),
   ai_polish = FALSE,
-  ai_model = "deepseek-chat",
   ai_api_key = NULL
 ) {
   checkmate::assert_class(x, "glysmith_result")
@@ -34,7 +32,6 @@ polish_report <- function(
   checkmate::assert_string(title)
   checkmate::assert_flag(open)
   checkmate::assert_flag(ai_polish)
-  checkmate::assert_string(ai_model)
   checkmate::assert_string(ai_api_key, null.ok = TRUE)
 
   template <- system.file("templates", "polish_report.Rmd", package = "glysmith")
@@ -64,7 +61,6 @@ polish_report <- function(
   step_reports <- .build_step_reports(
     x,
     ai_polish = ai_polish,
-    ai_model = ai_model,
     ai_api_key = ai_api_key
   )
 
@@ -138,13 +134,11 @@ polish_report <- function(
 # Each entry is a list(id, label, content), where content is a string (markdown) or NULL.
 # @param x A glysmith_result object.
 # @param ai_polish Whether to polish content using AI.
-# @param ai_model The AI model to use.
 # @param ai_api_key The API key for the AI model.
 # @noRd
 .build_step_reports <- function(
   x,
   ai_polish = FALSE,
-  ai_model = "deepseek-chat",
   ai_api_key = NULL
 ) {
   steps_executed <- character(0)
@@ -166,7 +160,7 @@ polish_report <- function(
       ))
       ai_polish <- FALSE
     } else {
-      cli::cli_alert_info("Polishing report with AI ({ai_model})...")
+      cli::cli_alert_info("Polishing report with AI (deepseek-chat)...")
     }
   }
 
@@ -190,7 +184,7 @@ polish_report <- function(
 
     # Apply AI polishing if enabled and content is not empty
     if (isTRUE(ai_polish) && !is.null(content) && nzchar(content)) {
-      content <- .polish_text(content, model = ai_model, api_key = ai_api_key)
+      content <- .polish_text(content, model = "deepseek-chat", api_key = ai_api_key)
     }
 
     list(id = s$id, label = s$label, content = content)
