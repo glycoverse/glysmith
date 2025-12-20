@@ -102,7 +102,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [115ms]
+#> ✔ Preprocessing [119ms]
 #> 
 #> ℹ Identification overview
 #> ✔ Identification overview [94ms]
@@ -120,16 +120,21 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [85ms]
+#> ✔ Differential expression analysis (limma) [63ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [558ms]
+#> ✔ Volcano plot [543ms]
+#> 
+#> ℹ Heatmap of significant variables
+#> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
+#> ℹ Heatmap of significant variables
+#> ✔ Heatmap of significant variables [12ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.5s]
+#> ✔ Derived trait calculation [2.4s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -138,9 +143,14 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [90ms]
+#> 
+#> ℹ Heatmap of significant traits
+#> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
+#> ℹ Heatmap of significant traits
+#> ✔ Heatmap of significant traits [13ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/Rtmp4QEdZM
+#> ✔ Result saved to /tmp/RtmpRpaCCv
 ```

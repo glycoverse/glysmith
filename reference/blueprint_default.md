@@ -19,6 +19,9 @@ This blueprint contains the following steps:
 - step_volcano(): Plot a volcano plot using
   [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html).
 
+- step_heatmap(on = "sig_exp"): Plot a heatmap using
+  [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
+
 - step_sig_enrich_go(): Perform GO enrichment analysis using
   [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 
@@ -33,6 +36,9 @@ This blueprint contains the following steps:
 
 - step_dea_limma(on = "trait_exp"): Differential trait analysis using
   [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
+
+- step_heatmap(on = "sig_trait_exp"): Plot a heatmap using
+  [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
 
 ## Usage
 
@@ -70,16 +76,18 @@ A `glysmith_blueprint` object.
 ``` r
 blueprint_default()
 #> 
-#> ── Blueprint (10 steps) ──
+#> ── Blueprint (12 steps) ──
 #> 
 #> • step_preprocess()
 #> • step_ident_overview()
 #> • step_pca()
 #> • step_dea_limma()
 #> • step_volcano()
+#> • step_heatmap(on = "sig_exp")
 #> • step_sig_enrich_go()
 #> • step_sig_enrich_kegg()
 #> • step_sig_enrich_reactome()
 #> • step_derive_traits()
 #> • step_dea_limma(on = "trait_exp")
+#> • step_heatmap(on = "sig_trait_exp")
 ```

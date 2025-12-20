@@ -6,11 +6,13 @@ step_pca(): Principal component analysis using glystats::gly_pca(),
 and plot the PCA using glyvis::plot_pca().
 step_dea_limma(): Differential analysis using glystats::gly_limma().
 step_volcano(): Plot a volcano plot using glyvis::plot_volcano().
+step_heatmap(on = "sig_exp"): Plot a heatmap using glyvis::plot_heatmap().
 step_sig_enrich_go(): Perform GO enrichment analysis using glystats::gly_enrich_go().
 step_sig_enrich_kegg(): Perform KEGG enrichment analysis using glystats::gly_enrich_kegg().
 step_sig_enrich_reactome(): Perform Reactome enrichment analysis using glystats::gly_enrich_reactome().
 step_derive_traits(): Derive traits using glydet::derive_traits().
 step_dea_limma(on = "trait_exp"): Differential trait analysis using glystats::gly_limma().
+step_heatmap(on = "sig_trait_exp"): Plot a heatmap using glyvis::plot_heatmap().
 
 '><meta property="og:description" content='This blueprint contains the following steps:
 step_preprocess(): Preprocess the data using glyclean::auto_clean().
@@ -19,11 +21,13 @@ step_pca(): Principal component analysis using glystats::gly_pca(),
 and plot the PCA using glyvis::plot_pca().
 step_dea_limma(): Differential analysis using glystats::gly_limma().
 step_volcano(): Plot a volcano plot using glyvis::plot_volcano().
+step_heatmap(on = "sig_exp"): Plot a heatmap using glyvis::plot_heatmap().
 step_sig_enrich_go(): Perform GO enrichment analysis using glystats::gly_enrich_go().
 step_sig_enrich_kegg(): Perform KEGG enrichment analysis using glystats::gly_enrich_kegg().
 step_sig_enrich_reactome(): Perform Reactome enrichment analysis using glystats::gly_enrich_reactome().
 step_derive_traits(): Derive traits using glydet::derive_traits().
 step_dea_limma(on = "trait_exp"): Differential trait analysis using glystats::gly_limma().
+step_heatmap(on = "sig_trait_exp"): Plot a heatmap using glyvis::plot_heatmap().
 
 '><meta property="og:image" content="https://glycoverse.github.io/glysmith/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -63,11 +67,13 @@ step_dea_limma(on = "trait_exp"): Differential trait analysis using glystats::gl
 and plot the PCA using <code><a href="https://glycoverse.github.io/glyvis/reference/plot_pca.html" class="external-link">glyvis::plot_pca()</a></code>.</p></li>
 <li><p>step_dea_limma(): Differential analysis using <code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">glystats::gly_limma()</a></code>.</p></li>
 <li><p>step_volcano(): Plot a volcano plot using <code><a href="https://glycoverse.github.io/glyvis/reference/plot_volcano.html" class="external-link">glyvis::plot_volcano()</a></code>.</p></li>
+<li><p>step_heatmap(on = "sig_exp"): Plot a heatmap using <code><a href="https://glycoverse.github.io/glyvis/reference/plot_heatmap.html" class="external-link">glyvis::plot_heatmap()</a></code>.</p></li>
 <li><p>step_sig_enrich_go(): Perform GO enrichment analysis using <code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_go.html" class="external-link">glystats::gly_enrich_go()</a></code>.</p></li>
 <li><p>step_sig_enrich_kegg(): Perform KEGG enrichment analysis using <code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_go.html" class="external-link">glystats::gly_enrich_kegg()</a></code>.</p></li>
 <li><p>step_sig_enrich_reactome(): Perform Reactome enrichment analysis using <code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_go.html" class="external-link">glystats::gly_enrich_reactome()</a></code>.</p></li>
 <li><p>step_derive_traits(): Derive traits using <code><a href="https://glycoverse.github.io/glydet/reference/derive_traits.html" class="external-link">glydet::derive_traits()</a></code>.</p></li>
 <li><p>step_dea_limma(on = "trait_exp"): Differential trait analysis using <code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">glystats::gly_limma()</a></code>.</p></li>
+<li><p>step_heatmap(on = "sig_trait_exp"): Plot a heatmap using <code><a href="https://glycoverse.github.io/glyvis/reference/plot_heatmap.html" class="external-link">glyvis::plot_heatmap()</a></code>.</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -102,18 +108,20 @@ i.e. <code><a href="step_derive_traits.html">step_derive_traits()</a></code> and
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">blueprint_default</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">10</span><span style="font-weight: bold;"> steps)</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">12</span><span style="font-weight: bold;"> steps)</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_preprocess()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_ident_overview()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_pca()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_dea_limma()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_volcano()</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • step_heatmap(on = "sig_exp")</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_sig_enrich_go()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_sig_enrich_kegg()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_sig_enrich_reactome()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_derive_traits()</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • step_dea_limma(on = "trait_exp")</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • step_heatmap(on = "sig_trait_exp")</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

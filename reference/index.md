@@ -29,6 +29,8 @@
   : Step: Differential Expression Analysis (DEA) using Wilcoxon test
 - [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md)
   : Step: Derived Trait Calculation
+- [`step_heatmap()`](https://glycoverse.github.io/glysmith/reference/step_heatmap.md)
+  : Step: Heatmap
 - [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md)
   : Step: Identification Overview
 - [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)
