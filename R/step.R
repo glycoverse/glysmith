@@ -1059,9 +1059,6 @@ step_heatmap <- function(on = "exp", ...) {
       )
       ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
     },
-    report = function(x) {
-      paste0("A heatmap was created and saved in `plots$", plot_name, "`.")
-    },
     require = on,
     signature = signature
   )
