@@ -105,7 +105,9 @@ polish_report <- function(
     "Keep the original meaning and content intact.",
     "Do not add new information or change the facts.",
     "Output only the polished text, without any explanation or preamble.",
-    "The text is in markdown format."
+    "The text is in markdown format.",
+    "Remove meaningless logging messages like 'Normalization completed'.",
+    "Format the text to be one paragraph."
   )
 
   tryCatch(
