@@ -107,7 +107,8 @@ polish_report <- function(
     "Output only the polished text, without any explanation or preamble.",
     "The text is in markdown format.",
     "Remove meaningless logging messages like 'Normalization completed'.",
-    "Format the text to be one paragraph."
+    "Format the text to be one paragraph.",
+    "Content in <AI></AI> tags should also be polished and included in the result."
   )
 
   tryCatch(
