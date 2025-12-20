@@ -487,6 +487,108 @@ step_dea_kruskal <- function(on = "exp", ...) {
   }
 }
 
+#' Get the item name for DEA report based on analysis type
+#' @param exp Experiment object
+#' @param on Target experiment type (exp or trait_exp)
+#' @returns A character string for the item name (e.g., "items", "traits")
+#' @noRd
+.dea_get_item_name <- function(exp, on) {
+  if (on == "trait_exp") {
+    if (glyexp::get_exp_type(exp) == "glycomics") {
+      "traits"
+    } else {
+      "site-specific traits"
+    }
+  } else {
+    "items"
+  }
+}
+
+#' Count total significant variables in DEA results
+#' @param tbl A tibble with DEA results
+#' @returns Number of unique significant variables
+#' @noRd
+.dea_count_sig_total <- function(tbl) {
+  length(unique(tbl$variable[tbl$p_adj < 0.05]))
+}
+
+#' Count significant variables per contrast
+#' @param tbl A tibble with DEA results (must have ref_group and test_group columns)
+#' @returns A named numeric vector with counts per contrast
+#' @noRd
+.dea_count_sig_per_contrast <- function(tbl) {
+  sig_tbl <- tbl[tbl$p_adj < 0.05, ]
+  if (nrow(sig_tbl) == 0) {
+    return(character(0))
+  }
+  contrasts <- paste0(sig_tbl$ref_group, " vs ", sig_tbl$test_group)
+  table(contrasts)
+}
+
+#' Determine if current analysis is multi-group
+#' @param tbl A tibble with DEA results
+#' @returns TRUE if more than one contrast exists
+#' @noRd
+.dea_is_multigroup <- function(tbl) {
+  if (!"ref_group" %in% colnames(tbl) || !"test_group" %in% colnames(tbl)) {
+    return(FALSE)
+  }
+  n_contrasts <- length(unique(paste0(tbl$ref_group, "_vs_", tbl$test_group)))
+  n_contrasts > 1
+}
+
+#' Generate DEA report text
+#'
+#' Creates a report message for differential expression analysis results.
+#' For 2-group comparisons, shows only total significant count.
+#' For multi-group comparisons, shows total count and per-contrast breakdown.
+#'
+#' @param x Step result containing tables and exp
+#' @param method DEA method (limma, ttest, wilcox, anova, kruskal)
+#' @param meta DEA metadata from .get_dea_meta()
+#' @param on Target experiment type (exp or trait_exp)
+#' @returns A character string for the report
+#' @noRd
+.dea_report <- function(x, method, meta, on) {
+  # Get the appropriate table
+  if (method %in% c("anova", "kruskal")) {
+    tbl <- x$tables[[paste0(meta$prefix, "_main_test")]]
+  } else {
+    tbl <- x$tables[[meta$prefix]]
+  }
+
+  item_name <- .dea_get_item_name(x$exp, on)
+  sig_total <- .dea_count_sig_total(tbl)
+  is_multigroup <- .dea_is_multigroup(tbl)
+
+  # Base message
+
+  msg <- paste0(meta$label, " analysis was performed.")
+
+  if (sig_total == 0) {
+    msg <- paste0(msg, "No significant ", item_name, " (adjusted p < 0.05).\n")
+    return(msg)
+  }
+
+  # Add total count
+  msg <- paste0(msg, "Number of significant ", item_name, " (adjusted p < 0.05): ", sig_total, ".\n")
+
+  # For multi-group analysis, add per-contrast breakdown
+  if (is_multigroup) {
+    sig_per_contrast <- .dea_count_sig_per_contrast(tbl)
+    if (length(sig_per_contrast) > 0) {
+      msg <- paste0(msg, "\nBreakdown by contrast:\n\n")
+      for (i in seq_along(sig_per_contrast)) {
+        contrast_name <- names(sig_per_contrast)[i]
+        contrast_count <- sig_per_contrast[i]
+        msg <- paste0(msg, "- ", contrast_name, ": ", contrast_count, "\n")
+      }
+    }
+  }
+
+  msg
+}
+
 #' Internal helper for DEA steps
 #' @noRd
 .step_dea <- function(method, label, on = "exp", signature = NULL, ...) {
@@ -551,31 +653,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
       ctx
     },
     report = function(x) {
-      if (method %in% c("anova", "kruskal")) {
-        tbl <- x$tables[[paste0(meta$prefix, "_main_test")]]
-      } else {
-        tbl <- x$tables[[meta$prefix]]
-      }
-      sig <- length(unique(tbl$variable[tbl$p_adj < 0.05]))
-
-      # Determine item name based on analysis type
-      if (on == "trait_exp") {
-        if (glyexp::get_exp_type(x$exp) == "glycomics") {
-          item_name <- "traits"
-        } else {
-          item_name <- "site-specific traits"
-        }
-      } else {
-        item_name <- "items"
-      }
-
-      msg <- paste0(meta$label, " analysis was performed and the results were saved in `tables$", meta$prefix, "*`. ")
-      if (sig > 0) {
-        msg <- paste0(msg, "Number of significant ", item_name, " (FDR/adjusted p < 0.05): ", sig, ".\n")
-      } else {
-        msg <- paste0(msg, "No significant ", item_name, " (FDR/adjusted p < 0.05).\n")
-      }
-      msg
+      .dea_report(x, method, meta, on)
     },
     generate = c(paste0(meta$prefix, "_res"), paste0("sig_", meta$require)),
     require = meta$require,
