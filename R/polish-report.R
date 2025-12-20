@@ -42,9 +42,9 @@ polish_report <- function(
   if (fs::file_exists(output_file)) {
     ans <- .ask_overwrite_file()
     ans <- tolower(trimws(ans))
-    if (ans == "n") {
+    if (ans == "n" || ans == "") {
       cli::cli_abort("Operation cancelled. Report not saved.")
-    } else if (ans == "y" || ans == "") {
+    } else if (ans == "y") {
       fs::file_delete(output_file)
     } else {
       cli::cli_abort("Invalid input. Operation cancelled. Report not saved.")
