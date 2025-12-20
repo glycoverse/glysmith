@@ -705,9 +705,6 @@ step_volcano <- function(...) {
         .run_step_volcano_ttest_wilcox(ctx, step_dots)
       }
     },
-    report = function(x) {
-      "This step will generate a volcano plot for each contrast in the DEA results."
-    },
     require = "dea_res",
     signature = signature
   )
@@ -913,12 +910,15 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
     report = function(x) {
       tbl <- x$tables[[kind]]
       n_sig <- sum(tbl$p_adj < 0.05)
-      msg <- paste0("Enrichment analysis was performed on differentially expressed variables and the results were saved in `tables$", kind, "` and `plots$", kind, "`.")
+      msg <- paste0("Enrichment analysis was performed on differentially expressed variables.")
       if (n_sig > 0) {
-        msg <- paste0(msg, " Number of significant items (FDR/adjusted p < 0.05): ", n_sig, ".\n\n")
+        msg <- paste0(msg, " Number of significant items (adjusted p < 0.05): ", n_sig, ".\n\n")
+        all_sig_terms <- tbl$description[tbl$p_adj < 0.05]
+        all_sig_terms_part <- paste(all_sig_terms, collapse = ", ")
+        msg <- paste0(msg, glue::glue("<AI>Summarize these terms in 1 sentence: {all_sig_terms_part}</AI>"))
         msg <- paste0(msg, "Top terms: \n\n", paste("- ", tbl$description[1:min(5, n_sig)], collapse = "\n"), "\n")
       } else {
-        msg <- paste0(msg, " No significant items (FDR/adjusted p < 0.05).\n")
+        msg <- paste0(msg, " No significant items (adjusted p < 0.05).\n")
       }
       msg
     },
