@@ -570,7 +570,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
       }
       msg
     },
-    generate = paste0(meta$prefix, "_res"),
+    generate = c(paste0(meta$prefix, "_res"), paste0("sig_", meta$require)),
     require = meta$require,
     signature = signature
   )
@@ -798,7 +798,6 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
       list(check = check, reason = reason)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
       sig_exp <- ctx_get_data(ctx, "sig_exp")
       if (universe == "detected") {
         # Force universe to be the detected experiment, overriding any dots.
@@ -838,7 +837,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
       }
       msg
     },
-    require = c("dea_res", "exp"),
+    require = c("exp", "sig_exp"),
     retry = retry,
     signature = signature
   )
