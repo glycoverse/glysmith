@@ -981,8 +981,8 @@ step_derive_traits <- function(...) {
       } else {
         item_name <- "Site-specific derived traits"
       }
-      paste0(
-        "Derived traits were calculated and the results were saved in `tables$derived_traits`. ",
+      msg <- paste0(
+        "Derived traits were calculated. ",
         "Number of derived traits: ", length(unique(tbl$trait)), "."
       )
     },
