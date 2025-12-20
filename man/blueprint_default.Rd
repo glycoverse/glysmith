@@ -27,11 +27,13 @@ This blueprint contains the following steps:
 and plot the PCA using \code{glyvis::plot_pca()}.
 \item step_dea_limma(): Differential analysis using \code{glystats::gly_limma()}.
 \item step_volcano(): Plot a volcano plot using \code{glyvis::plot_volcano()}.
+\item step_heatmap(on = "sig_exp"): Plot a heatmap using \code{glyvis::plot_heatmap()}.
 \item step_sig_enrich_go(): Perform GO enrichment analysis using \code{glystats::gly_enrich_go()}.
 \item step_sig_enrich_kegg(): Perform KEGG enrichment analysis using \code{glystats::gly_enrich_kegg()}.
 \item step_sig_enrich_reactome(): Perform Reactome enrichment analysis using \code{glystats::gly_enrich_reactome()}.
 \item step_derive_traits(): Derive traits using \code{glydet::derive_traits()}.
 \item step_dea_limma(on = "trait_exp"): Differential trait analysis using \code{glystats::gly_limma()}.
+\item step_heatmap(on = "sig_trait_exp"): Plot a heatmap using \code{glyvis::plot_heatmap()}.
 }
 }
 \examples{

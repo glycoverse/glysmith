@@ -8,8 +8,8 @@ step_heatmap(on = "exp", ...)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of \code{"exp"}, \code{"sig_exp"}, \code{"trait_exp"}, or \code{"sig_trait_exp"}.
-Default is \code{"exp"}.}
+One of "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+Default is "exp".}
 
 \item{...}{Step-specific arguments passed to \code{glyvis::plot_heatmap()}.
 Use the format \code{pkg.func.arg}.

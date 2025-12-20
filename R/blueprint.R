@@ -344,11 +344,13 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #'   and plot the PCA using `glyvis::plot_pca()`.
 #' - step_dea_limma(): Differential analysis using `glystats::gly_limma()`.
 #' - step_volcano(): Plot a volcano plot using `glyvis::plot_volcano()`.
+#' - step_heatmap(on = "sig_exp"): Plot a heatmap using `glyvis::plot_heatmap()`.
 #' - step_sig_enrich_go(): Perform GO enrichment analysis using `glystats::gly_enrich_go()`.
 #' - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
 #' - step_sig_enrich_reactome(): Perform Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
 #' - step_derive_traits(): Derive traits using `glydet::derive_traits()`.
 #' - step_dea_limma(on = "trait_exp"): Differential trait analysis using `glystats::gly_limma()`.
+#' - step_heatmap(on = "sig_trait_exp"): Plot a heatmap using `glyvis::plot_heatmap()`.
 #'
 #' @param preprocess Whether to include [step_preprocess()].
 #' @param enrich Whether to include the enrichment steps,
@@ -365,12 +367,26 @@ blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
   if (preprocess) {
     steps <- append(steps, list(step_preprocess()))
   }
-  steps <- append(steps, list(step_ident_overview(), step_pca(), step_dea_limma(), step_volcano()))
+  steps <- append(steps, list(
+    step_ident_overview(),
+    step_pca(),
+    step_dea_limma(),
+    step_volcano(),
+    step_heatmap("sig_exp")
+  ))
   if (enrich) {
-    steps <- append(steps, list(step_sig_enrich_go(), step_sig_enrich_kegg(), step_sig_enrich_reactome()))
+    steps <- append(steps, list(
+      step_sig_enrich_go(),
+      step_sig_enrich_kegg(),
+      step_sig_enrich_reactome()
+    ))
   }
   if (traits) {
-    steps <- append(steps, list(step_derive_traits(), step_dea_limma(on = "trait_exp")))
+    steps <- append(steps, list(
+      step_derive_traits(),
+      step_dea_limma(on = "trait_exp"),
+      step_heatmap("sig_trait_exp")
+    ))
   }
   names(steps) <- purrr::map_chr(steps, "id")
   new_blueprint(steps)
