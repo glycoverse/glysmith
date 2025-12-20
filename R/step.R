@@ -254,10 +254,6 @@ step_pca <- function(...) {
       )
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
     },
-    report = function(x) {
-      eig <- x$tables[["pca_eigenvalues"]]
-      "PCA was performed and the results were saved in `plots$pca` and `tables$pca_*`."
-    },
     require = "exp",
     signature = signature
   )
