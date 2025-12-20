@@ -57,6 +57,7 @@ all_steps <- function() {
     step_preprocess(),
     step_ident_overview(),
     step_pca(),
+    step_heatmap(),
     step_dea_limma(),
     step_dea_ttest(),
     step_dea_wilcox(),
@@ -903,6 +904,81 @@ step_derive_traits <- function(...) {
     },
     generate = "trait_exp",
     require = "exp",
+    signature = signature
+  )
+}
+
+#' Step: Heatmap
+#'
+#' Create a heatmap plot using `glyvis::plot_heatmap()`.
+#' The heatmap visualizes expression values across samples.
+#'
+#' @details
+#' Data required:
+#' - Depends on `on` parameter (default: `exp`)
+#'
+#' Plots generated:
+#' - `heatmap`: A heatmap plot (if `on = "exp"`)
+#' - `sig_heatmap`: A heatmap plot (if `on = "sig_exp"`)
+#' - `trait_heatmap`: A heatmap plot (if `on = "trait_exp"`)
+#' - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
+#'
+#' @param on Name of the experiment data in `ctx$data` to plot.
+#'   One of "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+#'   Default is "exp".
+#' @param ... Step-specific arguments passed to `glyvis::plot_heatmap()`.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_heatmap(glyvis.plot_heatmap.show_rownames = TRUE)`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_heatmap()
+#' step_heatmap(on = "sig_exp")
+#' step_heatmap(on = "trait_exp")
+#' @seealso [glyvis::plot_heatmap()]
+#' @export
+step_heatmap <- function(on = "exp", ...) {
+  on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  signature <- rlang::expr_deparse(match.call())
+  step_dots <- rlang::list2(...)
+
+  # Determine plot name based on `on` parameter
+  # "exp" -> "heatmap", "sig_exp" -> "sig_heatmap", etc.
+  plot_name <- switch(
+    on,
+    exp = "heatmap",
+    sig_exp = "sig_heatmap",
+    trait_exp = "trait_heatmap",
+    sig_trait_exp = "sig_trait_heatmap"
+  )
+
+  # Determine a readable label for the step
+  label <- switch(
+    on,
+    exp = "Heatmap",
+    sig_exp = "Heatmap of significant variables",
+    trait_exp = "Heatmap of traits",
+    sig_trait_exp = "Heatmap of significant traits"
+  )
+
+  step(
+    id = paste0("heatmap_", on),
+    label = label,
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, on)
+      p <- .run_function(
+        glyvis::plot_heatmap,
+        exp,
+        step_id = "heatmap",
+        global_dots = ctx$dots,
+        step_dots = step_dots
+      )
+      ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
+    },
+    report = function(x) {
+      paste0("A heatmap was created and saved in `plots$", plot_name, "`.")
+    },
+    require = on,
     signature = signature
   )
 }
