@@ -7,6 +7,10 @@
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
+#' @param ai_polish Whether to polish the report text using AI (default: FALSE).
+#' @param ai_model The AI model to use for polishing (default: "deepseek-chat").
+#' @param ai_api_key API key for the AI model. If NULL, uses the environment
+#'   variable `DEEPSEEK_API_KEY`.
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples
@@ -20,12 +24,18 @@ polish_report <- function(
   x,
   output_file,
   title = "GlySmith report",
-  open = interactive()
+  open = interactive(),
+  ai_polish = FALSE,
+  ai_model = "deepseek-chat",
+  ai_api_key = NULL
 ) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(output_file)
   checkmate::assert_string(title)
   checkmate::assert_flag(open)
+  checkmate::assert_flag(ai_polish)
+  checkmate::assert_string(ai_model)
+  checkmate::assert_string(ai_api_key, null.ok = TRUE)
 
   template <- system.file("templates", "polish_report.Rmd", package = "glysmith")
   out_dir <- fs::path_dir(output_file)
@@ -51,7 +61,12 @@ polish_report <- function(
   tmp_rmd <- fs::path(tmp_dir, "polish_report.Rmd")
   fs::file_copy(template, tmp_rmd, overwrite = TRUE)
 
-  step_reports <- .build_step_reports(x)
+  step_reports <- .build_step_reports(
+    x,
+    ai_polish = ai_polish,
+    ai_model = ai_model,
+    ai_api_key = ai_api_key
+  )
 
   rendered <- rmarkdown::render(
     input = tmp_rmd,
@@ -71,10 +86,67 @@ polish_report <- function(
   rendered
 }
 
+#' Polish text using AI
+#'
+#' Internal helper function to polish text using an LLM.
+#'
+#' @param text The text to polish.
+#' @param model The AI model to use.
+#' @param api_key The API key. If NULL, uses environment variable.
+#' @return The polished text, or original text if polishing fails.
+#' @noRd
+.polish_text <- function(text, model = "deepseek-chat", api_key = NULL) {
+  if (is.null(text) || !nzchar(text)) {
+    return(text)
+  }
+
+  rlang::check_installed("ellmer", reason = "for AI polishing")
+
+  system_prompt <- paste(
+    "You are a scientific writing assistant.",
+    "Your task is to polish the following text to be more professional,",
+    "fluent, and suitable for a scientific report.",
+    "Keep the original meaning and content intact.",
+    "Do not add new information or change the facts.",
+    "Output only the polished text, without any explanation or preamble.",
+    "The text is in markdown format."
+  )
+
+  tryCatch(
+    {
+      credentials <- if (!is.null(api_key)) function() api_key else NULL
+      chat <- ellmer::chat_deepseek(
+        system_prompt = system_prompt,
+        model = model,
+        credentials = credentials,
+        echo = "none"
+      )
+      polished <- chat$chat(text)
+      polished
+    },
+    error = function(e) {
+      cli::cli_warn(c(
+        "AI polishing failed, using original text.",
+        "i" = "Error: {conditionMessage(e)}"
+      ))
+      text
+    }
+  )
+}
+
 # Build an ordered list of step report entries for a glysmith_result.
 # Each entry is a list(id, label, content), where content is a string (markdown) or NULL.
+# @param x A glysmith_result object.
+# @param ai_polish Whether to polish content using AI.
+# @param ai_model The AI model to use.
+# @param ai_api_key The API key for the AI model.
 # @noRd
-.build_step_reports <- function(x) {
+.build_step_reports <- function(
+  x,
+  ai_polish = FALSE,
+  ai_model = "deepseek-chat",
+  ai_api_key = NULL
+) {
   steps_executed <- character(0)
   if (!is.null(x$meta) && is.list(x$meta) && !is.null(x$meta$steps)) {
     steps_executed <- x$meta$steps
@@ -82,6 +154,21 @@ polish_report <- function(
 
   step_map <- x$blueprint
   ids <- steps_executed
+
+  if (isTRUE(ai_polish)) {
+    # Check for API key early to avoid repeated warnings
+    api_key_available <- !is.null(ai_api_key) || nzchar(Sys.getenv("DEEPSEEK_API_KEY"))
+    if (!api_key_available) {
+      cli::cli_warn(c(
+        "AI polishing is enabled but no API key is available.",
+        "i" = "Set {.envvar DEEPSEEK_API_KEY} or provide {.arg ai_api_key}.",
+        "i" = "Proceeding without AI polishing."
+      ))
+      ai_polish <- FALSE
+    } else {
+      cli::cli_alert_info("Polishing report with AI ({ai_model})...")
+    }
+  }
 
   purrr::map(ids, function(id) {
     s <- step_map[[id]]
@@ -100,6 +187,12 @@ polish_report <- function(
         }
       )
     }
+
+    # Apply AI polishing if enabled and content is not empty
+    if (isTRUE(ai_polish) && !is.null(content) && nzchar(content)) {
+      content <- .polish_text(content, model = ai_model, api_key = ai_api_key)
+    }
+
     list(id = s$id, label = s$label, content = content)
   })
 }

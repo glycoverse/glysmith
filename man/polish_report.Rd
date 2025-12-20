@@ -4,7 +4,15 @@
 \alias{polish_report}
 \title{Render a HTML Report for GlySmith Results}
 \usage{
-polish_report(x, output_file, title = "GlySmith report", open = interactive())
+polish_report(
+  x,
+  output_file,
+  title = "GlySmith report",
+  open = interactive(),
+  ai_polish = FALSE,
+  ai_model = "deepseek-chat",
+  ai_api_key = NULL
+)
 }
 \arguments{
 \item{x}{A \code{glysmith_result} object.}
@@ -14,6 +22,13 @@ polish_report(x, output_file, title = "GlySmith report", open = interactive())
 \item{title}{Report title.}
 
 \item{open}{Whether to open the report in a browser after rendering.}
+
+\item{ai_polish}{Whether to polish the report text using AI (default: FALSE).}
+
+\item{ai_model}{The AI model to use for polishing (default: "deepseek-chat").}
+
+\item{ai_api_key}{API key for the AI model. If NULL, uses the environment
+variable \code{DEEPSEEK_API_KEY}.}
 }
 \value{
 The normalized path to the generated HTML file.
