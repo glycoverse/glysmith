@@ -11,7 +11,7 @@
   [`cast_table()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   : Get Plots or Tables from GlySmith Result
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md)
-  : Forge an Analysis for Group Comparison
+  : Perform the Whole Analysis Pipeline
 - [`polish_report()`](https://glycoverse.github.io/glysmith/reference/polish_report.md)
   : Render a HTML Report for GlySmith Results
 - [`quench_result()`](https://glycoverse.github.io/glysmith/reference/quench_result.md)

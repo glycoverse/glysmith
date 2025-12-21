@@ -82,15 +82,15 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [278ms]
+#> ✔ Preprocessing [172ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [140ms]
+#> ✔ Identification overview [102ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [13ms]
+#> ✔ Principal component analysis [14ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -100,29 +100,21 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [216ms]
+#> ✔ Differential expression analysis (limma) [222ms]
 #> 
 #> ℹ Volcano plot
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the EnhancedVolcano package.
-#>   Please report the issue to the authors.
-#> Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
-#> ℹ Please use the `linewidth` argument instead.
-#> ℹ The deprecated feature was likely used in the EnhancedVolcano package.
-#>   Please report the issue to the authors.
-#> ✔ Volcano plot [694ms]
+#> ✔ Volcano plot [724ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [13ms]
+#> ✔ Heatmap of significant variables [29ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [7.8s]
+#> ✔ Derived trait calculation [8.2s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -136,7 +128,7 @@ result <- forge_analysis(exp)
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [12ms]
+#> ✔ Heatmap of significant traits [13ms]
 #> 
 cast_exp(result)
 #> 

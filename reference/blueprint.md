@@ -1,6 +1,7 @@
 # Create a Blueprint
 
-A blueprint is a list of steps that are executed in order.
+A blueprint is a list of steps that are executed in order. Type `step_`
+and TAB in RStudio to see all available steps.
 
 ## Usage
 

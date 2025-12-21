@@ -1,4 +1,4 @@
-# Forge an Analysis for Group Comparison
+# Perform the Whole Analysis Pipeline
 
 This function performs a comprehensive analysis for group comparison.
 
@@ -34,8 +34,8 @@ forge_analysis(exp, blueprint = blueprint_default(), group_col = "group", ...)
   [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
   in
   [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
-  set `dea.glystats.gly_limma.p_adj_method = "BH"`. To pass `batch_col`
-  to
+  set `dea_limma.glystats.gly_limma.p_adj_method = "BH"`. To pass
+  `batch_col` to
   [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html)
   in
   [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md),
@@ -53,13 +53,17 @@ A `glysmith_result` object, with the following components:
 
 - `tables`: a named list of tibbles.
 
-- `meta`: a named list of metadata. Currently two elements:
+- `meta`: a named list of metadata, containing:
 
   - `explanation`: a named character vector or list of explanations for
     each plot and table, with keys like `tables$summary` and
     `plots$pca`.
 
   - `steps`: a character vector of the steps of the analysis.
+
+  - `log`: the messages and outputs from each step.
+
+- `blueprint`: the blueprint used for the analysis.
 
 ## Examples
 
@@ -113,10 +117,10 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [108ms]
+#> ✔ Preprocessing [115ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [118ms]
+#> ✔ Identification overview [120ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -131,10 +135,10 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [84ms]
+#> ✔ Differential expression analysis (limma) [66ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [584ms]
+#> ✔ Volcano plot [658ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -145,7 +149,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.7s]
+#> ✔ Derived trait calculation [2.9s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -154,12 +158,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [84ms]
+#> ✔ Differential trait analysis (limma) [86ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [12ms]
+#> ✔ Heatmap of significant traits [13ms]
 #> 
 print(result)
 #> 

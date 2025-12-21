@@ -3,7 +3,11 @@
 Generate a self-contained HTML report for a `glysmith_result` object.
 The report is rendered via
 [`rmarkdown::render()`](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
-using an internal R Markdown template.
+using an internal R Markdown template. If `ai_polish` is TRUE, the
+report text will be polished using LLM (deepseek-chat). To use this
+feature, you have to provide an API key and set it in the environment
+variable `DEEPSEEK_API_KEY`, or provide it directly in the `ai_api_key`
+argument. You can apply the API key on https://platform.deepseek.com.
 
 ## Usage
 
@@ -103,15 +107,15 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [118ms]
+#> ✔ Preprocessing [129ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [138ms]
+#> ✔ Identification overview [155ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [13ms]
+#> ✔ Principal component analysis [14ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -121,21 +125,21 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [88ms]
+#> ✔ Differential expression analysis (limma) [277ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [797ms]
+#> ✔ Volcano plot [540ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [15ms]
+#> ✔ Heatmap of significant variables [13ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.3s]
+#> ✔ Derived trait calculation [2.4s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -144,13 +148,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [55ms]
+#> ✔ Differential trait analysis (limma) [58ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [12ms]
+#> ✔ Heatmap of significant traits [13ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpRpaCCv/file1f9910d02c83.html"
+#> [1] "/tmp/RtmpkVTtjf/file1ceb309a7c4b.html"
 ```
