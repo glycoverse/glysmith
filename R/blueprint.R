@@ -317,16 +317,22 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
   tryCatch(
     {
       new_ctx <- NULL
+      logs_warning <- list()
       logs_output <- utils::capture.output({
         logs_message <- utils::capture.output({
-          new_ctx <- step$run(ctx)
+          new_ctx <- withCallingHandlers(
+            step$run(ctx),
+            warning = function(w) {
+              logs_warning[[length(logs_warning) + 1]] <<- w
+            }
+          )
         }, type = "message")
       }, type = "output")
 
       list(
         status = "success",
         new_ctx = new_ctx,
-        logs = list(output = logs_output, message = logs_message)
+        logs = list(output = logs_output, message = logs_message, warning = logs_warning)
       )
     },
     error = function(e) {

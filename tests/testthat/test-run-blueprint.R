@@ -65,3 +65,34 @@ test_that("run_blueprint handles step failure", {
   # Ensure step_fail is NOT in steps list
   expect_false("step_fail" %in% ctx_result$meta$steps)
 })
+
+test_that("run_blueprint captures warnings in logs", {
+  step_warn <- structure(
+    list(
+      id = "step_warn",
+      label = "Warning Step",
+      run = function(ctx) {
+        warning("be careful")
+        ctx$data$warned <- TRUE
+        ctx
+      },
+      retry = 0,
+      signature = "step_warn()"
+    ),
+    class = "glysmith_step"
+  )
+
+  ctx <- list(meta = list(logs = list(), steps = character(0)), data = list())
+  bp <- glysmith:::new_blueprint(list(step_warn))
+
+  expect_warning({
+    ctx_result <- glysmith:::run_blueprint(bp, ctx, quiet = TRUE)
+  }, "be careful")
+
+  expect_true(ctx_result$data$warned)
+  warnings_log <- ctx_result$meta$logs$step_warn$warning
+  expect_true(is.list(warnings_log))
+  expect_equal(length(warnings_log), 1L)
+  expect_true(inherits(warnings_log[[1]], "warning"))
+  expect_match(conditionMessage(warnings_log[[1]]), "be careful")
+})
