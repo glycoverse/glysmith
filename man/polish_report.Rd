@@ -9,8 +9,7 @@ polish_report(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  ai_polish = FALSE,
-  ai_api_key = NULL
+  use_ai = FALSE
 )
 }
 \arguments{
@@ -22,10 +21,7 @@ polish_report(
 
 \item{open}{Whether to open the report in a browser after rendering.}
 
-\item{ai_polish}{Whether to polish the report text using AI (deepseek-chat). Default is FALSE.}
-
-\item{ai_api_key}{API key for the AI model.
-If NULL, uses the environment variable \code{DEEPSEEK_API_KEY}.}
+\item{use_ai}{Whether to polish the report text using AI (deepseek-chat). Default is FALSE.}
 }
 \value{
 The normalized path to the generated HTML file.
@@ -33,9 +29,9 @@ The normalized path to the generated HTML file.
 \description{
 Generate a self-contained HTML report for a \code{glysmith_result} object.
 The report is rendered via \code{rmarkdown::render()} using an internal R Markdown template.
-If \code{ai_polish} is TRUE, the report text will be polished using LLM (deepseek-chat).
-To use this feature, you have to provide an API key and set it in the environment variable \code{DEEPSEEK_API_KEY},
-or provide it directly in the \code{ai_api_key} argument.
+If \code{use_ai} is TRUE, the report text will be polished using LLM (deepseek-chat).
+To use this feature, you have to provide an API key and set it in the environment variable \code{DEEPSEEK_API_KEY}
+by running \code{Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")}.
 You can apply the API key on https://platform.deepseek.com.
 }
 \examples{

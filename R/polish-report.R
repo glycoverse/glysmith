@@ -2,18 +2,16 @@
 #'
 #' Generate a self-contained HTML report for a `glysmith_result` object.
 #' The report is rendered via `rmarkdown::render()` using an internal R Markdown template.
-#' If `ai_polish` is TRUE, the report text will be polished using LLM (deepseek-chat).
-#' To use this feature, you have to provide an API key and set it in the environment variable `DEEPSEEK_API_KEY`,
-#' or provide it directly in the `ai_api_key` argument.
+#' If `use_ai` is TRUE, the report text will be polished using LLM (deepseek-chat).
+#' To use this feature, you have to provide an API key and set it in the environment variable `DEEPSEEK_API_KEY`
+#' by running `Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")`.
 #' You can apply the API key on https://platform.deepseek.com.
 #'
 #' @param x A `glysmith_result` object.
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
-#' @param ai_polish Whether to polish the report text using AI (deepseek-chat). Default is FALSE.
-#' @param ai_api_key API key for the AI model.
-#'   If NULL, uses the environment variable `DEEPSEEK_API_KEY`.
+#' @param use_ai Whether to polish the report text using AI (deepseek-chat). Default is FALSE.
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples
@@ -28,15 +26,13 @@ polish_report <- function(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  ai_polish = FALSE,
-  ai_api_key = NULL
+  use_ai = FALSE
 ) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(output_file)
   checkmate::assert_string(title)
   checkmate::assert_flag(open)
-  checkmate::assert_flag(ai_polish)
-  checkmate::assert_string(ai_api_key, null.ok = TRUE)
+  checkmate::assert_flag(use_ai)
 
   template <- system.file("templates", "polish_report.Rmd", package = "glysmith")
   out_dir <- fs::path_dir(output_file)
@@ -62,11 +58,7 @@ polish_report <- function(
   tmp_rmd <- fs::path(tmp_dir, "polish_report.Rmd")
   fs::file_copy(template, tmp_rmd, overwrite = TRUE)
 
-  step_reports <- .build_step_reports(
-    x,
-    ai_polish = ai_polish,
-    ai_api_key = ai_api_key
-  )
+  step_reports <- .build_step_reports(x, use_ai = use_ai)
 
   rendered <- rmarkdown::render(
     input = tmp_rmd,
@@ -140,14 +132,9 @@ polish_report <- function(
 # Build an ordered list of step report entries for a glysmith_result.
 # Each entry is a list(id, label, content), where content is a string (markdown) or NULL.
 # @param x A glysmith_result object.
-# @param ai_polish Whether to polish content using AI.
-# @param ai_api_key The API key for the AI model.
+# @param use_ai Whether to polish content using AI.
 # @noRd
-.build_step_reports <- function(
-  x,
-  ai_polish = FALSE,
-  ai_api_key = NULL
-) {
+.build_step_reports <- function(x, use_ai = FALSE) {
   steps_executed <- character(0)
   if (!is.null(x$meta) && is.list(x$meta) && !is.null(x$meta$steps)) {
     steps_executed <- x$meta$steps
@@ -156,16 +143,16 @@ polish_report <- function(
   step_map <- x$blueprint
   ids <- steps_executed
 
-  if (isTRUE(ai_polish)) {
+  if (isTRUE(use_ai)) {
     # Check for API key early to avoid repeated warnings
-    api_key_available <- !is.null(ai_api_key) || nzchar(Sys.getenv("DEEPSEEK_API_KEY"))
+    api_key_available <- nzchar(Sys.getenv("DEEPSEEK_API_KEY"))
     if (!api_key_available) {
       cli::cli_warn(c(
         "AI polishing is enabled but no API key is available.",
-        "i" = "Set {.envvar DEEPSEEK_API_KEY} or provide {.arg ai_api_key}.",
+        "i" = "Set {.envvar DEEPSEEK_API_KEY}.",
         "i" = "Proceeding without AI polishing."
       ))
-      ai_polish <- FALSE
+      use_ai <- FALSE
     } else {
       cli::cli_alert_info("Polishing report with AI (deepseek-chat)...")
     }
@@ -190,8 +177,8 @@ polish_report <- function(
     }
 
     # Apply AI polishing if enabled and content is not empty
-    if (isTRUE(ai_polish)) {
-      content <- .polish_text(content, model = "deepseek-chat", api_key = ai_api_key)
+    if (isTRUE(use_ai)) {
+      content <- .polish_text(content, model = "deepseek-chat")
     } else {
       content <- stringr::str_remove_all(content, "<AI>[\\s\\S]*?</AI>")
     }
