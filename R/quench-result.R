@@ -162,6 +162,15 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
     unlink(tmp)
   }, add = TRUE)
 
-  eval(expr, envir = parent.frame())
-  invisible(NULL)
+  # Capture result or error
+  result <- tryCatch(
+    eval(expr, envir = parent.frame()),
+    error = function(e) {
+      # Restore sinks before re-throwing error
+      while (sink.number(type = "message") > msg0) sink(type = "message")
+      while (sink.number() > out0) sink()
+      stop(e$message, call. = FALSE)
+    }
+  )
+  invisible(result)
 }
