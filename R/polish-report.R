@@ -78,62 +78,13 @@ polish_report <- function(
   rendered
 }
 
-#' Polish text using AI
+#' Build an ordered list of step report entries for a glysmith_result.
 #'
-#' Internal helper function to polish text using an LLM.
+#' Each entry is a list(id, label, content), where content is a string (markdown) or NULL.
 #'
-#' @param text The text to polish.
-#' @param model The AI model to use.
-#' @param api_key The API key. If NULL, uses environment variable.
-#' @return The polished text, or original text if polishing fails.
+#' @param x A glysmith_result object.
+#' @param use_ai Whether to polish content using AI.
 #' @noRd
-.polish_text <- function(text, model = "deepseek-chat", api_key = NULL) {
-  if (is.null(text) || !nzchar(text)) {
-    return(text)
-  }
-
-  rlang::check_installed("ellmer", reason = "for AI polishing")
-
-  system_prompt <- paste(
-    "You are a scientific writing assistant.",
-    "Your task is to polish the following text to be more professional,",
-    "fluent, and suitable for a scientific report.",
-    "Keep the original meaning and content intact.",
-    "Do not add new information or change the facts.",
-    "Output only the polished text, without any explanation or preamble.",
-    "The text is in markdown format.",
-    "Remove meaningless logging messages like 'Normalization completed'.",
-    "Format the text to be one paragraph.",
-    "Content in <AI></AI> tags should also be polished and included in the result."
-  )
-
-  tryCatch(
-    {
-      credentials <- if (!is.null(api_key)) function() api_key else NULL
-      chat <- ellmer::chat_deepseek(
-        system_prompt = system_prompt,
-        model = model,
-        credentials = credentials,
-        echo = "none"
-      )
-      polished <- chat$chat(text)
-      polished
-    },
-    error = function(e) {
-      cli::cli_warn(c(
-        "AI polishing failed, using original text.",
-        "i" = "Error: {conditionMessage(e)}"
-      ))
-      text
-    }
-  )
-}
-
-# Build an ordered list of step report entries for a glysmith_result.
-# Each entry is a list(id, label, content), where content is a string (markdown) or NULL.
-# @param x A glysmith_result object.
-# @param use_ai Whether to polish content using AI.
-# @noRd
 .build_step_reports <- function(x, use_ai = FALSE) {
   steps_executed <- character(0)
   if (!is.null(x$meta) && is.list(x$meta) && !is.null(x$meta$steps)) {
@@ -144,18 +95,8 @@ polish_report <- function(
   ids <- steps_executed
 
   if (isTRUE(use_ai)) {
-    # Check for API key early to avoid repeated warnings
-    api_key_available <- nzchar(Sys.getenv("DEEPSEEK_API_KEY"))
-    if (!api_key_available) {
-      cli::cli_warn(c(
-        "AI polishing is enabled but no API key is available.",
-        "i" = "Set {.envvar DEEPSEEK_API_KEY}.",
-        "i" = "Proceeding without AI polishing."
-      ))
-      use_ai <- FALSE
-    } else {
-      cli::cli_alert_info("Polishing report with AI (deepseek-chat)...")
-    }
+    api_key <- .get_api_key()
+    cli::cli_alert_info("Polishing report with AI (deepseek-chat)...")
   }
 
   purrr::map(ids, function(id) {
@@ -178,11 +119,73 @@ polish_report <- function(
 
     # Apply AI polishing if enabled and content is not empty
     if (isTRUE(use_ai)) {
-      content <- .polish_text(content, model = "deepseek-chat")
+      content <- .polish_text(content, api_key)
     } else {
       content <- stringr::str_remove_all(content, "<AI>[\\s\\S]*?</AI>")
     }
 
     list(id = s$id, label = s$label, content = content)
   })
+}
+
+#' Polish text using AI
+#'
+#' Internal helper function to polish text using an LLM.
+#'
+#' @param text The text to polish.
+#' @param api_key The API key for the LLM.
+#' @param model The AI model to use.
+#' @return The polished text, or original text if polishing fails.
+#' @noRd
+.polish_text <- function(text, api_key, model = "deepseek-chat") {
+  if (is.null(text) || !nzchar(text)) {
+    return(text)
+  }
+
+  system_prompt <- paste(
+    "You are a scientific writing assistant.",
+    "Your task is to polish the following text to be more professional,",
+    "fluent, and suitable for a scientific report.",
+    "Keep the original meaning and content intact.",
+    "Do not add new information or change the facts.",
+    "Output only the polished text, without any explanation or preamble.",
+    "The text is in markdown format.",
+    "Remove meaningless logging messages like 'Normalization completed'.",
+    "Format the text to be one paragraph.",
+    "Content in <AI></AI> tags should also be polished and included in the result."
+  )
+
+  tryCatch(
+    .ask_ai(system_prompt, text, api_key, model),
+    error = function(e) {
+      cli::cli_warn(c(
+        "AI polishing failed, using original text.",
+        "i" = "Error: {conditionMessage(e)}"
+      ))
+      text
+    }
+  )
+}
+
+.get_api_key <- function() {
+  api_key <- Sys.getenv("DEEPSEEK_API_KEY")
+  if (api_key == "") {
+    cli::cli_abort(c(
+      "API key for DeepSeek chat model is not set.",
+      "i" = "Please set the environment variable `DEEPSEEK_API_KEY` to your API key.",
+      "i" = "You can obtain an API key from https://platform.deepseek.com."
+    ))
+  }
+  api_key
+}
+
+.ask_ai <- function(system_prompt, user_prompt, api_key, model = "deepseek-chat") {
+  rlang::check_installed("ellmer")
+  chat <- ellmer::chat_deepseek(
+    system_prompt = system_prompt,
+    model = model,
+    echo = "none",
+    credentials = function() api_key
+  )
+  as.character(chat$chat(user_prompt))
 }
