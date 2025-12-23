@@ -6,14 +6,6 @@
 #' @param blueprint A `glysmith_blueprint` object. Default is [blueprint_default()].
 #' @param group_col Column name of group information in the sample information.
 #'   Used for various analyses. Default is "group".
-#' @param ... Additional arguments passed to the underlying functions.
-#'   Use the format `step_id.pkg.func.arg` (step-scoped).
-#'   For example, if you want to pass argument `p_adj_method = "BH"` to `glystats::gly_limma()`
-#'   in [step_dea_limma()], set `dea_limma.glystats.gly_limma.p_adj_method = "BH"`.
-#'   To pass `batch_col` to `glyclean::auto_clean()` in [step_preprocess()],
-#'   set `preprocess.glyclean.auto_clean.batch_col = "batch"`.
-#'   Note that arguments about group column specification is controlled by `group_col` argument,
-#'   and should not be passed to `...`.
 #'
 #' @returns A `glysmith_result` object, with the following components:
 #'   - `exp`: the experiment after preprocessing.
@@ -32,7 +24,7 @@
 #' print(result)
 #'
 #' @export
-forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "group", ...) {
+forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "group") {
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col)
   if (!group_col %in% colnames(exp$sample_info)) {
@@ -40,8 +32,7 @@ forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "gr
   }
   exp$sample_info[["group"]] <- droplevels(as.factor(exp$sample_info[[group_col]]))
 
-  dots <- rlang::list2(...)
-  ctx <- new_ctx(exp, group_col, dots)
+  ctx <- new_ctx(exp, group_col)
   ctx <- run_blueprint(blueprint, ctx)
 
   exp <- ctx_get_data(ctx, "exp")

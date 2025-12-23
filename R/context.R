@@ -2,14 +2,12 @@
 #'
 #' @param exp A `glyexp_experiment`.
 #' @param group_col Group column name.
-#' @param dots `rlang::list2(...)`.
 #'
 #' @returns A context list.
 #' @noRd
-new_ctx <- function(exp, group_col, dots) {
+new_ctx <- function(exp, group_col) {
   list(
     group_col = group_col,
-    dots = dots,
     plots = list(),
     tables = list(),
     meta = list(explanation = list(), steps = character(0)),

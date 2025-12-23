@@ -117,8 +117,6 @@ step_preprocess <- function(...) {
       clean_exp <- .run_function(
         glyclean::auto_clean,
         exp,
-        step_id = "preprocess",
-        global_dots = ctx$dots,
         step_dots = step_dots
       )
       ctx <- ctx_add_data(ctx, "exp", clean_exp)  # overwrite exp with preprocessed exp
@@ -172,8 +170,6 @@ step_ident_overview <- function(...) {
       tbl <- .run_function(
         glyexp::summarize_experiment,
         exp,
-        step_id = "ident_overview",
-        global_dots = ctx$dots,
         step_dots = step_dots
       )
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
@@ -229,8 +225,6 @@ step_pca <- function(...) {
       pca_res <- .run_function(
         glystats::gly_pca,
         exp,
-        step_id = "pca",
-        global_dots = ctx$dots,
         step_dots = step_dots
       )
       ctx <- ctx_add_table(
@@ -254,8 +248,6 @@ step_pca <- function(...) {
       p <- .run_function(
         glyvis::plot_pca,
         pca_res,
-        step_id = "pca",
-        global_dots = ctx$dots,
         step_dots = step_dots
       )
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
@@ -611,11 +603,11 @@ step_dea_kruskal <- function(on = "exp", ...) {
 
       dea_res <- switch(
         method,
-        "limma" = .run_function(glystats::gly_limma, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
-        "ttest" = .run_function(glystats::gly_ttest, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
-        "anova" = .run_function(glystats::gly_anova, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
-        "wilcox" = .run_function(glystats::gly_wilcox, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots),
-        "kruskal" = .run_function(glystats::gly_kruskal, exp, step_id = meta$prefix, global_dots = ctx$dots, step_dots = step_dots)
+        "limma" = .run_function(glystats::gly_limma, exp, step_dots = step_dots),
+        "ttest" = .run_function(glystats::gly_ttest, exp, step_dots = step_dots),
+        "anova" = .run_function(glystats::gly_anova, exp, step_dots = step_dots),
+        "wilcox" = .run_function(glystats::gly_wilcox, exp, step_dots = step_dots),
+        "kruskal" = .run_function(glystats::gly_kruskal, exp, step_dots = step_dots)
       )
       ctx <- ctx_add_data(ctx, paste0(meta$prefix, "_res"), dea_res)
 
@@ -643,8 +635,6 @@ step_dea_kruskal <- function(on = "exp", ...) {
       sig_exp <- .run_function(
         glystats::filter_sig_vars,
         exp,
-        step_id = meta$prefix,
-        global_dots = ctx$dots,
         step_dots = step_dots,
         holy_args = list(res = dea_res)
       )
@@ -723,8 +713,6 @@ step_volcano <- function(...) {
     p <- .run_function(
       glyvis::plot_volcano,
       dea_res,
-      step_id = "volcano",
-      global_dots = ctx$dots,
       step_dots = step_dots,
       holy_args = list(contrast = cont)
     )
@@ -738,8 +726,6 @@ step_volcano <- function(...) {
   p <- .run_function(
     glyvis::plot_volcano,
     dea_res,
-    step_id = "volcano",
-    global_dots = ctx$dots,
     step_dots = step_dots
   )
   ctx_add_plot(ctx, "volcano", p, "Volcano plot")
@@ -892,16 +878,16 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
         uni_arg <- ctx_get_data(ctx, "exp")
         enrich_res <- switch(
           kind,
-          go = .run_function(glystats::gly_enrich_go, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots, holy_args = list(universe = uni_arg)),
-          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots, holy_args = list(universe = uni_arg)),
-          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots, holy_args = list(universe = uni_arg))
+          go = .run_function(glystats::gly_enrich_go, sig_exp, step_dots = step_dots, holy_args = list(universe = uni_arg)),
+          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_dots = step_dots, holy_args = list(universe = uni_arg)),
+          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_dots = step_dots, holy_args = list(universe = uni_arg))
         )
       } else {
         enrich_res <- switch(
           kind,
-          go = .run_function(glystats::gly_enrich_go, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
-          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots),
-          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_id, global_dots = ctx$dots, step_dots = step_dots)
+          go = .run_function(glystats::gly_enrich_go, sig_exp, step_dots = step_dots),
+          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_dots = step_dots),
+          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_dots = step_dots)
         )
       }
       ctx <- ctx_add_table(
@@ -910,7 +896,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
         glystats::get_tidy_result(enrich_res),
         paste0(toupper(kind), " enrichment analysis results.")
       )
-      p <- .run_function(glyvis::plot_enrich, enrich_res, step_id, global_dots = ctx$dots, step_dots = step_dots)
+      p <- .run_function(glyvis::plot_enrich, enrich_res, step_dots = step_dots)
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
     report = function(x) {
@@ -973,8 +959,6 @@ step_derive_traits <- function(...) {
       trait_exp <- .run_function(
         glydet::derive_traits,
         exp,
-        step_id = "derive_traits",
-        global_dots = ctx$dots,
         step_dots = step_dots
       )
       ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
@@ -1067,8 +1051,6 @@ step_heatmap <- function(on = "exp", ...) {
       p <- .run_function(
         glyvis::plot_heatmap,
         exp,
-        step_id = "heatmap",
-        global_dots = ctx$dots,
         step_dots = step_dots
       )
       ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
