@@ -25,3 +25,21 @@
       -- GlySmith Analysis Result 
       Plots: 0, Tables: 0
 
+# cast_table works
+
+    Code
+      cast_table(result, "table2")
+    Condition
+      Error in `cast_table()`:
+      ! Table 'table2' not found in the result.
+      i Available tables: "table1"
+
+# cast_plot works
+
+    Code
+      cast_plot(result, "plot3")
+    Condition
+      Error in `cast_plot()`:
+      ! Plot 'plot3' not found in the result.
+      i Available plots: "plot1" and "plot2"
+
