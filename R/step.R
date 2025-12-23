@@ -105,6 +105,7 @@ all_steps <- function() {
 step_preprocess <- function(...) {
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   step(
     id = "preprocess",
     label = "Preprocessing",
@@ -162,6 +163,7 @@ step_preprocess <- function(...) {
 step_ident_overview <- function(...) {
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   step(
     id = "ident_overview",
     label = "Identification overview",
@@ -218,6 +220,7 @@ step_ident_overview <- function(...) {
 step_pca <- function(...) {
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   step(
     id = "pca",
     label = "Principal component analysis",
@@ -593,6 +596,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' @noRd
 .step_dea <- function(method, label, on = "exp", signature = NULL, ...) {
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   meta <- .get_dea_meta(on)
 
   step(
@@ -688,6 +692,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 step_volcano <- function(...) {
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   step(
     id = "volcano",
     label = "Volcano plot",
@@ -865,6 +870,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
   label <- paste0(toupper(kind), " enrichment analysis")
   step_id <- paste0("sig_enrich_", kind)
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   func <- switch(kind,
     go = "gly_enrich_go",
     kegg = "gly_enrich_kegg",
@@ -953,6 +959,7 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
 step_derive_traits <- function(...) {
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
@@ -1031,6 +1038,7 @@ step_heatmap <- function(on = "exp", ...) {
   on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
+  .valid_step_docts(step_dots)
 
   # Determine plot name based on `on` parameter
   # "exp" -> "heatmap", "sig_exp" -> "sig_heatmap", etc.
@@ -1068,4 +1076,17 @@ step_heatmap <- function(on = "exp", ...) {
     require = on,
     signature = signature
   )
+}
+
+.valid_step_docts <- function(dots) {
+  arg_names <- names(dots)
+  valid <- stringr::str_count(arg_names, stringr::fixed(".")) == 2
+  if (!all(valid)) {
+    invalid_args <- arg_names[!valid]
+    cli::cli_abort(c(
+      "Some dynamic arguments are invalid.",
+      "x" = "Invalid: {.arg {invalid_args}}",
+      "i" = "Use format {.arg pkg.func.arg}"
+    ))
+  }
 }

@@ -38,3 +38,11 @@ test_that("dynamic arguments in forge_analysis overwrite step-local arguments", 
   ))
   expect_true(nrow(res1$exp) == nrow(res2$exp))
 })
+
+test_that("wrong dynamic arguments raise errors", {
+  # forge-analysis-style dynamic arguments in steps
+  expect_snapshot(
+    step_preprocess(preprocess.glyclean.auto_clean.remove_preset = "discovery"),
+    error = TRUE
+  )
+})
