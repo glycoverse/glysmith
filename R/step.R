@@ -985,6 +985,12 @@ step_derive_traits <- function(...) {
         "Derived traits were calculated. ",
         "Number of derived traits: ", length(unique(tbl$trait)), "."
       )
+      trait_definition_tbl <- tbl |>
+        dplyr::distinct(.data$trait, .data$explanation)
+      definition_parts <- paste0("- ", trait_definition_tbl$trait, ": ", trait_definition_tbl$explanation)
+      definition_parts <- paste(definition_parts, collapse = "\n")
+      msg <- paste0(msg, "\n\n", "Trait definitions:\n\n", definition_parts)
+      msg
     },
     generate = "trait_exp",
     require = "exp",
