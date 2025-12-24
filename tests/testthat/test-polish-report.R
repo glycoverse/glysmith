@@ -39,5 +39,5 @@ test_that("polish_report captures AI errors", {
   suppressMessages(result <- forge_analysis(exp, blueprint = bp))
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
-  expect_error(polish_report(result, output_file, open = FALSE, use_ai = TRUE), "AI error")
+  suppressMessages(expect_warning(polish_report(result, output_file, open = FALSE, use_ai = TRUE), "AI error"))
 })
