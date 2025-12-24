@@ -105,15 +105,14 @@ polish_report(result, "path/to/save/report.html")
 By default, the report will open automatically in your browser when it's finished.
 
 Now for the exciting part!
-Set `ai_polish = TRUE` to let a Large Language Model (LLM) help polish your report.
+Set `use_ai = TRUE` to let a Large Language Model (LLM) help polish your report.
 We currently use `deepseek-chat`, which offers both cost-effectiveness and solid performance.
-To use this feature, you need to provide an API key, either by setting the environment variable `DEEPSEEK_API_KEY`,
-or by supplying it with the `ai_api_key` argument.
+To use this feature, you need to provide an API key, either by setting the environment variable `DEEPSEEK_API_KEY`.
 You can obtain an API key from https://platform.deepseek.com.
 
 ```r
 Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
-polish_report(result, "path/to/save/report.html", ai_polish = TRUE)
+polish_report(result, "path/to/save/report.html", use_ai = TRUE)
 ```
 
 We're continually working to make the report generation more readable and informative.
