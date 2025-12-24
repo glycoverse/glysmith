@@ -105,7 +105,7 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [126ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [126ms]
+#> ✔ Identification overview [122ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -119,10 +119,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [91ms]
+#> ✔ Differential expression analysis (limma) [89ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [646ms]
+#> ✔ Volcano plot [636ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -142,13 +142,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [60ms]
+#> ✔ Differential trait analysis (limma) [79ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [13ms]
+#> ✔ Heatmap of significant traits [12ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpRjFjiM/file1c80315b5d1c.html"
+#> [1] "/tmp/Rtmp3ryLs9/file1c9456e08d3e.html"
 ```

@@ -82,7 +82,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [263ms]
+#> ✔ Preprocessing [257ms]
 #> 
 #> ℹ Identification overview
 #> ✔ Identification overview [112ms]
@@ -99,10 +99,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [241ms]
+#> ✔ Differential expression analysis (limma) [247ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [685ms]
+#> ✔ Volcano plot [692ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -122,7 +122,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [82ms]
+#> ✔ Differential trait analysis (limma) [83ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
