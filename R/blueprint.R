@@ -324,6 +324,7 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
             step$run(ctx),
             warning = function(w) {
               logs_warning[[length(logs_warning) + 1]] <<- w
+              invokeRestart("muffleWarning")
             }
           )
         }, type = "message")
