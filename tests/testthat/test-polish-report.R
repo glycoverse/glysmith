@@ -30,3 +30,14 @@ test_that("polish_report raises an error when API key is not set", {
   output_file <- fs::path(tmp_dir, "polish_report.html")
   expect_error(polish_report(result, output_file, open = FALSE, use_ai = TRUE))
 })
+
+test_that("polish_report captures AI errors", {
+  local_mocked_bindings(.ask_ai = function(...) stop("AI error"))
+  exp <- glyexp::real_experiment2
+  bp <- blueprint(step_preprocess())
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_api_key"))
+  suppressMessages(result <- forge_analysis(exp, blueprint = bp))
+  tmp_dir <- withr::local_tempdir()
+  output_file <- fs::path(tmp_dir, "polish_report.html")
+  expect_error(polish_report(result, output_file, open = FALSE, use_ai = TRUE), "AI error")
+})
