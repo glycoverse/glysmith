@@ -36,6 +36,16 @@ Plots generated:
 \item \code{sig_trait_heatmap}: A heatmap plot (if \code{on = "sig_trait_exp"})
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glyvis.plot_heatmap.show_rownames}: Whether to show row names.
+\item \code{glyvis.plot_heatmap.show_colnames}: Whether to show column names.
+\item \code{glyvis.plot_heatmap.cluster_rows}: Whether to cluster rows.
+\item \code{glyvis.plot_heatmap.cluster_cols}: Whether to cluster columns.
+}
+}
+
 \examples{
 step_heatmap()
 step_heatmap(on = "sig_exp")

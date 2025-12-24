@@ -29,6 +29,13 @@ Tables generated:
 \item \code{summary}: A table containing the identification overview of the experiment
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glyexp.summarize_experiment.count_struct}: Whether to count by structure or composition.
+}
+}
+
 \examples{
 step_ident_overview()
 }

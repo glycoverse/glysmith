@@ -35,6 +35,15 @@ Tables generated:
 \item \code{go_enrich}: A table containing the GO enrichment results.
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glystats.gly_enrich_go.OrgDb}: Organism database (default: "org.Hs.eg.db").
+\item \code{glystats.gly_enrich_go.readable}: Whether to map to readable gene names.
+\item \code{glyvis.plot_enrich.type}: Plot type ("dotplot", "barplot", etc.).
+}
+}
+
 \examples{
 step_sig_enrich_go()
 }

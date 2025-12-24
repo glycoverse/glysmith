@@ -43,6 +43,17 @@ Tables generated:
 \item \code{dta}: A table containing the DTA result (if \code{on = "trait_exp"})
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glystats.gly_wilcox.p_adj_method}: P-value adjustment method (default: "BH").
+\item \code{glystats.gly_wilcox.ref_group}: Reference group for comparison.
+\item \code{glystats.filter_sig_vars.p_adj_cutoff}: Adjusted p-value cutoff (default: 0.05).
+\item \code{glystats.filter_sig_vars.p_val_cutoff}: Raw p-value cutoff.
+\item \code{glystats.filter_sig_vars.fc_cutoff}: Fold change cutoff.
+}
+}
+
 \examples{
 step_dea_wilcox()
 step_dea_wilcox(on = "trait_exp")  # Differential trait analysis

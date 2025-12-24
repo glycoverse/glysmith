@@ -35,6 +35,15 @@ Tables generated:
 \item \code{reactome_enrich}: A table containing the Reactome enrichment results.
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glystats.gly_enrich_reactome.OrgDb}: Organism database (default: "org.Hs.eg.db").
+\item \code{glystats.gly_enrich_reactome.organism}: Organism name (default: "human").
+\item \code{glyvis.plot_enrich.type}: Plot type ("dotplot", "barplot", etc.).
+}
+}
+
 \examples{
 step_sig_enrich_reactome()
 }

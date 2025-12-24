@@ -35,6 +35,14 @@ Tables generated:
 \item \code{kegg_enrich}: A table containing the KEGG enrichment results.
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glystats.gly_enrich_kegg.OrgDb}: Organism database (default: "org.Hs.eg.db").
+\item \code{glyvis.plot_enrich.type}: Plot type ("dotplot", "barplot", etc.).
+}
+}
+
 \examples{
 step_sig_enrich_kegg()
 }

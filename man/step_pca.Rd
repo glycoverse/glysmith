@@ -35,6 +35,16 @@ Plots generated:
 \item \code{pca}: A PCA plot colored by group
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glystats.gly_pca.center}: Whether to center the data (default: TRUE).
+\item \code{glystats.gly_pca.scale}: Whether to scale the data (default: TRUE).
+\item \code{glyvis.plot_pca.type}: Plot type ("screeplot", "individual", "variables", "biplot").
+\item \code{glyvis.plot_pca.groups}: Group membership for coloring.
+}
+}
+
 \examples{
 step_pca()
 }

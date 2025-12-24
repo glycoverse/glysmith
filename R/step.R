@@ -93,6 +93,17 @@ all_steps <- function() {
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `raw_exp` for reference.
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glyclean.auto_clean.batch_col`: Column name for batch information.
+#' - `glyclean.auto_clean.qc_name`: Name of QC samples (default: "QC").
+#' - `glyclean.auto_clean.normalize_to_try`: List of normalization functions to try.
+#' - `glyclean.auto_clean.impute_to_try`: List of imputation functions to try.
+#' - `glyclean.auto_clean.remove_preset`: Preset for removing variables ("simple", "discovery", "biomarker").
+#' - `glyclean.auto_clean.batch_prop_threshold`: Proportion threshold for batch correction (default: 0.3).
+#' - `glyclean.auto_clean.check_batch_confounding`: Whether to check batch confounding (default: TRUE).
+#' - `glyclean.auto_clean.batch_confounding_threshold`: Threshold for batch confounding (default: 0.4).
+#'
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_preprocess(glyclean.auto_clean.remove_preset = "discovery")`.
@@ -149,6 +160,10 @@ step_preprocess <- function(...) {
 #' Tables generated:
 #' - `summary`: A table containing the identification overview of the experiment
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glyexp.summarize_experiment.count_struct`: Whether to count by structure or composition.
+#'
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_ident_overview(glyexp.summarize_experiment.count_struct = FALSE)`.
@@ -203,6 +218,13 @@ step_ident_overview <- function(...) {
 #'
 #' Plots generated:
 #' - `pca`: A PCA plot colored by group
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
+#' - `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
+#' - `glyvis.plot_pca.type`: Plot type ("screeplot", "individual", "variables", "biplot").
+#' - `glyvis.plot_pca.groups`: Group membership for coloring.
 #'
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
@@ -278,6 +300,15 @@ step_pca <- function(...) {
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_limma.p_adj_method`: P-value adjustment method (default: "BH").
+#' - `glystats.gly_limma.ref_group`: Reference group for comparison.
+#' - `glystats.gly_limma.contrasts`: Custom contrasts for multi-group comparisons.
+#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
+#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
+#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
+#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -317,6 +348,14 @@ step_dea_limma <- function(on = "exp", ...) {
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_ttest.p_adj_method`: P-value adjustment method (default: "BH").
+#' - `glystats.gly_ttest.ref_group`: Reference group for comparison.
+#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
+#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
+#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
+#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -354,6 +393,13 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_anova.p_adj_method`: P-value adjustment method (default: "BH").
+#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
+#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
+#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -393,6 +439,14 @@ step_dea_anova <- function(on = "exp", ...) {
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_wilcox.p_adj_method`: P-value adjustment method (default: "BH").
+#' - `glystats.gly_wilcox.ref_group`: Reference group for comparison.
+#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
+#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
+#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
+#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -430,6 +484,13 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_anova.p_adj_method`: P-value adjustment method (default: "BH").
+#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
+#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
+#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -670,6 +731,13 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' Plots generated:
 #' - `volcano`: A volcano plot
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glyvis.plot_volcano.log2fc_cutoff`: Log2 fold change cutoff (default: 1).
+#' - `glyvis.plot_volcano.p_cutoff`: P-value cutoff (default: 0.05).
+#' - `glyvis.plot_volcano.p_col`: Column for p-value ("p_adj" or "p_val").
+#' - `glyvis.plot_volcano.contrast`: Contrast to plot for limma results.
+#'
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_volcano(glyvis.plot_volcano.log2fc_cutoff = 2)`.
@@ -755,6 +823,12 @@ step_volcano <- function(...) {
 #' Tables generated:
 #' - `go_enrich`: A table containing the GO enrichment results.
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_enrich_go.OrgDb`: Organism database (default: "org.Hs.eg.db").
+#' - `glystats.gly_enrich_go.readable`: Whether to map to readable gene names.
+#' - `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
+#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param ... Step-specific arguments passed to underlying functions.
@@ -786,6 +860,11 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' Tables generated:
 #' - `kegg_enrich`: A table containing the KEGG enrichment results.
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_enrich_kegg.OrgDb`: Organism database (default: "org.Hs.eg.db").
+#' - `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
+#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param ... Step-specific arguments passed to underlying functions.
@@ -816,6 +895,12 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #'
 #' Tables generated:
 #' - `reactome_enrich`: A table containing the Reactome enrichment results.
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_enrich_reactome.OrgDb`: Organism database (default: "org.Hs.eg.db").
+#' - `glystats.gly_enrich_reactome.organism`: Organism name (default: "human").
+#' - `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
@@ -944,6 +1029,12 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
 #' Tables generated:
 #' - `derived_traits`: A table containing the derived traits.
 #'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glydet.derive_traits.trait_fns`: Custom trait functions to calculate.
+#' - `glydet.derive_traits.mp_fns`: Custom meta-property functions.
+#' - `glydet.derive_traits.mp_cols`: Column names to use as meta-properties.
+#'
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
 #'
@@ -1013,6 +1104,13 @@ step_derive_traits <- function(...) {
 #' - `sig_heatmap`: A heatmap plot (if `on = "sig_exp"`)
 #' - `trait_heatmap`: A heatmap plot (if `on = "trait_exp"`)
 #' - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glyvis.plot_heatmap.show_rownames`: Whether to show row names.
+#' - `glyvis.plot_heatmap.show_colnames`: Whether to show column names.
+#' - `glyvis.plot_heatmap.cluster_rows`: Whether to cluster rows.
+#' - `glyvis.plot_heatmap.cluster_cols`: Whether to cluster columns.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp", "trait_exp", or "sig_trait_exp".

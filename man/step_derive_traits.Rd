@@ -32,6 +32,15 @@ Tables generated:
 \item \code{derived_traits}: A table containing the derived traits.
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glydet.derive_traits.trait_fns}: Custom trait functions to calculate.
+\item \code{glydet.derive_traits.mp_fns}: Custom meta-property functions.
+\item \code{glydet.derive_traits.mp_cols}: Column names to use as meta-properties.
+}
+}
+
 \examples{
 step_derive_traits()
 }

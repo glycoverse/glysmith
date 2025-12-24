@@ -43,6 +43,16 @@ Tables generated:
 \item \code{dta_main_test}, \code{dta_post_hoc_test}: Tables containing the results (if \code{on = "trait_exp"})
 }
 }
+\section{Dynamic Arguments}{
+This step supports the following dynamic arguments:
+\itemize{
+\item \code{glystats.gly_anova.p_adj_method}: P-value adjustment method (default: "BH").
+\item \code{glystats.filter_sig_vars.p_adj_cutoff}: Adjusted p-value cutoff (default: 0.05).
+\item \code{glystats.filter_sig_vars.p_val_cutoff}: Raw p-value cutoff.
+\item \code{glystats.filter_sig_vars.fc_cutoff}: Fold change cutoff.
+}
+}
+
 \examples{
 step_dea_anova()
 step_dea_anova(on = "trait_exp")  # Differential trait analysis
