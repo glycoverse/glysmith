@@ -744,7 +744,7 @@ step_volcano <- function(...) {
 #'
 #' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
 #' This step requires one of the DEA steps to be run.
-#' Only execute for glycoproteomics experiments.
+#' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' Use all genes in OrgDb as the background.
 #'
 #' @details
@@ -775,7 +775,7 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #'
 #' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
 #' This step requires one of the DEA steps to be run.
-#' Only execute for glycoproteomics experiments.
+#' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' Use all genes in OrgDb as the background.
 #'
 #' @details
@@ -806,7 +806,7 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #'
 #' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
 #' This step requires one of the DEA steps to be run.
-#' Only execute for glycoproteomics experiments.
+#' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' Use all genes in OrgDb as the background.
 #'
 #' @details
@@ -842,7 +842,7 @@ step_sig_enrich_reactome <- function(universe = "all", ...) {
 #' - `glystats::gly_sig_enrich_reactome()`
 #'
 #' This step requires one of the DEA steps to be run.
-#' Only execute for glycoproteomics experiments.
+#' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' Use all genes in OrgDb as the background.
 #'
 #' @param kind Enrichment type: `"go"`, `"kegg"`, or `"reactome"`.
@@ -867,9 +867,19 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
     id = step_id,
     label = label,
     condition = function(ctx) {
-      check <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics"
-      reason <- "input is not a glycoproteomics experiment"
-      list(check = check, reason = reason)
+      check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics"
+      reason1 <- "input is not a glycoproteomics experiment"
+      check2 <- length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2
+      reason2 <- "input has more than 2 groups"
+      if (check1 && check2) {
+        list(check = TRUE, reason = NULL)
+      } else if (check1 && !check2) {
+        list(check = FALSE, reason = reason2)
+      } else if (!check1 && check2) {
+        list(check = FALSE, reason = reason1)
+      } else {
+        list(check = FALSE, reason = paste0(reason1, " and ", reason2))
+      }
     },
     run = function(ctx) {
       sig_exp <- ctx_get_data(ctx, "sig_exp")
