@@ -53,7 +53,6 @@ code.
 
 ``` r
 result <- forge_analysis(real_experiment)
-#> Warning: Zero sample variances detected, have been offset away from zero
 result
 ```
 

@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   glysmith: glysmith.html
-last_built: 2025-12-24T05:14Z
+last_built: 2025-12-24T06:32Z
 urls:
   reference: https://glycoverse.github.io/glysmith/reference
   article: https://glycoverse.github.io/glysmith/articles

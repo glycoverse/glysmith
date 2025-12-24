@@ -105,7 +105,7 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [126ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [130ms]
+#> ✔ Identification overview [126ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -119,11 +119,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [89ms]
+#> ✔ Differential expression analysis (limma) [91ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [644ms]
+#> ✔ Volcano plot [646ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -134,7 +133,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.8s]
+#> ✔ Derived trait calculation [2.6s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -143,13 +142,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [60ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [12ms]
+#> ✔ Heatmap of significant traits [13ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpB0VY8e/file1d2668c36385.html"
+#> [1] "/tmp/RtmpRjFjiM/file1c80315b5d1c.html"
 ```
