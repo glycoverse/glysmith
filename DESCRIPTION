@@ -20,6 +20,7 @@ License: MIT + file LICENSE
 Suggests: 
     ellmer,
     knitr,
+    withr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
@@ -30,6 +31,7 @@ Imports:
     checkmate,
     cli,
     clusterProfiler,
+    dplyr,
     EnhancedVolcano,
     factoextra,
     fs,
