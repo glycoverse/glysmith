@@ -8,6 +8,7 @@ test_that("polish_report works", {
 })
 
 test_that("polish_report works with AI polish", {
+  skip_on_ci()
   local_mocked_bindings(.ask_ai = function(...) "AI response")
   exp <- glyexp::real_experiment2
   bp <- blueprint(step_preprocess())
@@ -21,6 +22,7 @@ test_that("polish_report works with AI polish", {
 })
 
 test_that("polish_report raises an error when API key is not set", {
+  skip_on_ci()
   local_mocked_bindings(.ask_ai = function(...) "AI response")
   exp <- glyexp::real_experiment2
   bp <- blueprint(step_preprocess())
@@ -32,6 +34,7 @@ test_that("polish_report raises an error when API key is not set", {
 })
 
 test_that("polish_report captures AI errors", {
+  skip_on_ci()
   local_mocked_bindings(.ask_ai = function(...) stop("AI error"))
   exp <- glyexp::real_experiment2
   bp <- blueprint(step_preprocess())
