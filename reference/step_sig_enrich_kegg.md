@@ -4,7 +4,8 @@ Perform KEGG enrichment analysis on differentially expressed variables
 using
 [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 This step requires one of the DEA steps to be run. Only execute for
-glycoproteomics experiments. Use all genes in OrgDb as the background.
+glycoproteomics experiments with exactly 2 groups. Use all genes in
+OrgDb as the background.
 
 ## Usage
 
@@ -41,6 +42,15 @@ Data required:
 Tables generated:
 
 - `kegg_enrich`: A table containing the KEGG enrichment results.
+
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glystats.gly_enrich_kegg.OrgDb`: Organism database (default:
+  "org.Hs.eg.db").
+
+- `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
 
 ## See also
 

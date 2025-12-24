@@ -39,6 +39,19 @@ Plots generated:
 
 - `volcano`: A volcano plot
 
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glyvis.plot_volcano.log2fc_cutoff`: Log2 fold change cutoff (default:
+  1).
+
+- `glyvis.plot_volcano.p_cutoff`: P-value cutoff (default: 0.05).
+
+- `glyvis.plot_volcano.p_col`: Column for p-value ("p_adj" or "p_val").
+
+- `glyvis.plot_volcano.contrast`: Contrast to plot for limma results.
+
 ## See also
 
 [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html)

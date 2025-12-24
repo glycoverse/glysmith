@@ -4,7 +4,8 @@ Perform Reactome enrichment analysis on differentially expressed
 variables using
 [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 This step requires one of the DEA steps to be run. Only execute for
-glycoproteomics experiments. Use all genes in OrgDb as the background.
+glycoproteomics experiments with exactly 2 groups. Use all genes in
+OrgDb as the background.
 
 ## Usage
 
@@ -41,6 +42,18 @@ Data required:
 Tables generated:
 
 - `reactome_enrich`: A table containing the Reactome enrichment results.
+
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glystats.gly_enrich_reactome.OrgDb`: Organism database (default:
+  "org.Hs.eg.db").
+
+- `glystats.gly_enrich_reactome.organism`: Organism name (default:
+  "human").
+
+- `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
 
 ## See also
 

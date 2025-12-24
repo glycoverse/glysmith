@@ -41,6 +41,19 @@ Plots generated:
 
 - `pca`: A PCA plot colored by group
 
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
+
+- `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
+
+- `glyvis.plot_pca.type`: Plot type ("screeplot", "individual",
+  "variables", "biplot").
+
+- `glyvis.plot_pca.groups`: Group membership for coloring.
+
 ## See also
 
 [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html),

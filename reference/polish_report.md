@@ -3,11 +3,12 @@
 Generate a self-contained HTML report for a `glysmith_result` object.
 The report is rendered via
 [`rmarkdown::render()`](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
-using an internal R Markdown template. If `ai_polish` is TRUE, the
-report text will be polished using LLM (deepseek-chat). To use this
-feature, you have to provide an API key and set it in the environment
-variable `DEEPSEEK_API_KEY`, or provide it directly in the `ai_api_key`
-argument. You can apply the API key on https://platform.deepseek.com.
+using an internal R Markdown template. If `use_ai` is TRUE, the report
+text will be polished using LLM (deepseek-chat). To use this feature,
+you have to provide an API key and set it in the environment variable
+`DEEPSEEK_API_KEY` by running
+`Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")`. You can apply the API
+key on https://platform.deepseek.com.
 
 ## Usage
 
@@ -17,8 +18,7 @@ polish_report(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  ai_polish = FALSE,
-  ai_api_key = NULL
+  use_ai = FALSE
 )
 ```
 
@@ -40,15 +40,10 @@ polish_report(
 
   Whether to open the report in a browser after rendering.
 
-- ai_polish:
+- use_ai:
 
   Whether to polish the report text using AI (deepseek-chat). Default is
   FALSE.
-
-- ai_api_key:
-
-  API key for the AI model. If NULL, uses the environment variable
-  `DEEPSEEK_API_KEY`.
 
 ## Value
 
@@ -107,10 +102,10 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [129ms]
+#> ✔ Preprocessing [126ms]
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [155ms]
+#> ✔ Identification overview [130ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -125,21 +120,21 @@ result <- forge_analysis(exp)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
 #> Warning: Partial NA coefficients for 7 probe(s)
-#> ✔ Differential expression analysis (limma) [277ms]
+#> ✔ Differential expression analysis (limma) [89ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [540ms]
+#> ✔ Volcano plot [644ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [13ms]
+#> ✔ Heatmap of significant variables [14ms]
 #> 
-#> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment.
-#> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment.
-#> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment.
+#> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
+#> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
+#> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.4s]
+#> ✔ Derived trait calculation [2.8s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -153,8 +148,8 @@ result <- forge_analysis(exp)
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [13ms]
+#> ✔ Heatmap of significant traits [12ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpkVTtjf/file1ceb309a7c4b.html"
+#> [1] "/tmp/RtmpB0VY8e/file1d2668c36385.html"
 ```

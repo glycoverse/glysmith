@@ -44,6 +44,18 @@ Plots generated:
 
 - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
 
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glyvis.plot_heatmap.show_rownames`: Whether to show row names.
+
+- `glyvis.plot_heatmap.show_colnames`: Whether to show column names.
+
+- `glyvis.plot_heatmap.cluster_rows`: Whether to cluster rows.
+
+- `glyvis.plot_heatmap.cluster_cols`: Whether to cluster columns.
+
 ## See also
 
 [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html)

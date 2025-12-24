@@ -67,6 +67,17 @@ the "active" experiment is always under the key <code>exp</code>.
 The previous <code>exp</code> is saved as <code>raw_exp</code> for reference.</p>
     </div>
     <div class="section level2">
+    <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>
+    <p>This step supports the following dynamic arguments:</p><ul><li><p><code>glyclean.auto_clean.batch_col</code>: Column name for batch information.</p></li>
+<li><p><code>glyclean.auto_clean.qc_name</code>: Name of QC samples (default: "QC").</p></li>
+<li><p><code>glyclean.auto_clean.normalize_to_try</code>: List of normalization functions to try.</p></li>
+<li><p><code>glyclean.auto_clean.impute_to_try</code>: List of imputation functions to try.</p></li>
+<li><p><code>glyclean.auto_clean.remove_preset</code>: Preset for removing variables ("simple", "discovery", "biomarker").</p></li>
+<li><p><code>glyclean.auto_clean.batch_prop_threshold</code>: Proportion threshold for batch correction (default: 0.3).</p></li>
+<li><p><code>glyclean.auto_clean.check_batch_confounding</code>: Whether to check batch confounding (default: TRUE).</p></li>
+<li><p><code>glyclean.auto_clean.batch_confounding_threshold</code>: Threshold for batch confounding (default: 0.4).</p></li>
+</ul></div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code></p></div>
     </div>

@@ -162,16 +162,15 @@ from the results.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"path/to/save/report.html"</span><span class="op">)</span></span></code></pre></div>
 <p>By default, the report will open automatically in your browser when
 it’s finished.</p>
-<p>Now for the exciting part! Set <code>ai_polish = TRUE</code> to let a
+<p>Now for the exciting part! Set <code>use_ai = TRUE</code> to let a
 Large Language Model (LLM) help polish your report. We currently use
 <code>deepseek-chat</code>, which offers both cost-effectiveness and
 solid performance. To use this feature, you need to provide an API key,
 either by setting the environment variable
-<code>DEEPSEEK_API_KEY</code>, or by supplying it with the
-<code>ai_api_key</code> argument. You can obtain an API key from <a href="https://platform.deepseek.com" class="external-link uri">https://platform.deepseek.com</a>.</p>
+<code>DEEPSEEK_API_KEY</code>. You can obtain an API key from <a href="https://platform.deepseek.com" class="external-link uri">https://platform.deepseek.com</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DEEPSEEK_API_KEY <span class="op">=</span> <span class="st">"your_api_key"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"path/to/save/report.html"</span>, ai_polish <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"path/to/save/report.html"</span>, use_ai <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>We’re continually working to make the report generation more readable
 and informative. Check back in a few months to see what’s new!</p>
 </div>

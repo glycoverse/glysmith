@@ -57,6 +57,20 @@ Tables generated:
 - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results
   (if `on = "trait_exp"`)
 
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glystats.gly_anova.p_adj_method`: P-value adjustment method (default:
+  "BH").
+
+- `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff
+  (default: 0.05).
+
+- `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
+
+- `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
+
 ## See also
 
 [`glystats::gly_kruskal()`](https://glycoverse.github.io/glystats/reference/gly_kruskal.html)

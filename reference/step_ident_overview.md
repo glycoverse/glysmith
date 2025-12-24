@@ -34,6 +34,13 @@ Tables generated:
 - `summary`: A table containing the identification overview of the
   experiment
 
+## Dynamic Arguments
+
+This step supports the following dynamic arguments:
+
+- `glyexp.summarize_experiment.count_struct`: Whether to count by
+  structure or composition.
+
 ## See also
 
 [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/count_compositions.html)
