@@ -346,8 +346,8 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' Default blueprint
 #'
 #' This blueprint contains the following steps:
-#' - step_preprocess(): Preprocess the data using `glyclean::auto_clean()`.
 #' - step_ident_overview(): Summarize the experiment using `glyexp::summarize_experiment()`.
+#' - step_preprocess(): Preprocess the data using `glyclean::auto_clean()`.
 #' - step_pca(): Principal component analysis using `glystats::gly_pca()`,
 #'   and plot the PCA using `glyvis::plot_pca()`.
 #' - step_dea_limma(): Differential analysis using `glystats::gly_limma()`.
@@ -371,12 +371,11 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' blueprint_default()
 #' @export
 blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
-  steps <- list()
+  steps <- list(step_ident_overview())
   if (preprocess) {
     steps <- append(steps, list(step_preprocess()))
   }
   steps <- append(steps, list(
-    step_ident_overview(),
     step_pca(),
     step_dea_limma(),
     step_volcano(),

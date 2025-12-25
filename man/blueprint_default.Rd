@@ -21,8 +21,8 @@ A \code{glysmith_blueprint} object.
 \description{
 This blueprint contains the following steps:
 \itemize{
-\item step_preprocess(): Preprocess the data using \code{glyclean::auto_clean()}.
 \item step_ident_overview(): Summarize the experiment using \code{glyexp::summarize_experiment()}.
+\item step_preprocess(): Preprocess the data using \code{glyclean::auto_clean()}.
 \item step_pca(): Principal component analysis using \code{glystats::gly_pca()},
 and plot the PCA using \code{glyvis::plot_pca()}.
 \item step_dea_limma(): Differential analysis using \code{glystats::gly_limma()}.
