@@ -16,7 +16,7 @@ A \code{glysmith_step} object.
 }
 \description{
 Summarize the experiment using \code{glyexp::summarize_experiment()}.
-This step can be run at any time, but is usually run before or right after preprocessing.
+This step can be run at any time, but is usually run before preprocessing.
 }
 \details{
 Data required:
@@ -40,5 +40,5 @@ This step supports the following dynamic arguments:
 step_ident_overview()
 }
 \seealso{
-\code{\link[glyexp:count_compositions]{glyexp::summarize_experiment()}}
+\code{\link[glyexp:summarize_experiment]{glyexp::summarize_experiment()}}
 }

@@ -151,7 +151,7 @@ step_preprocess <- function(...) {
 #' Step: Identification Overview
 #'
 #' Summarize the experiment using `glyexp::summarize_experiment()`.
-#' This step can be run at any time, but is usually run before or right after preprocessing.
+#' This step can be run at any time, but is usually run before preprocessing.
 #'
 #' @details
 #' Data required:
@@ -191,12 +191,11 @@ step_ident_overview <- function(...) {
     },
     report = function(x) {
       tbl <- x$tables[["summary"]]
-      parts <- paste0(tbl$n, " ", tbl$item, "s")
-      paste0(
-        "In total, ",
-        glue::glue_collapse(parts, sep = ", ", last = ", and "),
-        " were identified."
-      )
+      total_tbl <- dplyr::filter(tbl, stringr::str_starts(.data$item, "total_"))
+      total_parts <- paste0(total_tbl$n, " ", stringr::str_remove(total_tbl$item, "total_"), "s")
+      sample_tbl <- dplyr::filter(tbl, stringr::str_ends(.data$item, "_per_sample"))
+      sample_parts <- paste0(sample_tbl$n, " ", stringr::str_remove(sample_tbl$item, "_per_sample"), "s")
+      glue::glue("In total, there are {paste(total_parts, collapse = ', ')}. On average, there are {paste(sample_parts, collapse = ', ')} per sample.")
     },
     require = "exp",
     signature = signature
