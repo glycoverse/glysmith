@@ -112,7 +112,7 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner") {
     "  - DEPENDENCY: One of `step_dea_xxx` steps must be used before.",
     "- `step_sig_enrich_go`, `step_sig_enrich_kegg`, `step_sig_enrich_reactome`",
     "  - FUNCTION: Perform gene ontology, KEGG, and Reactome enrichment analysis.",
-    "  - USAGE: If the user asks for enrichment or biological functions.",
+    "  - USAGE: If the user asks for enrichment or biological functions. Only useful for glycoproteomics data.",
     "  - DEPENDENCY: One of `step_dea_xxx(on = 'sig_exp')` steps must be used before.",
     "- `step_derive_traits`",
     "  - FUNCTION: Calculate derived traits from the experiment.",
