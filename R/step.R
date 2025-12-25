@@ -564,7 +564,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' @returns Number of unique significant variables
 #' @noRd
 .dea_count_sig_total <- function(tbl) {
-  length(unique(tbl$variable[tbl$p_adj < 0.05]))
+  length(unique(tbl$variable[which(tbl$p_adj < 0.05)]))
 }
 
 #' Count significant variables per contrast
@@ -572,7 +572,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' @returns A named numeric vector with counts per contrast
 #' @noRd
 .dea_count_sig_per_contrast <- function(tbl) {
-  sig_tbl <- tbl[tbl$p_adj < 0.05, ]
+  sig_tbl <- tbl[which(tbl$p_adj < 0.05), ]
   if (nrow(sig_tbl) == 0) {
     return(character(0))
   }
