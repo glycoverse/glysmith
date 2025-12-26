@@ -16,6 +16,8 @@ A \code{glysmith_step} object.
 }
 \description{
 Run PCA using \code{glystats::gly_pca()} and plot it with \code{glyvis::plot_pca()}.
+Loading plot for glycoproteomics data can be crowded with too many variables.
+Ignore the resulting plot if it is not informative.
 }
 \details{
 Data required:
@@ -32,7 +34,9 @@ Tables generated:
 
 Plots generated:
 \itemize{
-\item \code{pca}: A PCA plot colored by group
+\item \code{pca_scores}: A PCA score plot colored by group
+\item \code{pca_loadings}: A PCA loading plot
+\item \code{pca_screeplot}: A PCA screeplot
 }
 }
 \section{Dynamic Arguments}{
@@ -40,8 +44,6 @@ This step supports the following dynamic arguments:
 \itemize{
 \item \code{glystats.gly_pca.center}: Whether to center the data (default: TRUE).
 \item \code{glystats.gly_pca.scale}: Whether to scale the data (default: TRUE).
-\item \code{glyvis.plot_pca.type}: Plot type ("screeplot", "individual", "variables", "biplot").
-\item \code{glyvis.plot_pca.groups}: Group membership for coloring.
 }
 }
 

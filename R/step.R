@@ -207,6 +207,8 @@ step_ident_overview <- function(...) {
 #' Step: Principal Component Analysis (PCA)
 #'
 #' Run PCA using `glystats::gly_pca()` and plot it with `glyvis::plot_pca()`.
+#' Loading plot for glycoproteomics data can be crowded with too many variables.
+#' Ignore the resulting plot if it is not informative.
 #'
 #' @details
 #' Data required:
@@ -218,14 +220,14 @@ step_ident_overview <- function(...) {
 #' - `pca_eigenvalues`: A table containing the PCA eigenvalues
 #'
 #' Plots generated:
-#' - `pca`: A PCA plot colored by group
+#' - `pca_scores`: A PCA score plot colored by group
+#' - `pca_loadings`: A PCA loading plot
+#' - `pca_screeplot`: A PCA screeplot
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
 #' - `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
 #' - `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
-#' - `glyvis.plot_pca.type`: Plot type ("screeplot", "individual", "variables", "biplot").
-#' - `glyvis.plot_pca.groups`: Group membership for coloring.
 #'
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
@@ -268,12 +270,28 @@ step_pca <- function(...) {
         glystats::get_tidy_result(pca_res, "eigenvalues"),
         "PCA eigenvalues."
       )
-      p <- .run_function(
+      p_scores <- .run_function(
         glyvis::plot_pca,
         pca_res,
-        step_dots = step_dots
+        step_dots = step_dots,
+        holy_args = list(type = "individual")
       )
-      ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
+      ctx <- ctx_add_plot(ctx, "pca_scores", p_scores, "PCA score plot colored by group.")
+      p_loadings <- .run_function(
+        glyvis::plot_pca,
+        pca_res,
+        step_dots = step_dots,
+        holy_args = list(type = "variables")
+      )
+      ctx <- ctx_add_plot(ctx, "pca_loadings", p_loadings, "PCA loading plot.")
+      p_screeplot <- .run_function(
+        glyvis::plot_pca,
+        pca_res,
+        step_dots = step_dots,
+        holy_args = list(type = "screeplot")
+      )
+      ctx <- ctx_add_plot(ctx, "pca_screeplot", p_screeplot, "PCA screeplot.")
+      ctx
     },
     require = "exp",
     signature = signature
