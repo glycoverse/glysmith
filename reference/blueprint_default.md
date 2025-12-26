@@ -2,11 +2,11 @@
 
 This blueprint contains the following steps:
 
+- step_ident_overview(): Summarize the experiment using
+  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html).
+
 - step_preprocess(): Preprocess the data using
   [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
-
-- step_ident_overview(): Summarize the experiment using
-  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/count_compositions.html).
 
 - step_pca(): Principal component analysis using
   [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html),
@@ -78,8 +78,8 @@ blueprint_default()
 #> 
 #> ── Blueprint (12 steps) ──
 #> 
-#> • step_preprocess()
 #> • step_ident_overview()
+#> • step_preprocess()
 #> • step_pca()
 #> • step_dea_limma()
 #> • step_volcano()

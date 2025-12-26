@@ -1,9 +1,10 @@
 # Step: Identification Overview
 
 Summarize the experiment using
-[`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/count_compositions.html).
-This step can be run at any time, but is usually run before or right
-after preprocessing.
+[`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html).
+This is usually the first step, BEFORE
+[`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md).
+Very light-weight to run, so always include it.
 
 ## Usage
 
@@ -43,7 +44,7 @@ This step supports the following dynamic arguments:
 
 ## See also
 
-[`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/count_compositions.html)
+[`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html)
 
 ## Examples
 

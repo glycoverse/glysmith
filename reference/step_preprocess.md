@@ -2,8 +2,7 @@
 
 Preprocess the experiment using
 [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
-This is usually the first step, but can be omitted if the experiment is
-already preprocessed.
+This step can be omitted if the experiment is already preprocessed.
 
 ## Usage
 

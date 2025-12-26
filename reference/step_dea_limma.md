@@ -7,7 +7,7 @@ variables using
 [`glystats::filter_sig_vars()`](https://glycoverse.github.io/glystats/reference/filter_sig_vars.html).
 By default, this runs DEA on the main experiment (`exp`), but can be
 configured to run on derived traits (`trait_exp`) or other experiment
-objects.
+objects. This step is the recommended DEA method for all experiments.
 
 ## Usage
 

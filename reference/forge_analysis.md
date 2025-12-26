@@ -53,6 +53,9 @@ A `glysmith_result` object, with the following components:
 ``` r
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
+#> ℹ Identification overview
+#> ✔ Identification overview [117ms]
+#> 
 #> ℹ Preprocessing
 #> 
 #> ℹ Preprocessing
@@ -100,10 +103,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [120ms]
-#> 
-#> ℹ Identification overview
-#> ✔ Identification overview [124ms]
+#> ✔ Preprocessing [115ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -117,21 +117,21 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [91ms]
+#> ✔ Differential expression analysis (limma) [86ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [620ms]
+#> ✔ Volcano plot [625ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [34ms]
+#> ✔ Heatmap of significant variables [13ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.7s]
+#> ✔ Derived trait calculation [2.8s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -140,7 +140,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [85ms]
+#> ✔ Differential trait analysis (limma) [82ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’

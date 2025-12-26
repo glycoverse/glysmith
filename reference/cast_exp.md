@@ -35,6 +35,9 @@ A glyexp_experiment object, a ggplot object or a tibble.
 library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
+#> ℹ Identification overview
+#> ✔ Identification overview [87ms]
+#> 
 #> ℹ Preprocessing
 #> 
 #> ℹ Preprocessing
@@ -82,15 +85,12 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [266ms]
-#> 
-#> ℹ Identification overview
-#> ✔ Identification overview [115ms]
+#> ✔ Preprocessing [250ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [16ms]
+#> ✔ Principal component analysis [18ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -99,21 +99,21 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [243ms]
+#> ✔ Differential expression analysis (limma) [246ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [827ms]
+#> ✔ Volcano plot [725ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [14ms]
+#> ✔ Heatmap of significant variables [28ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [7.8s]
+#> ✔ Derived trait calculation [8.2s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -122,7 +122,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [89ms]
+#> ✔ Differential trait analysis (limma) [65ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -136,9 +136,11 @@ cast_exp(result)
 #> ℹ Sample information fields: group <fct>
 #> ℹ Variable information fields: glycan_composition <comp>, glycan_structure <struct>
 cast_table(result, "summary")
-#> # A tibble: 2 × 2
-#>   item            n
-#>   <chr>       <int>
-#> 1 composition    67
-#> 2 structure      67
+#> # A tibble: 4 × 2
+#>   item                       n
+#>   <chr>                  <dbl>
+#> 1 total_composition       67  
+#> 2 total_structure         67  
+#> 3 composition_per_sample  52.7
+#> 4 structure_per_sample    52.7
 ```

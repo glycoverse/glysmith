@@ -61,7 +61,7 @@ That’s it! You’ve completed the following steps in one go:
 - Preprocessed your data using
   [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
 - Summarized the experiment with
-  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/count_compositions.html).
+  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html).
 - Performed principal component analysis with
   [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html).
 - Conducted differential expression analysis using
@@ -169,8 +169,8 @@ blueprint_default()
 #> 
 #> ── Blueprint (12 steps) ──
 #> 
-#> • step_preprocess()
 #> • step_ident_overview()
+#> • step_preprocess()
 #> • step_pca()
 #> • step_dea_limma()
 #> • step_volcano()
@@ -236,5 +236,20 @@ keep in mind:
   [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md)
   will overwrite the `dea_res` data from the former with that from the
   latter step. Ignore the warning if that’s what you intend.
+
+You can also use
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+to let a Large Language Model (LLM) help you create a blueprint. To use
+this feature, you need to provide an API key, either by setting the
+environment variable `DEEPSEEK_API_KEY`. You can obtain an API key from
+<https://platform.deepseek.com>.
+
+``` r
+Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
+bp <- inquire_blueprint("I want to know what pathways are enriched for my significantly differentially expressed glycoforms.")
+```
+
+*NOTE: This function might not be stable. Double check the blueprint
+before using it.*
 
 **Happy forging!**
