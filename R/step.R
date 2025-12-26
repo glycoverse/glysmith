@@ -60,6 +60,7 @@ all_steps <- function() {
     step_preprocess(),
     step_ident_overview(),
     step_pca(),
+    step_tsne(),
     step_heatmap(),
     step_dea_limma(),
     step_dea_ttest(),
@@ -272,6 +273,66 @@ step_pca <- function(...) {
         step_dots = step_dots
       )
       ctx_add_plot(ctx, "pca", p, "PCA plot colored by group.")
+    },
+    require = "exp",
+    signature = signature
+  )
+}
+
+#' Step: t-SNE
+#'
+#' Perform t-SNE analysis using `glystats::gly_tsne()` and
+#' plot a t-SNE plot using `glyvis::plot_tsne()`.
+#' Note that the result of t-SNE largely depends on the `perplexity` parameter.
+#' Usually it's a trial-and-error process to find the best value iteratively.
+#' If you are not satisfied with the result,
+#' manually call `glyvis::plot_tsne()` with different `perplexity` values
+#' to find the best one.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform t-SNE on
+#'
+#' Data generated:
+#' - `tsne`: The t-SNE result
+#'
+#' Plots generated:
+#' - `tsne`: The t-SNE plot
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_tsne.perplexity`: The perplexity parameter for t-SNE.
+#' - `glystats.gly_tsne.dims`: The number of dimensions for t-SNE.
+#' - `glystats.gly_tsne.xxx`: xxx are other parameters of `Rtsne::Rtsne()`.
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_tsne()` and `glyvis::plot_tsne()`.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_tsne(glystats.gly_tsne.perplexity = 30)`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_tsne()
+#' step_tsne(glystats.gly_tsne.perplexity = 30)
+#' @seealso [glystats::gly_tsne()], [glyvis::plot_tsne()]
+#' @export
+step_tsne <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
+  step_dots <- rlang::list2(...)
+  .valid_step_dots(step_dots)
+
+  step(
+    id = "tsne",
+    label = "t-SNE",
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      tsne <- .run_function(
+        glystats::gly_tsne,
+        exp,
+        step_dots = step_dots
+      )
+      ctx <- ctx_add_table(ctx, "tsne", glystats::get_tidy_result(tsne), "t-SNE result.")
+      ctx <- ctx_add_plot(ctx, "tsne", .run_function(glyvis::plot_tsne, tsne, step_dots = step_dots), "t-SNE plot.")
+      ctx
     },
     require = "exp",
     signature = signature
