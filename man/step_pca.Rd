@@ -4,7 +4,7 @@
 \alias{step_pca}
 \title{Step: Principal Component Analysis (PCA)}
 \usage{
-step_pca(on, ...)
+step_pca(on = "exp", ...)
 }
 \arguments{
 \item{on}{Name of the experiment to run PCA on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".}

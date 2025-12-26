@@ -239,17 +239,13 @@ step_ident_overview <- function(...) {
 #' step_pca()
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
-step_pca <- function(on, ...) {
+step_pca <- function(on = "exp", ...) {
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
-  id <- switch(on,
-    exp = "pca",
-    sig_exp = "pca_sig",
-    trait_exp = "pca_trait",
-    sig_trait_exp = "pca_sig_trait"
-  )
+  on_meta <- .resolve_on(on)
+  id <- paste0("pca", on_meta$id_suffix)
   step(
     id = id,
     label = "Principal component analysis",
@@ -364,12 +360,8 @@ step_tsne <- function(on = "exp", ...) {
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
 
-  id <- switch(on,
-    exp = "tsne",
-    sig_exp = "tsne_sig",
-    trait_exp = "tsne_trait",
-    sig_trait_exp = "tsne_sig_trait"
-  )
+  on_meta <- .resolve_on(on)
+  id <- paste0("tsne", on_meta$id_suffix)
 
   step(
     id = id,
@@ -433,12 +425,8 @@ step_umap <- function(on = "exp", ...) {
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
 
-  id <- switch(on,
-    exp = "umap",
-    sig_exp = "umap_sig",
-    trait_exp = "umap_trait",
-    sig_trait_exp = "umap_sig_trait"
-  )
+  on_meta <- .resolve_on(on)
+  id <- paste0("umap", on_meta$id_suffix)
 
   step(
     id = id,
@@ -1312,27 +1300,12 @@ step_heatmap <- function(on = "exp", ...) {
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
 
-  # Determine plot name based on `on` parameter
-  # "exp" -> "heatmap", "sig_exp" -> "sig_heatmap", etc.
-  plot_name <- switch(
-    on,
-    exp = "heatmap",
-    sig_exp = "sig_heatmap",
-    trait_exp = "trait_heatmap",
-    sig_trait_exp = "sig_trait_heatmap"
-  )
-
-  # Determine a readable label for the step
-  label <- switch(
-    on,
-    exp = "Heatmap",
-    sig_exp = "Heatmap of significant variables",
-    trait_exp = "Heatmap of traits",
-    sig_trait_exp = "Heatmap of significant traits"
-  )
+  on_meta <- .resolve_on(on)
+  plot_name <- paste0("heatmap", on_meta$id_suffix)
+  label <- paste0("Heatmap", on_meta$label_suffix)
 
   step(
-    id = paste0("heatmap_", on),
+    id = paste0("heatmap", on_meta$id_suffix),
     label = label,
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
@@ -1359,4 +1332,27 @@ step_heatmap <- function(on = "exp", ...) {
       "i" = "Use format {.arg pkg.func.arg}"
     ))
   }
+}
+
+#' Resolve properties from 'on' parameter
+#'
+#' @param on Name of the experiment data.
+#' @returns A list with suffixes and prefixes.
+#' @noRd
+.resolve_on <- function(on) {
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  list(
+    id_suffix = switch(on,
+      exp = "",
+      sig_exp = "_sig",
+      trait_exp = "_trait",
+      sig_trait_exp = "_sig_trait"
+    ),
+    label_suffix = switch(on,
+      exp = "",
+      sig_exp = " of significant variables",
+      trait_exp = " of traits",
+      sig_trait_exp = " of significant traits"
+    )
+  )
 }
