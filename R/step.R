@@ -61,6 +61,7 @@ all_steps <- function() {
     step_ident_overview(),
     step_pca(),
     step_tsne(),
+    step_umap(),
     step_heatmap(),
     step_dea_limma(),
     step_dea_ttest(),
@@ -332,6 +333,66 @@ step_tsne <- function(...) {
       )
       ctx <- ctx_add_table(ctx, "tsne", glystats::get_tidy_result(tsne), "t-SNE result.")
       ctx <- ctx_add_plot(ctx, "tsne", .run_function(glyvis::plot_tsne, tsne, step_dots = step_dots), "t-SNE plot.")
+      ctx
+    },
+    require = "exp",
+    signature = signature
+  )
+}
+
+#' Step: UMAP
+#'
+#' Perform UMAP analysis using `glystats::gly_umap()` and
+#' plot a UMAP plot using `glyvis::plot_umap()`.
+#' Note that the result of UMAP largely depends on the `n_neighbors` parameter.
+#' Usually it's a trial-and-error process to find the best value iteratively.
+#' If you are not satisfied with the result,
+#' manually call `glyvis::plot_umap()` with different `n_neighbors` values
+#' to find the best one.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform UMAP on
+#'
+#' Data generated:
+#' - `umap`: The UMAP result
+#'
+#' Plots generated:
+#' - `umap`: The UMAP plot
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_umap.n_neighbors`: The number of neighbors.
+#' - `glystats.gly_umap.n_components`: The number of dimensions.
+#' - `glystats.gly_umap.xxx`: xxx are other parameters of `uwot::umap()`.
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_umap()` and `glyvis::plot_umap()`.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_umap(glystats.gly_umap.n_neighbors = 15)`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_umap()
+#' step_umap(glystats.gly_umap.n_neighbors = 15)
+#' @seealso [glystats::gly_umap()], [glyvis::plot_umap()]
+#' @export
+step_umap <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
+  step_dots <- rlang::list2(...)
+  .valid_step_dots(step_dots)
+
+  step(
+    id = "umap",
+    label = "UMAP",
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      umap <- .run_function(
+        glystats::gly_umap,
+        exp,
+        step_dots = step_dots
+      )
+      ctx <- ctx_add_table(ctx, "umap", glystats::get_tidy_result(umap), "UMAP result.")
+      ctx <- ctx_add_plot(ctx, "umap", .run_function(glyvis::plot_umap, umap, step_dots = step_dots), "UMAP plot.")
       ctx
     },
     require = "exp",
