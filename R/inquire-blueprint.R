@@ -19,6 +19,7 @@
 #'
 #' @param description A description of what you want to analysis.
 #' @param model Model to use. Default to "deepseek-reasoner".
+#' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #'
 #' @export
 inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retries = 3) {

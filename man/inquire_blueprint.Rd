@@ -10,6 +10,8 @@ inquire_blueprint(description, model = "deepseek-reasoner", max_retries = 3)
 \item{description}{A description of what you want to analysis.}
 
 \item{model}{Model to use. Default to "deepseek-reasoner".}
+
+\item{max_retries}{Maximum number of retries when the AI output is invalid. Default to 3.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
