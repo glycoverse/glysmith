@@ -154,7 +154,7 @@ step_preprocess <- function(...) {
 #' Step: Identification Overview
 #'
 #' Summarize the experiment using `glyexp::summarize_experiment()`.
-#' This is usually the first step, before `step_preprocess()`.
+#' This is usually the first step, BEFORE `step_preprocess()`.
 #' Very light-weight to run, so always include it.
 #'
 #' @details

@@ -16,7 +16,7 @@ A \code{glysmith_step} object.
 }
 \description{
 Summarize the experiment using \code{glyexp::summarize_experiment()}.
-This is usually the first step, before \code{step_preprocess()}.
+This is usually the first step, BEFORE \code{step_preprocess()}.
 Very light-weight to run, so always include it.
 }
 \details{
