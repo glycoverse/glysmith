@@ -16,7 +16,7 @@ A \code{glysmith_step} object.
 }
 \description{
 Preprocess the experiment using \code{glyclean::auto_clean()}.
-This is usually the first step, but can be omitted if the experiment is already preprocessed.
+This step can be omitted if the experiment is already preprocessed.
 }
 \details{
 Data required:

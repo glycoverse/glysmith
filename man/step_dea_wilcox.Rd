@@ -22,6 +22,7 @@ Run differential analysis using Wilcoxon analysis via \code{glystats::gly_wilcox
 then filter the experiment to keep only the differentially expressed variables using \code{glystats::filter_sig_vars()}.
 By default, this runs DEA on the main experiment (\code{exp}), but can be configured
 to run on derived traits (\code{trait_exp}) or other experiment objects.
+Only use this method for experiments with 2 groups.
 }
 \details{
 Data required:

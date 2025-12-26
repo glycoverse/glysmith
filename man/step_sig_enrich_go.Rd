@@ -21,6 +21,7 @@ A \code{glysmith_step} object.
 Perform GO enrichment analysis on differentially expressed variables using \code{glystats::gly_enrich_go()}.
 This step requires one of the DEA steps to be run.
 Only execute for glycoproteomics experiments with exactly 2 groups.
+If used for glycomics experiments, the step will be skipped.
 Use all genes in OrgDb as the background.
 }
 \details{

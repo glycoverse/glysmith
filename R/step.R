@@ -81,7 +81,7 @@ all_steps <- function() {
 #' Step: Preprocessing
 #'
 #' Preprocess the experiment using `glyclean::auto_clean()`.
-#' This is usually the first step, but can be omitted if the experiment is already preprocessed.
+#' This step can be omitted if the experiment is already preprocessed.
 #'
 #' @details
 #' Data required:
@@ -153,7 +153,8 @@ step_preprocess <- function(...) {
 #' Step: Identification Overview
 #'
 #' Summarize the experiment using `glyexp::summarize_experiment()`.
-#' This step can be run at any time, but is usually run before preprocessing.
+#' This is usually the first step, before `step_preprocess()`.
+#' Very light-weight to run, so always include it.
 #'
 #' @details
 #' Data required:
@@ -453,6 +454,7 @@ step_umap <- function(on = "exp", ...) {
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
+#' This step is the recommended DEA method for all experiments.
 #'
 #' @details
 #' Data required:
@@ -501,6 +503,7 @@ step_dea_limma <- function(on = "exp", ...) {
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
+#' Only use this method for experiments with 2 groups.
 #'
 #' @details
 #' Data required:
@@ -592,6 +595,7 @@ step_dea_anova <- function(on = "exp", ...) {
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
+#' Only use this method for experiments with 2 groups.
 #'
 #' @details
 #' Data required:
@@ -981,6 +985,7 @@ step_volcano <- function(...) {
 #' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
 #' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments with exactly 2 groups.
+#' If used for glycomics experiments, the step will be skipped.
 #' Use all genes in OrgDb as the background.
 #'
 #' @details
@@ -1018,6 +1023,7 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
 #' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments with exactly 2 groups.
+#' If used for glycomics experiments, the step will be skipped.
 #' Use all genes in OrgDb as the background.
 #'
 #' @details
@@ -1054,6 +1060,7 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
 #' This step requires one of the DEA steps to be run.
 #' Only execute for glycoproteomics experiments with exactly 2 groups.
+#' If used for glycomics experiments, the step will be skipped.
 #' Use all genes in OrgDb as the background.
 #'
 #' @details
