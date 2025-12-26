@@ -159,7 +159,7 @@ test_that("inquire_blueprint retries on invalid output", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
-  bp <- inquire_blueprint("test description", max_retries = 2)
+  suppressMessages(bp <- inquire_blueprint("test description", max_retries = 2))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 2)
@@ -184,7 +184,7 @@ test_that("inquire_blueprint fails after max retries", {
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
   expect_error(
-    inquire_blueprint("test description", max_retries = 2),
+    suppressMessages(inquire_blueprint("test description", max_retries = 2)),
     "Failed to generate a valid blueprint after 2 retries"
   )
 
