@@ -4,7 +4,7 @@
 \alias{inquire_blueprint}
 \title{Create a Blueprint using Natural Language}
 \usage{
-inquire_blueprint(description, model = "deepseek-reasoner")
+inquire_blueprint(description, model = "deepseek-reasoner", max_retries = 3)
 }
 \arguments{
 \item{description}{A description of what you want to analysis.}

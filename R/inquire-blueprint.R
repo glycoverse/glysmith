@@ -21,60 +21,89 @@
 #' @param model Model to use. Default to "deepseek-reasoner".
 #'
 #' @export
-inquire_blueprint <- function(description, model = "deepseek-reasoner") {
+inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retries = 3) {
   checkmate::assert_string(description)
   checkmate::assert_choice(model, c("deepseek-reasoner", "deepseek-chat"))
+  checkmate::assert_count(max_retries)
+  rlang::check_installed("ellmer")
 
   api_key <- .get_api_key()
   system_prompt <- .inquire_blueprint_sys_prompt()
-  output <- .ask_ai(system_prompt, description, api_key, model)
 
-  .raise_invalid_ai_output <- function(output) {
-    cli::cli_abort(c(
-      "Invalid AI output.",
-      "x" = "AI output: {output}",
-      "i" = "AI can be wrong. Please try another description or create a blueprint manually."
-    ))
-  }
-
-  # Clean up the output - remove backticks and trim whitespace
-  output <- stringr::str_remove_all(output, "`")
-  output <- stringr::str_trim(output)
-
-  steps <- stringr::str_split_1(output, ";")
-  steps <- stringr::str_trim(steps)
-  steps <- steps[steps != ""]
-
-  if (length(steps) == 0) {
-    .raise_invalid_ai_output(output)
-  }
-  if (!all(stringr::str_detect(steps, "^step_.*?\\(.*?\\)$"))) {
-    .raise_invalid_ai_output(output)
-  }
-
-  # Parse and evaluate each step
-  step_objects <- tryCatch(
-    {
-      purrr::map(steps, function(step_str) {
-        expr <- rlang::parse_expr(step_str)
-        eval(expr)
-      })
-    },
-    error = function(e) {
-      cli::cli_abort(c(
-        "Failed to parse AI output as step functions.",
-        "x" = "AI output: {output}",
-        "x" = "Error: {e$message}",
-        "i" = "AI can be wrong. Please try another description or create a blueprint manually."
-      ))
-    }
+  chat <- ellmer::chat_deepseek(
+    system_prompt = system_prompt,
+    model = model,
+    echo = "none",
+    credentials = function() api_key
   )
 
-  # Create and return the blueprint
-  names(step_objects) <- purrr::map_chr(step_objects, "id")
-  bp <- new_blueprint(step_objects)
-  validate_blueprint(bp)
-  bp
+  # Initial prompt
+  current_prompt <- description
+
+  for (i in 0:max_retries) {
+    if (i > 0) {
+      cli::cli_alert_info("Attempt {i}/{max_retries}: Retrying with feedback...")
+    }
+
+    # Call AI
+    output <- as.character(chat$chat(current_prompt))
+
+    # Clean up the output - remove backticks and trim whitespace
+    output_clean <- stringr::str_remove_all(output, "`")
+    output_clean <- stringr::str_trim(output_clean)
+
+    steps <- stringr::str_split_1(output_clean, ";")
+    steps <- stringr::str_trim(steps)
+    steps <- steps[steps != ""]
+
+    error_msg <- NULL
+
+    if (length(steps) == 0) {
+      error_msg <- "The output is empty. Please provide a list of steps separated by ';'."
+    } else if (!all(stringr::str_detect(steps, "^step_.*?\\(.*?\\)$"))) {
+      error_msg <- "Invalid format. Every step must start with 'step_' and end with ')'. Split steps with ';'."
+    } else {
+      # Try to parsing and validation
+      tryCatch(
+        {
+          # Parse and evaluate
+          step_objects <- purrr::map(steps, function(step_str) {
+            expr <- rlang::parse_expr(step_str)
+            eval(expr)
+          })
+
+          names(step_objects) <- purrr::map_chr(step_objects, "id")
+          bp <- new_blueprint(step_objects)
+          validate_blueprint(bp)
+
+          # If we get here, everything is valid
+          return(bp)
+        },
+        error = function(e) {
+          error_msg <<- paste("Error:", e$message)
+        }
+      )
+    }
+
+    # If successful (error_msg is NULL), the function would have returned above.
+    # If we are here, there was an error.
+
+    if (i < max_retries) {
+      # Prepare prompt for next iteration
+      current_prompt <- paste0(
+        "The previous blueprint was invalid:\n",
+        error_msg, "\n",
+        "Please fix the blueprint and return the corrected list of steps."
+      )
+    } else {
+      # Final failure
+      cli::cli_abort(c(
+        "Failed to generate a valid blueprint after {max_retries} retries.",
+        "x" = "Last error: {error_msg}",
+        "i" = "Please try a different description or inspect the AI output."
+      ))
+    }
+  }
 }
 
 .inquire_blueprint_sys_prompt <- function() {
