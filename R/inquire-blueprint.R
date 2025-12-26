@@ -47,56 +47,21 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
 
     # Call AI
     output <- as.character(chat$chat(current_prompt))
+    result <- .process_blueprint_response(output)
 
-    # Clean up the output - remove backticks and trim whitespace
-    output_clean <- stringr::str_remove_all(output, "`")
-    output_clean <- stringr::str_trim(output_clean)
-
-    steps <- stringr::str_split_1(output_clean, ";")
-    steps <- stringr::str_trim(steps)
-    steps <- steps[steps != ""]
-
-    error_msg <- NULL
-
-    if (length(steps) == 0) {
-      error_msg <- "The output is empty. Please provide a list of steps separated by ';'."
-    } else if (!all(stringr::str_detect(steps, "^step_.*?\\(.*?\\)$"))) {
-      error_msg <- "Invalid format. Every step must start with 'step_' and end with ')'. Split steps with ';'."
-    } else {
-      # Try to parsing and validation
-      tryCatch(
-        {
-          # Parse and evaluate
-          step_objects <- purrr::map(steps, function(step_str) {
-            expr <- rlang::parse_expr(step_str)
-            eval(expr)
-          })
-
-          names(step_objects) <- purrr::map_chr(step_objects, "id")
-          bp <- new_blueprint(step_objects)
-          validate_blueprint(bp)
-
-          # If we get here, everything is valid
-          return(bp)
-        },
-        error = function(e) {
-          error_msg <<- paste("Error:", e$message)
-        }
-      )
+    if (result$valid) {
+      return(result$blueprint)
     }
 
-    # If successful (error_msg is NULL), the function would have returned above.
-    # If we are here, there was an error.
-
+    # Handle failure
+    error_msg <- result$error
     if (i < max_retries) {
-      # Prepare prompt for next iteration
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg, "\n",
         "Please fix the blueprint and return the corrected list of steps."
       )
     } else {
-      # Final failure
       cli::cli_abort(c(
         "Failed to generate a valid blueprint after {max_retries} retries.",
         "x" = "Last error: {error_msg}",
@@ -104,6 +69,45 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
       ))
     }
   }
+}
+
+.process_blueprint_response <- function(output) {
+  # Clean up the output - remove backticks and trim whitespace
+  output_clean <- stringr::str_remove_all(output, "`")
+  output_clean <- stringr::str_trim(output_clean)
+
+  steps <- stringr::str_split_1(output_clean, ";")
+  steps <- stringr::str_trim(steps)
+  steps <- steps[steps != ""]
+
+  if (length(steps) == 0) {
+    return(list(valid = FALSE, error = "The output is empty. Please provide a list of steps separated by ';'."))
+  }
+
+  if (!all(stringr::str_detect(steps, "^step_.*?\\(.*?\\)$"))) {
+    return(list(valid = FALSE, error = "Invalid format. Every step must start with 'step_' and end with ')'. Split steps with ';'."))
+  }
+
+  # Try parsing and validation
+  tryCatch(
+    {
+      # Parse and evaluate
+      step_objects <- purrr::map(steps, function(step_str) {
+        expr <- rlang::parse_expr(step_str)
+        eval(expr)
+      })
+
+      names(step_objects) <- purrr::map_chr(step_objects, "id")
+      bp <- new_blueprint(step_objects)
+      validate_blueprint(bp)
+
+      # If we get here, everything is valid
+      list(valid = TRUE, blueprint = bp)
+    },
+    error = function(e) {
+      list(valid = FALSE, error = paste("Error:", e$message))
+    }
+  )
 }
 
 .inquire_blueprint_sys_prompt <- function() {
