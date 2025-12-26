@@ -18,7 +18,6 @@ Description: glysmith provides high-level, end-to-end workflows for glycomics
     with minimal code while retaining full flexibility for customization.
 License: MIT + file LICENSE
 Suggests: 
-    ellmer,
     knitr,
     withr,
     testthat (>= 3.0.0)
@@ -30,6 +29,7 @@ URL: https://glycoverse.github.io/glysmith/
 Imports: 
     checkmate,
     cli,
+    ellmer,
     clusterProfiler,
     dplyr,
     EnhancedVolcano,
@@ -48,7 +48,10 @@ Imports:
     rlang,
     rmarkdown,
     stringr,
-    tibble
+    tibble,
+    pROC,
+    Rtsne,
+    uwot
 Remotes: 
     glycoverse/glyclean@*release,
     glycoverse/glydet@*release,

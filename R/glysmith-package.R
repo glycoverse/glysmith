@@ -12,4 +12,7 @@ ignore_unused_imports <- function() {
   clusterProfiler::enrichGO
   factoextra::fviz_pca_ind
   org.Hs.eg.db::org.Hs.eg.db
+  pROC::plot.roc
+  Rtsne::Rtsne
+  uwot::umap
 }
