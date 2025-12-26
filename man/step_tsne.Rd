@@ -4,9 +4,11 @@
 \alias{step_tsne}
 \title{Step: t-SNE}
 \usage{
-step_tsne(...)
+step_tsne(on = "exp", ...)
 }
 \arguments{
+\item{on}{Name of the experiment to run t-SNE on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".}
+
 \item{...}{Step-specific arguments passed to \code{glystats::gly_tsne()} and \code{glyvis::plot_tsne()}.
 Use the format \code{pkg.func.arg}.
 For example, \code{step_tsne(glystats.gly_tsne.perplexity = 30)}.}

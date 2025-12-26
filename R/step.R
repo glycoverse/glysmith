@@ -229,6 +229,7 @@ step_ident_overview <- function(...) {
 #' - `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
 #' - `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
 #'
+#' @param on Name of the experiment to run PCA on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_pca(glystats.gly_pca.center = FALSE)`.
@@ -238,15 +239,22 @@ step_ident_overview <- function(...) {
 #' step_pca()
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
-step_pca <- function(...) {
+step_pca <- function(on, ...) {
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
+  id <- switch(on,
+    exp = "pca",
+    sig_exp = "pca_sig",
+    trait_exp = "pca_trait",
+    sig_trait_exp = "pca_sig_trait"
+  )
   step(
-    id = "pca",
+    id = id,
     label = "Principal component analysis",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
+      exp <- ctx_get_data(ctx, on)
       pca_res <- .run_function(
         glystats::gly_pca,
         exp,
@@ -254,21 +262,21 @@ step_pca <- function(...) {
       )
       ctx <- ctx_add_table(
         ctx,
-        "pca_samples",
+        paste0(id, "_samples"),
         glystats::get_tidy_result(pca_res, "samples"),
-        "PCA scores for each sample."
+        paste0("PCA scores for each sample of ", on, ".")
       )
       ctx <- ctx_add_table(
         ctx,
-        "pca_variables",
+        paste0(id, "_variables"),
         glystats::get_tidy_result(pca_res, "variables"),
-        "PCA loadings for each variable."
+        paste0("PCA loadings for each variable of ", on, ".")
       )
       ctx <- ctx_add_table(
         ctx,
-        "pca_eigenvalues",
+        paste0(id, "_eigenvalues"),
         glystats::get_tidy_result(pca_res, "eigenvalues"),
-        "PCA eigenvalues."
+        paste0("PCA eigenvalues of ", on, ".")
       )
       p_scores <- .run_function(
         glyvis::plot_pca,
@@ -276,21 +284,36 @@ step_pca <- function(...) {
         step_dots = step_dots,
         holy_args = list(type = "individual")
       )
-      ctx <- ctx_add_plot(ctx, "pca_scores", p_scores, "PCA score plot colored by group.")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_scores"),
+        p_scores,
+        paste0("PCA score plot colored by group of ", on, ".")
+      )
       p_loadings <- .run_function(
         glyvis::plot_pca,
         pca_res,
         step_dots = step_dots,
         holy_args = list(type = "variables")
       )
-      ctx <- ctx_add_plot(ctx, "pca_loadings", p_loadings, "PCA loading plot.")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_loadings"),
+        p_loadings,
+        paste0("PCA loading plot of ", on, ".")
+      )
       p_screeplot <- .run_function(
         glyvis::plot_pca,
         pca_res,
         step_dots = step_dots,
         holy_args = list(type = "screeplot")
       )
-      ctx <- ctx_add_plot(ctx, "pca_screeplot", p_screeplot, "PCA screeplot.")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_screeplot"),
+        p_screeplot,
+        paste0("PCA screeplot of ", on, ".")
+      )
       ctx
     },
     require = "exp",
@@ -324,6 +347,7 @@ step_pca <- function(...) {
 #' - `glystats.gly_tsne.dims`: The number of dimensions for t-SNE.
 #' - `glystats.gly_tsne.xxx`: xxx are other parameters of `Rtsne::Rtsne()`.
 #'
+#' @param on Name of the experiment to run t-SNE on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
 #' @param ... Step-specific arguments passed to `glystats::gly_tsne()` and `glyvis::plot_tsne()`.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_tsne(glystats.gly_tsne.perplexity = 30)`.
@@ -334,26 +358,34 @@ step_pca <- function(...) {
 #' step_tsne(glystats.gly_tsne.perplexity = 30)
 #' @seealso [glystats::gly_tsne()], [glyvis::plot_tsne()]
 #' @export
-step_tsne <- function(...) {
+step_tsne <- function(on = "exp", ...) {
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
 
+  id <- switch(on,
+    exp = "tsne",
+    sig_exp = "tsne_sig",
+    trait_exp = "tsne_trait",
+    sig_trait_exp = "tsne_sig_trait"
+  )
+
   step(
-    id = "tsne",
+    id = id,
     label = "t-SNE",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
+      exp <- ctx_get_data(ctx, on)
       tsne <- .run_function(
         glystats::gly_tsne,
         exp,
         step_dots = step_dots
       )
-      ctx <- ctx_add_table(ctx, "tsne", glystats::get_tidy_result(tsne), "t-SNE result.")
-      ctx <- ctx_add_plot(ctx, "tsne", .run_function(glyvis::plot_tsne, tsne, step_dots = step_dots), "t-SNE plot.")
+      ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(tsne), paste0("t-SNE result of ", on, "."))
+      ctx <- ctx_add_plot(ctx, id, .run_function(glyvis::plot_tsne, tsne, step_dots = step_dots), paste0("t-SNE plot of ", on, "."))
       ctx
     },
-    require = "exp",
+    require = on,
     signature = signature
   )
 }
@@ -384,6 +416,7 @@ step_tsne <- function(...) {
 #' - `glystats.gly_umap.n_components`: The number of dimensions.
 #' - `glystats.gly_umap.xxx`: xxx are other parameters of `uwot::umap()`.
 #'
+#' @param on Name of the experiment to run UMAP on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
 #' @param ... Step-specific arguments passed to `glystats::gly_umap()` and `glyvis::plot_umap()`.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_umap(glystats.gly_umap.n_neighbors = 15)`.
@@ -394,26 +427,34 @@ step_tsne <- function(...) {
 #' step_umap(glystats.gly_umap.n_neighbors = 15)
 #' @seealso [glystats::gly_umap()], [glyvis::plot_umap()]
 #' @export
-step_umap <- function(...) {
+step_umap <- function(on = "exp", ...) {
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
 
+  id <- switch(on,
+    exp = "umap",
+    sig_exp = "umap_sig",
+    trait_exp = "umap_trait",
+    sig_trait_exp = "umap_sig_trait"
+  )
+
   step(
-    id = "umap",
+    id = id,
     label = "UMAP",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
+      exp <- ctx_get_data(ctx, on)
       umap <- .run_function(
         glystats::gly_umap,
         exp,
         step_dots = step_dots
       )
-      ctx <- ctx_add_table(ctx, "umap", glystats::get_tidy_result(umap), "UMAP result.")
-      ctx <- ctx_add_plot(ctx, "umap", .run_function(glyvis::plot_umap, umap, step_dots = step_dots), "UMAP plot.")
+      ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(umap), paste0("UMAP result of ", on, "."))
+      ctx <- ctx_add_plot(ctx, id, .run_function(glyvis::plot_umap, umap, step_dots = step_dots), paste0("UMAP plot of ", on, "."))
       ctx
     },
-    require = "exp",
+    require = on,
     signature = signature
   )
 }

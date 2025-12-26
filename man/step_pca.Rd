@@ -4,9 +4,11 @@
 \alias{step_pca}
 \title{Step: Principal Component Analysis (PCA)}
 \usage{
-step_pca(...)
+step_pca(on, ...)
 }
 \arguments{
+\item{on}{Name of the experiment to run PCA on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".}
+
 \item{...}{Step-specific arguments passed to underlying functions.
 Use the format \code{pkg.func.arg}.
 For example, \code{step_pca(glystats.gly_pca.center = FALSE)}.}
