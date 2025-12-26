@@ -72,7 +72,8 @@ all_steps <- function() {
     step_sig_enrich_go(),
     step_sig_enrich_kegg(),
     step_sig_enrich_reactome(),
-    step_derive_traits()
+    step_derive_traits(),
+    step_roc()
   )
   names(steps) <- purrr::map_chr(steps, "id")
   steps
@@ -1324,6 +1325,110 @@ step_heatmap <- function(on = "exp", ...) {
       ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
     },
     require = on,
+    signature = signature
+  )
+}
+
+#' Step: ROC Analysis
+#'
+#' Perform ROC analysis using `glystats::gly_roc()`,
+#' extract top 10 variables with highest AUC,
+#' and plot ROC curves for these variables using `glyvis::plot_roc()`.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform ROC analysis on
+#'
+#' Tables generated:
+#' - `roc_auc`: A table containing the ROC AUC values for all variables
+#'
+#' Plots generated:
+#' - `roc_curves`: ROC curves for the top 10 variables
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glystats.gly_roc.pos_class`: The positive class.
+#'
+#' @param ... Step-specific arguments passed to `glystats::gly_roc()` and `glyvis::plot_roc()`.
+#'   Use the format `pkg.func.arg`.
+#'   For example, `step_roc(glystats.gly_roc.pos_class = "positive_class")`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_roc()
+#' @seealso [glystats::gly_roc()], [glyvis::plot_roc()]
+#' @export
+step_roc <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
+  step_dots <- rlang::list2(...)
+  .valid_step_dots(step_dots)
+
+  step(
+    id = "roc",
+    label = "ROC analysis",
+    condition = function(ctx) {
+      if (length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2) {
+        list(check = TRUE, reason = NULL)
+      } else {
+        list(check = FALSE, reason = "more than 2 groups are in the experiment")
+      }
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      roc_res <- .run_function(
+        glystats::gly_roc,
+        exp,
+        step_dots = step_dots
+      )
+
+      # Save full AUC results
+      ctx <- ctx_add_table(
+        ctx,
+        "roc_auc",
+        roc_res$tidy_result$auc,
+        "ROC AUC values for all variables."
+      )
+
+      # Extract top 10 variables
+      top_vars <- roc_res$tidy_result$auc |>
+        dplyr::slice_max(.data$auc, n = 10, with_ties = FALSE) |>
+        dplyr::pull("variable")
+
+      # Filter experiment and plot
+      sub_exp <- exp |>
+        glyexp::filter_var(.data$variable %in% top_vars)
+
+      p_roc <- .run_function(
+        glyvis::plot_roc,
+        sub_exp,
+        step_dots = step_dots,
+        holy_args = list(type = "roc")
+      )
+
+      ctx <- ctx_add_plot(
+        ctx,
+        "roc_curves",
+        p_roc,
+        "ROC curves for top 10 variables."
+      )
+
+      ctx
+    },
+    report = function(x) {
+      auc_vals <- x$tables$roc_auc$auc
+
+      n_gt_0.8 <- sum(auc_vals > 0.8, na.rm = TRUE)
+      n_gt_0.9 <- sum(auc_vals > 0.9, na.rm = TRUE)
+      max_auc <- max(auc_vals, na.rm = TRUE)
+
+      glue::glue(
+        "ROC analysis was performed. ",
+        "There are {n_gt_0.8} variables with AUC > 0.8, ",
+        "{n_gt_0.9} variables with AUC > 0.9. ",
+        "The highest AUC is {round(max_auc, 3)}."
+      )
+    },
+    require = "exp",
     signature = signature
   )
 }
