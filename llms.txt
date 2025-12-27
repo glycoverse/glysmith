@@ -13,6 +13,8 @@ line of code.
 Try glysmith! Perform the comprehensive analysis pipeline with one
 function call.
 
+<https://github.com/user-attachments/assets/d1eede5f-f919-428b-a5e8-574a8ab6f863>
+
 ## Installation
 
 You can install the development version of glysmith from

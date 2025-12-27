@@ -56,7 +56,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [111ms]
+#> ✔ Identification overview [125ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -105,7 +105,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [118ms]
+#> ✔ Preprocessing [120ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
@@ -119,10 +119,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [94ms]
+#> ✔ Differential expression analysis (limma) [90ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [853ms]
+#> ✔ Volcano plot [851ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -133,7 +133,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.2s]
+#> ✔ Derived trait calculation [2.4s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -142,7 +142,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [82ms]
+#> ✔ Differential trait analysis (limma) [83ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
@@ -150,5 +150,5 @@ result <- forge_analysis(exp)
 #> ✔ Heatmap of significant traits [12ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpFOOzhX/file1d051c1fcdac.html"
+#> [1] "/tmp/RtmpAG6qO6/file1c8217def768.html"
 ```
