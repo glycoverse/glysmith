@@ -5,7 +5,7 @@
     Message
       
       -- GlySmith Analysis Result 
-      Plots: 2, Tables: 1
+      Plots: 2, Tables: 1, Data: 0
 
 # print.glysmith_result handles empty plots and tables
 
@@ -14,7 +14,7 @@
     Message
       
       -- GlySmith Analysis Result 
-      Plots: 0, Tables: 0
+      Plots: 0, Tables: 0, Data: 0
 
 # print.glysmith_result handles NULL plots and tables
 
@@ -23,7 +23,7 @@
     Message
       
       -- GlySmith Analysis Result 
-      Plots: 0, Tables: 0
+      Plots: 0, Tables: 0, Data: 0
 
 # cast_table works
 
