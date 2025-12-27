@@ -27,7 +27,7 @@ line of code.
 Try glysmith! Perform the comprehensive analysis pipeline with one
 function call.
 
-https://github.com/user-attachments/assets/d1eede5f-f919-428b-a5e8-574a8ab6f863
+<https://github.com/user-attachments/assets/d1eede5f-f919-428b-a5e8-574a8ab6f863>
 
 ## Installation
 
@@ -57,7 +57,15 @@ quench_result(result, "path/to/save")
 polish_report(result, "report.html")
 ```
 
-After running the above `quench_result` line, you will get a organized
+After running the above `quench_result` line, you will get an organized
 result folder:
 
 ![](man/figures/result-folder.png)
+
+And after running the above `polish_report` line, you will get a report
+in HTML format and automatically open it in your default browser:
+
+![](man/figures/report.png)
+
+*Note: Here we set `use_ai` to `TRUE` to enable LLM-assisted report
+generation.*
