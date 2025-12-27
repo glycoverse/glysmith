@@ -11,7 +11,7 @@ elements of a glysmith result object, respectively."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@ elements of a glysmith result object, respectively.</p>
 <span class="r-in"><span><span class="va">exp</span> <span class="op">&lt;-</span> <span class="va">real_experiment2</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Identification overview</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Identification overview <span style="color: #B2B2B2;">[87ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Identification overview <span style="color: #B2B2B2;">[93ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Preprocessing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -123,7 +123,7 @@ elements of a glysmith result object, respectively.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Preprocessing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `step_preprocess()` failed. Skipping... Error: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Preprocessing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Preprocessing <span style="color: #B2B2B2;">[254ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Preprocessing <span style="color: #B2B2B2;">[244ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Principal component analysis</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance</span>
@@ -137,19 +137,19 @@ elements of a glysmith result object, respectively.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Pairwise comparisons will be performed, with levels coming first as reference groups.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential expression analysis (limma)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential expression analysis (limma) <span style="color: #B2B2B2;">[422ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential expression analysis (limma) <span style="color: #B2B2B2;">[232ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Volcano plot</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Volcano plot <span style="color: #B2B2B2;">[791ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Volcano plot <span style="color: #B2B2B2;">[776ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Heatmap of significant variables</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Heatmap of significant variables <span style="color: #B2B2B2;">[105ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Heatmap of significant variables <span style="color: #B2B2B2;">[103ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Derived trait calculation</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Derived trait calculation <span style="color: #B2B2B2;">[8.5s]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Derived trait calculation <span style="color: #B2B2B2;">[8.1s]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Number of groups: <span style="color: #0000BB;">4</span></span>
@@ -158,10 +158,10 @@ elements of a glysmith result object, respectively.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Pairwise comparisons will be performed, with levels coming first as reference groups.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Differential trait analysis (limma)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential trait analysis (limma) <span style="color: #B2B2B2;">[89ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Differential trait analysis (limma) <span style="color: #B2B2B2;">[82ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Heatmap of significant traits</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Heatmap of significant traits <span style="color: #B2B2B2;">[42ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Heatmap of significant traits <span style="color: #B2B2B2;">[40ms]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">cast_exp</span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
