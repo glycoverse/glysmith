@@ -51,7 +51,9 @@ Imports:
     tibble,
     pROC,
     Rtsne,
-    uwot
+    uwot,
+    ggplotify,
+    pheatmap
 Remotes: 
     glycoverse/glyclean@*release,
     glycoverse/glydet@*release,

@@ -15,4 +15,6 @@ ignore_unused_imports <- function() {
   pROC::plot.roc
   Rtsne::Rtsne
   uwot::umap
+  ggplotify::ggplotify
+  pheatmap::pheatmap
 }
