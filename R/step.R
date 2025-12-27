@@ -314,7 +314,7 @@ step_pca <- function(on = "exp", ...) {
       )
       ctx
     },
-    require = "exp",
+    require = on,
     signature = signature
   )
 }
