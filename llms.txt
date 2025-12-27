@@ -43,10 +43,18 @@ quench_result(result, "path/to/save")
 polish_report(result, "report.html")
 ```
 
-After running the above `quench_result` line, you will get a organized
+After running the above `quench_result` line, you will get an organized
 result folder:
 
 ![](reference/figures/result-folder.png)
+
+And after running the above `polish_report` line, you will get a report
+in HTML format and automatically open it in your default browser:
+
+![](reference/figures/report.png)
+
+*Note: Here we set `use_ai` to `TRUE` to enable LLM-assisted report
+generation.*
 
 # Package index
 

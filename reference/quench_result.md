@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [126ms]
+#> ✔ Identification overview [92ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -101,12 +101,12 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ! `step_preprocess()` failed. Skipping... Error: 
 #> ℹ Preprocessing
-#> ✔ Preprocessing [93ms]
+#> ✔ Preprocessing [116ms]
 #> 
 #> ℹ Principal component analysis
 #> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [14ms]
+#> ✔ Principal component analysis [13ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -115,15 +115,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [89ms]
+#> ✔ Differential expression analysis (limma) [64ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [556ms]
+#> ✔ Volcano plot [575ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ! `step_heatmap(on = "sig_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
-#> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [13ms]
+#> ✔ Heatmap of significant variables [40ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -138,14 +136,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [85ms]
+#> ✔ Differential trait analysis (limma) [82ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ! `step_heatmap(on = "sig_trait_exp")` failed. Skipping... Error: there is no package called ‘pheatmap’
-#> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [13ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmpAG6qO6
+#> ✔ Result saved to /tmp/RtmpItoejp
 ```
