@@ -1,6 +1,6 @@
-glysmith_result <- function(exp, plots, tables, meta, blueprint) {
+glysmith_result <- function(exp, data, plots, tables, meta, blueprint) {
   structure(
-    list(exp = exp, plots = plots, tables = tables, meta = meta, blueprint = blueprint),
+    list(exp = exp, data = data, plots = plots, tables = tables, meta = meta, blueprint = blueprint),
     class = "glysmith_result"
   )
 }
@@ -8,7 +8,7 @@ glysmith_result <- function(exp, plots, tables, meta, blueprint) {
 #' @export
 print.glysmith_result <- function(x, ...) {
   cli::cli_h3("GlySmith Analysis Result")
-  cli::cli_text("Plots: {.val {length(x$plots)}}, Tables: {.val {length(x$tables)}}")
+  cli::cli_text("Plots: {.val {length(x$plots)}}, Tables: {.val {length(x$tables)}}, Data: {.val {length(x$data)}}")
   invisible(x)
 }
 
