@@ -61,3 +61,7 @@ quench_result(result, "path/to/save")
 # One line of code to generate a report
 polish_report(result, "report.html")
 ```
+
+After running the above `quench_result` line, you will get a organized result folder:
+
+![](man/figures/result-folder.png)
