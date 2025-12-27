@@ -58,7 +58,8 @@ This step supports the following dynamic arguments:
 
 - `glystats.gly_umap.n_components`: The number of dimensions.
 
-- `glystats.gly_umap.xxx`: xxx are other parameters of `uwot::umap()`.
+- `glystats.gly_umap.xxx`: xxx are other parameters of
+  [`uwot::umap()`](https://jlmelville.github.io/uwot/reference/umap.html).
 
 ## See also
 

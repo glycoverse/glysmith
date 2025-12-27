@@ -58,7 +58,8 @@ This step supports the following dynamic arguments:
 
 - `glystats.gly_tsne.dims`: The number of dimensions for t-SNE.
 
-- `glystats.gly_tsne.xxx`: xxx are other parameters of `Rtsne::Rtsne()`.
+- `glystats.gly_tsne.xxx`: xxx are other parameters of
+  [`Rtsne::Rtsne()`](https://rdrr.io/pkg/Rtsne/man/Rtsne.html).
 
 ## See also
 

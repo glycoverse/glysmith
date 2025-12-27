@@ -23,6 +23,10 @@ inquire_blueprint(description, model = "deepseek-reasoner", max_retries = 3)
 
   Model to use. Default to "deepseek-reasoner".
 
+- max_retries:
+
+  Maximum number of retries when the AI output is invalid. Default to 3.
+
 ## Details
 
 LLMs can be unstable. If you get an error, try again with another

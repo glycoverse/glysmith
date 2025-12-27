@@ -15,8 +15,6 @@ function call.
 
 ## Installation
 
-> \[!NOTE\] This package is still in development and may not be stable.
-
 You can install the development version of glysmith from
 [GitHub](https://github.com/) with:
 
@@ -42,6 +40,11 @@ quench_result(result, "path/to/save")
 # One line of code to generate a report
 polish_report(result, "report.html")
 ```
+
+After running the above `quench_result` line, you will get a organized
+result folder:
+
+![](reference/figures/result-folder.png)
 
 # Package index
 
