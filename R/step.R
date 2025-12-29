@@ -1266,6 +1266,92 @@ step_derive_traits <- function(...) {
   )
 }
 
+#' Step: Quantify Motifs
+#'
+#' Quantify glycan motifs using `glydet::quantify_motifs()`.
+#' The motifs are extracted using `glymotif::extract_branch_motif()` for N-glycans
+#' and `glymotif::extract_motif()` for others.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to quantify motifs for
+#'
+#' Data generated:
+#' - `motif_exp`: The experiment with quantified motifs
+#'
+#' Tables generated:
+#' - `quantified_motifs`: A table containing the quantified motifs.
+#'
+#' # Dynamic Arguments
+#' This step supports the following dynamic arguments:
+#' - `glymotif.extract_motif.max_size`: Maximum size of motifs to extract.
+#' - `glydet.quantify_motifs.method`: "relative" or "absolute".
+#'
+#' @param ... Step-specific arguments passed to underlying functions.
+#'   Use the format `pkg.func.arg`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_quantify_motifs()
+#' @seealso [glydet::quantify_motifs()], [glymotif::extract_motif()], [glymotif::extract_branch_motif()]
+#' @export
+step_quantify_motifs <- function(...) {
+  signature <- rlang::expr_deparse(match.call())
+  step_dots <- rlang::list2(...)
+  .valid_step_dots(step_dots)
+
+  step(
+    id = "quantify_motifs",
+    label = "Motif quantification",
+    condition = function(ctx) {
+      check <- "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info)
+      reason <- "glycan structures are not available in the experiment"
+      list(check = check, reason = reason)
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      type <- glyexp::get_glycan_type(exp)
+
+      if (type == "N") {
+        motifs <- glymotif::extract_branch_motif(exp$var_info$glycan_structure)
+        alignment <- "exact"
+      } else {
+        motifs <- .run_function(glymotif::extract_motif, exp$var_info$glycan_structure, step_dots = step_dots)
+        alignment <- "substructure"
+      }
+
+      motif_exp <- .run_function(
+        glydet::quantify_motifs,
+        exp,
+        step_dots = step_dots,
+        holy_args = list(motifs = motifs, alignment = alignment, ignore_linkages = FALSE)
+      )
+
+      ctx <- ctx_add_data(ctx, "motif_exp", motif_exp)
+      ctx <- ctx_add_table(ctx, "quantified_motifs", tibble::as_tibble(motif_exp), "Motif quantification results.")
+      ctx
+    },
+    report = function(x) {
+      tbl <- x$tables[["quantified_motifs"]]
+      n_motifs <- length(unique(tbl$motif))
+      motif_type_msg <- ifelse(
+        glyexp::get_glycan_type(ctx_get_data(x, "exp")) == "N",
+        "Branching motifs for N-glycans were extracted. ",
+        "All motifs were extracted. "
+      )
+      msg <- paste0(
+        "Motif quantification was performed. ",
+        motif_type_msg,
+        "Number of quantified motifs: ", n_motifs, "."
+      )
+      msg
+    },
+    generate = "motif_exp",
+    require = "exp",
+    signature = signature
+  )
+}
+
 #' Step: Heatmap
 #'
 #' Create a heatmap plot using `glyvis::plot_heatmap()`.
