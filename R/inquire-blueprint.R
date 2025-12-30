@@ -51,6 +51,10 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
     result <- .process_blueprint_response(output)
 
     if (result$valid) {
+      if (!is.null(result$explanation) && nzchar(result$explanation)) {
+        cli::cli_h3("Blueprint Explanation")
+        cli::cli_text(result$explanation)
+      }
       return(result$blueprint)
     }
 
@@ -76,6 +80,16 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
   # Clean up the output - remove backticks and trim whitespace
   output_clean <- stringr::str_remove_all(output, "`")
   output_clean <- stringr::str_trim(output_clean)
+
+  # Split explanation and steps by "---" delimiter
+  explanation <- NULL
+  if (stringr::str_detect(output_clean, "---")) {
+    parts <- stringr::str_split_1(output_clean, "---")
+    if (length(parts) >= 2) {
+      explanation <- stringr::str_trim(parts[1])
+      output_clean <- stringr::str_trim(parts[2])
+    }
+  }
 
   steps <- stringr::str_split_1(output_clean, ";")
   steps <- stringr::str_trim(steps)
@@ -103,7 +117,7 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
       validate_blueprint(bp)
 
       # If we get here, everything is valid
-      list(valid = TRUE, blueprint = bp)
+      list(valid = TRUE, blueprint = bp, explanation = explanation)
     },
     error = function(e) {
       list(valid = FALSE, error = paste("Error:", e$message))
@@ -121,10 +135,15 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
     "Available analytical steps include:\n",
     step_descriptions,
     "\n",
-    "Return: ONLY RETURN A list of analytical steps and parameters in function calls, separated by `;`.",
-    "For example:",
-    "`step_preprocess();step_ident_overview();step_pca();step_dea_limma();step_heatmap(on = 'sig_exp')`",
-    "Do NOT add any explanation.",
+    "Return format:",
+    "1. First, provide a BRIEF explanation (1-3 sentences) of why you chose these steps.",
+    "2. Then write `---` on a new line.",
+    "3. Finally, list analytical steps as function calls separated by `;`.",
+    "",
+    "Example output:",
+    "Your data needs preprocessing to handle missing values, followed by statistical analysis to find significant changes.",
+    "---",
+    "step_preprocess();step_pca();step_dea_limma();step_heatmap(on = 'sig_exp')",
     sep = "\n"
   )
   prompt
