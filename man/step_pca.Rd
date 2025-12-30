@@ -7,7 +7,8 @@
 step_pca(on = "exp", ...)
 }
 \arguments{
-\item{on}{Name of the experiment to run PCA on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".}
+\item{on}{Name of the experiment to run PCA on.
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
 
 \item{...}{Step-specific arguments passed to underlying functions.
 Use the format \code{pkg.func.arg}.
@@ -24,17 +25,19 @@ Ignore the resulting plot if it is not informative.
 \details{
 Data required:
 \itemize{
-\item \code{exp}: The experiment to run PCA on
+\item \code{exp} (if \code{on = "exp"}): The experiment to run PCA on
+\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run PCA on
+\item \code{motif_exp} (if \code{on = "motif_exp"}): The motif experiment to run PCA on
 }
 
-Tables generated:
+Tables generated (with suffixes):
 \itemize{
 \item \code{pca_samples}: A table containing the PCA scores for each sample
 \item \code{pca_variables}: A table containing the PCA loadings for each variable
 \item \code{pca_eigenvalues}: A table containing the PCA eigenvalues
 }
 
-Plots generated:
+Plots generated (with suffixes):
 \itemize{
 \item \code{pca_scores}: A PCA score plot colored by group
 \item \code{pca_loadings}: A PCA loading plot

@@ -8,7 +8,7 @@ step_heatmap(on = "exp", ...)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 Default is "exp".}
 
 \item{...}{Step-specific arguments passed to \code{glyvis::plot_heatmap()}.
@@ -34,6 +34,8 @@ Plots generated:
 \item \code{sig_heatmap}: A heatmap plot (if \code{on = "sig_exp"})
 \item \code{trait_heatmap}: A heatmap plot (if \code{on = "trait_exp"})
 \item \code{sig_trait_heatmap}: A heatmap plot (if \code{on = "sig_trait_exp"})
+\item \code{motif_heatmap}: A heatmap plot (if \code{on = "motif_exp"})
+\item \code{sig_motif_heatmap}: A heatmap plot (if \code{on = "sig_motif_exp"})
 }
 }
 \section{Dynamic Arguments}{

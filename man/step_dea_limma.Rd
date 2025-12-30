@@ -9,7 +9,8 @@ step_dea_limma(on = "exp", ...)
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
 Default is \code{"exp"} for differential expression analysis.
-Use \code{"trait_exp"} for differential trait analysis.}
+Use \code{"trait_exp"} for differential trait analysis.
+Use \code{"motif_exp"} for differential motif analysis.}
 
 \item{...}{Step-specific arguments passed to \code{glystats::gly_limma()}.
 Use the format \code{pkg.func.arg}.
@@ -28,21 +29,26 @@ This step is the recommended DEA method for all experiments.
 \details{
 Data required:
 \itemize{
-\item Depends on \code{on} parameter (default: \code{exp})
+\item \code{exp} (if \code{on = "exp"}): The experiment to run DEA on
+\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run DEA on
+\item \code{motif_exp} (if \code{on = "motif_exp"}): The motif experiment to run DEA on
 }
 
 Data generated:
 \itemize{
-\item \code{dea_res}: The DEA results (if \code{on = "exp"}, default)
-\item \code{dta_res}: The DTA results (if \code{on = "trait_exp"})
+\item \code{dea_res}: The DEA (differential expression analysis) results (if \code{on = "exp"}, default)
+\item \code{dta_res}: The DTA (differential trait analysis) results (if \code{on = "trait_exp"})
+\item \code{dma_res}: The DMA (differential motif analysis) results (if \code{on = "motif_exp"})
 \item \code{sig_exp}: The filtered experiment (if \code{on = "exp"}, default)
 \item \code{sig_trait_exp}: The filtered trait experiment (if \code{on = "trait_exp"})
+\item \code{sig_motif_exp}: The filtered motif experiment (if \code{on = "motif_exp"})
 }
 
 Tables generated:
 \itemize{
-\item \code{dea}: A table containing the DEA result (if \code{on = "exp"}, default)
-\item \code{dta}: A table containing the DTA result (if \code{on = "trait_exp"})
+\item \code{dea}: A table containing the DEA (differential expression analysis) result (if \code{on = "exp"}, default)
+\item \code{dta}: A table containing the DTA (differential trait analysis) result (if \code{on = "trait_exp"})
+\item \code{dma}: A table containing the DMA (differential motif analysis) result (if \code{on = "motif_exp"})
 }
 }
 \section{Dynamic Arguments}{

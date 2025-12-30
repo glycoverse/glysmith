@@ -7,7 +7,8 @@
 step_tsne(on = "exp", ...)
 }
 \arguments{
-\item{on}{Name of the experiment to run t-SNE on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".}
+\item{on}{Name of the experiment to run t-SNE on.
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
 
 \item{...}{Step-specific arguments passed to \code{glystats::gly_tsne()} and \code{glyvis::plot_tsne()}.
 Use the format \code{pkg.func.arg}.
@@ -28,15 +29,17 @@ to find the best one.
 \details{
 Data required:
 \itemize{
-\item \code{exp}: The experiment to perform t-SNE on
+\item \code{exp} (if \code{on = "exp"}): The experiment to perform t-SNE on
+\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to perform t-SNE on
+\item \code{motif_exp} (if \code{on = "motif_exp"}): The motif experiment to perform t-SNE on
 }
 
-Data generated:
+Data generated (with suffixes):
 \itemize{
 \item \code{tsne}: The t-SNE result
 }
 
-Plots generated:
+Plots generated (with suffixes):
 \itemize{
 \item \code{tsne}: The t-SNE plot
 }

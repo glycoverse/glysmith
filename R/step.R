@@ -214,14 +214,16 @@ step_ident_overview <- function(...) {
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to run PCA on
+#' - `exp` (if `on = "exp"`): The experiment to run PCA on
+#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PCA on
+#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run PCA on
 #'
-#' Tables generated:
+#' Tables generated (with suffixes):
 #' - `pca_samples`: A table containing the PCA scores for each sample
 #' - `pca_variables`: A table containing the PCA loadings for each variable
 #' - `pca_eigenvalues`: A table containing the PCA eigenvalues
 #'
-#' Plots generated:
+#' Plots generated (with suffixes):
 #' - `pca_scores`: A PCA score plot colored by group
 #' - `pca_loadings`: A PCA loading plot
 #' - `pca_screeplot`: A PCA screeplot
@@ -231,7 +233,8 @@ step_ident_overview <- function(...) {
 #' - `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
 #' - `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
 #'
-#' @param on Name of the experiment to run PCA on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+#' @param on Name of the experiment to run PCA on.
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #' @param ... Step-specific arguments passed to underlying functions.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_pca(glystats.gly_pca.center = FALSE)`.
@@ -242,7 +245,7 @@ step_ident_overview <- function(...) {
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
 step_pca <- function(on = "exp", ...) {
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
@@ -331,12 +334,14 @@ step_pca <- function(on = "exp", ...) {
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to perform t-SNE on
+#' - `exp` (if `on = "exp"`): The experiment to perform t-SNE on
+#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform t-SNE on
+#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform t-SNE on
 #'
-#' Data generated:
+#' Data generated (with suffixes):
 #' - `tsne`: The t-SNE result
 #'
-#' Plots generated:
+#' Plots generated (with suffixes):
 #' - `tsne`: The t-SNE plot
 #'
 #' # Dynamic Arguments
@@ -345,7 +350,8 @@ step_pca <- function(on = "exp", ...) {
 #' - `glystats.gly_tsne.dims`: The number of dimensions for t-SNE.
 #' - `glystats.gly_tsne.xxx`: xxx are other parameters of `Rtsne::Rtsne()`.
 #'
-#' @param on Name of the experiment to run t-SNE on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+#' @param on Name of the experiment to run t-SNE on.
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #' @param ... Step-specific arguments passed to `glystats::gly_tsne()` and `glyvis::plot_tsne()`.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_tsne(glystats.gly_tsne.perplexity = 30)`.
@@ -357,7 +363,7 @@ step_pca <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_tsne()], [glyvis::plot_tsne()]
 #' @export
 step_tsne <- function(on = "exp", ...) {
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
@@ -396,12 +402,14 @@ step_tsne <- function(on = "exp", ...) {
 #'
 #' @details
 #' Data required:
-#' - `exp`: The experiment to perform UMAP on
+#' - `exp` (if `on = "exp"`): The experiment to perform UMAP on
+#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform UMAP on
+#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform UMAP on
 #'
-#' Data generated:
+#' Data generated (with suffixes):
 #' - `umap`: The UMAP result
 #'
-#' Plots generated:
+#' Plots generated (with suffixes):
 #' - `umap`: The UMAP plot
 #'
 #' # Dynamic Arguments
@@ -410,7 +418,8 @@ step_tsne <- function(on = "exp", ...) {
 #' - `glystats.gly_umap.n_components`: The number of dimensions.
 #' - `glystats.gly_umap.xxx`: xxx are other parameters of `uwot::umap()`.
 #'
-#' @param on Name of the experiment to run UMAP on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+#' @param on Name of the experiment to run UMAP on.
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #' @param ... Step-specific arguments passed to `glystats::gly_umap()` and `glyvis::plot_umap()`.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_umap(glystats.gly_umap.n_neighbors = 15)`.
@@ -422,7 +431,7 @@ step_tsne <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_umap()], [glyvis::plot_umap()]
 #' @export
 step_umap <- function(on = "exp", ...) {
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
@@ -459,17 +468,22 @@ step_umap <- function(on = "exp", ...) {
 #'
 #' @details
 #' Data required:
-#' - Depends on `on` parameter (default: `exp`)
+#' - `exp` (if `on = "exp"`): The experiment to run DEA on
+#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run DEA on
+#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run DEA on
 #'
 #' Data generated:
-#' - `dea_res`: The DEA results (if `on = "exp"`, default)
-#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `dea_res`: The DEA (differential expression analysis) results (if `on = "exp"`, default)
+#' - `dta_res`: The DTA (differential trait analysis) results (if `on = "trait_exp"`)
+#' - `dma_res`: The DMA (differential motif analysis) results (if `on = "motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 #'
 #' Tables generated:
-#' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
-#' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
+#' - `dea`: A table containing the DEA (differential expression analysis) result (if `on = "exp"`, default)
+#' - `dta`: A table containing the DTA (differential trait analysis) result (if `on = "trait_exp"`)
+#' - `dma`: A table containing the DMA (differential motif analysis) result (if `on = "motif_exp"`)
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
@@ -483,6 +497,7 @@ step_umap <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
+#'   Use `"motif_exp"` for differential motif analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_limma()`.
 #'   Use the format `pkg.func.arg`.
 #'   For example, `step_dea_limma(glystats.gly_limma.p_adj_method = "BH")`.
@@ -513,12 +528,15 @@ step_dea_limma <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
+#' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
@@ -531,6 +549,7 @@ step_dea_limma <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
+#'   Use `"motif_exp"` for differential motif analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_ttest()`.
 #'   Use the format `pkg.func.arg`.
 #'
@@ -559,12 +578,15 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
+#' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
@@ -576,6 +598,7 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
+#'   Use `"motif_exp"` for differential motif analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_anova()`.
 #'   Use the format `pkg.func.arg`.
 #'
@@ -605,12 +628,15 @@ step_dea_anova <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
+#' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
@@ -623,6 +649,7 @@ step_dea_anova <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
+#'   Use `"motif_exp"` for differential motif analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_wilcox()`.
 #'   Use the format `pkg.func.arg`.
 #'
@@ -651,12 +678,15 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
+#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
+#' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
@@ -668,6 +698,7 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
+#'   Use `"motif_exp"` for differential motif analysis.
 #' @param ... Step-specific arguments passed to `glystats::gly_kruskal()`.
 #'   Use the format `pkg.func.arg`.
 #'
@@ -700,6 +731,12 @@ step_dea_kruskal <- function(on = "exp", ...) {
       label = "Differential trait",
       require = "trait_exp",
       name = "trait"
+    ),
+    motif_exp = list(
+      prefix = "dma",
+      label = "Differential motif",
+      require = "motif_exp",
+      name = "motif"
     )
   )
 
@@ -1366,6 +1403,8 @@ step_quantify_motifs <- function(...) {
 #' - `sig_heatmap`: A heatmap plot (if `on = "sig_exp"`)
 #' - `trait_heatmap`: A heatmap plot (if `on = "trait_exp"`)
 #' - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
+#' - `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
+#' - `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
 #'
 #' # Dynamic Arguments
 #' This step supports the following dynamic arguments:
@@ -1375,7 +1414,7 @@ step_quantify_motifs <- function(...) {
 #' - `glyvis.plot_heatmap.cluster_cols`: Whether to cluster columns.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
-#'   One of "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+#'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #'   Default is "exp".
 #' @param ... Step-specific arguments passed to `glyvis::plot_heatmap()`.
 #'   Use the format `pkg.func.arg`.
@@ -1389,7 +1428,7 @@ step_quantify_motifs <- function(...) {
 #' @seealso [glyvis::plot_heatmap()]
 #' @export
 step_heatmap <- function(on = "exp", ...) {
-  on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
@@ -1538,19 +1577,23 @@ step_roc <- function(...) {
 #' @returns A list with suffixes and prefixes.
 #' @noRd
 .resolve_on <- function(on) {
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp"))
+  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   list(
     id_suffix = switch(on,
       exp = "",
       sig_exp = "_sig",
       trait_exp = "_trait",
-      sig_trait_exp = "_sig_trait"
+      sig_trait_exp = "_sig_trait",
+      motif_exp = "_motif",
+      sig_motif_exp = "_sig_motif"
     ),
     label_suffix = switch(on,
       exp = "",
       sig_exp = " of significant variables",
       trait_exp = " of traits",
-      sig_trait_exp = " of significant traits"
+      sig_trait_exp = " of significant traits",
+      motif_exp = " of motifs",
+      sig_motif_exp = " of significant motifs"
     )
   )
 }

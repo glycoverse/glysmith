@@ -7,7 +7,8 @@
 step_umap(on = "exp", ...)
 }
 \arguments{
-\item{on}{Name of the experiment to run UMAP on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".}
+\item{on}{Name of the experiment to run UMAP on.
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
 
 \item{...}{Step-specific arguments passed to \code{glystats::gly_umap()} and \code{glyvis::plot_umap()}.
 Use the format \code{pkg.func.arg}.
@@ -28,15 +29,17 @@ to find the best one.
 \details{
 Data required:
 \itemize{
-\item \code{exp}: The experiment to perform UMAP on
+\item \code{exp} (if \code{on = "exp"}): The experiment to perform UMAP on
+\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to perform UMAP on
+\item \code{motif_exp} (if \code{on = "motif_exp"}): The motif experiment to perform UMAP on
 }
 
-Data generated:
+Data generated (with suffixes):
 \itemize{
 \item \code{umap}: The UMAP result
 }
 
-Plots generated:
+Plots generated (with suffixes):
 \itemize{
 \item \code{umap}: The UMAP plot
 }
