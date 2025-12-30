@@ -1232,6 +1232,8 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
 #' Step: Derived Trait Calculation
 #'
 #' Calculate glycan derived traits using `glydet::derive_traits()`.
+#' Advanced glycan structure analysis that summarizes structural properties of a glycome or each glycosite.
+#' Need glycan structure information.
 #'
 #' @details
 #' Data required:
@@ -1309,6 +1311,8 @@ step_derive_traits <- function(...) {
 #' Quantify glycan motifs using `glydet::quantify_motifs()`.
 #' The motifs are extracted using `glymotif::extract_branch_motif()` for N-glycans
 #' and `glymotif::extract_motif()` for others.
+#' Advanced glycan motif analysis that quantify glycan motifs (substructures) of a glycome or each glycosite.
+#' Need glycan structure information.
 #'
 #' @details
 #' Data required:

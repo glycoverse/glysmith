@@ -17,6 +17,8 @@ A \code{glysmith_step} object.
 Quantify glycan motifs using \code{glydet::quantify_motifs()}.
 The motifs are extracted using \code{glymotif::extract_branch_motif()} for N-glycans
 and \code{glymotif::extract_motif()} for others.
+Advanced glycan motif analysis that quantify glycan motifs (substructures) of a glycome or each glycosite.
+Need glycan structure information.
 }
 \details{
 Data required:
