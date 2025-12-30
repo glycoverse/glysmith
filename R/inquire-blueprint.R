@@ -18,12 +18,16 @@
 #' - "I have a glycomics dataset. I want to calculate derived traits and perform DEA on them."
 #'
 #' @param description A description of what you want to analysis.
+#' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
+#' @param group_col The column name of the group variable in the experiment. Default to "group".
 #' @param model Model to use. Default to "deepseek-reasoner".
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #'
 #' @export
-inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retries = 3) {
+inquire_blueprint <- function(description, exp = NULL, group_col = "group", model = "deepseek-reasoner", max_retries = 3) {
   checkmate::assert_string(description)
+  checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
+  checkmate::assert_string(group_col)
   checkmate::assert_choice(model, c("deepseek-reasoner", "deepseek-chat"))
   checkmate::assert_count(max_retries)
   rlang::check_installed("ellmer")
@@ -38,8 +42,9 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
     credentials = function() api_key
   )
 
-  # Initial prompt
-  current_prompt <- description
+  # Initial prompt with dataset info
+  exp_info <- .generate_exp_info(exp, group_col)
+  current_prompt <- paste0(exp_info, "\n", "Requirements: ", description)
 
   for (i in 0:max_retries) {
     if (i > 0) {
@@ -147,6 +152,27 @@ inquire_blueprint <- function(description, model = "deepseek-reasoner", max_retr
     sep = "\n"
   )
   prompt
+}
+
+.generate_exp_info <- function(exp, group_col) {
+  if (is.null(exp)) return("")
+
+  n_samples <- ncol(exp)
+  n_variables <- nrow(exp)
+  glycan_type <- glyexp::get_glycan_type(exp)
+  exp_type <- glyexp::get_exp_type(exp)
+  has_structure <- "glycan_structure" %in% colnames(exp$var_info)
+  n_groups <- length(unique(exp$sample_info[[group_col]]))
+
+  paste0(
+    "\nDataset information:\n",
+    "- Number of samples: ", n_samples, "\n",
+    "- Number of variables (glycans/glycopeptides): ", n_variables, "\n",
+    "- Glycan type: ", glycan_type, "\n",
+    "- Experiment type: ", exp_type, "\n",
+    "- Glycan structure available: ", if (has_structure) "Yes" else "No", "\n",
+    "- Number of groups: ", n_groups, "\n"
+  )
 }
 
 .generate_step_descriptions <- function() {

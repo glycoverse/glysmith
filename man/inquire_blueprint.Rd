@@ -4,10 +4,20 @@
 \alias{inquire_blueprint}
 \title{Create a Blueprint using Natural Language}
 \usage{
-inquire_blueprint(description, model = "deepseek-reasoner", max_retries = 3)
+inquire_blueprint(
+  description,
+  exp = NULL,
+  group_col = "group",
+  model = "deepseek-reasoner",
+  max_retries = 3
+)
 }
 \arguments{
 \item{description}{A description of what you want to analysis.}
+
+\item{exp}{Optional. A \code{glyexp::experiment()} object to provide more context to the LLM.}
+
+\item{group_col}{The column name of the group variable in the experiment. Default to "group".}
 
 \item{model}{Model to use. Default to "deepseek-reasoner".}
 
