@@ -465,7 +465,8 @@ step_umap <- function(on = "exp", ...) {
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
-#' This step is the recommended DEA method for all experiments.
+#' This step is the recommended DEA method for all experiments,
+#' for both two-group and multi-group experiments.
 #'
 #' @details
 #' Data required:
@@ -931,7 +932,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #'
 #' Create a volcano plot from DEA results using `glyvis::plot_volcano()`.
 #' This step requires one of the DEA steps to be run:
-#' - [step_dea_limma()]
+#' - [step_dea_limma()] (multi-group comparison is also supported)
 #' - [step_dea_ttest()]
 #' - [step_dea_wilcox()]
 #'
