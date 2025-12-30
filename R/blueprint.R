@@ -285,7 +285,8 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
   retries_left <- as.integer(step$retry %||% 0L)
 
   while (TRUE) {
-    if (!quiet) cli::cli_progress_step(step$label)
+    step_id <- NULL
+    if (!quiet) step_id <- cli::cli_progress_step(step$label)
 
     attempt <- .run_blueprint_run_once(step, ctx)
 
@@ -300,6 +301,7 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
     if (retries_left > 0) {
       retries_left <- retries_left - 1
       if (!quiet) {
+        cli::cli_progress_done(id = step_id, result = "clear")
         cli::cli_alert_warning(
           "`{step$signature}` failed. Retrying... ({retries_left + 1} attempts left)"
         )
@@ -307,7 +309,10 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
       next
     }
 
-    if (!quiet) cli::cli_alert_warning("`{step$signature}` failed. Skipping... Error: {e$message}")
+    if (!quiet) {
+      cli::cli_progress_done(id = step_id, result = "failed")
+      cli::cli_alert_warning("`{step$signature}` failed. Error: {e$message}")
+    }
     ctx$meta$logs[[step$id]] <- list(error = e$message)
     return(list(ctx = ctx))
   }
