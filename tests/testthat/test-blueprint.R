@@ -19,7 +19,6 @@ test_that("blueprint checks overwrites", {
 })
 
 test_that("blueprint check duplicated steps", {
-  # Use expect_error instead of expect_snapshot to avoid message capture differences
   step1 <- step("step1", "Step 1", function(ctx) ctx, generate = "x")
   step2 <- step("step2", "Step 2", function(ctx) ctx, require = "x")
   expect_error(
