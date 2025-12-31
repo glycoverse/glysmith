@@ -83,11 +83,11 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [126ms]
+#> ✖ Preprocessing [129ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [48ms]
+#> ✖ Principal component analysis [50ms]
 #> 
 #> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
@@ -97,13 +97,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [230ms]
+#> ✔ Differential expression analysis (limma) [231ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [619ms]
+#> ✔ Volcano plot [657ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [78ms]
+#> ✔ Heatmap of significant variables [80ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -118,7 +118,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [60ms]
+#> ✔ Differential trait analysis (limma) [62ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [42ms]

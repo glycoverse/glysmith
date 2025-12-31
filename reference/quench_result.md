@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [87ms]
+#> ✔ Identification overview [88ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -99,7 +99,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [85ms]
+#> ✖ Preprocessing [87ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
@@ -113,10 +113,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [61ms]
+#> ✔ Differential expression analysis (limma) [62ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [498ms]
+#> ✔ Volcano plot [508ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [41ms]
@@ -134,12 +134,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [57ms]
+#> ✔ Differential trait analysis (limma) [58ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [41ms]
+#> ✔ Heatmap of significant traits [42ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmpCrc0qH
+#> ✔ Result saved to /tmp/RtmpveVOO0
 ```
