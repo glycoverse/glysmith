@@ -13,11 +13,9 @@ test_that("blueprint checks ctx$data dependencies", {
 })
 
 test_that("blueprint checks overwrites", {
-  steps <- list(
-    step("step1", "Step 1", function(ctx) ctx, generate = "x"),
-    step("step2", "Step 2", function(ctx) ctx, generate = "x")
-  )
-  expect_snapshot(blueprint(!!!steps))
+  step1 <- step("step1", "Step 1", function(ctx) ctx, generate = "x")
+  step2 <- step("step2", "Step 2", function(ctx) ctx, generate = "x")
+  expect_snapshot(blueprint(step1, step2))
 })
 
 test_that("blueprint check duplicated steps", {
