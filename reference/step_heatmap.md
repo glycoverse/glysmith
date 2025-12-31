@@ -15,7 +15,8 @@ step_heatmap(on = "exp", ...)
 - on:
 
   Name of the experiment data in `ctx$data` to plot. One of "exp",
-  "sig_exp", "trait_exp", or "sig_trait_exp". Default is "exp".
+  "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+  Default is "exp".
 
 - ...:
 
@@ -43,6 +44,10 @@ Plots generated:
 - `trait_heatmap`: A heatmap plot (if `on = "trait_exp"`)
 
 - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
+
+- `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
+
+- `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
 
 ## Dynamic Arguments
 

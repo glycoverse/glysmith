@@ -21,7 +21,8 @@ step_dea_wilcox(on = "exp", ...)
 
   Name of the experiment data in `ctx$data` to run analysis on. Default
   is `"exp"` for differential expression analysis. Use `"trait_exp"` for
-  differential trait analysis.
+  differential trait analysis. Use `"motif_exp"` for differential motif
+  analysis.
 
 - ...:
 
@@ -45,15 +46,21 @@ Data generated:
 
 - `dta_res`: The DTA results (if `on = "trait_exp"`)
 
+- `dma_res`: The DMA results (if `on = "motif_exp"`)
+
 - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 
 - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+
+- `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 
 Tables generated:
 
 - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 
 - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
+
+- `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 
 ## Dynamic Arguments
 

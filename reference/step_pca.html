@@ -11,7 +11,7 @@ Ignore the resulting plot if it is not informative."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,8 @@ Ignore the resulting plot if it is not informative.</p>
 
 
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
-<dd><p>Name of the experiment to run PCA on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".</p></dd>
+<dd><p>Name of the experiment to run PCA on.
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -67,11 +68,13 @@ For example, <code>step_pca(glystats.gly_pca.center = FALSE)</code>.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Data required:</p><ul><li><p><code>exp</code>: The experiment to run PCA on</p></li>
-</ul><p>Tables generated:</p><ul><li><p><code>pca_samples</code>: A table containing the PCA scores for each sample</p></li>
+    <p>Data required:</p><ul><li><p><code>exp</code> (if <code>on = "exp"</code>): The experiment to run PCA on</p></li>
+<li><p><code>trait_exp</code> (if <code>on = "trait_exp"</code>): The trait experiment to run PCA on</p></li>
+<li><p><code>motif_exp</code> (if <code>on = "motif_exp"</code>): The motif experiment to run PCA on</p></li>
+</ul><p>Tables generated (with suffixes):</p><ul><li><p><code>pca_samples</code>: A table containing the PCA scores for each sample</p></li>
 <li><p><code>pca_variables</code>: A table containing the PCA loadings for each variable</p></li>
 <li><p><code>pca_eigenvalues</code>: A table containing the PCA eigenvalues</p></li>
-</ul><p>Plots generated:</p><ul><li><p><code>pca_scores</code>: A PCA score plot colored by group</p></li>
+</ul><p>Plots generated (with suffixes):</p><ul><li><p><code>pca_scores</code>: A PCA score plot colored by group</p></li>
 <li><p><code>pca_loadings</code>: A PCA loading plot</p></li>
 <li><p><code>pca_screeplot</code>: A PCA screeplot</p></li>
 </ul></div>

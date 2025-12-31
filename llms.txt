@@ -97,6 +97,8 @@ generation.*
   : Step: Principal Component Analysis (PCA)
 - [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
   : Step: Preprocessing
+- [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
+  : Step: Quantify Motifs
 - [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md)
   : Step: ROC Analysis
 - [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md)

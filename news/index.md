@@ -1,5 +1,42 @@
 # Changelog
 
+## glysmith (development version)
+
+### Breaking changes
+
+### New features
+
+- Added
+  [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
+  for quantifying glycan motifs. Updated relevant steps to support the
+  `on` parameter for `motif_exp` experiments.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  now prints an LLM-generated explanation to the console before
+  returning the blueprint.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  now supports an `exp` argument, accepting a
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object, to provide more accurate, context-aware suggestions.
+
+### Minor improvements and bug fixes
+
+- Refined step documentation to improve clarity and optimize
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  performance.
+- Enhanced error messages for failed steps.
+- Suppressed a harmless warning in
+  [`quench_result()`](https://glycoverse.github.io/glysmith/reference/quench_result.md)
+  when used with
+  [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md).
+- Console messages from
+  [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)
+  now include the experiment name during
+  [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md).
+- Moved several dependencies (`pROC`, `Rtsne`, `uwot`,
+  `EnhancedVolcano`, `org.Hs.eg.db`, `clusterProfiler`, `ggplotify`,
+  `pheatmap`, and `factoextra`) to “Suggests”. These are now
+  automatically checked and installed when required by blueprint steps.
+
 ## glysmith 0.2.0
 
 ### New features

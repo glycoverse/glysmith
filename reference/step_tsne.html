@@ -19,7 +19,7 @@ to find the best one."><meta property="og:image" content="https://glycoverse.git
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,8 @@ to find the best one.</p>
 
 
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
-<dd><p>Name of the experiment to run t-SNE on. Can be "exp", "sig_exp", "trait_exp", or "sig_trait_exp".</p></dd>
+<dd><p>Name of the experiment to run t-SNE on.
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -79,9 +80,11 @@ For example, <code>step_tsne(glystats.gly_tsne.perplexity = 30)</code>.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Data required:</p><ul><li><p><code>exp</code>: The experiment to perform t-SNE on</p></li>
-</ul><p>Data generated:</p><ul><li><p><code>tsne</code>: The t-SNE result</p></li>
-</ul><p>Plots generated:</p><ul><li><p><code>tsne</code>: The t-SNE plot</p></li>
+    <p>Data required:</p><ul><li><p><code>exp</code> (if <code>on = "exp"</code>): The experiment to perform t-SNE on</p></li>
+<li><p><code>trait_exp</code> (if <code>on = "trait_exp"</code>): The trait experiment to perform t-SNE on</p></li>
+<li><p><code>motif_exp</code> (if <code>on = "motif_exp"</code>): The motif experiment to perform t-SNE on</p></li>
+</ul><p>Data generated (with suffixes):</p><ul><li><p><code>tsne</code>: The t-SNE result</p></li>
+</ul><p>Plots generated (with suffixes):</p><ul><li><p><code>tsne</code>: The t-SNE plot</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>

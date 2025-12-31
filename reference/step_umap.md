@@ -21,7 +21,7 @@ step_umap(on = "exp", ...)
 - on:
 
   Name of the experiment to run UMAP on. Can be "exp", "sig_exp",
-  "trait_exp", or "sig_trait_exp".
+  "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 
 - ...:
 
@@ -40,13 +40,19 @@ A `glysmith_step` object.
 
 Data required:
 
-- `exp`: The experiment to perform UMAP on
+- `exp` (if `on = "exp"`): The experiment to perform UMAP on
 
-Data generated:
+- `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform
+  UMAP on
+
+- `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform
+  UMAP on
+
+Data generated (with suffixes):
 
 - `umap`: The UMAP result
 
-Plots generated:
+Plots generated (with suffixes):
 
 - `umap`: The UMAP plot
 

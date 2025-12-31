@@ -5,6 +5,7 @@ Create a volcano plot from DEA results using
 This step requires one of the DEA steps to be run:
 
 - [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md)
+  (multi-group comparison is also supported)
 
 - [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md)
 

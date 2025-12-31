@@ -13,7 +13,7 @@ to run on derived traits (trait_exp) or other experiment objects."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,8 @@ to run on derived traits (<code>trait_exp</code>) or other experiment objects.</
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
 <dd><p>Name of the experiment data in <code>ctx$data</code> to run analysis on.
 Default is <code>"exp"</code> for differential expression analysis.
-Use <code>"trait_exp"</code> for differential trait analysis.</p></dd>
+Use <code>"trait_exp"</code> for differential trait analysis.
+Use <code>"motif_exp"</code> for differential motif analysis.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -74,10 +75,13 @@ Use the format <code>pkg.func.arg</code>.</p></dd>
     <p>Data required:</p><ul><li><p>Depends on <code>on</code> parameter (default: <code>exp</code>)</p></li>
 </ul><p>Data generated:</p><ul><li><p><code>dea_res</code>: The DEA results (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>dta_res</code>: The DTA results (if <code>on = "trait_exp"</code>)</p></li>
+<li><p><code>dma_res</code>: The DMA results (if <code>on = "motif_exp"</code>)</p></li>
 <li><p><code>sig_exp</code>: The filtered experiment (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>sig_trait_exp</code>: The filtered trait experiment (if <code>on = "trait_exp"</code>)</p></li>
+<li><p><code>sig_motif_exp</code>: The filtered motif experiment (if <code>on = "motif_exp"</code>)</p></li>
 </ul><p>Tables generated:</p><ul><li><p><code>dea_main_test</code>, <code>dea_post_hoc_test</code>: Tables containing the results (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>dta_main_test</code>, <code>dta_post_hoc_test</code>: Tables containing the results (if <code>on = "trait_exp"</code>)</p></li>
+<li><p><code>dma_main_test</code>, <code>dma_post_hoc_test</code>: Tables containing the results (if <code>on = "motif_exp"</code>)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>

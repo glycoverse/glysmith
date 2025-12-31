@@ -2,6 +2,8 @@
 
 Calculate glycan derived traits using
 [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).
+Advanced glycan structure analysis that summarizes structural properties
+of a glycome or each glycosite. Need glycan structure information.
 
 ## Usage
 

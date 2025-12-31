@@ -18,7 +18,7 @@ step_pca(on = "exp", ...)
 - on:
 
   Name of the experiment to run PCA on. Can be "exp", "sig_exp",
-  "trait_exp", or "sig_trait_exp".
+  "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 
 - ...:
 
@@ -34,9 +34,15 @@ A `glysmith_step` object.
 
 Data required:
 
-- `exp`: The experiment to run PCA on
+- `exp` (if `on = "exp"`): The experiment to run PCA on
 
-Tables generated:
+- `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PCA
+  on
+
+- `motif_exp` (if `on = "motif_exp"`): The motif experiment to run PCA
+  on
+
+Tables generated (with suffixes):
 
 - `pca_samples`: A table containing the PCA scores for each sample
 
@@ -44,7 +50,7 @@ Tables generated:
 
 - `pca_eigenvalues`: A table containing the PCA eigenvalues
 
-Plots generated:
+Plots generated (with suffixes):
 
 - `pca_scores`: A PCA score plot colored by group
 

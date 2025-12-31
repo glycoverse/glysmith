@@ -10,7 +10,13 @@ variable `DEEPSEEK_API_KEY` to your API key with
 ## Usage
 
 ``` r
-inquire_blueprint(description, model = "deepseek-reasoner", max_retries = 3)
+inquire_blueprint(
+  description,
+  exp = NULL,
+  group_col = "group",
+  model = "deepseek-reasoner",
+  max_retries = 3
+)
 ```
 
 ## Arguments
@@ -18,6 +24,17 @@ inquire_blueprint(description, model = "deepseek-reasoner", max_retries = 3)
 - description:
 
   A description of what you want to analysis.
+
+- exp:
+
+  Optional. A
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object to provide more context to the LLM.
+
+- group_col:
+
+  The column name of the group variable in the experiment. Default to
+  "group".
 
 - model:
 

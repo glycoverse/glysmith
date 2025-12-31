@@ -9,7 +9,7 @@ The heatmap visualizes expression values across samples."><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@ The heatmap visualizes expression values across samples.</p>
 
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
 <dd><p>Name of the experiment data in <code>ctx$data</code> to plot.
-One of "exp", "sig_exp", "trait_exp", or "sig_trait_exp".
+One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 Default is "exp".</p></dd>
 
 
@@ -71,6 +71,8 @@ For example, <code>step_heatmap(glyvis.plot_heatmap.show_rownames = TRUE)</code>
 <li><p><code>sig_heatmap</code>: A heatmap plot (if <code>on = "sig_exp"</code>)</p></li>
 <li><p><code>trait_heatmap</code>: A heatmap plot (if <code>on = "trait_exp"</code>)</p></li>
 <li><p><code>sig_trait_heatmap</code>: A heatmap plot (if <code>on = "sig_trait_exp"</code>)</p></li>
+<li><p><code>motif_heatmap</code>: A heatmap plot (if <code>on = "motif_exp"</code>)</p></li>
+<li><p><code>sig_motif_heatmap</code>: A heatmap plot (if <code>on = "sig_motif_exp"</code>)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>

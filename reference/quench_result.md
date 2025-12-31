@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [93ms]
+#> ✔ Identification overview [88ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -99,15 +99,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ! `step_preprocess()` failed. Skipping... Error: 
-#> ℹ Preprocessing
-#> ✔ Preprocessing [126ms]
+#> ✖ Preprocessing [86ms]
 #> 
+#> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
-#> ! `step_pca()` failed. Skipping... Error: cannot rescale a constant/zero column to unit variance
-#> ℹ Principal component analysis
-#> ✔ Principal component analysis [14ms]
+#> ✖ Principal component analysis [20ms]
 #> 
+#> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
 #> ℹ Differential expression analysis (limma)
@@ -115,19 +113,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [67ms]
+#> ✔ Differential expression analysis (limma) [61ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [607ms]
+#> ✔ Volcano plot [500ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
+#> ✔ Heatmap of significant variables [45ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.7s]
+#> ✔ Derived trait calculation [2.2s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -136,12 +134,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [92ms]
+#> ✔ Differential trait analysis (limma) [57ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [41ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmpQgJd9l
+#> ✔ Result saved to /tmp/RtmpZ18soW
 ```

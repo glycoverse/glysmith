@@ -21,7 +21,8 @@ step_dea_anova(on = "exp", ...)
 
   Name of the experiment data in `ctx$data` to run analysis on. Default
   is `"exp"` for differential expression analysis. Use `"trait_exp"` for
-  differential trait analysis.
+  differential trait analysis. Use `"motif_exp"` for differential motif
+  analysis.
 
 - ...:
 
@@ -45,9 +46,13 @@ Data generated:
 
 - `dta_res`: The DTA results (if `on = "trait_exp"`)
 
+- `dma_res`: The DMA results (if `on = "motif_exp"`)
+
 - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 
 - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
+
+- `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
 
 Tables generated:
 
@@ -56,6 +61,9 @@ Tables generated:
 
 - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results
   (if `on = "trait_exp"`)
+
+- `dma_main_test`, `dma_post_hoc_test`: Tables containing the results
+  (if `on = "motif_exp"`)
 
 ## Dynamic Arguments
 
