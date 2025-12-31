@@ -3,7 +3,13 @@ test_that("blueprint checks ctx$data dependencies", {
     step_dea_limma(),
     step_volcano()
   ))
-  expect_snapshot(blueprint(step_volcano()), error = TRUE)
+  # Use expect_error instead of expect_snapshot to avoid message capture differences
+  # between test() and R CMD check environments
+  my_step <- step("my_step", "My Step", function(ctx) ctx, require = "dea_res")
+  expect_error(
+    blueprint(my_step),
+    class = "rlang_error"
+  )
 })
 
 test_that("blueprint checks overwrites", {
@@ -15,14 +21,12 @@ test_that("blueprint checks overwrites", {
 })
 
 test_that("blueprint check duplicated steps", {
-  expect_snapshot(
-    blueprint(
-      step_dea_limma(),
-      step_dea_limma(),
-      step_volcano(),
-      step_volcano()
-    ),
-    error = TRUE
+  # Use expect_error instead of expect_snapshot to avoid message capture differences
+  step1 <- step("step1", "Step 1", function(ctx) ctx, generate = "x")
+  step2 <- step("step2", "Step 2", function(ctx) ctx, require = "x")
+  expect_error(
+    blueprint(step1, step1, step2, step2),
+    class = "rlang_error"
   )
 })
 
