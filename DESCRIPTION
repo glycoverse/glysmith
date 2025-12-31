@@ -60,4 +60,5 @@ Remotes:
     glycoverse/glyexp@*release,
     glycoverse/glystats@*release,
     glycoverse/glyvis@*release
+Depends: R (>= 4.1.0)
 VignetteBuilder: knitr
