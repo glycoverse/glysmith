@@ -254,7 +254,7 @@ step_pca <- function(on = "exp", ...) {
   id <- paste0("pca", on_meta$id_suffix)
   step(
     id = id,
-    label = "Principal component analysis",
+    label = paste0("Principal component analysis", on_meta$label_suffix),
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
       pca_res <- .run_function(
