@@ -246,6 +246,7 @@ step_ident_overview <- function(...) {
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
 step_pca <- function(on = "exp", ...) {
+  rlang::check_installed("factoextra")
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
@@ -364,6 +365,7 @@ step_pca <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_tsne()], [glyvis::plot_tsne()]
 #' @export
 step_tsne <- function(on = "exp", ...) {
+  rlang::check_installed("Rtsne")
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
@@ -432,6 +434,7 @@ step_tsne <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_umap()], [glyvis::plot_umap()]
 #' @export
 step_umap <- function(on = "exp", ...) {
+  rlang::check_installed("uwot")
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
@@ -960,6 +963,7 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' @seealso [glyvis::plot_volcano()]
 #' @export
 step_volcano <- function(...) {
+  rlang::check_installed("EnhancedVolcano")
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
@@ -1054,6 +1058,8 @@ step_volcano <- function(...) {
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
 step_sig_enrich_go <- function(universe = "all", ...) {
+  rlang::check_installed("clusterProfiler")
+  rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich("go", universe = universe, signature = signature, ...)
 }
@@ -1091,6 +1097,8 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
 step_sig_enrich_kegg <- function(universe = "all", ...) {
+  rlang::check_installed("clusterProfiler")
+  rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich("kegg", universe = universe, retry = 2L, signature = signature, ...)
 }
@@ -1129,6 +1137,8 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
 step_sig_enrich_reactome <- function(universe = "all", ...) {
+  rlang::check_installed("clusterProfiler")
+  rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich("reactome", universe = universe, retry = 2L, signature = signature, ...)
 }
@@ -1434,6 +1444,8 @@ step_quantify_motifs <- function(...) {
 #' @seealso [glyvis::plot_heatmap()]
 #' @export
 step_heatmap <- function(on = "exp", ...) {
+  rlang::check_installed("pheatmap")
+  rlang::check_installed("ggplotify")
   on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
@@ -1490,6 +1502,7 @@ step_heatmap <- function(on = "exp", ...) {
 #' @seealso [glystats::gly_roc()], [glyvis::plot_roc()]
 #' @export
 step_roc <- function(...) {
+  rlang::check_installed("pROC")
   signature <- rlang::expr_deparse(match.call())
   step_dots <- rlang::list2(...)
   .valid_step_dots(step_dots)
