@@ -1,5 +1,21 @@
 # glysmith (development version)
 
+## Breaking changes
+
+## New features
+
+* Added `step_quantify_motifs()` for quantifying glycan motifs. Updated relevant steps to support the `on` parameter for `motif_exp` experiments.
+* `inquire_blueprint()` now prints an LLM-generated explanation to the console before returning the blueprint.
+* `inquire_blueprint()` now supports an `exp` argument, accepting a `glyexp::experiment()` object, to provide more accurate, context-aware suggestions.
+
+## Minor improvements and bug fixes
+
+* Refined step documentation to improve clarity and optimize `inquire_blueprint()` performance.
+* Enhanced error messages for failed steps.
+* Suppressed a harmless warning in `quench_result()` when used with `step_pca()`.
+* Console messages from `step_pca()` now include the experiment name during `forge_analysis()`.
+* Moved several dependencies (`pROC`, `Rtsne`, `uwot`, `EnhancedVolcano`, `org.Hs.eg.db`, `clusterProfiler`, `ggplotify`, `pheatmap`, and `factoextra`) to "Suggests". These are now automatically checked and installed when required by blueprint steps.
+
 # glysmith 0.2.0
 
 ## New features
