@@ -20,6 +20,30 @@ test_that("inquire_blueprint works with valid AI output", {
   expect_equal(bp[[2]]$id, "pca")
 })
 
+test_that("inquire_blueprint supports branches", {
+  skip_on_ci()
+  skip_if_not_installed("ellmer")
+
+  mock_chat_fun <- function(...) {
+    "br(\"limma\", step_dea_limma(), step_volcano()); step_pca()"
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  bp <- inquire_blueprint("dummy description")
+
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_length(bp, 3)
+  expect_named(bp, c("limma__dea_limma", "limma__volcano", "pca"))
+  expect_equal(bp[[1]]$branch, "limma")
+  expect_equal(bp[[2]]$branch, "limma")
+  expect_null(bp[[3]]$branch)
+})
+
 test_that("inquire_blueprint handles single step", {
   skip_on_ci()
   skip_if_not_installed("ellmer")

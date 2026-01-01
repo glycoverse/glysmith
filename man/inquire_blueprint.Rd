@@ -34,6 +34,8 @@ Then set the environment variable \code{DEEPSEEK_API_KEY} to your API key with
 \details{
 LLMs can be unstable. If you get an error, try again with another description.
 Make sure to examine the returned blueprint carefully to ensure it's what you want.
+You can also create parallel analysis branches with \code{br("name", step_..., step_...)},
+which will namespace outputs with the branch prefix.
 
 Here are some examples that works:
 \itemize{

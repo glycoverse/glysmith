@@ -10,6 +10,8 @@
 #' @details
 #' LLMs can be unstable. If you get an error, try again with another description.
 #' Make sure to examine the returned blueprint carefully to ensure it's what you want.
+#' You can also create parallel analysis branches with `br("name", step_..., step_...)`,
+#' which will namespace outputs with the branch prefix.
 #'
 #' Here are some examples that works:
 #'
@@ -104,8 +106,10 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     return(list(valid = FALSE, error = "The output is empty. Please provide a list of steps separated by ';'."))
   }
 
-  if (!all(stringr::str_detect(steps, "^step_.*?\\(.*?\\)$"))) {
-    return(list(valid = FALSE, error = "Invalid format. Every step must start with 'step_' and end with ')'. Split steps with ';'."))
+  is_step <- stringr::str_detect(steps, "^step_[a-z0-9_]+\\s*\\(.*\\)$")
+  is_branch <- stringr::str_detect(steps, "^br\\s*\\(.*\\)$")
+  if (!all(is_step | is_branch)) {
+    return(list(valid = FALSE, error = "Invalid format. Every entry must be a `step_...()` call or a `br(...)` branch. Split entries with ';'."))
   }
 
   # Try parsing and validation
@@ -117,9 +121,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
         eval(expr)
       })
 
-      names(step_objects) <- purrr::map_chr(step_objects, "id")
-      bp <- new_blueprint(step_objects)
-      validate_blueprint(bp)
+      bp <- do.call(blueprint, step_objects)
 
       # If we get here, everything is valid
       list(valid = TRUE, blueprint = bp, explanation = explanation)
@@ -137,13 +139,14 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "You are a professional omics data scientist and glycobiologist.",
     "Your job is to create a blueprint for glycomics or glycoproteomics data analysis.",
     "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
+    "Use `br(\"name\", step_..., step_...)` to create alternative analysis branches.",
     "Available analytical steps include:\n",
     step_descriptions,
     "\n",
     "Return format:",
     "1. First, provide a BRIEF explanation (1-3 sentences) of why you chose these steps.",
     "2. Then write `---` on a new line.",
-    "3. Finally, list analytical steps as function calls separated by `;`.",
+    "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
     "",
     "Example output:",
     "Your data needs preprocessing to handle missing values, followed by statistical analysis to find significant changes.",
