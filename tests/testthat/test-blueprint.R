@@ -36,3 +36,19 @@ test_that("writing and loading blueprint works", {
   write_blueprint(bp, file)
   expect_s3_class(read_blueprint(file), "glysmith_blueprint")
 })
+
+test_that("br expands into namespaced steps", {
+  step1 <- step("step1", "Step 1", function(ctx) ctx, generate = "x")
+  step2 <- step("step2", "Step 2", function(ctx) ctx, require = "x")
+  bp <- blueprint(
+    br("branch1", step1, step2),
+    br("branch2", step1, step2)
+  )
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_true(
+    all(
+      stringr::str_starts(names(bp), "branch1__") |
+        stringr::str_starts(names(bp), "branch2__")
+    )
+  )
+})

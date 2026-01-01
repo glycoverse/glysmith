@@ -173,3 +173,43 @@ test_that("warnings from nested function calls are captured", {
   # Verify the function still executed correctly
   expect_equal(result_ctx$data$result, 42)
 })
+
+test_that("branch steps namespace outputs", {
+  step_make <- step(
+    id = "make",
+    label = "Make",
+    run = function(ctx) {
+      ctx_add_data(ctx, "x", 1)
+    },
+    generate = "x"
+  )
+
+  step_use <- step(
+    id = "use",
+    label = "Use",
+    run = function(ctx) {
+      val <- ctx_get_data(ctx, "x")
+      ctx_add_data(ctx, "y", val + 1)
+    },
+    require = "x",
+    generate = "y"
+  )
+
+  bp <- blueprint(
+    br("one", step_make, step_use),
+    br("two", step_make, step_use)
+  )
+
+  ctx <- list(
+    data = list(exp = 1),
+    plots = list(),
+    tables = list(),
+    meta = list()
+  )
+  ctx <- run_blueprint(bp, ctx, quiet = TRUE)
+
+  expect_true(all(c("one__x", "one__y", "two__x", "two__y") %in% names(ctx$data)))
+  expect_false("x" %in% names(ctx$data))
+  expect_equal(ctx$data[["one__y"]], 2)
+  expect_equal(ctx$data[["two__y"]], 2)
+})

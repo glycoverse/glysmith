@@ -15,6 +15,7 @@
 #' @export
 blueprint <- function(...) {
   steps <- as.list(rlang::list2(...))
+  steps <- .expand_branches(steps)
   names(steps) <- purrr::map_chr(steps, "id")
   bp <- new_blueprint(steps)
   bp <- validate_blueprint(bp)
