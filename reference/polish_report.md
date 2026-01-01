@@ -103,11 +103,11 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [88ms]
+#> ✖ Preprocessing [92ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [21ms]
+#> ✖ Principal component analysis [22ms]
 #> 
 #> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
@@ -117,19 +117,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [64ms]
+#> ✔ Differential expression analysis (limma) [67ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [519ms]
+#> ✔ Volcano plot [539ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [43ms]
+#> ✔ Heatmap of significant variables [44ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.2s]
+#> ✔ Derived trait calculation [2.3s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -138,11 +138,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [61ms]
+#> ✔ Differential trait analysis (limma) [62ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [43ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpFHaR56/file1d0f5c00dc01.html"
+#> [1] "/tmp/RtmpioS7he/file1c7e3cd18738.html"
 ```
