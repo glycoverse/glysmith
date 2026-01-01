@@ -2,6 +2,12 @@
 
 ## glysmith (development version)
 
+## glysmith 0.3.1
+
+### Minor improvements and bug fixes
+
+- Fix deployment issue on r-universe.
+
 ## glysmith 0.3.0
 
 ### New features
