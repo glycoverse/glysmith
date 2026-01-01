@@ -78,7 +78,7 @@ br <- function(name, ...) {
     }
   }
 
-  step(
+  wrapped <- step(
     id = wrapped_id,
     label = paste0("[", branch, "] ", step$label),
     run = function(ctx) {
@@ -91,6 +91,10 @@ br <- function(name, ...) {
     retry = step$retry %||% 0L,
     signature = paste0("br(\"", branch, "\", ", step$signature, ")")
   )
+
+  wrapped$branch <- branch
+  wrapped$branch_signature <- step$signature
+  wrapped
 }
 
 .branch_run_condition <- function(step, ctx, branch) {

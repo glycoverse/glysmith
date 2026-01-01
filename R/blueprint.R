@@ -220,9 +220,36 @@ validate_blueprint <- function(blueprint) {
 #' @export
 print.glysmith_blueprint <- function(x, ...) {
   cli::cli_h2("Blueprint ({.val {length(x)}} steps)")
+  top_id <- cli::cli_ul(.close = FALSE)
+  branch_id <- NULL
+  current_branch <- NULL
+
   for (s in x) {
-    cli::cli_ul(s$signature)
+    if (!is.null(s$branch)) {
+      if (!identical(current_branch, s$branch)) {
+        if (!is.null(branch_id)) {
+          cli::cli_end(branch_id)
+        }
+        current_branch <- s$branch
+        cli::cli_li(paste0("br(\"", current_branch, "\")"))
+        branch_id <- cli::cli_ul(.close = FALSE)
+      }
+      cli::cli_li(s$branch_signature %||% s$signature)
+      next
+    }
+
+    if (!is.null(branch_id)) {
+      cli::cli_end(branch_id)
+      branch_id <- NULL
+      current_branch <- NULL
+    }
+    cli::cli_li(s$signature)
   }
+
+  if (!is.null(branch_id)) {
+    cli::cli_end(branch_id)
+  }
+  cli::cli_end(top_id)
 }
 
 #' Run a list of steps

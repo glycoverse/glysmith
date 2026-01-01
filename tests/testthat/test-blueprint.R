@@ -52,3 +52,12 @@ test_that("br expands into namespaced steps", {
     )
   )
 })
+
+test_that("blueprint prints branches", {
+  bp <- blueprint(
+    step_preprocess(),
+    br("branch1", step_dea_limma(), step_volcano()),
+    br("branch2", step_dea_ttest(), step_volcano())
+  )
+  expect_snapshot(bp)
+})

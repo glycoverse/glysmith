@@ -14,3 +14,19 @@
       * step_step1()
       * step_step2()
 
+# blueprint prints branches
+
+    Code
+      bp
+    Message
+      
+      -- Blueprint (5 steps) --
+      
+      * step_preprocess()
+      * br("branch1")
+        * step_dea_limma()
+        * step_volcano()
+      * br("branch2")
+        * step_dea_ttest()
+        * step_volcano()
+
