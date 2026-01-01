@@ -56,7 +56,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [96ms]
+#> ✔ Identification overview [93ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -103,7 +103,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [89ms]
+#> ✖ Preprocessing [87ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
@@ -120,10 +120,10 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [64ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [511ms]
+#> ✔ Volcano plot [504ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
+#> ✔ Heatmap of significant variables [41ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -138,11 +138,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [60ms]
+#> ✔ Differential trait analysis (limma) [57ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [42ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpveVOO0/file1cbe5795388.html"
+#> [1] "/tmp/RtmpwzqmSC/file1cfe18ce6177.html"
 ```
