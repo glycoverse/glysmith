@@ -1,6 +1,6 @@
 Package: glysmith
 Title: Full-Featured Analysis Pipeline for Glycomics and Glycoproteomics
-Version: 0.3.0.9000
+Version: 0.3.1
 Authors@R: 
     person("Bin", "Fu", , "23110220018@m.fudan.edu.cn", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-8567-2997"))
