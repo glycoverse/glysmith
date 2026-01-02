@@ -92,6 +92,19 @@ test_that("step_derive_traits generates trait_exp and tables", {
   expect_true("derived_traits" %in% names(res$tables))
 })
 
+# ----- step_quantify_motifs -----
+test_that("step_quantify_motifs generates motif_exp and tables", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_var(10) |>
+      glyclean::auto_clean()
+  )
+  bp <- blueprint(step_quantify_motifs())
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true("motif_exp" %in% names(res$data))
+  expect_true("quantified_motifs" %in% names(res$tables))
+})
+
 # ----- step_heatmap -----
 test_that("step_heatmap generates plot", {
   suppressMessages(
@@ -178,6 +191,22 @@ test_that("step_dea_ttest skips multi-group experiment", {
   expect_null(res$tables$dea)
 })
 
+# ----- step_dea_wilcox -----
+test_that("step_dea_wilcox generates results", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::filter_obs(group %in% c("H", "C")) |>
+      glyexp::mutate_obs(group = factor(group)) |>
+      glyexp::slice_head_var(10) |>
+      glyclean::auto_clean()
+  )
+  bp <- blueprint(step_dea_wilcox())
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true("dea_res" %in% names(res$data))
+  expect_true("sig_exp" %in% names(res$data))
+  expect_true("dea" %in% names(res$tables))
+})
+
 # ----- step_dea_anova -----
 test_that("step_dea_anova generates results for multi-group", {
   suppressMessages(
@@ -194,6 +223,74 @@ test_that("step_dea_anova generates results for multi-group", {
   expect_true("dea_res" %in% names(res$data))
   expect_true("dea_main_test" %in% names(res$tables))
   expect_true("dea_post_hoc_test" %in% names(res$tables))
+})
+
+# ----- step_dea_kruskal -----
+test_that("step_dea_kruskal generates results for multi-group", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_var(10) |>
+      glyclean::auto_clean()
+  )
+  expect_gt(length(unique(exp$sample_info$group)), 2)
+
+  bp <- blueprint(step_dea_kruskal())
+  suppressMessages(res <- forge_analysis(exp, bp))
+
+  expect_true("dea_res" %in% names(res$data))
+  expect_true("dea_main_test" %in% names(res$tables))
+  expect_true("dea_post_hoc_test" %in% names(res$tables))
+})
+
+# ----- step_sig_enrich -----
+run_sig_enrich_step <- function(step_fun, kind) {
+  skip_if_not_installed("clusterProfiler")
+  skip_if_not_installed("org.Hs.eg.db")
+
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::filter_obs(group %in% c("H", "C")) |>
+      glyexp::mutate_obs(group = factor(group)) |>
+      glyexp::slice_head_var(20) |>
+      glyclean::auto_clean()
+  )
+
+  ctx <- new_ctx(exp, "group")
+  ctx <- ctx_add_data(ctx, "sig_exp", exp)
+
+  mock_tbl <- tibble::tibble(
+    description = c("term_a", "term_b"),
+    p_adj = c(0.01, 0.2)
+  )
+  local_mocked_bindings(
+    gly_enrich_go = function(...) structure(list(), class = "mock_enrich"),
+    gly_enrich_kegg = function(...) structure(list(), class = "mock_enrich"),
+    gly_enrich_reactome = function(...) structure(list(), class = "mock_enrich"),
+    get_tidy_result = function(...) mock_tbl,
+    .package = "glystats"
+  )
+  local_mocked_bindings(
+    plot_enrich = function(...) ggplot2::ggplot(),
+    .package = "glyvis"
+  )
+
+  step_obj <- step_fun()
+  expect_true(step_obj$condition(ctx)$check)
+  ctx <- step_obj$run(ctx)
+  expect_true(kind %in% names(ctx$tables))
+  expect_true(kind %in% names(ctx$plots))
+}
+
+test_that("step_sig_enrich_go generates results", {
+  run_sig_enrich_step(step_sig_enrich_go, "go")
+})
+
+test_that("step_sig_enrich_kegg generates results", {
+  run_sig_enrich_step(step_sig_enrich_kegg, "kegg")
+})
+
+test_that("step_sig_enrich_reactome generates results", {
+  run_sig_enrich_step(step_sig_enrich_reactome, "reactome")
 })
 
 # ----- step_volcano -----
