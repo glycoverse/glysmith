@@ -322,6 +322,9 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
       ctx <- .run_blueprint_ensure_ctx(attempt$new_ctx)
       ctx$meta$logs[[step$id]] <- attempt$logs
       ctx$meta$steps <- c(ctx$meta$steps, step$id)
+      if (!quiet && !is.null(step_id)) {
+        cli::cli_progress_done(id = step_id)
+      }
       return(list(ctx = ctx))
     }
 
