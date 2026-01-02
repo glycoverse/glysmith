@@ -140,6 +140,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "Your job is to create a blueprint for glycomics or glycoproteomics data analysis.",
     "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
     "Use `br(\"name\", step_..., step_...)` to create alternative analysis branches.",
+    "Use step arguments with caution: prefer default values unless they are necessary.",
+    "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
     "Available analytical steps include:\n",
     step_descriptions,
     "\n",
