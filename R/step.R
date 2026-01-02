@@ -776,6 +776,7 @@ step_dea_kruskal <- function(
   filter_comparison = NULL,
   ...
 ) {
+  rlang::check_installed("FSA")
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(p_adj_method = p_adj_method, ...)
   filter_args <- list(
