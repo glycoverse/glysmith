@@ -87,7 +87,7 @@ result <- forge_analysis(exp)
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [20ms]
+#> ✖ Principal component analysis [21ms]
 #> 
 #> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
@@ -97,19 +97,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [205ms]
+#> ✔ Differential expression analysis (limma) [228ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [608ms]
+#> ✔ Volcano plot [599ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [77ms]
+#> ✔ Heatmap of significant variables [76ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8s]
+#> ✔ Derived trait calculation [8.1s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
