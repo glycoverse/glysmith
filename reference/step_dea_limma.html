@@ -17,7 +17,7 @@ for both two-group and multi-group experiments."><meta property="og:image" conte
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,18 @@ for both two-group and multi-group experiments.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_dea_limma</span><span class="op">(</span>on <span class="op">=</span> <span class="st">"exp"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_dea_limma</span><span class="op">(</span></span>
+<span>  on <span class="op">=</span> <span class="st">"exp"</span>,</span>
+<span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
+<span>  covariate_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subject_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ref_group <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  contrasts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_p_adj_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  filter_p_val_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_fc_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,10 +78,51 @@ Use <code>"trait_exp"</code> for differential trait analysis.
 Use <code>"motif_exp"</code> for differential motif analysis.</p></dd>
 
 
+<dt id="arg-p-adj-method">p_adj_method<a class="anchor" aria-label="anchor" href="#arg-p-adj-method"></a></dt>
+<dd><p>A character string specifying the method for multiple testing correction.
+Must be one of the methods supported by <code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">stats::p.adjust()</a></code>. Default is "BH" (Benjamini-Hochberg).
+Set to NULL to skip p-value adjustment.</p></dd>
+
+
+<dt id="arg-covariate-cols">covariate_cols<a class="anchor" aria-label="anchor" href="#arg-covariate-cols"></a></dt>
+<dd><p>(Only for <code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">gly_limma()</a></code>) A character vector specifying column names in sample information
+to include as covariates in the limma model. Default is NULL.</p></dd>
+
+
+<dt id="arg-subject-col">subject_col<a class="anchor" aria-label="anchor" href="#arg-subject-col"></a></dt>
+<dd><p>(Only for <code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">gly_limma()</a></code>) A character string specifying the column name in sample information
+that contains subject identifiers for paired comparisons. Default is NULL.</p></dd>
+
+
+<dt id="arg-ref-group">ref_group<a class="anchor" aria-label="anchor" href="#arg-ref-group"></a></dt>
+<dd><p>A character string specifying the reference group.
+If NULL (default), the first level of the group factor is used as the reference.
+Only used for two-group comparisons.</p></dd>
+
+
+<dt id="arg-contrasts">contrasts<a class="anchor" aria-label="anchor" href="#arg-contrasts"></a></dt>
+<dd><p>A character vector specifying custom contrasts.
+If NULL (default), all pairwise comparisons are automatically generated,
+and the levels coming first in the factor will be used as the reference group.
+Supports two formats: "group1-group2" or "group1_vs_group2".
+Use the second format if group names contain hyphens.
+"group1" will be used as the reference group.</p></dd>
+
+
+<dt id="arg-filter-p-adj-cutoff">filter_p_adj_cutoff<a class="anchor" aria-label="anchor" href="#arg-filter-p-adj-cutoff"></a></dt>
+<dd><p>Adjusted p-value cutoff for filtering.</p></dd>
+
+
+<dt id="arg-filter-p-val-cutoff">filter_p_val_cutoff<a class="anchor" aria-label="anchor" href="#arg-filter-p-val-cutoff"></a></dt>
+<dd><p>Raw p-value cutoff for filtering.</p></dd>
+
+
+<dt id="arg-filter-fc-cutoff">filter_fc_cutoff<a class="anchor" aria-label="anchor" href="#arg-filter-fc-cutoff"></a></dt>
+<dd><p>Fold change cutoff for filtering.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Step-specific arguments passed to <code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">glystats::gly_limma()</a></code>.
-Use the format <code>pkg.func.arg</code>.
-For example, <code>step_dea_limma(glystats.gly_limma.p_adj_method = "BH")</code>.</p></dd>
+<dd><p>Additional arguments passed to <code><a href="https://rdrr.io/pkg/limma/man/lmFit.html" class="external-link">limma::lmFit()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -93,15 +145,6 @@ For example, <code>step_dea_limma(glystats.gly_limma.p_adj_method = "BH")</code>
 <li><p><code>dma</code>: A table containing the DMA (differential motif analysis) result (if <code>on = "motif_exp"</code>)</p></li>
 </ul></div>
     <div class="section level2">
-    <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>
-    <p>This step supports the following dynamic arguments:</p><ul><li><p><code>glystats.gly_limma.p_adj_method</code>: P-value adjustment method (default: "BH").</p></li>
-<li><p><code>glystats.gly_limma.ref_group</code>: Reference group for comparison.</p></li>
-<li><p><code>glystats.gly_limma.contrasts</code>: Custom contrasts for multi-group comparisons.</p></li>
-<li><p><code>glystats.filter_sig_vars.p_adj_cutoff</code>: Adjusted p-value cutoff (default: 0.05).</p></li>
-<li><p><code>glystats.filter_sig_vars.p_val_cutoff</code>: Raw p-value cutoff.</p></li>
-<li><p><code>glystats.filter_sig_vars.fc_cutoff</code>: Fold change cutoff.</p></li>
-</ul></div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glystats/reference/gly_limma.html" class="external-link">glystats::gly_limma()</a></code></p></div>
     </div>
@@ -112,6 +155,9 @@ For example, <code>step_dea_limma(glystats.gly_limma.p_adj_method = "BH")</code>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_dea_limma()"</span>&gt; <span style="font-style: italic;">Differential expression analysis (limma)</span></span>
 <span class="r-in"><span><span class="fu">step_dea_limma</span><span class="op">(</span>on <span class="op">=</span> <span class="st">"trait_exp"</span><span class="op">)</span>  <span class="co"># Differential trait analysis</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_dea_limma(on = \"trait_exp\")"</span>&gt; <span style="font-style: italic;">Differential trait analysis (limma)</span></span>
+<span class="r-in"><span><span class="fu">step_dea_limma</span><span class="op">(</span>p_adj_method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_dea_limma(p_adj_method = \"BH\")"</span>&gt; <span style="font-style: italic;">Differential expression analysis</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-style: italic;">(limma)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

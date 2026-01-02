@@ -6,6 +6,8 @@
   : Create a Blueprint
 - [`blueprint_default()`](https://glycoverse.github.io/glysmith/reference/blueprint_default.md)
   : Default blueprint
+- [`br()`](https://glycoverse.github.io/glysmith/reference/br.md) :
+  Create a Branch in a Blueprint
 - [`cast_exp()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   [`cast_plot()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   [`cast_table()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)

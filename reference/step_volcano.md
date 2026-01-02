@@ -14,16 +14,28 @@ This step requires one of the DEA steps to be run:
 ## Usage
 
 ``` r
-step_volcano(...)
+step_volcano(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...)
 ```
 
 ## Arguments
 
+- log2fc_cutoff:
+
+  The log2 fold change cutoff. Defaults to 1.
+
+- p_cutoff:
+
+  The p-value cutoff. Defaults to 0.05.
+
+- p_col:
+
+  The column name for p-value. Defaults to "p_adj". Can also be "p_val"
+  (raw p-values without multiple testing correction).
+
 - ...:
 
-  Step-specific arguments passed to underlying functions. Use the format
-  `pkg.func.arg`. For example,
-  `step_volcano(glyvis.plot_volcano.log2fc_cutoff = 2)`.
+  Other arguments passed to
+  [`EnhancedVolcano::EnhancedVolcano()`](https://rdrr.io/pkg/EnhancedVolcano/man/EnhancedVolcano.html).
 
 ## Value
 
@@ -40,19 +52,6 @@ Plots generated:
 
 - `volcano`: A volcano plot
 
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glyvis.plot_volcano.log2fc_cutoff`: Log2 fold change cutoff (default:
-  1).
-
-- `glyvis.plot_volcano.p_cutoff`: P-value cutoff (default: 0.05).
-
-- `glyvis.plot_volcano.p_col`: Column for p-value ("p_adj" or "p_val").
-
-- `glyvis.plot_volcano.contrast`: Contrast to plot for limma results.
-
 ## See also
 
 [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html)
@@ -62,4 +61,6 @@ This step supports the following dynamic arguments:
 ``` r
 step_volcano()
 #> <step "step_volcano()"> Volcano plot
+step_volcano(log2fc_cutoff = 2)
+#> <step "step_volcano(log2fc_cutoff = 2)"> Volcano plot
 ```

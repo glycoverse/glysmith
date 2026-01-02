@@ -10,7 +10,7 @@ variables. Ignore the resulting plot if it is not informative.
 ## Usage
 
 ``` r
-step_pca(on = "exp", ...)
+step_pca(on = "exp", center = TRUE, scale = TRUE, ...)
 ```
 
 ## Arguments
@@ -20,11 +20,18 @@ step_pca(on = "exp", ...)
   Name of the experiment to run PCA on. Can be "exp", "sig_exp",
   "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 
+- center:
+
+  A logical indicating whether to center the data. Default is TRUE.
+
+- scale:
+
+  A logical indicating whether to scale the data. Default is TRUE.
+
 - ...:
 
-  Step-specific arguments passed to underlying functions. Use the format
-  `pkg.func.arg`. For example,
-  `step_pca(glystats.gly_pca.center = FALSE)`.
+  Additional arguments passed to
+  [`prcomp()`](https://rdrr.io/r/stats/prcomp.html).
 
 ## Value
 
@@ -57,14 +64,6 @@ Plots generated (with suffixes):
 - `pca_loadings`: A PCA loading plot
 
 - `pca_screeplot`: A PCA screeplot
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
-
-- `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
 
 ## See also
 

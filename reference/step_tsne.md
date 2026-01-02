@@ -13,7 +13,7 @@ with different `perplexity` values to find the best one.
 ## Usage
 
 ``` r
-step_tsne(on = "exp", ...)
+step_tsne(on = "exp", dims = 2, perplexity = 30, ...)
 ```
 
 ## Arguments
@@ -23,14 +23,18 @@ step_tsne(on = "exp", ...)
   Name of the experiment to run t-SNE on. Can be "exp", "sig_exp",
   "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 
+- dims:
+
+  Number of output dimensions. Default is 2.
+
+- perplexity:
+
+  Perplexity parameter for t-SNE. Default is 30.
+
 - ...:
 
-  Step-specific arguments passed to
-  [`glystats::gly_tsne()`](https://glycoverse.github.io/glystats/reference/gly_tsne.html)
-  and
-  [`glyvis::plot_tsne()`](https://glycoverse.github.io/glyvis/reference/plot_tsne.html).
-  Use the format `pkg.func.arg`. For example,
-  `step_tsne(glystats.gly_tsne.perplexity = 30)`.
+  Additional arguments passed to
+  [`Rtsne::Rtsne()`](https://rdrr.io/pkg/Rtsne/man/Rtsne.html).
 
 ## Value
 
@@ -56,17 +60,6 @@ Plots generated (with suffixes):
 
 - `tsne`: The t-SNE plot
 
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_tsne.perplexity`: The perplexity parameter for t-SNE.
-
-- `glystats.gly_tsne.dims`: The number of dimensions for t-SNE.
-
-- `glystats.gly_tsne.xxx`: xxx are other parameters of
-  [`Rtsne::Rtsne()`](https://rdrr.io/pkg/Rtsne/man/Rtsne.html).
-
 ## See also
 
 [`glystats::gly_tsne()`](https://glycoverse.github.io/glystats/reference/gly_tsne.html),
@@ -77,6 +70,6 @@ This step supports the following dynamic arguments:
 ``` r
 step_tsne()
 #> <step "step_tsne()"> t-SNE
-step_tsne(glystats.gly_tsne.perplexity = 30)
-#> <step "step_tsne(glystats.gly_tsne.perplexity = 30)"> t-SNE
+step_tsne(perplexity = 30)
+#> <step "step_tsne(perplexity = 30)"> t-SNE
 ```

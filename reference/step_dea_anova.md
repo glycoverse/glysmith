@@ -12,7 +12,16 @@ objects.
 ## Usage
 
 ``` r
-step_dea_anova(on = "exp", ...)
+step_dea_anova(
+  on = "exp",
+  p_adj_method = "BH",
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  filter_on = "main_test",
+  filter_comparison = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -24,11 +33,37 @@ step_dea_anova(on = "exp", ...)
   differential trait analysis. Use `"motif_exp"` for differential motif
   analysis.
 
+- p_adj_method:
+
+  A character string specifying the method to adjust p-values. See
+  `p.adjust.methods` for available methods. Default is "BH". If NULL, no
+  adjustment is performed.
+
+- filter_p_adj_cutoff:
+
+  Adjusted p-value cutoff for filtering.
+
+- filter_p_val_cutoff:
+
+  Raw p-value cutoff for filtering.
+
+- filter_fc_cutoff:
+
+  Fold change cutoff for filtering.
+
+- filter_on:
+
+  Name of the test to filter on. Default is `"main_test"`. Can also be
+  `"post_hoc_test"`.
+
+- filter_comparison:
+
+  Name of the comparison to filter on.
+
 - ...:
 
-  Step-specific arguments passed to
-  [`glystats::gly_anova()`](https://glycoverse.github.io/glystats/reference/gly_anova.html).
-  Use the format `pkg.func.arg`.
+  Additional arguments passed to
+  [`stats::aov()`](https://rdrr.io/r/stats/aov.html).
 
 ## Value
 
@@ -64,20 +99,6 @@ Tables generated:
 
 - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results
   (if `on = "motif_exp"`)
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_anova.p_adj_method`: P-value adjustment method (default:
-  "BH").
-
-- `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff
-  (default: 0.05).
-
-- `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-
-- `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
 
 ## See also
 

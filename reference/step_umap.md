@@ -13,7 +13,7 @@ with different `n_neighbors` values to find the best one.
 ## Usage
 
 ``` r
-step_umap(on = "exp", ...)
+step_umap(on = "exp", n_neighbors = 15, n_components = 2, ...)
 ```
 
 ## Arguments
@@ -23,14 +23,18 @@ step_umap(on = "exp", ...)
   Name of the experiment to run UMAP on. Can be "exp", "sig_exp",
   "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 
+- n_neighbors:
+
+  Number of neighbors to consider for each point. Default is 15.
+
+- n_components:
+
+  Number of output dimensions. Default is 2.
+
 - ...:
 
-  Step-specific arguments passed to
-  [`glystats::gly_umap()`](https://glycoverse.github.io/glystats/reference/gly_umap.html)
-  and
-  [`glyvis::plot_umap()`](https://glycoverse.github.io/glyvis/reference/plot_umap.html).
-  Use the format `pkg.func.arg`. For example,
-  `step_umap(glystats.gly_umap.n_neighbors = 15)`.
+  Additional arguments passed to
+  [`uwot::umap()`](https://jlmelville.github.io/uwot/reference/umap.html).
 
 ## Value
 
@@ -56,17 +60,6 @@ Plots generated (with suffixes):
 
 - `umap`: The UMAP plot
 
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_umap.n_neighbors`: The number of neighbors.
-
-- `glystats.gly_umap.n_components`: The number of dimensions.
-
-- `glystats.gly_umap.xxx`: xxx are other parameters of
-  [`uwot::umap()`](https://jlmelville.github.io/uwot/reference/umap.html).
-
 ## See also
 
 [`glystats::gly_umap()`](https://glycoverse.github.io/glystats/reference/gly_umap.html),
@@ -77,6 +70,6 @@ This step supports the following dynamic arguments:
 ``` r
 step_umap()
 #> <step "step_umap()"> UMAP
-step_umap(glystats.gly_umap.n_neighbors = 15)
-#> <step "step_umap(glystats.gly_umap.n_neighbors = 15)"> UMAP
+step_umap(n_neighbors = 15)
+#> <step "step_umap(n_neighbors = 15)"> UMAP
 ```

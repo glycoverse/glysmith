@@ -13,7 +13,18 @@ for both two-group and multi-group experiments.
 ## Usage
 
 ``` r
-step_dea_limma(on = "exp", ...)
+step_dea_limma(
+  on = "exp",
+  p_adj_method = "BH",
+  covariate_cols = NULL,
+  subject_col = NULL,
+  ref_group = NULL,
+  contrasts = NULL,
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -25,12 +36,59 @@ step_dea_limma(on = "exp", ...)
   differential trait analysis. Use `"motif_exp"` for differential motif
   analysis.
 
+- p_adj_method:
+
+  A character string specifying the method for multiple testing
+  correction. Must be one of the methods supported by
+  [`stats::p.adjust()`](https://rdrr.io/r/stats/p.adjust.html). Default
+  is "BH" (Benjamini-Hochberg). Set to NULL to skip p-value adjustment.
+
+- covariate_cols:
+
+  (Only for
+  [`gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html))
+  A character vector specifying column names in sample information to
+  include as covariates in the limma model. Default is NULL.
+
+- subject_col:
+
+  (Only for
+  [`gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html))
+  A character string specifying the column name in sample information
+  that contains subject identifiers for paired comparisons. Default is
+  NULL.
+
+- ref_group:
+
+  A character string specifying the reference group. If NULL (default),
+  the first level of the group factor is used as the reference. Only
+  used for two-group comparisons.
+
+- contrasts:
+
+  A character vector specifying custom contrasts. If NULL (default), all
+  pairwise comparisons are automatically generated, and the levels
+  coming first in the factor will be used as the reference group.
+  Supports two formats: "group1-group2" or "group1_vs_group2". Use the
+  second format if group names contain hyphens. "group1" will be used as
+  the reference group.
+
+- filter_p_adj_cutoff:
+
+  Adjusted p-value cutoff for filtering.
+
+- filter_p_val_cutoff:
+
+  Raw p-value cutoff for filtering.
+
+- filter_fc_cutoff:
+
+  Fold change cutoff for filtering.
+
 - ...:
 
-  Step-specific arguments passed to
-  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
-  Use the format `pkg.func.arg`. For example,
-  `step_dea_limma(glystats.gly_limma.p_adj_method = "BH")`.
+  Additional arguments passed to
+  [`limma::lmFit()`](https://rdrr.io/pkg/limma/man/lmFit.html).
 
 ## Value
 
@@ -76,25 +134,6 @@ Tables generated:
 - `dma`: A table containing the DMA (differential motif analysis) result
   (if `on = "motif_exp"`)
 
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_limma.p_adj_method`: P-value adjustment method (default:
-  "BH").
-
-- `glystats.gly_limma.ref_group`: Reference group for comparison.
-
-- `glystats.gly_limma.contrasts`: Custom contrasts for multi-group
-  comparisons.
-
-- `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff
-  (default: 0.05).
-
-- `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-
-- `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
-
 ## See also
 
 [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
@@ -106,4 +145,7 @@ step_dea_limma()
 #> <step "step_dea_limma()"> Differential expression analysis (limma)
 step_dea_limma(on = "trait_exp")  # Differential trait analysis
 #> <step "step_dea_limma(on = \"trait_exp\")"> Differential trait analysis (limma)
+step_dea_limma(p_adj_method = "BH")
+#> <step "step_dea_limma(p_adj_method = \"BH\")"> Differential expression analysis
+#> (limma)
 ```

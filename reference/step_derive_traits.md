@@ -8,15 +8,37 @@ of a glycome or each glycosite. Need glycan structure information.
 ## Usage
 
 ``` r
-step_derive_traits(...)
+step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
 ```
 
 ## Arguments
 
-- ...:
+- trait_fns:
 
-  Step-specific arguments passed to underlying functions. Use the format
-  `pkg.func.arg`.
+  A named list of derived trait functions created by trait factories.
+  Names of the list are the names of the derived traits. Default is
+  `NULL`, which means all derived traits in
+  [`basic_traits()`](https://glycoverse.github.io/glydet/reference/basic_traits.html)
+  are calculated.
+
+- mp_fns:
+
+  A named list of meta-property functions. This parameter is useful if
+  your trait functions use custom meta-properties other than those in
+  [`all_mp_fns()`](https://glycoverse.github.io/glydet/reference/all_mp_fns.html).
+  Default is `NULL`, which means all meta-properties in
+  [`all_mp_fns()`](https://glycoverse.github.io/glydet/reference/all_mp_fns.html)
+  are used.
+
+- mp_cols:
+
+  A character vector of column names in the `var_info` tibble to use as
+  meta-properties. If names are provided, they will be used as names of
+  the meta-properties, otherwise the column names will be used.
+  Meta-properties specified in `mp_cols` will overwrite those introduced
+  by `mp_fns` with the same names, including the built-in
+  meta-properties. Default is `NULL`, which means no columns are used as
+  meta-properties.
 
 ## Value
 
@@ -35,17 +57,6 @@ Data generated:
 Tables generated:
 
 - `derived_traits`: A table containing the derived traits.
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glydet.derive_traits.trait_fns`: Custom trait functions to calculate.
-
-- `glydet.derive_traits.mp_fns`: Custom meta-property functions.
-
-- `glydet.derive_traits.mp_cols`: Column names to use as
-  meta-properties.
 
 ## See also
 

@@ -20,10 +20,8 @@ step_heatmap(on = "exp", ...)
 
 - ...:
 
-  Step-specific arguments passed to
+  Additional arguments passed to
   [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
-  Use the format `pkg.func.arg`. For example,
-  `step_heatmap(glyvis.plot_heatmap.show_rownames = TRUE)`.
 
 ## Value
 
@@ -48,18 +46,6 @@ Plots generated:
 - `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
 
 - `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glyvis.plot_heatmap.show_rownames`: Whether to show row names.
-
-- `glyvis.plot_heatmap.show_colnames`: Whether to show column names.
-
-- `glyvis.plot_heatmap.cluster_rows`: Whether to cluster rows.
-
-- `glyvis.plot_heatmap.cluster_cols`: Whether to cluster columns.
 
 ## See also
 

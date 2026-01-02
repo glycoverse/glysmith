@@ -13,7 +13,7 @@ to run on derived traits (trait_exp) or other experiment objects."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,16 @@ to run on derived traits (<code>trait_exp</code>) or other experiment objects.</
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_dea_kruskal</span><span class="op">(</span>on <span class="op">=</span> <span class="st">"exp"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_dea_kruskal</span><span class="op">(</span></span>
+<span>  on <span class="op">=</span> <span class="st">"exp"</span>,</span>
+<span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
+<span>  filter_p_adj_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  filter_p_val_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_fc_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_on <span class="op">=</span> <span class="st">"main_test"</span>,</span>
+<span>  filter_comparison <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -61,9 +70,34 @@ Use <code>"trait_exp"</code> for differential trait analysis.
 Use <code>"motif_exp"</code> for differential motif analysis.</p></dd>
 
 
+<dt id="arg-p-adj-method">p_adj_method<a class="anchor" aria-label="anchor" href="#arg-p-adj-method"></a></dt>
+<dd><p>A character string specifying the method to adjust p-values.
+See <code>p.adjust.methods</code> for available methods. Default is "BH".
+If NULL, no adjustment is performed.</p></dd>
+
+
+<dt id="arg-filter-p-adj-cutoff">filter_p_adj_cutoff<a class="anchor" aria-label="anchor" href="#arg-filter-p-adj-cutoff"></a></dt>
+<dd><p>Adjusted p-value cutoff for filtering.</p></dd>
+
+
+<dt id="arg-filter-p-val-cutoff">filter_p_val_cutoff<a class="anchor" aria-label="anchor" href="#arg-filter-p-val-cutoff"></a></dt>
+<dd><p>Raw p-value cutoff for filtering.</p></dd>
+
+
+<dt id="arg-filter-fc-cutoff">filter_fc_cutoff<a class="anchor" aria-label="anchor" href="#arg-filter-fc-cutoff"></a></dt>
+<dd><p>Fold change cutoff for filtering.</p></dd>
+
+
+<dt id="arg-filter-on">filter_on<a class="anchor" aria-label="anchor" href="#arg-filter-on"></a></dt>
+<dd><p>Filter on "main_test" or "post_hoc_test" for Kruskal-Wallis results.</p></dd>
+
+
+<dt id="arg-filter-comparison">filter_comparison<a class="anchor" aria-label="anchor" href="#arg-filter-comparison"></a></dt>
+<dd><p>Comparison name for post-hoc filtering.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Step-specific arguments passed to <code><a href="https://glycoverse.github.io/glystats/reference/gly_kruskal.html" class="external-link">glystats::gly_kruskal()</a></code>.
-Use the format <code>pkg.func.arg</code>.</p></dd>
+<dd><p>Additional arguments passed to <code><a href="https://glycoverse.github.io/glystats/reference/gly_kruskal.html" class="external-link">glystats::gly_kruskal()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -82,13 +116,6 @@ Use the format <code>pkg.func.arg</code>.</p></dd>
 </ul><p>Tables generated:</p><ul><li><p><code>dea_main_test</code>, <code>dea_post_hoc_test</code>: Tables containing the results (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>dta_main_test</code>, <code>dta_post_hoc_test</code>: Tables containing the results (if <code>on = "trait_exp"</code>)</p></li>
 <li><p><code>dma_main_test</code>, <code>dma_post_hoc_test</code>: Tables containing the results (if <code>on = "motif_exp"</code>)</p></li>
-</ul></div>
-    <div class="section level2">
-    <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>
-    <p>This step supports the following dynamic arguments:</p><ul><li><p><code>glystats.gly_anova.p_adj_method</code>: P-value adjustment method (default: "BH").</p></li>
-<li><p><code>glystats.filter_sig_vars.p_adj_cutoff</code>: Adjusted p-value cutoff (default: 0.05).</p></li>
-<li><p><code>glystats.filter_sig_vars.p_val_cutoff</code>: Raw p-value cutoff.</p></li>
-<li><p><code>glystats.filter_sig_vars.fc_cutoff</code>: Fold change cutoff.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

@@ -11,7 +11,7 @@ background.
 ## Usage
 
 ``` r
-step_sig_enrich_go(universe = "all", ...)
+step_sig_enrich_go(universe = "all", plot_type = "dotplot", ...)
 ```
 
 ## Arguments
@@ -21,11 +21,14 @@ step_sig_enrich_go(universe = "all", ...)
   The universe (background) to use for enrichment analysis. One of "all"
   (all genes in OrgDb), "detected" (detected variables in `exp`).
 
+- plot_type:
+
+  Plot type for enrichment results ("dotplot", "barplot", etc.).
+
 - ...:
 
-  Step-specific arguments passed to underlying functions. Use the format
-  `pkg.func.arg`. For example,
-  `step_sig_enrich_go(glystats.gly_enrich_go.p_adj_method = "BH")`.
+  Additional arguments passed to
+  [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 
 ## Value
 
@@ -44,18 +47,6 @@ Tables generated:
 
 - `go_enrich`: A table containing the GO enrichment results.
 
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_enrich_go.OrgDb`: Organism database (default:
-  "org.Hs.eg.db").
-
-- `glystats.gly_enrich_go.readable`: Whether to map to readable gene
-  names.
-
-- `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
-
 ## See also
 
 [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html)
@@ -65,4 +56,6 @@ This step supports the following dynamic arguments:
 ``` r
 step_sig_enrich_go()
 #> <step "step_sig_enrich_go()"> GO enrichment analysis
+step_sig_enrich_go(plot_type = "barplot")
+#> <step "step_sig_enrich_go(plot_type = \"barplot\")"> GO enrichment analysis
 ```

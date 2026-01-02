@@ -12,7 +12,15 @@ objects. Only use this method for experiments with 2 groups.
 ## Usage
 
 ``` r
-step_dea_ttest(on = "exp", ...)
+step_dea_ttest(
+  on = "exp",
+  p_adj_method = "BH",
+  ref_group = NULL,
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -24,11 +32,33 @@ step_dea_ttest(on = "exp", ...)
   differential trait analysis. Use `"motif_exp"` for differential motif
   analysis.
 
+- p_adj_method:
+
+  A character string specifying the method to adjust p-values. See
+  `p.adjust.methods` for available methods. Default is "BH". If NULL, no
+  adjustment is performed.
+
+- ref_group:
+
+  A character string specifying the reference group. If NULL (default),
+  the first level of the group factor is used as the reference.
+
+- filter_p_adj_cutoff:
+
+  Adjusted p-value cutoff for filtering.
+
+- filter_p_val_cutoff:
+
+  Raw p-value cutoff for filtering.
+
+- filter_fc_cutoff:
+
+  Fold change cutoff for filtering.
+
 - ...:
 
-  Step-specific arguments passed to
-  [`glystats::gly_ttest()`](https://glycoverse.github.io/glystats/reference/gly_ttest.html).
-  Use the format `pkg.func.arg`.
+  Additional arguments passed to
+  [`stats::t.test()`](https://rdrr.io/r/stats/t.test.html).
 
 ## Value
 
@@ -61,22 +91,6 @@ Tables generated:
 - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 
 - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_ttest.p_adj_method`: P-value adjustment method (default:
-  "BH").
-
-- `glystats.gly_ttest.ref_group`: Reference group for comparison.
-
-- `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff
-  (default: 0.05).
-
-- `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-
-- `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
 
 ## See also
 

@@ -15,7 +15,7 @@ Need glycan structure information."><meta property="og:image" content="https://g
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,16 +50,19 @@ Need glycan structure information.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_quantify_motifs</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_quantify_motifs</span><span class="op">(</span>max_size <span class="op">=</span> <span class="fl">3</span>, method <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Step-specific arguments passed to underlying functions.
-Use the format <code>pkg.func.arg</code>.</p></dd>
+<dl><dt id="arg-max-size">max_size<a class="anchor" aria-label="anchor" href="#arg-max-size"></a></dt>
+<dd><p>Maximum size of motifs to extract.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>Method for motif quantification ("relative" or "absolute").</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -71,11 +74,6 @@ Use the format <code>pkg.func.arg</code>.</p></dd>
     <p>Data required:</p><ul><li><p><code>exp</code>: The experiment to quantify motifs for</p></li>
 </ul><p>Data generated:</p><ul><li><p><code>motif_exp</code>: The experiment with quantified motifs</p></li>
 </ul><p>Tables generated:</p><ul><li><p><code>quantified_motifs</code>: A table containing the quantified motifs.</p></li>
-</ul></div>
-    <div class="section level2">
-    <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>
-    <p>This step supports the following dynamic arguments:</p><ul><li><p><code>glymotif.extract_motif.max_size</code>: Maximum size of motifs to extract.</p></li>
-<li><p><code>glydet.quantify_motifs.method</code>: "relative" or "absolute".</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

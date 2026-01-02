@@ -13,15 +13,18 @@ information.
 ## Usage
 
 ``` r
-step_quantify_motifs(...)
+step_quantify_motifs(max_size = 3, method = "relative")
 ```
 
 ## Arguments
 
-- ...:
+- max_size:
 
-  Step-specific arguments passed to underlying functions. Use the format
-  `pkg.func.arg`.
+  Maximum size of motifs to extract.
+
+- method:
+
+  Method for motif quantification ("relative" or "absolute").
 
 ## Value
 
@@ -40,14 +43,6 @@ Data generated:
 Tables generated:
 
 - `quantified_motifs`: A table containing the quantified motifs.
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glymotif.extract_motif.max_size`: Maximum size of motifs to extract.
-
-- `glydet.quantify_motifs.method`: "relative" or "absolute".
 
 ## See also
 

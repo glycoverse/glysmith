@@ -9,19 +9,16 @@ variables using
 ## Usage
 
 ``` r
-step_roc(...)
+step_roc(pos_class = NULL)
 ```
 
 ## Arguments
 
-- ...:
+- pos_class:
 
-  Step-specific arguments passed to
-  [`glystats::gly_roc()`](https://glycoverse.github.io/glystats/reference/gly_roc.html)
-  and
-  [`glyvis::plot_roc()`](https://glycoverse.github.io/glyvis/reference/plot_roc.html).
-  Use the format `pkg.func.arg`. For example,
-  `step_roc(glystats.gly_roc.pos_class = "positive_class")`.
+  A character string specifying which group level should be treated as
+  the positive class. If `NULL` (default), the second level
+  (alphabetically) will be used as the positive class.
 
 ## Value
 
@@ -40,12 +37,6 @@ Tables generated:
 Plots generated:
 
 - `roc_curves`: ROC curves for the top 10 variables
-
-## Dynamic Arguments
-
-This step supports the following dynamic arguments:
-
-- `glystats.gly_roc.pos_class`: The positive class.
 
 ## See also
 

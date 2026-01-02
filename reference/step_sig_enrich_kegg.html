@@ -15,7 +15,7 @@ Use all genes in OrgDb as the background."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@ Use all genes in OrgDb as the background.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_sig_enrich_kegg</span><span class="op">(</span>universe <span class="op">=</span> <span class="st">"all"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_sig_enrich_kegg</span><span class="op">(</span>universe <span class="op">=</span> <span class="st">"all"</span>, plot_type <span class="op">=</span> <span class="st">"dotplot"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -62,10 +62,12 @@ Use all genes in OrgDb as the background.</p>
 One of "all" (all genes in OrgDb), "detected" (detected variables in <code>exp</code>).</p></dd>
 
 
+<dt id="arg-plot-type">plot_type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
+<dd><p>Plot type for enrichment results ("dotplot", "barplot", etc.).</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Step-specific arguments passed to underlying functions.
-Use the format <code>pkg.func.arg</code>.
-For example, <code>step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = "BH")</code>.</p></dd>
+<dd><p>Additional arguments passed to <code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_go.html" class="external-link">glystats::gly_enrich_kegg()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -79,11 +81,6 @@ For example, <code>step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = 
 </ul><p>Tables generated:</p><ul><li><p><code>kegg_enrich</code>: A table containing the KEGG enrichment results.</p></li>
 </ul></div>
     <div class="section level2">
-    <h2 id="dynamic-arguments">Dynamic Arguments<a class="anchor" aria-label="anchor" href="#dynamic-arguments"></a></h2>
-    <p>This step supports the following dynamic arguments:</p><ul><li><p><code>glystats.gly_enrich_kegg.OrgDb</code>: Organism database (default: "org.Hs.eg.db").</p></li>
-<li><p><code>glyvis.plot_enrich.type</code>: Plot type ("dotplot", "barplot", etc.).</p></li>
-</ul></div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_go.html" class="external-link">glystats::gly_enrich_kegg()</a></code></p></div>
     </div>
@@ -92,6 +89,8 @@ For example, <code>step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = 
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">step_sig_enrich_kegg</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_sig_enrich_kegg()"</span>&gt; <span style="font-style: italic;">KEGG enrichment analysis</span></span>
+<span class="r-in"><span><span class="fu">step_sig_enrich_kegg</span><span class="op">(</span>plot_type <span class="op">=</span> <span class="st">"barplot"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_sig_enrich_kegg(plot_type = \"barplot\")"</span>&gt; <span style="font-style: italic;">KEGG enrichment analysis</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
