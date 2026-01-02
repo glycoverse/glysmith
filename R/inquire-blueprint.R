@@ -127,7 +127,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       list(valid = TRUE, blueprint = bp, explanation = explanation)
     },
     error = function(e) {
-      list(valid = FALSE, error = paste("Error:", e$message))
+      list(valid = FALSE, error = paste("Error:", conditionMessage(e)))
     }
   )
 }

@@ -198,6 +198,34 @@ test_that("inquire_blueprint retries on invalid output", {
   expect_true(error_feedback_received)
 })
 
+test_that("inquire_blueprint reflects full error details back to LLM", {
+  skip_if_not_installed("ellmer")
+
+  call_count <- 0
+  prompt_received <- NULL
+
+  mock_chat_fun <- function(prompt) {
+    call_count <<- call_count + 1
+    if (call_count == 1) {
+      return("step_volcano()")
+    }
+    prompt_received <<- prompt
+    "step_dea_ttest(); step_volcano()"
+  }
+
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
+
+  suppressMessages(inquire_blueprint("test description", max_retries = 1))
+
+  expect_true(grepl("missing data", prompt_received))
+  expect_true(grepl("dea_res", prompt_received))
+})
+
 test_that("inquire_blueprint fails after max retries", {
   skip_if_not_installed("ellmer")
 
