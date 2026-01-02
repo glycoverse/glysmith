@@ -141,10 +141,15 @@ step_preprocess <- function(
     },
     report = function(x) {
       text <- paste(x$meta$logs$preprocess, collapse = "\n")
-      text <- stringr::str_replace_all(text, "gf", "glycoform")
-      text <- stringr::str_replace_all(text, "gfs", "glycoform (with structure)")
-      text <- stringr::str_replace_all(text, "gp", "glycopeptide")
-      text <- stringr::str_replace_all(text, "gps", "glycopeptide (with structure)")
+      replacements <- c(
+        "gfs" = "glycoform (with structure)",
+        "gf" = "glycoform",
+        "gps" = "glycopeptide (with structure)",
+        "gp" = "glycopeptide"
+      )
+      for (pattern in names(replacements)) {
+        text <- stringr::str_replace_all(text, pattern, replacements[[pattern]])
+      }
       paste0("<AI>", text, "</AI>")
     },
     require = "exp",
@@ -234,7 +239,6 @@ step_pca <- function(
   ...
 ) {
   rlang::check_installed("factoextra")
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   pca_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -336,7 +340,6 @@ step_tsne <- function(
   ...
 ) {
   rlang::check_installed("Rtsne")
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   tsne_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -403,7 +406,6 @@ step_umap <- function(
   ...
 ) {
   rlang::check_installed("uwot")
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
   umap_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -855,7 +857,8 @@ step_dea_kruskal <- function(
 #' @returns Number of unique significant variables
 #' @noRd
 .dea_count_sig_total <- function(tbl) {
-  length(unique(tbl$variable[which(tbl$p_adj < 0.05)]))
+  sig_vars <- tbl$variable[!is.na(tbl$p_adj) & tbl$p_adj < 0.05]
+  length(unique(sig_vars))
 }
 
 #' Count significant variables per contrast
@@ -863,7 +866,7 @@ step_dea_kruskal <- function(
 #' @returns A named numeric vector with counts per contrast
 #' @noRd
 .dea_count_sig_per_contrast <- function(tbl) {
-  sig_tbl <- tbl[which(tbl$p_adj < 0.05), ]
+  sig_tbl <- tbl[!is.na(tbl$p_adj) & tbl$p_adj < 0.05, , drop = FALSE]
   if (nrow(sig_tbl) == 0) {
     return(character(0))
   }
@@ -907,32 +910,24 @@ step_dea_kruskal <- function(
   sig_total <- .dea_count_sig_total(tbl)
   is_multigroup <- .dea_is_multigroup(tbl)
 
-  # Base message
-
-  msg <- paste0(meta$label, " analysis was performed.")
+  lines <- c(paste0(meta$label, " analysis was performed."))
 
   if (sig_total == 0) {
-    msg <- paste0(msg, "No significant ", item_name, " (adjusted p < 0.05).\n")
-    return(msg)
+    lines <- c(lines, paste0("No significant ", item_name, " (adjusted p < 0.05)."))
+    return(paste(lines, collapse = "\n"))
   }
 
-  # Add total count
-  msg <- paste0(msg, "Number of significant ", item_name, " (adjusted p < 0.05): ", sig_total, ".\n")
+  lines <- c(lines, paste0("Number of significant ", item_name, " (adjusted p < 0.05): ", sig_total, "."))
 
-  # For multi-group analysis, add per-contrast breakdown
   if (is_multigroup) {
     sig_per_contrast <- .dea_count_sig_per_contrast(tbl)
     if (length(sig_per_contrast) > 0) {
-      msg <- paste0(msg, "\nBreakdown by contrast:\n\n")
-      for (i in seq_along(sig_per_contrast)) {
-        contrast_name <- names(sig_per_contrast)[i]
-        contrast_count <- sig_per_contrast[i]
-        msg <- paste0(msg, "- ", contrast_name, ": ", contrast_count, "\n")
-      }
+      contrast_lines <- paste0("- ", names(sig_per_contrast), ": ", as.integer(sig_per_contrast))
+      lines <- c(lines, "", "Breakdown by contrast:", "", contrast_lines)
     }
   }
 
-  msg
+  paste(lines, collapse = "\n")
 }
 
 #' Internal helper for DEA steps
@@ -1036,8 +1031,9 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ..
     id = "volcano",
     label = "Volcano plot",
     condition = function(ctx) {
-      check <- !inherits(ctx_get_data(ctx, "dea_res"), "glystats_anova_res") ||
-        !inherits(ctx_get_data(ctx, "dea_res"), "glystats_kruskal_res")
+      dea_res <- ctx_get_data(ctx, "dea_res")
+      check <- !inherits(dea_res, "glystats_anova_res") &&
+        !inherits(dea_res, "glystats_kruskal_res")
       reason <- "volcano plot is not supported for ANOVA or Kruskal-Wallis DEA results."
       list(check = check, reason = reason)
     },
@@ -1337,7 +1333,7 @@ step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) 
     id = "derive_traits",
     label = "Derived trait calculation",
     condition = function(ctx) {
-      check <- "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info)
+      check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
       reason <- "glycan structures are not available in the experiment"
       list(check = check, reason = reason)
     },
@@ -1410,7 +1406,7 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
     id = "quantify_motifs",
     label = "Motif quantification",
     condition = function(ctx) {
-      check <- "glycan_structure" %in% colnames(ctx_get_data(ctx, "exp")$var_info)
+      check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
       reason <- "glycan structures are not available in the experiment"
       list(check = check, reason = reason)
     },
@@ -1441,11 +1437,11 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
     report = function(x) {
       tbl <- x$tables[["quantified_motifs"]]
       n_motifs <- length(unique(tbl$motif))
-      motif_type_msg <- ifelse(
-        glyexp::get_glycan_type(ctx_get_data(x, "exp")) == "N",
-        "Branching motifs for N-glycans were extracted. ",
+      motif_type_msg <- if (glyexp::get_glycan_type(x$exp) == "N") {
+        "Branching motifs for N-glycans were extracted. "
+      } else {
         "All motifs were extracted. "
-      )
+      }
       msg <- paste0(
         "Motif quantification was performed. ",
         motif_type_msg,
@@ -1491,7 +1487,6 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
 step_heatmap <- function(on = "exp", ...) {
   rlang::check_installed("pheatmap")
   rlang::check_installed("ggplotify")
-  on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
 
   on_meta <- .resolve_on(on)
@@ -1599,13 +1594,21 @@ step_roc <- function(pos_class = NULL) {
   )
 }
 
+.on_choices <- function() {
+  c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp")
+}
+
+.has_glycan_structure <- function(exp) {
+  "glycan_structure" %in% colnames(exp$var_info)
+}
+
 #' Resolve properties from 'on' parameter
 #'
 #' @param on Name of the experiment data.
 #' @returns A list with suffixes and prefixes.
 #' @noRd
 .resolve_on <- function(on) {
-  checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
+  checkmate::assert_choice(on, .on_choices())
   list(
     id_suffix = switch(on,
       exp = "",
