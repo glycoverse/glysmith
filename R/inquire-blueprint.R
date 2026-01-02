@@ -227,6 +227,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
         args <- .get_rd_arguments(rd)
         # Filter out "..." and arguments that shouldn't be touched by LLM usually
         args <- args[!names(args) %in% c("...", "signature")]
+        args <- .filter_inquire_blueprint_args(args)
 
         if (length(args) > 0) {
           # Format parameters
@@ -252,6 +253,12 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   })
 
   paste(desc_list, collapse = "\n")
+}
+
+.filter_inquire_blueprint_args <- function(args) {
+  if (length(args) == 0) return(args)
+  allowed <- "on"
+  args[names(args) %in% allowed]
 }
 
 .get_rd_database <- function() {
