@@ -131,6 +131,24 @@ validate_blueprint <- function(blueprint) {
     if (length(require) > 0) {
       missing <- setdiff(require, known)
       missing <- setdiff(missing, "exp")  # exp is always present
+
+      # If the step is in a branch, check if the missing keys can be resolved from global data.
+      # This allows branches to "inherit" dependencies from the main flow.
+      if (!is.null(s$branch) && length(missing) > 0) {
+        prefix <- paste0(s$branch, "__")
+        # Identify missing keys that have the branch prefix
+        prefixed_missing <- missing[startsWith(missing, prefix)]
+        if (length(prefixed_missing) > 0) {
+          # Strip prefix to get the "global" key
+          unprefixed <- substr(prefixed_missing, nchar(prefix) + 1, nchar(prefixed_missing))
+          # Check if the global key is known
+          found_globally <- unprefixed %in% known
+          # Remove resolved keys from missing list
+          resolved <- prefixed_missing[found_globally]
+          missing <- setdiff(missing, resolved)
+        }
+      }
+
       missing_keys[[s$id]] <- missing
     }
 
@@ -299,6 +317,20 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
   if (length(required) == 0) return(FALSE)
 
   missing_deps <- setdiff(required, names(ctx$data))
+
+  # Allow branches to inherit dependencies from the main flow
+  if (!is.null(step$branch) && length(missing_deps) > 0) {
+    prefix <- paste0(step$branch, "__")
+    prefixed_missing <- missing_deps[startsWith(missing_deps, prefix)]
+
+    if (length(prefixed_missing) > 0) {
+      unprefixed <- substr(prefixed_missing, nchar(prefix) + 1, nchar(prefixed_missing))
+      found_globally <- unprefixed %in% names(ctx$data)
+      resolved <- prefixed_missing[found_globally]
+      missing_deps <- setdiff(missing_deps, resolved)
+    }
+  }
+
   if (length(missing_deps) == 0) return(FALSE)
 
   if (!quiet) {

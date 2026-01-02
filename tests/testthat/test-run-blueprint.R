@@ -213,3 +213,46 @@ test_that("branch steps namespace outputs", {
   expect_equal(ctx$data[["one__y"]], 2)
   expect_equal(ctx$data[["two__y"]], 2)
 })
+
+test_that("branch steps can inherit global data", {
+  step_global <- step(
+    id = "global",
+    label = "Global Step",
+    run = function(ctx) {
+      ctx_add_data(ctx, "uniq_global_val", 999)
+    },
+    generate = "uniq_global_val"
+  )
+
+  step_branch <- step(
+    id = "branch",
+    label = "Branch Step",
+    run = function(ctx) {
+      # This step requires "uniq_global_val"
+      # It should find it even though it's not prefixed with the branch name
+      val <- ctx_get_data(ctx, "uniq_global_val")
+      ctx_add_data(ctx, "branch_res", val + 1)
+    },
+    require = "uniq_global_val",
+    generate = "branch_res"
+  )
+
+  bp <- blueprint(
+    step_global,
+    br("b1", step_branch)
+  )
+
+  ctx <- list(
+    data = list(exp = 1),
+    plots = list(),
+    tables = list(),
+    meta = list()
+  )
+
+  # This should pass without error
+  expect_no_error(ctx <- run_blueprint(bp, ctx, quiet = TRUE))
+
+  # Check output
+  expect_true("b1__branch_res" %in% names(ctx$data))
+  expect_equal(ctx$data[["b1__branch_res"]], 1000)
+})
