@@ -60,7 +60,7 @@ test_that("step_tsne generates plots and tables", {
       glyexp::slice_head_var(50) |>
       glyclean::auto_clean()
   )
-  bp <- blueprint(step_tsne(glystats.gly_tsne.perplexity = 2))
+  bp <- blueprint(step_tsne(perplexity = 2))
   suppressMessages(res <- forge_analysis(exp, bp))
   expect_true("tsne" %in% names(res$tables))
   expect_true("tsne" %in% names(res$plots))
@@ -73,7 +73,7 @@ test_that("step_umap generates plots and tables", {
       glyexp::slice_head_var(50) |>
       glyclean::auto_clean()
   )
-  bp <- blueprint(step_umap(glystats.gly_umap.n_neighbors = 5))
+  bp <- blueprint(step_umap(n_neighbors = 5))
   suppressMessages(res <- forge_analysis(exp, bp))
   expect_true("umap" %in% names(res$tables))
   expect_true("umap" %in% names(res$plots))

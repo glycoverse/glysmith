@@ -11,9 +11,7 @@ step_heatmap(on = "exp", ...)
 One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 Default is "exp".}
 
-\item{...}{Step-specific arguments passed to \code{glyvis::plot_heatmap()}.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_heatmap(glyvis.plot_heatmap.show_rownames = TRUE)}.}
+\item{...}{Additional arguments passed to \code{\link[glyvis:plot_heatmap]{glyvis::plot_heatmap()}}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -38,16 +36,6 @@ Plots generated:
 \item \code{sig_motif_heatmap}: A heatmap plot (if \code{on = "sig_motif_exp"})
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glyvis.plot_heatmap.show_rownames}: Whether to show row names.
-\item \code{glyvis.plot_heatmap.show_colnames}: Whether to show column names.
-\item \code{glyvis.plot_heatmap.cluster_rows}: Whether to cluster rows.
-\item \code{glyvis.plot_heatmap.cluster_cols}: Whether to cluster columns.
-}
-}
-
 \examples{
 step_heatmap()
 step_heatmap(on = "sig_exp")

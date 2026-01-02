@@ -4,7 +4,16 @@
 \alias{step_dea_anova}
 \title{Step: Differential Expression Analysis (DEA) using ANOVA}
 \usage{
-step_dea_anova(on = "exp", ...)
+step_dea_anova(
+  on = "exp",
+  p_adj_method = "BH",
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  filter_on = "main_test",
+  filter_comparison = NULL,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
@@ -12,8 +21,21 @@ Default is \code{"exp"} for differential expression analysis.
 Use \code{"trait_exp"} for differential trait analysis.
 Use \code{"motif_exp"} for differential motif analysis.}
 
-\item{...}{Step-specific arguments passed to \code{glystats::gly_anova()}.
-Use the format \code{pkg.func.arg}.}
+\item{p_adj_method}{A character string specifying the method to adjust p-values.
+See \code{p.adjust.methods} for available methods. Default is "BH".
+If NULL, no adjustment is performed.}
+
+\item{filter_p_adj_cutoff}{Adjusted p-value cutoff for filtering.}
+
+\item{filter_p_val_cutoff}{Raw p-value cutoff for filtering.}
+
+\item{filter_fc_cutoff}{Fold change cutoff for filtering.}
+
+\item{filter_on}{Name of the test to filter on. Default is \code{"main_test"}. Can also be \code{"post_hoc_test"}.}
+
+\item{filter_comparison}{Name of the comparison to filter on.}
+
+\item{...}{Additional arguments passed to \code{stats::aov()}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -47,16 +69,6 @@ Tables generated:
 \item \code{dma_main_test}, \code{dma_post_hoc_test}: Tables containing the results (if \code{on = "motif_exp"})
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_anova.p_adj_method}: P-value adjustment method (default: "BH").
-\item \code{glystats.filter_sig_vars.p_adj_cutoff}: Adjusted p-value cutoff (default: 0.05).
-\item \code{glystats.filter_sig_vars.p_val_cutoff}: Raw p-value cutoff.
-\item \code{glystats.filter_sig_vars.fc_cutoff}: Fold change cutoff.
-}
-}
-
 \examples{
 step_dea_anova()
 step_dea_anova(on = "trait_exp")  # Differential trait analysis

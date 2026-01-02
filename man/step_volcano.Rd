@@ -4,12 +4,17 @@
 \alias{step_volcano}
 \title{Step: Volcano Plot}
 \usage{
-step_volcano(...)
+step_volcano(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...)
 }
 \arguments{
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_volcano(glyvis.plot_volcano.log2fc_cutoff = 2)}.}
+\item{log2fc_cutoff}{The log2 fold change cutoff. Defaults to 1.}
+
+\item{p_cutoff}{The p-value cutoff. Defaults to 0.05.}
+
+\item{p_col}{The column name for p-value. Defaults to "p_adj".
+Can also be "p_val" (raw p-values without multiple testing correction).}
+
+\item{...}{Other arguments passed to \code{\link[EnhancedVolcano:EnhancedVolcano]{EnhancedVolcano::EnhancedVolcano()}}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -34,18 +39,9 @@ Plots generated:
 \item \code{volcano}: A volcano plot
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glyvis.plot_volcano.log2fc_cutoff}: Log2 fold change cutoff (default: 1).
-\item \code{glyvis.plot_volcano.p_cutoff}: P-value cutoff (default: 0.05).
-\item \code{glyvis.plot_volcano.p_col}: Column for p-value ("p_adj" or "p_val").
-\item \code{glyvis.plot_volcano.contrast}: Contrast to plot for limma results.
-}
-}
-
 \examples{
 step_volcano()
+step_volcano(log2fc_cutoff = 2)
 }
 \seealso{
 \code{\link[glyvis:plot_volcano]{glyvis::plot_volcano()}}

@@ -4,7 +4,16 @@
 \alias{step_dea_limma}
 \title{Step: Differential Expression Analysis (DEA) using Limma}
 \usage{
-step_dea_limma(on = "exp", ...)
+step_dea_limma(
+  on = "exp",
+  p_adj_method = "BH",
+  ref_group = NULL,
+  contrasts = NULL,
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
@@ -12,9 +21,28 @@ Default is \code{"exp"} for differential expression analysis.
 Use \code{"trait_exp"} for differential trait analysis.
 Use \code{"motif_exp"} for differential motif analysis.}
 
-\item{...}{Step-specific arguments passed to \code{glystats::gly_limma()}.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_dea_limma(glystats.gly_limma.p_adj_method = "BH")}.}
+\item{p_adj_method}{A character string specifying the method for multiple testing correction.
+Must be one of the methods supported by \code{stats::p.adjust()}. Default is "BH" (Benjamini-Hochberg).
+Set to NULL to skip p-value adjustment.}
+
+\item{ref_group}{A character string specifying the reference group.
+If NULL (default), the first level of the group factor is used as the reference.
+Only used for two-group comparisons.}
+
+\item{contrasts}{A character vector specifying custom contrasts for multi-group comparisons.
+If NULL (default), all pairwise comparisons are automatically generated,
+and the levels coming first in the factor will be used as the reference group.
+Supports two formats: "group1-group2" or "group1_vs_group2".
+Use the second format if group names contain hyphens.
+"group1" will be used as the reference group.}
+
+\item{filter_p_adj_cutoff}{Adjusted p-value cutoff for filtering.}
+
+\item{filter_p_val_cutoff}{Raw p-value cutoff for filtering.}
+
+\item{filter_fc_cutoff}{Fold change cutoff for filtering.}
+
+\item{...}{Additional arguments passed to \code{limma::lmFit()}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -52,21 +80,10 @@ Tables generated:
 \item \code{dma}: A table containing the DMA (differential motif analysis) result (if \code{on = "motif_exp"})
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_limma.p_adj_method}: P-value adjustment method (default: "BH").
-\item \code{glystats.gly_limma.ref_group}: Reference group for comparison.
-\item \code{glystats.gly_limma.contrasts}: Custom contrasts for multi-group comparisons.
-\item \code{glystats.filter_sig_vars.p_adj_cutoff}: Adjusted p-value cutoff (default: 0.05).
-\item \code{glystats.filter_sig_vars.p_val_cutoff}: Raw p-value cutoff.
-\item \code{glystats.filter_sig_vars.fc_cutoff}: Fold change cutoff.
-}
-}
-
 \examples{
 step_dea_limma()
 step_dea_limma(on = "trait_exp")  # Differential trait analysis
+step_dea_limma(p_adj_method = "BH")
 }
 \seealso{
 \code{\link[glystats:gly_limma]{glystats::gly_limma()}}

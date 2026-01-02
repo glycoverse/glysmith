@@ -97,30 +97,25 @@ all_steps <- function() {
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `raw_exp` for reference.
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glyclean.auto_clean.batch_col`: Column name for batch information.
-#' - `glyclean.auto_clean.qc_name`: Name of QC samples (default: "QC").
-#' - `glyclean.auto_clean.normalize_to_try`: List of normalization functions to try.
-#' - `glyclean.auto_clean.impute_to_try`: List of imputation functions to try.
-#' - `glyclean.auto_clean.remove_preset`: Preset for removing variables ("simple", "discovery", "biomarker").
-#' - `glyclean.auto_clean.batch_prop_threshold`: Proportion threshold for batch correction (default: 0.3).
-#' - `glyclean.auto_clean.check_batch_confounding`: Whether to check batch confounding (default: TRUE).
-#' - `glyclean.auto_clean.batch_confounding_threshold`: Threshold for batch confounding (default: 0.4).
-#'
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_preprocess(glyclean.auto_clean.remove_preset = "discovery")`.
+#' @inheritParams glyclean::auto_clean
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_preprocess()
+#' step_preprocess(remove_preset = "discovery")
 #' @seealso [glyclean::auto_clean()]
 #' @export
-step_preprocess <- function(...) {
+step_preprocess <- function(
+  batch_col = "batch",
+  qc_name = "QC",
+  normalize_to_try = NULL,
+  impute_to_try = NULL,
+  remove_preset = "discovery",
+  batch_prop_threshold = 0.3,
+  check_batch_confounding = TRUE,
+  batch_confounding_threshold = 0.4
+) {
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
   step(
     id = "preprocess",
     label = "Preprocessing",
@@ -129,10 +124,16 @@ step_preprocess <- function(...) {
       # This ensures the "active" experiment is always under the key "exp",
       # no matter if preprocessing is performed or not.
       exp <- ctx_get_data(ctx, "exp")
-      clean_exp <- .run_function(
-        glyclean::auto_clean,
+      clean_exp <- glyclean::auto_clean(
         exp,
-        step_dots = step_dots
+        batch_col = batch_col,
+        qc_name = qc_name,
+        normalize_to_try = normalize_to_try,
+        impute_to_try = impute_to_try,
+        remove_preset = remove_preset,
+        batch_prop_threshold = batch_prop_threshold,
+        check_batch_confounding = check_batch_confounding,
+        batch_confounding_threshold = batch_confounding_threshold
       )
       ctx <- ctx_add_data(ctx, "exp", clean_exp)  # overwrite exp with preprocessed exp
       ctx <- ctx_add_data(ctx, "raw_exp", exp)  # keep raw exp for reference
@@ -165,33 +166,21 @@ step_preprocess <- function(...) {
 #' Tables generated:
 #' - `summary`: A table containing the identification overview of the experiment
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glyexp.summarize_experiment.count_struct`: Whether to count by structure or composition.
-#'
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_ident_overview(glyexp.summarize_experiment.count_struct = FALSE)`.
+#' @inheritParams glyexp::summarize_experiment
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_ident_overview()
 #' @seealso [glyexp::summarize_experiment()]
 #' @export
-step_ident_overview <- function(...) {
+step_ident_overview <- function(count_struct = NULL) {
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
   step(
     id = "ident_overview",
     label = "Identification overview",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      tbl <- .run_function(
-        glyexp::summarize_experiment,
-        exp,
-        step_dots = step_dots
-      )
+      tbl <- glyexp::summarize_experiment(exp, count_struct = count_struct)
       ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
     },
     report = function(x) {
@@ -229,28 +218,25 @@ step_ident_overview <- function(...) {
 #' - `pca_loadings`: A PCA loading plot
 #' - `pca_screeplot`: A PCA screeplot
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_pca.center`: Whether to center the data (default: TRUE).
-#' - `glystats.gly_pca.scale`: Whether to scale the data (default: TRUE).
-#'
 #' @param on Name of the experiment to run PCA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_pca(glystats.gly_pca.center = FALSE)`.
+#' @inheritParams glystats::gly_pca
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_pca()
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
-step_pca <- function(on = "exp", ...) {
+step_pca <- function(
+  on = "exp",
+  center = TRUE,
+  scale = TRUE,
+  ...
+) {
   rlang::check_installed("factoextra")
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
+  pca_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
   id <- paste0("pca", on_meta$id_suffix)
   step(
@@ -258,10 +244,12 @@ step_pca <- function(on = "exp", ...) {
     label = paste0("Principal component analysis", on_meta$label_suffix),
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
-      pca_res <- .run_function(
+      pca_res <- rlang::exec(
         glystats::gly_pca,
         exp,
-        step_dots = step_dots
+        center = center,
+        scale = scale,
+        !!!pca_args
       )
       ctx <- ctx_add_table(
         ctx,
@@ -281,36 +269,21 @@ step_pca <- function(on = "exp", ...) {
         glystats::get_tidy_result(pca_res, "eigenvalues"),
         paste0("PCA eigenvalues of ", on, ".")
       )
-      p_scores <- .run_function(
-        glyvis::plot_pca,
-        pca_res,
-        step_dots = step_dots,
-        holy_args = list(type = "individual")
-      )
+      p_scores <- glyvis::plot_pca(pca_res, type = "individual")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_scores"),
         p_scores,
         paste0("PCA score plot colored by group of ", on, ".")
       )
-      p_loadings <- .run_function(
-        glyvis::plot_pca,
-        pca_res,
-        step_dots = step_dots,
-        holy_args = list(type = "variables")
-      )
+      p_loadings <- glyvis::plot_pca(pca_res, type = "variables")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_loadings"),
         p_loadings,
         paste0("PCA loading plot of ", on, ".")
       )
-      p_screeplot <- .run_function(
-        glyvis::plot_pca,
-        pca_res,
-        step_dots = step_dots,
-        holy_args = list(type = "screeplot")
-      )
+      p_screeplot <- glyvis::plot_pca(pca_res, type = "screeplot")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_screeplot"),
@@ -346,31 +319,26 @@ step_pca <- function(on = "exp", ...) {
 #' Plots generated (with suffixes):
 #' - `tsne`: The t-SNE plot
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_tsne.perplexity`: The perplexity parameter for t-SNE.
-#' - `glystats.gly_tsne.dims`: The number of dimensions for t-SNE.
-#' - `glystats.gly_tsne.xxx`: xxx are other parameters of `Rtsne::Rtsne()`.
-#'
 #' @param on Name of the experiment to run t-SNE on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
-#' @param ... Step-specific arguments passed to `glystats::gly_tsne()` and `glyvis::plot_tsne()`.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_tsne(glystats.gly_tsne.perplexity = 30)`.
+#' @inheritParams glystats::gly_tsne
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_tsne()
-#' step_tsne(glystats.gly_tsne.perplexity = 30)
+#' step_tsne(perplexity = 30)
 #' @seealso [glystats::gly_tsne()], [glyvis::plot_tsne()]
 #' @export
-step_tsne <- function(on = "exp", ...) {
+step_tsne <- function(
+  on = "exp",
+  dims = 2,
+  perplexity = 30,
+  ...
+) {
   rlang::check_installed("Rtsne")
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
-
+  tsne_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
   id <- paste0("tsne", on_meta$id_suffix)
 
@@ -379,13 +347,16 @@ step_tsne <- function(on = "exp", ...) {
     label = "t-SNE",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
-      tsne <- .run_function(
+      tsne <- rlang::exec(
         glystats::gly_tsne,
         exp,
-        step_dots = step_dots
+        dims = dims,
+        perplexity = perplexity,
+        !!!tsne_args
       )
       ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(tsne), paste0("t-SNE result of ", on, "."))
-      ctx <- ctx_add_plot(ctx, id, .run_function(glyvis::plot_tsne, tsne, step_dots = step_dots), paste0("t-SNE plot of ", on, "."))
+      p <- glyvis::plot_tsne(tsne)
+      ctx <- ctx_add_plot(ctx, id, p, paste0("t-SNE plot of ", on, "."))
       ctx
     },
     require = on,
@@ -415,31 +386,26 @@ step_tsne <- function(on = "exp", ...) {
 #' Plots generated (with suffixes):
 #' - `umap`: The UMAP plot
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_umap.n_neighbors`: The number of neighbors.
-#' - `glystats.gly_umap.n_components`: The number of dimensions.
-#' - `glystats.gly_umap.xxx`: xxx are other parameters of `uwot::umap()`.
-#'
 #' @param on Name of the experiment to run UMAP on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
-#' @param ... Step-specific arguments passed to `glystats::gly_umap()` and `glyvis::plot_umap()`.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_umap(glystats.gly_umap.n_neighbors = 15)`.
+#' @inheritParams glystats::gly_umap
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_umap()
-#' step_umap(glystats.gly_umap.n_neighbors = 15)
+#' step_umap(n_neighbors = 15)
 #' @seealso [glystats::gly_umap()], [glyvis::plot_umap()]
 #' @export
-step_umap <- function(on = "exp", ...) {
+step_umap <- function(
+  on = "exp",
+  n_neighbors = 15,
+  n_components = 2,
+  ...
+) {
   rlang::check_installed("uwot")
   checkmate::assert_choice(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
-
+  umap_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
   id <- paste0("umap", on_meta$id_suffix)
 
@@ -448,13 +414,16 @@ step_umap <- function(on = "exp", ...) {
     label = "UMAP",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
-      umap <- .run_function(
+      umap <- rlang::exec(
         glystats::gly_umap,
         exp,
-        step_dots = step_dots
+        n_neighbors = n_neighbors,
+        n_components = n_components,
+        !!!umap_args
       )
       ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(umap), paste0("UMAP result of ", on, "."))
-      ctx <- ctx_add_plot(ctx, id, .run_function(glyvis::plot_umap, umap, step_dots = step_dots), paste0("UMAP plot of ", on, "."))
+      p <- glyvis::plot_umap(umap)
+      ctx <- ctx_add_plot(ctx, id, p, paste0("UMAP plot of ", on, "."))
       ctx
     },
     require = on,
@@ -490,32 +459,52 @@ step_umap <- function(on = "exp", ...) {
 #' - `dta`: A table containing the DTA (differential trait analysis) result (if `on = "trait_exp"`)
 #' - `dma`: A table containing the DMA (differential motif analysis) result (if `on = "motif_exp"`)
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_limma.p_adj_method`: P-value adjustment method (default: "BH").
-#' - `glystats.gly_limma.ref_group`: Reference group for comparison.
-#' - `glystats.gly_limma.contrasts`: Custom contrasts for multi-group comparisons.
-#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
-#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
 #'   Use `"motif_exp"` for differential motif analysis.
-#' @param ... Step-specific arguments passed to `glystats::gly_limma()`.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_dea_limma(glystats.gly_limma.p_adj_method = "BH")`.
+#' @inheritParams glystats::gly_limma
+#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
+#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
+#' @param filter_fc_cutoff Fold change cutoff for filtering.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_dea_limma()
 #' step_dea_limma(on = "trait_exp")  # Differential trait analysis
+#' step_dea_limma(p_adj_method = "BH")
 #' @seealso [glystats::gly_limma()]
 #' @export
-step_dea_limma <- function(on = "exp", ...) {
+step_dea_limma <- function(
+  on = "exp",
+  p_adj_method = "BH",
+  ref_group = NULL,
+  contrasts = NULL,
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
-  .step_dea(method = "limma", label = "Differential expression analysis (limma)", on = on, signature = signature, ...)
+  dea_args <- rlang::list2(
+    p_adj_method = p_adj_method,
+    ref_group = ref_group,
+    contrasts = contrasts,
+    ...
+  )
+  filter_args <- list(
+    p_adj_cutoff = filter_p_adj_cutoff,
+    p_val_cutoff = filter_p_val_cutoff,
+    fc_cutoff = filter_fc_cutoff
+  )
+  .step_dea(
+    method = "limma",
+    label = "Differential expression analysis (limma)",
+    on = on,
+    signature = signature,
+    dea_args = dea_args,
+    filter_args = filter_args
+  )
 }
 
 #' Step: Differential Expression Analysis (DEA) using t-test
@@ -543,20 +532,14 @@ step_dea_limma <- function(on = "exp", ...) {
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_ttest.p_adj_method`: P-value adjustment method (default: "BH").
-#' - `glystats.gly_ttest.ref_group`: Reference group for comparison.
-#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
-#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
 #'   Use `"motif_exp"` for differential motif analysis.
-#' @param ... Step-specific arguments passed to `glystats::gly_ttest()`.
-#'   Use the format `pkg.func.arg`.
+#' @inheritParams glystats::gly_ttest
+#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
+#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
+#' @param filter_fc_cutoff Fold change cutoff for filtering.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -564,9 +547,34 @@ step_dea_limma <- function(on = "exp", ...) {
 #' step_dea_ttest(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_ttest()]
 #' @export
-step_dea_ttest <- function(on = "exp", ...) {
+step_dea_ttest <- function(
+  on = "exp",
+  p_adj_method = "BH",
+  ref_group = NULL,
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
-  .step_dea(method = "ttest", label = "Differential expression analysis (t-test)", on = on, signature = signature, ...)
+  dea_args <- rlang::list2(
+    p_adj_method = p_adj_method,
+    ref_group = ref_group,
+    ...
+  )
+  filter_args <- list(
+    p_adj_cutoff = filter_p_adj_cutoff,
+    p_val_cutoff = filter_p_val_cutoff,
+    fc_cutoff = filter_fc_cutoff
+  )
+  .step_dea(
+    method = "ttest",
+    label = "Differential expression analysis (t-test)",
+    on = on,
+    signature = signature,
+    dea_args = dea_args,
+    filter_args = filter_args
+  )
 }
 
 #' Step: Differential Expression Analysis (DEA) using ANOVA
@@ -593,19 +601,16 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_anova.p_adj_method`: P-value adjustment method (default: "BH").
-#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
-#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
 #'   Use `"motif_exp"` for differential motif analysis.
-#' @param ... Step-specific arguments passed to `glystats::gly_anova()`.
-#'   Use the format `pkg.func.arg`.
+#' @inheritParams glystats::gly_anova
+#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
+#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
+#' @param filter_fc_cutoff Fold change cutoff for filtering.
+#' @param filter_on Name of the test to filter on. Default is `"main_test"`. Can also be `"post_hoc_test"`.
+#' @param filter_comparison Name of the comparison to filter on.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -613,9 +618,33 @@ step_dea_ttest <- function(on = "exp", ...) {
 #' step_dea_anova(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_anova()]
 #' @export
-step_dea_anova <- function(on = "exp", ...) {
+step_dea_anova <- function(
+  on = "exp",
+  p_adj_method = "BH",
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  filter_on = "main_test",
+  filter_comparison = NULL,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
-  .step_dea(method = "anova", label = "Differential expression analysis (ANOVA)", on = on, signature = signature, ...)
+  dea_args <- rlang::list2(p_adj_method = p_adj_method, ...)
+  filter_args <- list(
+    p_adj_cutoff = filter_p_adj_cutoff,
+    p_val_cutoff = filter_p_val_cutoff,
+    fc_cutoff = filter_fc_cutoff,
+    on = filter_on,
+    comparison = filter_comparison
+  )
+  .step_dea(
+    method = "anova",
+    label = "Differential expression analysis (ANOVA)",
+    on = on,
+    signature = signature,
+    dea_args = dea_args,
+    filter_args = filter_args
+  )
 }
 
 #' Step: Differential Expression Analysis (DEA) using Wilcoxon test
@@ -643,20 +672,15 @@ step_dea_anova <- function(on = "exp", ...) {
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_wilcox.p_adj_method`: P-value adjustment method (default: "BH").
-#' - `glystats.gly_wilcox.ref_group`: Reference group for comparison.
-#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
-#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
 #'   Use `"motif_exp"` for differential motif analysis.
-#' @param ... Step-specific arguments passed to `glystats::gly_wilcox()`.
-#'   Use the format `pkg.func.arg`.
+#' @inheritParams glystats::gly_wilcox
+#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
+#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
+#' @param filter_fc_cutoff Fold change cutoff for filtering.
+#' @param ... Additional arguments passed to [glystats::gly_wilcox()].
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -664,9 +688,34 @@ step_dea_anova <- function(on = "exp", ...) {
 #' step_dea_wilcox(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_wilcox()]
 #' @export
-step_dea_wilcox <- function(on = "exp", ...) {
+step_dea_wilcox <- function(
+  on = "exp",
+  p_adj_method = "BH",
+  ref_group = NULL,
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
-  .step_dea(method = "wilcox", label = "Differential expression analysis (Wilcoxon)", on = on, signature = signature, ...)
+  dea_args <- rlang::list2(
+    p_adj_method = p_adj_method,
+    ref_group = ref_group,
+    ...
+  )
+  filter_args <- list(
+    p_adj_cutoff = filter_p_adj_cutoff,
+    p_val_cutoff = filter_p_val_cutoff,
+    fc_cutoff = filter_fc_cutoff
+  )
+  .step_dea(
+    method = "wilcox",
+    label = "Differential expression analysis (Wilcoxon)",
+    on = on,
+    signature = signature,
+    dea_args = dea_args,
+    filter_args = filter_args
+  )
 }
 
 #' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
@@ -693,19 +742,17 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_anova.p_adj_method`: P-value adjustment method (default: "BH").
-#' - `glystats.filter_sig_vars.p_adj_cutoff`: Adjusted p-value cutoff (default: 0.05).
-#' - `glystats.filter_sig_vars.p_val_cutoff`: Raw p-value cutoff.
-#' - `glystats.filter_sig_vars.fc_cutoff`: Fold change cutoff.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
 #'   Use `"motif_exp"` for differential motif analysis.
-#' @param ... Step-specific arguments passed to `glystats::gly_kruskal()`.
-#'   Use the format `pkg.func.arg`.
+#' @inheritParams glystats::gly_kruskal
+#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
+#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
+#' @param filter_fc_cutoff Fold change cutoff for filtering.
+#' @param filter_on Filter on "main_test" or "post_hoc_test" for Kruskal-Wallis results.
+#' @param filter_comparison Comparison name for post-hoc filtering.
+#' @param ... Additional arguments passed to [glystats::gly_kruskal()].
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -713,9 +760,33 @@ step_dea_wilcox <- function(on = "exp", ...) {
 #' step_dea_kruskal(on = "trait_exp")  # Differential trait analysis
 #' @seealso [glystats::gly_kruskal()]
 #' @export
-step_dea_kruskal <- function(on = "exp", ...) {
+step_dea_kruskal <- function(
+  on = "exp",
+  p_adj_method = "BH",
+  filter_p_adj_cutoff = 0.05,
+  filter_p_val_cutoff = NULL,
+  filter_fc_cutoff = NULL,
+  filter_on = "main_test",
+  filter_comparison = NULL,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
-  .step_dea(method = "kruskal", label = "Differential expression analysis (Kruskal-Wallis)", on = on, signature = signature, ...)
+  dea_args <- rlang::list2(p_adj_method = p_adj_method, ...)
+  filter_args <- list(
+    p_adj_cutoff = filter_p_adj_cutoff,
+    p_val_cutoff = filter_p_val_cutoff,
+    fc_cutoff = filter_fc_cutoff,
+    on = filter_on,
+    comparison = filter_comparison
+  )
+  .step_dea(
+    method = "kruskal",
+    label = "Differential expression analysis (Kruskal-Wallis)",
+    on = on,
+    signature = signature,
+    dea_args = dea_args,
+    filter_args = filter_args
+  )
 }
 
 #' Get metadata for DEA analysis based on the target experiment
@@ -862,10 +933,10 @@ step_dea_kruskal <- function(on = "exp", ...) {
 
 #' Internal helper for DEA steps
 #' @noRd
-.step_dea <- function(method, label, on = "exp", signature = NULL, ...) {
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
+.step_dea <- function(method, label, on = "exp", signature = NULL, dea_args, filter_args) {
   meta <- .get_dea_meta(on)
+  dea_args <- dea_args %||% list()
+  filter_args <- filter_args %||% list()
 
   step(
     id = paste0(meta$prefix, "_", method),
@@ -879,11 +950,11 @@ step_dea_kruskal <- function(on = "exp", ...) {
 
       dea_res <- switch(
         method,
-        "limma" = .run_function(glystats::gly_limma, exp, step_dots = step_dots),
-        "ttest" = .run_function(glystats::gly_ttest, exp, step_dots = step_dots),
-        "anova" = .run_function(glystats::gly_anova, exp, step_dots = step_dots),
-        "wilcox" = .run_function(glystats::gly_wilcox, exp, step_dots = step_dots),
-        "kruskal" = .run_function(glystats::gly_kruskal, exp, step_dots = step_dots)
+        "limma" = rlang::exec(glystats::gly_limma, exp, !!!dea_args),
+        "ttest" = rlang::exec(glystats::gly_ttest, exp, !!!dea_args),
+        "anova" = rlang::exec(glystats::gly_anova, exp, !!!dea_args),
+        "wilcox" = rlang::exec(glystats::gly_wilcox, exp, !!!dea_args),
+        "kruskal" = rlang::exec(glystats::gly_kruskal, exp, !!!dea_args)
       )
       ctx <- ctx_add_data(ctx, paste0(meta$prefix, "_res"), dea_res)
 
@@ -908,11 +979,11 @@ step_dea_kruskal <- function(on = "exp", ...) {
           paste0(meta$label, " analysis results of all comparisons for all variables.")
         )
       }
-      sig_exp <- .run_function(
+      sig_exp <- rlang::exec(
         glystats::filter_sig_vars,
         exp,
-        step_dots = step_dots,
-        holy_args = list(res = dea_res)
+        res = dea_res,
+        !!!filter_args
       )
       ctx <- ctx_add_data(
         ctx,
@@ -946,27 +1017,17 @@ step_dea_kruskal <- function(on = "exp", ...) {
 #' Plots generated:
 #' - `volcano`: A volcano plot
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glyvis.plot_volcano.log2fc_cutoff`: Log2 fold change cutoff (default: 1).
-#' - `glyvis.plot_volcano.p_cutoff`: P-value cutoff (default: 0.05).
-#' - `glyvis.plot_volcano.p_col`: Column for p-value ("p_adj" or "p_val").
-#' - `glyvis.plot_volcano.contrast`: Contrast to plot for limma results.
-#'
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_volcano(glyvis.plot_volcano.log2fc_cutoff = 2)`.
+#' @inheritParams glyvis::plot_volcano
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_volcano()
+#' step_volcano(log2fc_cutoff = 2)
 #' @seealso [glyvis::plot_volcano()]
 #' @export
-step_volcano <- function(...) {
+step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...) {
   rlang::check_installed("EnhancedVolcano")
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
   step(
     id = "volcano",
     label = "Volcano plot",
@@ -979,9 +1040,9 @@ step_volcano <- function(...) {
     run = function(ctx) {
       dea_res <- ctx_get_data(ctx, "dea_res")
       if (inherits(dea_res, "glystats_limma_res")) {
-        .run_step_volcano_limma(ctx, step_dots)
+        .run_step_volcano_limma(ctx, log2fc_cutoff, p_cutoff, p_col, ...)
       } else {
-        .run_step_volcano_ttest_wilcox(ctx, step_dots)
+        .run_step_volcano_ttest_wilcox(ctx, log2fc_cutoff, p_cutoff, p_col, ...)
       }
     },
     require = "dea_res",
@@ -989,28 +1050,32 @@ step_volcano <- function(...) {
   )
 }
 
-.run_step_volcano_limma <- function(ctx, step_dots) {
+.run_step_volcano_limma <- function(ctx, log2fc_cutoff, p_cutoff, p_col, ...) {
   dea_res <- ctx_get_data(ctx, "dea_res")
   contrasts <- .get_unique_contrasts(dea_res)
   for (cont in contrasts) {
     plot_name <- paste0("volcano_", cont)
-    p <- .run_function(
-      glyvis::plot_volcano,
+    p <- glyvis::plot_volcano(
       dea_res,
-      step_dots = step_dots,
-      holy_args = list(contrast = cont)
+      log2fc_cutoff = log2fc_cutoff,
+      p_cutoff = p_cutoff,
+      p_col = p_col,
+      contrast = cont,
+      ...
     )
     ctx <- ctx_add_plot(ctx, plot_name, p, paste0("Volcano plot for the comparison of ", cont, "."))
   }
   ctx
 }
 
-.run_step_volcano_ttest_wilcox <- function(ctx, step_dots) {
+.run_step_volcano_ttest_wilcox <- function(ctx, log2fc_cutoff, p_cutoff, p_col, ...) {
   dea_res <- ctx_get_data(ctx, "dea_res")
-  p <- .run_function(
-    glyvis::plot_volcano,
+  p <- glyvis::plot_volcano(
     dea_res,
-    step_dots = step_dots
+    log2fc_cutoff = log2fc_cutoff,
+    p_cutoff = p_cutoff,
+    p_col = p_col,
+    ...
   )
   ctx_add_plot(ctx, "volcano", p, "Volcano plot")
 }
@@ -1040,28 +1105,28 @@ step_volcano <- function(...) {
 #' Tables generated:
 #' - `go_enrich`: A table containing the GO enrichment results.
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_enrich_go.OrgDb`: Organism database (default: "org.Hs.eg.db").
-#' - `glystats.gly_enrich_go.readable`: Whether to map to readable gene names.
-#' - `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
-#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_sig_enrich_go(glystats.gly_enrich_go.p_adj_method = "BH")`.
+#' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
+#' @param ... Additional arguments passed to [glystats::gly_enrich_go()].
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_sig_enrich_go()
+#' step_sig_enrich_go(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
-step_sig_enrich_go <- function(universe = "all", ...) {
+step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
   rlang::check_installed("clusterProfiler")
   rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
-  step_sig_enrich("go", universe = universe, signature = signature, ...)
+  step_sig_enrich(
+    "go",
+    universe = universe,
+    plot_type = plot_type,
+    signature = signature,
+    ...
+  )
 }
 
 #' Step: KEGG Enrichment Analysis on Differentially Expressed Variables
@@ -1080,27 +1145,29 @@ step_sig_enrich_go <- function(universe = "all", ...) {
 #' Tables generated:
 #' - `kegg_enrich`: A table containing the KEGG enrichment results.
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_enrich_kegg.OrgDb`: Organism database (default: "org.Hs.eg.db").
-#' - `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
-#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = "BH")`.
+#' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
+#' @param ... Additional arguments passed to [glystats::gly_enrich_kegg()].
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_sig_enrich_kegg()
+#' step_sig_enrich_kegg(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
-step_sig_enrich_kegg <- function(universe = "all", ...) {
+step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
   rlang::check_installed("clusterProfiler")
   rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
-  step_sig_enrich("kegg", universe = universe, retry = 2L, signature = signature, ...)
+  step_sig_enrich(
+    "kegg",
+    universe = universe,
+    plot_type = plot_type,
+    retry = 2L,
+    signature = signature,
+    ...
+  )
 }
 
 #' Step: Reactome Enrichment Analysis on Differentially Expressed Variables
@@ -1119,28 +1186,29 @@ step_sig_enrich_kegg <- function(universe = "all", ...) {
 #' Tables generated:
 #' - `reactome_enrich`: A table containing the Reactome enrichment results.
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_enrich_reactome.OrgDb`: Organism database (default: "org.Hs.eg.db").
-#' - `glystats.gly_enrich_reactome.organism`: Organism name (default: "human").
-#' - `glyvis.plot_enrich.type`: Plot type ("dotplot", "barplot", etc.).
-#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_sig_enrich_reactome(glystats.gly_enrich_reactome.OrgDb = "org.Mm.eg.db")`.
+#' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
+#' @param ... Additional arguments passed to [glystats::gly_enrich_reactome()].
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_sig_enrich_reactome()
+#' step_sig_enrich_reactome(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
-step_sig_enrich_reactome <- function(universe = "all", ...) {
+step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", ...) {
   rlang::check_installed("clusterProfiler")
   rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
-  step_sig_enrich("reactome", universe = universe, retry = 2L, signature = signature, ...)
+  step_sig_enrich(
+    "reactome",
+    universe = universe,
+    plot_type = plot_type,
+    retry = 2L,
+    signature = signature,
+    ...
+  )
 }
 
 #' Step: Enrichment Analysis on Differentially Expressed Variables
@@ -1160,18 +1228,19 @@ step_sig_enrich_reactome <- function(universe = "all", ...) {
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param retry Number of retries if the step errors.
 #' @noRd
-step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("all", "detected"), retry = 0L, signature = NULL, ...) {
+step_sig_enrich <- function(
+  kind = c("go", "kegg", "reactome"),
+  universe = c("all", "detected"),
+  plot_type = "dotplot",
+  retry = 0L,
+  signature = NULL,
+  ...
+) {
   kind <- rlang::arg_match(kind)
   universe <- rlang::arg_match(universe)
   label <- paste0(toupper(kind), " enrichment analysis")
   step_id <- paste0("sig_enrich_", kind)
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
-  func <- switch(kind,
-    go = "gly_enrich_go",
-    kegg = "gly_enrich_kegg",
-    reactome = "gly_enrich_reactome"
-  )
+  enrich_args <- rlang::list2(...)
 
   step(
     id = step_id,
@@ -1193,30 +1262,25 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
     },
     run = function(ctx) {
       sig_exp <- ctx_get_data(ctx, "sig_exp")
+      call_args <- enrich_args
       if (universe == "detected") {
         # Force universe to be the detected experiment, overriding any dots.
         uni_arg <- ctx_get_data(ctx, "exp")
-        enrich_res <- switch(
-          kind,
-          go = .run_function(glystats::gly_enrich_go, sig_exp, step_dots = step_dots, holy_args = list(universe = uni_arg)),
-          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_dots = step_dots, holy_args = list(universe = uni_arg)),
-          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_dots = step_dots, holy_args = list(universe = uni_arg))
-        )
-      } else {
-        enrich_res <- switch(
-          kind,
-          go = .run_function(glystats::gly_enrich_go, sig_exp, step_dots = step_dots),
-          kegg = .run_function(glystats::gly_enrich_kegg, sig_exp, step_dots = step_dots),
-          reactome = .run_function(glystats::gly_enrich_reactome, sig_exp, step_dots = step_dots)
-        )
+        call_args <- c(call_args, list(universe = uni_arg))
       }
+      enrich_res <- switch(
+        kind,
+        go = rlang::exec(glystats::gly_enrich_go, sig_exp, !!!call_args),
+        kegg = rlang::exec(glystats::gly_enrich_kegg, sig_exp, !!!call_args),
+        reactome = rlang::exec(glystats::gly_enrich_reactome, sig_exp, !!!call_args)
+      )
       ctx <- ctx_add_table(
         ctx,
         kind,
         glystats::get_tidy_result(enrich_res),
         paste0(toupper(kind), " enrichment analysis results.")
       )
-      p <- .run_function(glyvis::plot_enrich, enrich_res, step_dots = step_dots)
+      p <- glyvis::plot_enrich(enrich_res, type = plot_type)
       ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
     },
     report = function(x) {
@@ -1256,24 +1320,15 @@ step_sig_enrich <- function(kind = c("go", "kegg", "reactome"), universe = c("al
 #' Tables generated:
 #' - `derived_traits`: A table containing the derived traits.
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glydet.derive_traits.trait_fns`: Custom trait functions to calculate.
-#' - `glydet.derive_traits.mp_fns`: Custom meta-property functions.
-#' - `glydet.derive_traits.mp_cols`: Column names to use as meta-properties.
-#'
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
+#' @inheritParams glydet::derive_traits
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_derive_traits()
 #' @seealso [glydet::derive_traits()]
 #' @export
-step_derive_traits <- function(...) {
+step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) {
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
@@ -1284,10 +1339,11 @@ step_derive_traits <- function(...) {
     },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      trait_exp <- .run_function(
-        glydet::derive_traits,
+      trait_exp <- glydet::derive_traits(
         exp,
-        step_dots = step_dots
+        trait_fns = trait_fns,
+        mp_fns = mp_fns,
+        mp_cols = mp_cols
       )
       ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
       ctx <- ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
@@ -1335,23 +1391,16 @@ step_derive_traits <- function(...) {
 #' Tables generated:
 #' - `quantified_motifs`: A table containing the quantified motifs.
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glymotif.extract_motif.max_size`: Maximum size of motifs to extract.
-#' - `glydet.quantify_motifs.method`: "relative" or "absolute".
-#'
-#' @param ... Step-specific arguments passed to underlying functions.
-#'   Use the format `pkg.func.arg`.
+#' @param max_size Maximum size of motifs to extract.
+#' @param method Method for motif quantification ("relative" or "absolute").
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_quantify_motifs()
 #' @seealso [glydet::quantify_motifs()], [glymotif::extract_motif()], [glymotif::extract_branch_motif()]
 #' @export
-step_quantify_motifs <- function(...) {
+step_quantify_motifs <- function(max_size = 3, method = "relative") {
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
 
   step(
     id = "quantify_motifs",
@@ -1369,15 +1418,16 @@ step_quantify_motifs <- function(...) {
         motifs <- glymotif::extract_branch_motif(exp$var_info$glycan_structure)
         alignment <- "exact"
       } else {
-        motifs <- .run_function(glymotif::extract_motif, exp$var_info$glycan_structure, step_dots = step_dots)
+        motifs <- glymotif::extract_motif(exp$var_info$glycan_structure, max_size = max_size)
         alignment <- "substructure"
       }
 
-      motif_exp <- .run_function(
-        glydet::quantify_motifs,
+      motif_exp <- glydet::quantify_motifs(
         exp,
-        step_dots = step_dots,
-        holy_args = list(motifs = motifs, alignment = alignment, ignore_linkages = FALSE)
+        motifs = motifs,
+        method = method,
+        alignments = alignment,
+        ignore_linkages = FALSE
       )
 
       ctx <- ctx_add_data(ctx, "motif_exp", motif_exp)
@@ -1422,19 +1472,10 @@ step_quantify_motifs <- function(...) {
 #' - `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
 #' - `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glyvis.plot_heatmap.show_rownames`: Whether to show row names.
-#' - `glyvis.plot_heatmap.show_colnames`: Whether to show column names.
-#' - `glyvis.plot_heatmap.cluster_rows`: Whether to cluster rows.
-#' - `glyvis.plot_heatmap.cluster_cols`: Whether to cluster columns.
-#'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #'   Default is "exp".
-#' @param ... Step-specific arguments passed to `glyvis::plot_heatmap()`.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_heatmap(glyvis.plot_heatmap.show_rownames = TRUE)`.
+#' @param ... Additional arguments passed to [glyvis::plot_heatmap()].
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -1448,8 +1489,6 @@ step_heatmap <- function(on = "exp", ...) {
   rlang::check_installed("ggplotify")
   on <- rlang::arg_match(on, c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp"))
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
 
   on_meta <- .resolve_on(on)
   plot_name <- paste0("heatmap", on_meta$id_suffix)
@@ -1460,11 +1499,7 @@ step_heatmap <- function(on = "exp", ...) {
     label = label,
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
-      p <- .run_function(
-        glyvis::plot_heatmap,
-        exp,
-        step_dots = step_dots
-      )
+      p <- glyvis::plot_heatmap(exp, ...)
       ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
     },
     require = on,
@@ -1488,24 +1523,16 @@ step_heatmap <- function(on = "exp", ...) {
 #' Plots generated:
 #' - `roc_curves`: ROC curves for the top 10 variables
 #'
-#' # Dynamic Arguments
-#' This step supports the following dynamic arguments:
-#' - `glystats.gly_roc.pos_class`: The positive class.
-#'
-#' @param ... Step-specific arguments passed to `glystats::gly_roc()` and `glyvis::plot_roc()`.
-#'   Use the format `pkg.func.arg`.
-#'   For example, `step_roc(glystats.gly_roc.pos_class = "positive_class")`.
+#' @inheritParams glystats::gly_roc
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_roc()
 #' @seealso [glystats::gly_roc()], [glyvis::plot_roc()]
 #' @export
-step_roc <- function(...) {
+step_roc <- function(pos_class = NULL) {
   rlang::check_installed("pROC")
   signature <- rlang::expr_deparse(match.call())
-  step_dots <- rlang::list2(...)
-  .valid_step_dots(step_dots)
 
   step(
     id = "roc",
@@ -1519,11 +1546,7 @@ step_roc <- function(...) {
     },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      roc_res <- .run_function(
-        glystats::gly_roc,
-        exp,
-        step_dots = step_dots
-      )
+      roc_res <- glystats::gly_roc(exp, pos_class = pos_class)
 
       # Save full AUC results
       ctx <- ctx_add_table(
@@ -1542,12 +1565,7 @@ step_roc <- function(...) {
       sub_exp <- exp |>
         glyexp::filter_var(.data$variable %in% top_vars)
 
-      p_roc <- .run_function(
-        glyvis::plot_roc,
-        sub_exp,
-        step_dots = step_dots,
-        holy_args = list(type = "roc")
-      )
+      p_roc <- glyvis::plot_roc(sub_exp, type = "roc")
 
       ctx <- ctx_add_plot(
         ctx,
@@ -1575,19 +1593,6 @@ step_roc <- function(...) {
     require = "exp",
     signature = signature
   )
-}
-
-.valid_step_dots <- function(dots) {
-  arg_names <- names(dots)
-  valid <- stringr::str_count(arg_names, stringr::fixed(".")) == 2
-  if (!all(valid)) {
-    invalid_args <- arg_names[!valid]
-    cli::cli_abort(c(
-      "Some dynamic arguments are invalid.",
-      "x" = "Invalid: {.arg {invalid_args}}",
-      "i" = "Use format {.arg pkg.func.arg}"
-    ))
-  }
 }
 
 #' Resolve properties from 'on' parameter

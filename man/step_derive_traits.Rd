@@ -4,11 +4,24 @@
 \alias{step_derive_traits}
 \title{Step: Derived Trait Calculation}
 \usage{
-step_derive_traits(...)
+step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
 }
 \arguments{
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.}
+\item{trait_fns}{A named list of derived trait functions created by trait factories.
+Names of the list are the names of the derived traits.
+Default is \code{NULL}, which means all derived traits in \code{\link[glydet:basic_traits]{basic_traits()}} are calculated.}
+
+\item{mp_fns}{A named list of meta-property functions.
+This parameter is useful if your trait functions use custom meta-properties
+other than those in \code{\link[glydet:all_mp_fns]{all_mp_fns()}}.
+Default is \code{NULL}, which means all meta-properties in \code{\link[glydet:all_mp_fns]{all_mp_fns()}} are used.}
+
+\item{mp_cols}{A character vector of column names in the \code{var_info} tibble to use as meta-properties.
+If names are provided, they will be used as names of the meta-properties,
+otherwise the column names will be used.
+Meta-properties specified in \code{mp_cols} will overwrite those introduced by \code{mp_fns} with the same names,
+including the built-in meta-properties.
+Default is \code{NULL}, which means no columns are used as meta-properties.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -34,15 +47,6 @@ Tables generated:
 \item \code{derived_traits}: A table containing the derived traits.
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glydet.derive_traits.trait_fns}: Custom trait functions to calculate.
-\item \code{glydet.derive_traits.mp_fns}: Custom meta-property functions.
-\item \code{glydet.derive_traits.mp_cols}: Column names to use as meta-properties.
-}
-}
-
 \examples{
 step_derive_traits()
 }

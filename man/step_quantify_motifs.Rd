@@ -4,11 +4,12 @@
 \alias{step_quantify_motifs}
 \title{Step: Quantify Motifs}
 \usage{
-step_quantify_motifs(...)
+step_quantify_motifs(max_size = 3, method = "relative")
 }
 \arguments{
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.}
+\item{max_size}{Maximum size of motifs to extract.}
+
+\item{method}{Method for motif quantification ("relative" or "absolute").}
 }
 \value{
 A \code{glysmith_step} object.
@@ -36,14 +37,6 @@ Tables generated:
 \item \code{quantified_motifs}: A table containing the quantified motifs.
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glymotif.extract_motif.max_size}: Maximum size of motifs to extract.
-\item \code{glydet.quantify_motifs.method}: "relative" or "absolute".
-}
-}
-
 \examples{
 step_quantify_motifs()
 }

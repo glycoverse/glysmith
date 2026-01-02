@@ -4,12 +4,15 @@
 \alias{step_ident_overview}
 \title{Step: Identification Overview}
 \usage{
-step_ident_overview(...)
+step_ident_overview(count_struct = NULL)
 }
 \arguments{
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_ident_overview(glyexp.summarize_experiment.count_struct = FALSE)}.}
+\item{count_struct}{For counting glycopeptides and glycoforms.
+whether to count the number of glycan structures or glycopeptides.
+If \code{TRUE}, glycopeptides or glycoforms bearing different glycan structures
+with the same glycan composition are counted as different ones.
+If not provided (NULL), defaults to \code{TRUE} if \code{glycan_structure} column exists
+in the variable information tibble, otherwise \code{FALSE}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -30,13 +33,6 @@ Tables generated:
 \item \code{summary}: A table containing the identification overview of the experiment
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glyexp.summarize_experiment.count_struct}: Whether to count by structure or composition.
-}
-}
-
 \examples{
 step_ident_overview()
 }

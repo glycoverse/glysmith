@@ -4,12 +4,69 @@
 \alias{step_preprocess}
 \title{Step: Preprocessing}
 \usage{
-step_preprocess(...)
+step_preprocess(
+  batch_col = "batch",
+  qc_name = "QC",
+  normalize_to_try = NULL,
+  impute_to_try = NULL,
+  remove_preset = "discovery",
+  batch_prop_threshold = 0.3,
+  check_batch_confounding = TRUE,
+  batch_confounding_threshold = 0.4
+)
 }
 \arguments{
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_preprocess(glyclean.auto_clean.remove_preset = "discovery")}.}
+\item{batch_col}{The column name in sample_info for batches. Default is "batch".
+Can be NULL when no batch information is available.}
+
+\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
+Only used when \code{group_col} is not NULL.}
+
+\item{normalize_to_try}{Normalization functions to try. A list. Default includes:
+\itemize{
+\item \code{\link[glyclean:normalize_median]{normalize_median()}}: median normalization
+\item \code{\link[glyclean:normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
+\item \code{\link[glyclean:normalize_total_area]{normalize_total_area()}}: total area mormalization
+\item \code{\link[glyclean:normalize_quantile]{normalize_quantile()}}: quantile normalization
+\item \code{\link[glyclean:normalize_loessf]{normalize_loessf()}}: LoessF normalization
+\item \code{\link[glyclean:normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
+\item \code{\link[glyclean:normalize_rlr]{normalize_rlr()}}: RLR normalization
+\item \code{\link[glyclean:normalize_rlrma]{normalize_rlrma()}}: RLRMA normalization
+\item \code{\link[glyclean:normalize_rlrmacyc]{normalize_rlrmacyc()}}: RLRMAcyc normalization
+}}
+
+\item{impute_to_try}{Imputation functions to try. A list. Default includes:
+\itemize{
+\item \code{\link[glyclean:impute_zero]{impute_zero()}}: zero imputation
+\item \code{\link[glyclean:impute_sample_min]{impute_sample_min()}}: sample-wise minimum imputation
+\item \code{\link[glyclean:impute_half_sample_min]{impute_half_sample_min()}}: half sample-wise minimum imputation
+\item \code{\link[glyclean:impute_sw_knn]{impute_sw_knn()}}: sample-wise KNN imputation
+\item \code{\link[glyclean:impute_fw_knn]{impute_fw_knn()}}: feature-wise KNN imputation
+\item \code{\link[glyclean:impute_bpca]{impute_bpca()}}: BPCA imputation
+\item \code{\link[glyclean:impute_ppca]{impute_ppca()}}: PPCA imputation
+\item \code{\link[glyclean:impute_svd]{impute_svd()}}: SVD imputation
+\item \code{\link[glyclean:impute_min_prob]{impute_min_prob()}}: minimum probability imputation
+\item \code{\link[glyclean:impute_miss_forest]{impute_miss_forest()}}: MissForest imputation
+}}
+
+\item{remove_preset}{The preset for removing variables. Default is "discovery".
+Available presets:
+\itemize{
+\item "simple": remove variables with more than 50\% missing values.
+\item "discovery": more lenient, remove variables with more than 80\% missing values,
+but ensure less than 50\% of missing values in at least one group.
+\item "biomarker": more strict, remove variables with more than 40\% missing values,
+and ensure less than 60\% of missing values in all groups.
+}}
+
+\item{batch_prop_threshold}{The proportion of variables that must show significant batch effects to perform batch correction.
+Default is 0.3 (30\%).}
+
+\item{check_batch_confounding}{Whether to check for confounding between batch and group variables.
+Default to TRUE.}
+
+\item{batch_confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
+Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -34,22 +91,9 @@ This ensures that no matter if preprocessing is performed or not,
 the "active" experiment is always under the key \code{exp}.
 The previous \code{exp} is saved as \code{raw_exp} for reference.
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glyclean.auto_clean.batch_col}: Column name for batch information.
-\item \code{glyclean.auto_clean.qc_name}: Name of QC samples (default: "QC").
-\item \code{glyclean.auto_clean.normalize_to_try}: List of normalization functions to try.
-\item \code{glyclean.auto_clean.impute_to_try}: List of imputation functions to try.
-\item \code{glyclean.auto_clean.remove_preset}: Preset for removing variables ("simple", "discovery", "biomarker").
-\item \code{glyclean.auto_clean.batch_prop_threshold}: Proportion threshold for batch correction (default: 0.3).
-\item \code{glyclean.auto_clean.check_batch_confounding}: Whether to check batch confounding (default: TRUE).
-\item \code{glyclean.auto_clean.batch_confounding_threshold}: Threshold for batch confounding (default: 0.4).
-}
-}
-
 \examples{
 step_preprocess()
+step_preprocess(remove_preset = "discovery")
 }
 \seealso{
 \code{\link[glyclean:auto_clean]{glyclean::auto_clean()}}

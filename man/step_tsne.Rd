@@ -4,15 +4,17 @@
 \alias{step_tsne}
 \title{Step: t-SNE}
 \usage{
-step_tsne(on = "exp", ...)
+step_tsne(on = "exp", dims = 2, perplexity = 30, ...)
 }
 \arguments{
 \item{on}{Name of the experiment to run t-SNE on.
 Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
 
-\item{...}{Step-specific arguments passed to \code{glystats::gly_tsne()} and \code{glyvis::plot_tsne()}.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_tsne(glystats.gly_tsne.perplexity = 30)}.}
+\item{dims}{Number of output dimensions. Default is 2.}
+
+\item{perplexity}{Perplexity parameter for t-SNE. Default is 30.}
+
+\item{...}{Additional arguments passed to \code{Rtsne::Rtsne()}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -44,18 +46,9 @@ Plots generated (with suffixes):
 \item \code{tsne}: The t-SNE plot
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_tsne.perplexity}: The perplexity parameter for t-SNE.
-\item \code{glystats.gly_tsne.dims}: The number of dimensions for t-SNE.
-\item \code{glystats.gly_tsne.xxx}: xxx are other parameters of \code{Rtsne::Rtsne()}.
-}
-}
-
 \examples{
 step_tsne()
-step_tsne(glystats.gly_tsne.perplexity = 30)
+step_tsne(perplexity = 30)
 }
 \seealso{
 \code{\link[glystats:gly_tsne]{glystats::gly_tsne()}}, \code{\link[glyvis:plot_tsne]{glyvis::plot_tsne()}}

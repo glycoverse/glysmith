@@ -4,15 +4,17 @@
 \alias{step_umap}
 \title{Step: UMAP}
 \usage{
-step_umap(on = "exp", ...)
+step_umap(on = "exp", n_neighbors = 15, n_components = 2, ...)
 }
 \arguments{
 \item{on}{Name of the experiment to run UMAP on.
 Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
 
-\item{...}{Step-specific arguments passed to \code{glystats::gly_umap()} and \code{glyvis::plot_umap()}.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_umap(glystats.gly_umap.n_neighbors = 15)}.}
+\item{n_neighbors}{Number of neighbors to consider for each point. Default is 15.}
+
+\item{n_components}{Number of output dimensions. Default is 2.}
+
+\item{...}{Additional arguments passed to \code{uwot::umap()}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -44,18 +46,9 @@ Plots generated (with suffixes):
 \item \code{umap}: The UMAP plot
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_umap.n_neighbors}: The number of neighbors.
-\item \code{glystats.gly_umap.n_components}: The number of dimensions.
-\item \code{glystats.gly_umap.xxx}: xxx are other parameters of \code{uwot::umap()}.
-}
-}
-
 \examples{
 step_umap()
-step_umap(glystats.gly_umap.n_neighbors = 15)
+step_umap(n_neighbors = 15)
 }
 \seealso{
 \code{\link[glystats:gly_umap]{glystats::gly_umap()}}, \code{\link[glyvis:plot_umap]{glyvis::plot_umap()}}

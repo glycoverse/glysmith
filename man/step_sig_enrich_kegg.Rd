@@ -4,15 +4,15 @@
 \alias{step_sig_enrich_kegg}
 \title{Step: KEGG Enrichment Analysis on Differentially Expressed Variables}
 \usage{
-step_sig_enrich_kegg(universe = "all", ...)
+step_sig_enrich_kegg(universe = "all", plot_type = "dotplot", ...)
 }
 \arguments{
 \item{universe}{The universe (background) to use for enrichment analysis.
 One of "all" (all genes in OrgDb), "detected" (detected variables in \code{exp}).}
 
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_sig_enrich_kegg(glystats.gly_enrich_kegg.p_adj_method = "BH")}.}
+\item{plot_type}{Plot type for enrichment results ("dotplot", "barplot", etc.).}
+
+\item{...}{Additional arguments passed to \code{\link[glystats:gly_enrich_go]{glystats::gly_enrich_kegg()}}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -36,16 +36,9 @@ Tables generated:
 \item \code{kegg_enrich}: A table containing the KEGG enrichment results.
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_enrich_kegg.OrgDb}: Organism database (default: "org.Hs.eg.db").
-\item \code{glyvis.plot_enrich.type}: Plot type ("dotplot", "barplot", etc.).
-}
-}
-
 \examples{
 step_sig_enrich_kegg()
+step_sig_enrich_kegg(plot_type = "barplot")
 }
 \seealso{
 \code{\link[glystats:gly_enrich_go]{glystats::gly_enrich_kegg()}}

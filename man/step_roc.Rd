@@ -4,12 +4,12 @@
 \alias{step_roc}
 \title{Step: ROC Analysis}
 \usage{
-step_roc(...)
+step_roc(pos_class = NULL)
 }
 \arguments{
-\item{...}{Step-specific arguments passed to \code{glystats::gly_roc()} and \code{glyvis::plot_roc()}.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_roc(glystats.gly_roc.pos_class = "positive_class")}.}
+\item{pos_class}{A character string specifying which group level should be treated as
+the positive class. If \code{NULL} (default), the second level (alphabetically) will be
+used as the positive class.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -35,13 +35,6 @@ Plots generated:
 \item \code{roc_curves}: ROC curves for the top 10 variables
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_roc.pos_class}: The positive class.
-}
-}
-
 \examples{
 step_roc()
 }

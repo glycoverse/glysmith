@@ -4,15 +4,17 @@
 \alias{step_pca}
 \title{Step: Principal Component Analysis (PCA)}
 \usage{
-step_pca(on = "exp", ...)
+step_pca(on = "exp", center = TRUE, scale = TRUE, ...)
 }
 \arguments{
 \item{on}{Name of the experiment to run PCA on.
 Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
 
-\item{...}{Step-specific arguments passed to underlying functions.
-Use the format \code{pkg.func.arg}.
-For example, \code{step_pca(glystats.gly_pca.center = FALSE)}.}
+\item{center}{A logical indicating whether to center the data. Default is TRUE.}
+
+\item{scale}{A logical indicating whether to scale the data. Default is TRUE.}
+
+\item{...}{Additional arguments passed to \code{prcomp()}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -44,14 +46,6 @@ Plots generated (with suffixes):
 \item \code{pca_screeplot}: A PCA screeplot
 }
 }
-\section{Dynamic Arguments}{
-This step supports the following dynamic arguments:
-\itemize{
-\item \code{glystats.gly_pca.center}: Whether to center the data (default: TRUE).
-\item \code{glystats.gly_pca.scale}: Whether to scale the data (default: TRUE).
-}
-}
-
 \examples{
 step_pca()
 }
