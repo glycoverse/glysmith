@@ -150,10 +150,15 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "2. Then write `---` on a new line.",
     "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
     "",
-    "Example output:",
+    "Example output 1:",
     "Your data needs preprocessing to handle missing values, followed by statistical analysis to find significant changes.",
     "---",
     "step_preprocess();step_pca();step_dea_limma();step_heatmap(on = 'sig_exp')",
+    "",
+    "Example output 2:",
+    "The blueprint compares two DEA methods after preprocessing.",
+    "---",
+    "step_preprocess();br('limma', step_dea_limma(), step_volcano());br('ttest', step_dea_ttest(), step_volcano())",
     sep = "\n"
   )
   prompt
