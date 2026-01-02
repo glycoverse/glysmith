@@ -236,6 +236,9 @@ keep in mind:
   [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md)
   will overwrite the `dea_res` data from the former with that from the
   latter step. Ignore the warning if that’s what you intend.
+- You can create branches in a blueprint by using
+  [`br()`](https://glycoverse.github.io/glysmith/reference/br.md). Check
+  out its document for examples.
 
 You can also use
 [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)

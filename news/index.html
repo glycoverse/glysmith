@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,26 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glysmith-development-version">glysmith (development version)<a class="anchor" aria-label="anchor" href="#glysmith-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="glysmith-040">glysmith 0.4.0<a class="anchor" aria-label="anchor" href="#glysmith-040"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-4-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-4-0"></a></h3>
+<ul><li>The dynamic argument mechanism was removed. Now you can directly pass arguments to the step functions.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-4-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
+<ul><li>Added <code><a href="../reference/br.html">br()</a></code> for creating branches in a blueprint. <code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> also supports blueprints with branches now.</li>
+<li>
+<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code> now support covariates and paired comparison, via the <code>covariate_cols</code> and <code>subject_col</code> arguments.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-4-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-4-0"></a></h3>
+<ul><li>Fix the issue that blank lines were printed to console when the package is first loaded in one session.</li>
+<li>Update system prompt and the reflection strategy in <code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> to make the LLM work better.</li>
+<li>Fix a dependency issue of <code><a href="../reference/step_dea_kruskal.html">step_dea_kruskal()</a></code>.</li>
+<li>Update the Get Started vignette to introduce <code><a href="../reference/br.html">br()</a></code>.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="glysmith-031">glysmith 0.3.1<a class="anchor" aria-label="anchor" href="#glysmith-031"></a></h2>
