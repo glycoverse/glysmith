@@ -1,4 +1,20 @@
-# glysmith (development version)
+# glysmith 0.4.0
+
+## Breaking changes
+
+* The dynamic argument mechanism was removed. Now you can directly pass arguments to the step functions.
+
+## New features
+
+* Added `br()` for creating branches in a blueprint. `inquire_blueprint()` also supports blueprints with branches now.
+* `step_dea_limma()` now support covariates and paired comparison, via the `covariate_cols` and `subject_col` arguments.
+
+## Minor improvements and bug fixes
+
+* Fix the issue that blank lines were printed to console when the package is first loaded in one session.
+* Update system prompt and the reflection strategy in `inquire_blueprint()` to make the LLM work better.
+* Fix a dependency issue of `step_dea_kruskal()`.
+* Update the Get Started vignette to introduce `br()`.
 
 # glysmith 0.3.1
 
