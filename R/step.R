@@ -478,6 +478,8 @@ step_umap <- function(
 step_dea_limma <- function(
   on = "exp",
   p_adj_method = "BH",
+  covariate_cols = NULL,
+  subject_col = NULL,
   ref_group = NULL,
   contrasts = NULL,
   filter_p_adj_cutoff = 0.05,
@@ -488,6 +490,8 @@ step_dea_limma <- function(
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(
     p_adj_method = p_adj_method,
+    covariate_cols = covariate_cols,
+    subject_col = subject_col,
     ref_group = ref_group,
     contrasts = contrasts,
     ...

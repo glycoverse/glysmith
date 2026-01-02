@@ -7,6 +7,8 @@
 step_dea_limma(
   on = "exp",
   p_adj_method = "BH",
+  covariate_cols = NULL,
+  subject_col = NULL,
   ref_group = NULL,
   contrasts = NULL,
   filter_p_adj_cutoff = 0.05,
@@ -25,11 +27,17 @@ Use \code{"motif_exp"} for differential motif analysis.}
 Must be one of the methods supported by \code{stats::p.adjust()}. Default is "BH" (Benjamini-Hochberg).
 Set to NULL to skip p-value adjustment.}
 
+\item{covariate_cols}{(Only for \code{\link[glystats:gly_limma]{gly_limma()}}) A character vector specifying column names in sample information
+to include as covariates in the limma model. Default is NULL.}
+
+\item{subject_col}{(Only for \code{\link[glystats:gly_limma]{gly_limma()}}) A character string specifying the column name in sample information
+that contains subject identifiers for paired comparisons. Default is NULL.}
+
 \item{ref_group}{A character string specifying the reference group.
 If NULL (default), the first level of the group factor is used as the reference.
 Only used for two-group comparisons.}
 
-\item{contrasts}{A character vector specifying custom contrasts for multi-group comparisons.
+\item{contrasts}{A character vector specifying custom contrasts.
 If NULL (default), all pairwise comparisons are automatically generated,
 and the levels coming first in the factor will be used as the reference group.
 Supports two formats: "group1-group2" or "group1_vs_group2".
