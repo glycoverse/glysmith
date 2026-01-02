@@ -186,7 +186,7 @@ test_that("step_dea_ttest skips multi-group experiment", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_dea_ttest())
-  expect_message(res <- forge_analysis(exp, bp), "failed")
+  suppressMessages(expect_message(res <- forge_analysis(exp, bp), "failed"))
   expect_null(res$data$dea_res)
   expect_null(res$tables$dea)
 })
