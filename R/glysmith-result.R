@@ -41,50 +41,37 @@ cast_exp <- function(x) {
 #' @rdname cast_exp
 #' @export
 cast_plot <- function(x, name = NULL) {
-  checkmate::assert_class(x, "glysmith_result")
-  checkmate::assert_string(name, null.ok = TRUE)
-  if (is.null(name)) {
-    return(names(x$plots))
-  }
-  if (!name %in% names(x$plots)) {
-    cli::cli_abort(c(
-      "Plot '{name}' not found in the result.",
-      "i" = "Available plots: {.val {names(x$plots)}}"
-    ))
-  }
-  x$plots[[name]]
+  cast_component(x, "plots", name, "Plot")
 }
 
 #' @rdname cast_exp
 #' @export
 cast_table <- function(x, name = NULL) {
-  checkmate::assert_class(x, "glysmith_result")
-  checkmate::assert_string(name, null.ok = TRUE)
-  if (is.null(name)) {
-    return(names(x$tables))
-  }
-  if (!name %in% names(x$tables)) {
-    cli::cli_abort(c(
-      "Table '{name}' not found in the result.",
-      "i" = "Available tables: {.val {names(x$tables)}}"
-    ))
-  }
-  x$tables[[name]]
+  cast_component(x, "tables", name, "Table")
 }
 
 #' @rdname cast_exp
 #' @export
 cast_data <- function(x, name = NULL) {
+  cast_component(x, "data", name, "Data")
+}
+
+cast_component <- function(x, component, name, label, call = rlang::caller_env()) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(name, null.ok = TRUE)
+
+  items <- x[[component]]
+
   if (is.null(name)) {
-    return(names(x$data))
+    return(names(items))
   }
-  if (!name %in% names(x$data)) {
+
+  if (!name %in% names(items)) {
     cli::cli_abort(c(
-      "Data '{name}' not found in the result.",
-      "i" = "Available data: {.val {names(x$data)}}"
-    ))
+      "{label} '{name}' not found in the result.",
+      "i" = "Available {component}: {.val {names(items)}}"
+    ), call = call)
   }
-  x$data[[name]]
+
+  items[[name]]
 }
