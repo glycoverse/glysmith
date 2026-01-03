@@ -192,8 +192,134 @@ polish_report <- function(
     if (!is.null(desc) && !nzchar(desc)) {
       desc <- NULL
     }
-    list(id = id, label = id, description = desc, plot = p)
+    label <- .humanize_plot_label(id, desc)
+    list(id = id, label = label, description = desc, plot = p)
   })
+}
+
+#' Human-friendly plot labels
+#'
+#' @param id Plot id.
+#' @param description Optional plot description.
+#' @noRd
+.humanize_plot_label <- function(id, description = NULL) {
+  if (is.null(id) || !nzchar(id)) {
+    return(id)
+  }
+
+  id <- stringr::str_trim(id)
+  on_labels <- .on_suffix_labels()
+
+  if (id == "volcano") {
+    return("Volcano plot")
+  }
+  if (stringr::str_starts(id, "volcano_")) {
+    contrast <- stringr::str_remove(id, "^volcano_")
+    contrast <- stringr::str_replace_all(contrast, "_vs_", " vs ")
+    contrast <- stringr::str_replace_all(contrast, "_", " ")
+    contrast <- stringr::str_squish(contrast)
+    return(paste0("Volcano plot: ", contrast))
+  }
+
+  if (stringr::str_starts(id, "heatmap")) {
+    parts <- stringr::str_split_1(id, "_")
+    suffix <- .extract_on_suffix(parts[-1])$suffix
+    if (!is.null(suffix)) {
+      return(paste("Heatmap of", on_labels[[suffix]]))
+    }
+    return("Heatmap")
+  }
+
+  if (stringr::str_starts(id, "pca")) {
+    parts <- stringr::str_split_1(id, "_")
+    info <- .extract_on_suffix(parts[-1])
+    suffix <- info$suffix
+    rest <- info$rest
+    label <- "PCA"
+    if (length(rest) > 0) {
+      label <- paste(label, stringr::str_to_title(paste(rest, collapse = " ")))
+    }
+    if (!is.null(suffix)) {
+      label <- paste0(label, " (", on_labels[[suffix]], ")")
+    }
+    return(.fix_plot_abbrev(label))
+  }
+
+  if (stringr::str_starts(id, "tsne")) {
+    parts <- stringr::str_split_1(id, "_")
+    info <- .extract_on_suffix(parts[-1])
+    suffix <- info$suffix
+    label <- "t-SNE"
+    if (!is.null(suffix)) {
+      label <- paste0(label, " (", on_labels[[suffix]], ")")
+    }
+    return(label)
+  }
+
+  if (stringr::str_starts(id, "umap")) {
+    parts <- stringr::str_split_1(id, "_")
+    info <- .extract_on_suffix(parts[-1])
+    suffix <- info$suffix
+    label <- "UMAP"
+    if (!is.null(suffix)) {
+      label <- paste0(label, " (", on_labels[[suffix]], ")")
+    }
+    return(label)
+  }
+
+  label <- stringr::str_replace_all(id, "_", " ")
+  label <- stringr::str_squish(label)
+  label <- stringr::str_to_title(label)
+  label <- .fix_plot_abbrev(label)
+  label
+}
+
+.fix_plot_abbrev <- function(label) {
+  replacements <- c(
+    "Pca" = "PCA",
+    "Umap" = "UMAP",
+    "Tsne" = "t-SNE",
+    "Dea" = "DEA",
+    "Go" = "GO",
+    "Kegg" = "KEGG",
+    "Vs" = "vs",
+    "Sig" = "Significant"
+  )
+  for (from in names(replacements)) {
+    label <- stringr::str_replace_all(label, paste0("\\b", from, "\\b"), replacements[[from]])
+  }
+  label
+}
+
+.on_suffix_labels <- function() {
+  c(
+    sig = "significant variables",
+    trait = "traits",
+    sig_trait = "significant traits",
+    motif = "motifs",
+    sig_motif = "significant motifs"
+  )
+}
+
+.extract_on_suffix <- function(parts) {
+  if (length(parts) == 0) {
+    return(list(suffix = NULL, rest = character(0)))
+  }
+
+  labels <- .on_suffix_labels()
+
+  if (length(parts) >= 2) {
+    candidate <- paste(parts[1:2], collapse = "_")
+    if (candidate %in% names(labels)) {
+      return(list(suffix = candidate, rest = parts[-c(1, 2)]))
+    }
+  }
+
+  if (parts[1] %in% names(labels)) {
+    return(list(suffix = parts[1], rest = parts[-1]))
+  }
+
+  list(suffix = NULL, rest = parts)
 }
 
 #' Organize report sections with AI.
@@ -354,6 +480,80 @@ polish_report <- function(
   purrr::compact(items)
 }
 
+#' Extract section titles in order.
+#'
+#' @param section_plan Parsed section plan.
+#' @noRd
+.section_titles <- function(section_plan) {
+  titles <- purrr::map_chr(section_plan, function(section) section$title %||% "Analysis")
+  titles[!duplicated(titles)]
+}
+
+.plan_step_sections <- function(section_plan, step_ids) {
+  step_sections <- character(0)
+  for (section in section_plan) {
+    title <- section$title %||% "Analysis"
+    items <- section$items %||% list()
+    for (item in items) {
+      if (!is.list(item) || item$type != "step") {
+        next
+      }
+      if (!item$id %in% step_ids) {
+        next
+      }
+      if (!item$id %in% names(step_sections)) {
+        step_sections[[item$id]] <- title
+      }
+    }
+  }
+  step_sections
+}
+
+.plan_plot_sections <- function(section_plan, plot_ids) {
+  plot_sections <- character(0)
+  for (section in section_plan) {
+    title <- section$title %||% "Analysis"
+    items <- section$items %||% list()
+    for (item in items) {
+      if (!is.list(item) || item$type != "plot") {
+        next
+      }
+      if (!item$id %in% plot_ids) {
+        next
+      }
+      if (!item$id %in% names(plot_sections)) {
+        plot_sections[[item$id]] <- title
+      }
+    }
+  }
+  plot_sections
+}
+
+.infer_plot_owner <- function(plot_ids, step_ids) {
+  purrr::map_chr(plot_ids, function(plot_id) {
+    candidates <- purrr::keep(step_ids, function(step_id) {
+      if (plot_id == step_id) {
+        return(TRUE)
+      }
+      if (stringr::str_starts(plot_id, paste0(step_id, "_"))) {
+        return(TRUE)
+      }
+      if (stringr::str_starts(step_id, "sig_enrich_")) {
+        suffix <- stringr::str_remove(step_id, "^sig_enrich_")
+        if (plot_id == suffix) {
+          return(TRUE)
+        }
+      }
+      FALSE
+    })
+
+    if (length(candidates) == 0) {
+      return(NA_character_)
+    }
+    candidates[which.max(nchar(candidates))]
+  })
+}
+
 #' Assemble report sections from a plan.
 #'
 #' @param step_reports Step report entries.
@@ -366,45 +566,77 @@ polish_report <- function(
   step_map <- rlang::set_names(step_reports, step_ids)
   plot_map <- rlang::set_names(plot_entries, plot_ids)
 
-  used_steps <- character(0)
+  section_titles <- .section_titles(section_plan)
+  step_sections <- .plan_step_sections(section_plan, step_ids)
+  plot_sections <- .plan_plot_sections(section_plan, plot_ids)
+
+  plot_owner <- .infer_plot_owner(plot_ids, step_ids)
+  names(plot_owner) <- plot_ids
+
+  plot_section_map <- rlang::set_names(rep(NA_character_, length(plot_ids)), plot_ids)
+  for (plot_id in plot_ids) {
+    owner <- plot_owner[[plot_id]]
+    if (!is.na(owner) && owner %in% names(step_sections)) {
+      plot_section_map[[plot_id]] <- step_sections[[owner]]
+    } else if (plot_id %in% names(plot_sections)) {
+      plot_section_map[[plot_id]] <- plot_sections[[plot_id]]
+    }
+  }
+
   used_plots <- character(0)
   sections <- list()
 
-  for (section in section_plan) {
-    title <- section$title %||% "Analysis"
-    items <- section$items %||% list()
+  for (title in section_titles) {
     entries <- list()
-
-    for (item in items) {
-      if (!is.list(item) || is.null(item$type) || is.null(item$id)) {
+    for (step in step_reports) {
+      if (!step$id %in% names(step_sections) || step_sections[[step$id]] != title) {
         next
       }
-      if (item$type == "step" && item$id %in% names(step_map) && !item$id %in% used_steps) {
-        step <- step_map[[item$id]]
+      if (.has_report_content(step$content)) {
         entries <- append(entries, list(.step_entry(step)))
-        used_steps <- c(used_steps, item$id)
       }
-      if (item$type == "plot" && item$id %in% names(plot_map) && !item$id %in% used_plots) {
-        plot <- plot_map[[item$id]]
-        entries <- append(entries, list(.plot_entry(plot)))
-        used_plots <- c(used_plots, item$id)
+      owned_plots <- plot_ids[!is.na(plot_owner) & !is.na(plot_section_map) &
+        plot_owner == step$id & plot_section_map == title]
+      for (plot_id in owned_plots) {
+        entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
+        used_plots <- c(used_plots, plot_id)
       }
     }
 
-    sections <- append(sections, list(list(title = title, entries = entries)))
+    extra_plots <- plot_ids[is.na(plot_owner) & !is.na(plot_section_map) &
+      plot_section_map == title & !plot_ids %in% used_plots]
+    for (plot_id in extra_plots) {
+      entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
+      used_plots <- c(used_plots, plot_id)
+    }
+
+    if (length(entries) > 0) {
+      sections <- append(sections, list(list(title = title, entries = entries)))
+    }
   }
 
-  remaining_steps <- step_ids[!step_ids %in% used_steps]
+  remaining_steps <- step_ids[!step_ids %in% names(step_sections)]
   remaining_plots <- plot_ids[!plot_ids %in% used_plots]
   if (length(remaining_steps) > 0 || length(remaining_plots) > 0) {
     entries <- list()
     for (step_id in remaining_steps) {
-      entries <- append(entries, list(.step_entry(step_map[[step_id]])))
+      step <- step_map[[step_id]]
+      if (.has_report_content(step$content)) {
+        entries <- append(entries, list(.step_entry(step)))
+      }
+      owned_plots <- plot_ids[!is.na(plot_owner) & plot_owner == step_id & plot_ids %in% remaining_plots]
+      for (plot_id in owned_plots) {
+        entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
+        used_plots <- c(used_plots, plot_id)
+      }
     }
+    remaining_plots <- plot_ids[!plot_ids %in% used_plots]
     for (plot_id in remaining_plots) {
       entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
     }
-    sections <- append(sections, list(list(title = "Additional results", entries = entries)))
+    if (length(entries) > 0) {
+      sections <- append(sections, list(list(title = "Additional results", entries = entries)))
+    }
   }
 
   sections
@@ -419,7 +651,10 @@ polish_report <- function(
   sections <- list()
   if (length(step_reports) > 0) {
     entries <- purrr::map(step_reports, .step_entry)
-    sections <- append(sections, list(list(title = "Analysis narrative", entries = entries)))
+    entries <- purrr::keep(entries, ~ isTRUE(.x$has_content))
+    if (length(entries) > 0) {
+      sections <- append(sections, list(list(title = "Analysis narrative", entries = entries)))
+    }
   }
   if (length(plot_entries) > 0) {
     entries <- purrr::map(plot_entries, .plot_entry)
@@ -428,12 +663,17 @@ polish_report <- function(
   sections
 }
 
+.has_report_content <- function(content) {
+  is.character(content) && length(content) == 1 && nzchar(content)
+}
+
 .step_entry <- function(step) {
   list(
     type = "step",
     id = step$id,
     label = step$label %||% step$id,
-    content = step$content
+    content = step$content,
+    has_content = .has_report_content(step$content)
   )
 }
 

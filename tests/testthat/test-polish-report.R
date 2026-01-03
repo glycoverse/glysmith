@@ -111,3 +111,42 @@ test_that("polish_report captures AI errors", {
   ))
   expect_true(any(grepl("AI error", warn_msgs, fixed = TRUE)))
 })
+
+test_that("polish_report omits empty step placeholders and humanizes plot titles", {
+  bp <- structure(
+    list(
+      volcano = list(
+        id = "volcano",
+        label = "Volcano plot",
+        report = function(x) ""
+      ),
+      heatmap_sig = list(
+        id = "heatmap_sig",
+        label = "Heatmap of significant variables",
+        report = function(x) ""
+      )
+    ),
+    class = "glysmith_blueprint"
+  )
+  result <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(
+        volcano_H_vs_M = ggplot2::ggplot(),
+        heatmap_sig = ggplot2::ggplot()
+      ),
+      tables = list(),
+      meta = list(steps = c("volcano", "heatmap_sig"), explanation = list()),
+      blueprint = bp
+    ),
+    class = "glysmith_result"
+  )
+  tmp_dir <- withr::local_tempdir()
+  output_file <- fs::path(tmp_dir, "polish_report.html")
+  suppressMessages(polish_report(result, output_file, open = FALSE))
+  output_lines <- readLines(output_file)
+  expect_false(any(grepl("No report content for this step.", output_lines, fixed = TRUE)))
+  expect_true(any(grepl("Volcano plot: H vs M", output_lines, fixed = TRUE)))
+  expect_true(any(grepl("Heatmap of significant variables", output_lines, fixed = TRUE)))
+})

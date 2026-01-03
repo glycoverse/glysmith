@@ -20,6 +20,17 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 x <- params$x
 report_sections <- params$report_sections
 if (is.null(report_sections)) report_sections <- list()
+
+.normalize_title <- function(x) {
+  if (is.null(x) || !nzchar(x)) return("")
+  x <- tolower(x)
+  x <- gsub("[^a-z0-9]+", " ", x)
+  trimws(x)
+}
+
+.has_content <- function(x) {
+  is.character(x) && length(x) == 1 && nzchar(x)
+}
 ```
 
 ## Overview
@@ -43,28 +54,40 @@ if (length(report_sections) == 0) {
 } else {
   for (section in report_sections) {
     title <- section$title %||% "Analysis"
-    cat("## ", title, "\n\n", sep = "")
     entries <- section$entries %||% list()
-    if (length(entries) == 0) {
-      cat("_No content for this section._\n\n")
-      next
+    printable <- FALSE
+    for (entry in entries) {
+      if (!is.null(entry$type) && entry$type == "step" && .has_content(entry$content)) {
+        printable <- TRUE
+      }
+      if (!is.null(entry$type) && entry$type == "plot" && !is.null(entry$plot)) {
+        printable <- TRUE
+      }
     }
+    if (!printable) next
+    cat("## ", title, "\n\n", sep = "")
+    section_norm <- .normalize_title(title)
     for (entry in entries) {
       if (!is.null(entry$type) && entry$type == "step") {
+        if (!.has_content(entry$content)) next
         label <- entry$label %||% entry$id
-        cat("### ", label, "\n\n", sep = "")
-        if (!is.null(entry$content) && is.character(entry$content) &&
-          length(entry$content) == 1 && nzchar(entry$content)) {
+        label_norm <- .normalize_title(label)
+        if (nzchar(section_norm) && label_norm == section_norm) {
           cat(entry$content, "\n\n", sep = "")
         } else {
-          cat("_No report content for this step._\n\n")
+          cat("### ", label, "\n\n", sep = "")
+          cat(entry$content, "\n\n", sep = "")
         }
       }
       if (!is.null(entry$type) && entry$type == "plot") {
         label <- entry$label %||% entry$id
         cat("### ", label, "\n\n", sep = "")
         if (!is.null(entry$description) && nzchar(entry$description)) {
-          cat(entry$description, "\n\n", sep = "")
+          desc_norm <- .normalize_title(entry$description)
+          label_norm <- .normalize_title(label)
+          if (!(nzchar(desc_norm) && desc_norm == label_norm)) {
+            cat(entry$description, "\n\n", sep = "")
+          }
         }
         if (!is.null(entry$plot)) print(entry$plot)
         cat("\n\n")
