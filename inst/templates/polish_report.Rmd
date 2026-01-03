@@ -9,7 +9,7 @@ output:
 params:
   title: "GlySmith report"
   x: ~
-  step_reports: ~
+  report_sections: ~
 ---
 
 ```{r setup, include=FALSE}
@@ -18,27 +18,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 x <- params$x
-step_reports <- params$step_reports
-if (is.null(step_reports)) step_reports <- list()
-
-.explain <- function(key, default = NULL) {
-  # Safely get explanation text by key.
-  explanation <- NULL
-  if (!is.null(x$meta) && is.list(x$meta)) explanation <- x$meta$explanation
-  if (is.null(explanation)) return(default)
-
-  if (is.list(explanation)) {
-    if (key %in% names(explanation)) {
-      val <- explanation[[key]]
-      if (!is.null(val) && !is.na(val) && nzchar(val)) return(val)
-    }
-    return(default)
-  }
-
-  val <- explanation[key]
-  if (length(val) == 1 && !is.na(val) && nzchar(val)) return(unname(val))
-  default
-}
+report_sections <- params$report_sections
+if (is.null(report_sections)) report_sections <- list()
 ```
 
 ## Overview
@@ -56,39 +37,39 @@ knitr::kable(
 )
 ```
 
-## Analysis narrative
-
 ```{r, results = "asis"}
-if (length(step_reports) == 0) {
-  cat("_No step report available._\n")
+if (length(report_sections) == 0) {
+  cat("_No report sections available._\n")
 } else {
-  for (s in step_reports) {
-    label <- s$label %||% s$id
-    cat("### ", label, "\n\n", sep = "")
-    if (!is.null(s$content) && is.character(s$content) && length(s$content) == 1 && nzchar(s$content)) {
-      cat(s$content, "\n\n", sep = "")
-    } else {
-      cat("_No report content for this step._\n\n")
+  for (section in report_sections) {
+    title <- section$title %||% "Analysis"
+    cat("## ", title, "\n\n", sep = "")
+    entries <- section$entries %||% list()
+    if (length(entries) == 0) {
+      cat("_No content for this section._\n\n")
+      next
     }
-  }
-}
-```
-
-## Plots
-
-```{r, results = "asis"}
-plots <- x$plots
-if (is.null(plots)) plots <- list()
-
-if (length(plots) == 0) {
-  cat("_No plots._\n")
-} else {
-  for (nm in names(plots)) {
-    cat("### ", nm, "\n\n", sep = "")
-    desc <- .explain(paste0("plots$", nm), default = NULL)
-    if (!is.null(desc)) cat(desc, "\n\n", sep = "")
-    print(plots[[nm]])
-    cat("\n\n")
+    for (entry in entries) {
+      if (!is.null(entry$type) && entry$type == "step") {
+        label <- entry$label %||% entry$id
+        cat("### ", label, "\n\n", sep = "")
+        if (!is.null(entry$content) && is.character(entry$content) &&
+          length(entry$content) == 1 && nzchar(entry$content)) {
+          cat(entry$content, "\n\n", sep = "")
+        } else {
+          cat("_No report content for this step._\n\n")
+        }
+      }
+      if (!is.null(entry$type) && entry$type == "plot") {
+        label <- entry$label %||% entry$id
+        cat("### ", label, "\n\n", sep = "")
+        if (!is.null(entry$description) && nzchar(entry$description)) {
+          cat(entry$description, "\n\n", sep = "")
+        }
+        if (!is.null(entry$plot)) print(entry$plot)
+        cat("\n\n")
+      }
+    }
   }
 }
 ```
