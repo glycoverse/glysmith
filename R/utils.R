@@ -46,3 +46,14 @@
   )
   as.character(chat$chat(user_prompt))
 }
+
+.ask_ai_multimodal <- function(system_prompt, user_prompt, content, api_key, model = "deepseek-chat") {
+  rlang::check_installed("ellmer")
+  chat <- ellmer::chat_deepseek(
+    system_prompt = system_prompt,
+    model = model,
+    echo = "none",
+    credentials = function() api_key
+  )
+  as.character(chat$chat(content, user_prompt))
+}

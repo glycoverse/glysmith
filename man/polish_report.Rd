@@ -21,7 +21,8 @@ polish_report(
 
 \item{open}{Whether to open the report in a browser after rendering.}
 
-\item{use_ai}{Whether to polish the report text and organize sections using AI (deepseek-chat). Default is FALSE.}
+\item{use_ai}{Whether to polish the report text, organize sections, and generate plot descriptions using AI
+(deepseek-chat and deepseek-vision). Default is FALSE.}
 }
 \value{
 The normalized path to the generated HTML file.
@@ -29,7 +30,8 @@ The normalized path to the generated HTML file.
 \description{
 Generate a self-contained HTML report for a \code{glysmith_result} object.
 The report is rendered via \code{rmarkdown::render()} using an internal R Markdown template.
-If \code{use_ai} is TRUE, the report text will be polished and organized into sections using LLM (deepseek-chat).
+If \code{use_ai} is TRUE, the report text will be polished and organized into sections using LLM (deepseek-chat),
+and plots will be described with a multimodal model (deepseek-vl-chat).
 To use this feature, you have to provide an API key and set it in the environment variable \code{DEEPSEEK_API_KEY}
 by running \code{Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")}.
 You can apply the API key on https://platform.deepseek.com.

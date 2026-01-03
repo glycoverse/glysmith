@@ -2,7 +2,8 @@
 #'
 #' Generate a self-contained HTML report for a `glysmith_result` object.
 #' The report is rendered via `rmarkdown::render()` using an internal R Markdown template.
-#' If `use_ai` is TRUE, the report text will be polished and organized into sections using LLM (deepseek-chat).
+#' If `use_ai` is TRUE, the report text will be polished and organized into sections using LLM (deepseek-chat),
+#' and plots will be described with a multimodal model (deepseek-vl-chat).
 #' To use this feature, you have to provide an API key and set it in the environment variable `DEEPSEEK_API_KEY`
 #' by running `Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")`.
 #' You can apply the API key on https://platform.deepseek.com.
@@ -11,7 +12,8 @@
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
-#' @param use_ai Whether to polish the report text and organize sections using AI (deepseek-chat). Default is FALSE.
+#' @param use_ai Whether to polish the report text, organize sections, and generate plot descriptions using AI
+#'   (deepseek-chat and deepseek-vision). Default is FALSE.
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples
@@ -98,7 +100,7 @@ polish_report <- function(
     if (is.null(api_key)) {
       api_key <- .get_api_key()
     }
-    cli::cli_alert_info("Polishing report with AI (deepseek-chat)...")
+    cli::cli_alert_info("Polishing report text with AI (deepseek-chat)...")
   }
 
   purrr::map(ids, function(id) {
@@ -144,7 +146,7 @@ polish_report <- function(
   }
 
   step_reports <- .build_step_reports(x, use_ai = use_ai, api_key = api_key)
-  plot_entries <- .build_plot_entries(x)
+  plot_entries <- .build_plot_entries(x, use_ai = use_ai, api_key = api_key)
 
   section_plan <- NULL
   if (isTRUE(use_ai)) {
@@ -162,7 +164,7 @@ polish_report <- function(
 #'
 #' @param x A glysmith_result object.
 #' @noRd
-.build_plot_entries <- function(x) {
+.build_plot_entries <- function(x, use_ai = FALSE, api_key = NULL) {
   plots <- x$plots
   if (is.null(plots)) {
     return(list())
@@ -171,6 +173,14 @@ polish_report <- function(
   explanation <- NULL
   if (!is.null(x$meta) && is.list(x$meta)) {
     explanation <- x$meta$explanation
+  }
+
+  if (isTRUE(use_ai) && is.null(api_key)) {
+    api_key <- .get_api_key()
+  }
+
+  if (isTRUE(use_ai) && length(plots) > 0) {
+    cli::cli_alert_info("Generating AI plot descriptions (deepseek-vl-chat)...")
   }
 
   purrr::imap(plots, function(p, id) {
@@ -191,6 +201,10 @@ polish_report <- function(
     }
     if (!is.null(desc) && !nzchar(desc)) {
       desc <- NULL
+    }
+    label <- .humanize_plot_label(id, desc)
+    if (isTRUE(use_ai)) {
+      desc <- .describe_plot_ai(p, label, desc, api_key)
     }
     desc <- .humanize_plot_description(desc)
     label <- .humanize_plot_label(id, desc)
@@ -308,6 +322,83 @@ polish_report <- function(
   desc <- stringr::str_squish(desc)
   desc <- .fix_plot_abbrev(desc)
   desc
+}
+
+.describe_plot_ai <- function(plot, label, description, api_key, model = "deepseek-chat") {
+  if (is.null(plot)) {
+    return(description)
+  }
+
+  system_prompt <- paste(
+    "You are a scientific visualization assistant.",
+    "Write a concise alt-text style description (1 paragraph, 2-4 sentences).",
+    "Briefly mention the plot type and axes if they are visible.",
+    "Summarize 2-5 major visual patterns or group differences.",
+    "Do not speculate about causes or conclusions.",
+    "Avoid mentioning colors or styling unless essential.",
+    "Output plain text only."
+  )
+
+  user_prompt <- paste0("Plot title: ", label)
+  if (!is.null(description) && nzchar(description)) {
+    user_prompt <- paste0(user_prompt, "\nExisting context: ", description)
+  }
+  user_prompt <- paste0(
+    user_prompt,
+    "\nDescribe the plot as you would for scientific alt-text."
+  )
+
+  tryCatch(
+    {
+      content <- .plot_to_content(plot)
+      if (is.null(content)) {
+        return(description)
+      }
+      response <- .ask_ai_multimodal(system_prompt, user_prompt, content, api_key, model)
+      response <- stringr::str_squish(response)
+      if (!nzchar(response)) {
+        description
+      } else {
+        response
+      }
+    },
+    error = function(e) {
+      cli::cli_warn(c(
+        "AI plot description failed, using existing description.",
+        "i" = "Error: {conditionMessage(e)}"
+      ))
+      description
+    }
+  )
+}
+
+.plot_to_content <- function(plot, width = 768, height = 768) {
+  rlang::check_installed("ellmer")
+  tmp_file <- tempfile("glysmith-plot-", fileext = ".png")
+  old_dev <- grDevices::dev.cur()
+  grDevices::png(tmp_file, width = width, height = height)
+  grDevices::dev.control("enable")
+  print(plot)
+
+  content <- tryCatch(
+    ellmer::content_image_plot(width = width, height = height),
+    error = function(e) NULL
+  )
+
+  grDevices::dev.off()
+  if (old_dev > 1) {
+    grDevices::dev.set(old_dev)
+  }
+
+  if (is.null(content) && file.exists(tmp_file)) {
+    content <- ellmer::content_image_file(tmp_file, "image/png", resize = "low")
+  }
+
+  if (file.exists(tmp_file)) {
+    fs::file_delete(tmp_file)
+  }
+
+  content
 }
 
 .humanize_on_label <- function(on) {

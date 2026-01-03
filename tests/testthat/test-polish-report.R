@@ -10,7 +10,8 @@ test_that("polish_report works", {
 test_that("polish_report works with AI polish", {
   skip_on_ci()
   skip_on_cran()
-  local_mocked_bindings(.ask_ai = function(system_prompt, user_prompt, ...) {
+  local_mocked_bindings(
+    .ask_ai = function(system_prompt, user_prompt, ...) {
     if (grepl("report section organizer", system_prompt, fixed = TRUE)) {
       return(paste(
         "## Preprocessing",
@@ -21,7 +22,9 @@ test_that("polish_report works with AI polish", {
       ))
     }
     "AI response"
-  })
+  },
+    .ask_ai_multimodal = function(...) "AI plot description"
+  )
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_api_key"))
   bp <- structure(
     list(
@@ -76,6 +79,7 @@ test_that("polish_report works with AI polish", {
   expect_true(any(grepl("Preprocessing", output_lines, fixed = TRUE)))
   expect_true(any(grepl("DEA analysis", output_lines, fixed = TRUE)))
   expect_true(any(grepl("AI response", output_lines, fixed = TRUE)))
+  expect_true(any(grepl("AI plot description", output_lines, fixed = TRUE)))
 })
 
 test_that("polish_report raises an error when API key is not set", {
@@ -94,7 +98,10 @@ test_that("polish_report raises an error when API key is not set", {
 test_that("polish_report captures AI errors", {
   skip_on_ci()
   skip_on_cran()
-  local_mocked_bindings(.ask_ai = function(...) stop("AI error"))
+  local_mocked_bindings(
+    .ask_ai = function(...) stop("AI error"),
+    .ask_ai_multimodal = function(...) "AI plot description"
+  )
   exp <- glyexp::real_experiment2
   bp <- blueprint(step_preprocess())
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_api_key"))
