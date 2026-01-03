@@ -93,27 +93,6 @@ if (length(plots) == 0) {
 }
 ```
 
-## Available tables
-
-```{r, results = "asis"}
-tables <- x$tables
-if (is.null(tables)) tables <- list()
-
-if (length(tables) == 0) {
-  cat("_No tables._\n")
-} else {
-  for (nm in names(tables)) {
-    desc <- .explain(paste0("tables$", nm), default = NULL)
-    if (is.null(desc)) desc <- ""
-    if (nzchar(desc)) {
-      cat("- `", nm, "`: ", desc, "\n", sep = "")
-    } else {
-      cat("- `", nm, "`\n", sep = "")
-    }
-  }
-}
-```
-
 ## Session info
 
 ```{r}
