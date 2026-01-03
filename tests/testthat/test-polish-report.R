@@ -137,7 +137,12 @@ test_that("polish_report omits empty step placeholders and humanizes plot titles
         heatmap_sig = ggplot2::ggplot()
       ),
       tables = list(),
-      meta = list(steps = c("volcano", "heatmap_sig"), explanation = list()),
+      meta = list(
+        steps = c("volcano", "heatmap_sig"),
+        explanation = list(
+          "plots$volcano_H_vs_M" = "Volcano plot for the comparison of H_vs_M."
+        )
+      ),
       blueprint = bp
     ),
     class = "glysmith_result"
@@ -148,5 +153,6 @@ test_that("polish_report omits empty step placeholders and humanizes plot titles
   output_lines <- readLines(output_file)
   expect_false(any(grepl("No report content for this step.", output_lines, fixed = TRUE)))
   expect_true(any(grepl("Volcano plot: H vs M", output_lines, fixed = TRUE)))
+  expect_true(any(grepl("comparison of H vs M", output_lines, fixed = TRUE)))
   expect_true(any(grepl("Heatmap of significant variables", output_lines, fixed = TRUE)))
 })

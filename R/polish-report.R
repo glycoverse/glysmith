@@ -192,6 +192,7 @@ polish_report <- function(
     if (!is.null(desc) && !nzchar(desc)) {
       desc <- NULL
     }
+    desc <- .humanize_plot_description(desc)
     label <- .humanize_plot_label(id, desc)
     list(id = id, label = label, description = desc, plot = p)
   })
@@ -289,6 +290,37 @@ polish_report <- function(
     label <- stringr::str_replace_all(label, paste0("\\b", from, "\\b"), replacements[[from]])
   }
   label
+}
+
+.humanize_plot_description <- function(description) {
+  if (is.null(description) || !nzchar(description)) {
+    return(description)
+  }
+
+  desc <- description
+  desc <- stringr::str_replace_all(desc, "_vs_", " vs ")
+  desc <- stringr::str_replace_all(
+    desc,
+    "\\b(sig_trait_exp|sig_motif_exp|sig_exp|trait_exp|motif_exp|exp)\\b",
+    function(x) .humanize_on_label(x)
+  )
+  desc <- stringr::str_replace_all(desc, "_", " ")
+  desc <- stringr::str_squish(desc)
+  desc <- .fix_plot_abbrev(desc)
+  desc
+}
+
+.humanize_on_label <- function(on) {
+  on <- stringr::str_to_lower(on)
+  switch(on,
+    sig_exp = "significant variables",
+    trait_exp = "traits",
+    sig_trait_exp = "significant traits",
+    motif_exp = "motifs",
+    sig_motif_exp = "significant motifs",
+    exp = "variables",
+    on
+  )
 }
 
 .on_suffix_labels <- function() {
