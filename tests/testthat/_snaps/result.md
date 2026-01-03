@@ -5,7 +5,7 @@
     Message
       
       -- GlySmith Analysis Result 
-      Plots: 2, Tables: 1, Data: 0
+      Plots: 2, Tables: 1, Data: 2
 
 # print.glysmith_result handles empty plots and tables
 

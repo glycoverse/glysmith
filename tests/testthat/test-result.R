@@ -3,7 +3,7 @@ result_for_test <- function() {
   plots <- list(plot1 = "plot1", plot2 = "plot2")
   tables <- list(table1 = "table1")
   meta <- list()
-  data <- list()
+  data <- list(data1 = "data1", data2 = "data2")
   blueprint <- new_blueprint(list(step_preprocess(), step_pca()))
   glysmith_result(exp, data, plots, tables, meta, blueprint)
 }
@@ -47,4 +47,14 @@ test_that("cast_plot works", {
   result <- result_for_test()
   expect_equal(cast_plot(result, "plot1"), "plot1")
   expect_snapshot(cast_plot(result, "plot3"), error = TRUE)
+})
+
+test_that("cast_data works", {
+  result <- result_for_test()
+  expect_equal(cast_data(result, "data1"), "data1")
+})
+
+test_that("cast_plot without name returns names", {
+  result <- result_for_test()
+  expect_equal(cast_plot(result), c("plot1", "plot2"))
 })

@@ -17,7 +17,7 @@ print.glysmith_result <- function(x, ...) {
 #' Helper functions to get processed experiment, plots, tables or data from a glysmith result object.
 #'
 #' @param x A glysmith result object.
-#' @param name The name of the plot or table to get.
+#' @param name The name of the plot or table to get. If not specified, return available names.
 #'
 #' @returns
 #'   - `cast_exp()`: a [glyexp::experiment()].
@@ -29,6 +29,7 @@ print.glysmith_result <- function(x, ...) {
 #' exp <- real_experiment2
 #' result <- forge_analysis(exp)
 #' cast_exp(result)
+#' cast_table(result)
 #' cast_table(result, "summary")
 #'
 #' @export
@@ -39,9 +40,12 @@ cast_exp <- function(x) {
 
 #' @rdname cast_exp
 #' @export
-cast_plot <- function(x, name) {
+cast_plot <- function(x, name = NULL) {
   checkmate::assert_class(x, "glysmith_result")
-  checkmate::assert_string(name)
+  checkmate::assert_string(name, null.ok = TRUE)
+  if (is.null(name)) {
+    return(names(x$plots))
+  }
   if (!name %in% names(x$plots)) {
     cli::cli_abort(c(
       "Plot '{name}' not found in the result.",
@@ -53,9 +57,12 @@ cast_plot <- function(x, name) {
 
 #' @rdname cast_exp
 #' @export
-cast_table <- function(x, name) {
+cast_table <- function(x, name = NULL) {
   checkmate::assert_class(x, "glysmith_result")
-  checkmate::assert_string(name)
+  checkmate::assert_string(name, null.ok = TRUE)
+  if (is.null(name)) {
+    return(names(x$tables))
+  }
   if (!name %in% names(x$tables)) {
     cli::cli_abort(c(
       "Table '{name}' not found in the result.",
@@ -67,9 +74,12 @@ cast_table <- function(x, name) {
 
 #' @rdname cast_exp
 #' @export
-cast_data <- function(x, name) {
+cast_data <- function(x, name = NULL) {
   checkmate::assert_class(x, "glysmith_result")
-  checkmate::assert_string(name)
+  checkmate::assert_string(name, null.ok = TRUE)
+  if (is.null(name)) {
+    return(names(x$data))
+  }
   if (!name %in% names(x$data)) {
     cli::cli_abort(c(
       "Data '{name}' not found in the result.",

@@ -9,16 +9,16 @@
 \usage{
 cast_exp(x)
 
-cast_plot(x, name)
+cast_plot(x, name = NULL)
 
-cast_table(x, name)
+cast_table(x, name = NULL)
 
-cast_data(x, name)
+cast_data(x, name = NULL)
 }
 \arguments{
 \item{x}{A glysmith result object.}
 
-\item{name}{The name of the plot or table to get.}
+\item{name}{The name of the plot or table to get. If not specified, return available names.}
 }
 \value{
 \itemize{
@@ -36,6 +36,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 cast_exp(result)
+cast_table(result)
 cast_table(result, "summary")
 
 }
