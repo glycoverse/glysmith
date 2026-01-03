@@ -59,6 +59,7 @@ all_steps <- function() {
   steps <- list(
     step_preprocess(),
     step_ident_overview(),
+    step_qc(),
     step_pca(),
     step_tsne(),
     step_umap(),
@@ -195,6 +196,123 @@ step_ident_overview <- function(count_struct = NULL) {
       sample_tbl <- dplyr::filter(tbl, stringr::str_ends(.data$item, "_per_sample"))
       sample_parts <- paste0(sample_tbl$n, " ", stringr::str_remove(sample_tbl$item, "_per_sample"), "s")
       glue::glue("In total, there are {paste(total_parts, collapse = ', ')}. On average, there are {paste(sample_parts, collapse = ', ')} per sample.")
+    },
+    require = "exp",
+    signature = signature
+  )
+}
+
+#' Step: Quality Control (QC)
+#'
+#' Generate various QC plots using `glyclean` plotting functions.
+#' This step is usually used before preprocessing.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to perform QC on
+#'
+#' Plots generated:
+#' - `qc_missing_heatmap`: Missing value heatmap
+#' - `qc_missing_bar`: Missing value bar plot
+#' - `qc_tic_bar`: Total intensity count bar plot
+#' - `qc_rank_abundance`: Rank abundance plot
+#' - `qc_int_boxplot`: Intensity boxplot (colored by `by`)
+#' - `qc_rle`: RLE plot (colored by `by`)
+#' - `qc_cv_dent`: CV density plot (colored by `by`)
+#' - `qc_batch_pca`: PCA score plot colored by batch (if `batch_col` provided)
+#' - `qc_rep_scatter`: Replicate scatter plots (if `rep_col` provided)
+#'
+#' @param batch_col Column name for batch information (for `glyclean::plot_batch_pca`).
+#' @param rep_col Column name for replicate information (for `glyclean::plot_rep_scatter`).
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_qc()
+#' @export
+step_qc <- function(
+  batch_col = NULL,
+  rep_col = NULL,
+  ...
+) {
+  signature <- rlang::expr_deparse(match.call())
+  step(
+    id = "qc",
+    label = "Quality Control",
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+
+      # Regular plots
+      plots <- list(
+        list(
+          id = "qc_missing_heatmap",
+          fun = function() glyclean::plot_missing_heatmap(exp),
+          desc = "Missing value heatmap."
+        ),
+        list(
+          id = "qc_missing_samples_bar",
+          fun = function() glyclean::plot_missing_bar(exp, on = "sample"),
+          desc = "Missing value bar plot on samples."
+        ),
+        list(
+          id = "qc_missing_variables_bar",
+          fun = function() glyclean::plot_missing_bar(exp, on = "variable"),
+          desc = "Missing value bar plot on variables."
+        ),
+        list(
+          id = "qc_tic_bar",
+          fun = function() glyclean::plot_tic_bar(exp),
+          desc = "Total intensity count (TIC) bar plot."
+        ),
+        list(
+          id = "qc_rank_abundance",
+          fun = function() glyclean::plot_rank_abundance(exp),
+          desc = "Rank abundance plot."
+        ),
+        list(
+          id = "qc_int_boxplot",
+          fun = function() glyclean::plot_int_boxplot(exp, by = "group"),
+          desc = "Log2 intensity boxplot."
+        ),
+        list(
+          id = "qc_rle",
+          fun = function() glyclean::plot_rle(exp, by = "group"),
+          desc = "Relative Log Expression (RLE) plot."
+        ),
+        list(
+          id = "qc_cv_dent",
+          fun = function() glyclean::plot_cv_dent(exp, by = "group"),
+          desc = "Coefficient of Variation (CV) density plot."
+        )
+      )
+
+      # Special handling for optional plot
+      if (!is.null(batch_col) && batch_col %in% colnames(exp$sample_info)) {
+        plots <- c(plots, list(list(
+          id = "qc_batch_pca",
+          fun = function() glyclean::plot_batch_pca(exp, batch_col = batch_col),
+          desc = "PCA score plot colored by batch."
+        )))
+      }
+
+      if (!is.null(rep_col) && rep_col %in% colnames(exp$sample_info)) {
+        plots <- c(plots, list(list(
+          id = "qc_rep_scatter",
+          fun = function() glyclean::plot_rep_scatter(exp, rep_col = rep_col),
+          desc = "Replicate scatter plots."
+        )))
+      }
+
+      for (p in plots) {
+        ctx <- tryCatch({
+          plot <- p$fun()
+          ctx_add_plot(ctx, p$id, plot, p$desc)
+        }, error = function(e) {
+          cli::warn("Failed to generate plot {p$id}: {e$message}")
+          ctx
+        })
+      }
+
+      ctx
     },
     require = "exp",
     signature = signature
