@@ -59,7 +59,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
     if (result$valid) {
       if (!is.null(result$explanation) && nzchar(result$explanation)) {
-        cli::cli_h3("Blueprint Explanation")
+        cli::cli_h3("Blueprint Description")
         cli::cli_text(result$explanation)
       }
       return(result$blueprint)
@@ -147,7 +147,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     step_descriptions,
     "\n",
     "Return format:",
-    "1. First, provide a BRIEF explanation (1-3 sentences) of why you chose these steps.",
+    "1. First, provide a BRIEF description (1-3 sentences) of the blueprint.",
     "2. Then write `---` on a new line.",
     "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
     "",
