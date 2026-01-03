@@ -4,13 +4,16 @@
 \alias{cast_exp}
 \alias{cast_plot}
 \alias{cast_table}
-\title{Get Plots or Tables from GlySmith Result}
+\alias{cast_data}
+\title{Get Data from GlySmith Result}
 \usage{
 cast_exp(x)
 
 cast_plot(x, name)
 
 cast_table(x, name)
+
+cast_data(x, name)
 }
 \arguments{
 \item{x}{A glysmith result object.}
@@ -18,12 +21,15 @@ cast_table(x, name)
 \item{name}{The name of the plot or table to get.}
 }
 \value{
-A glyexp_experiment object, a ggplot object or a tibble.
+\itemize{
+\item \code{cast_exp()}: a \code{\link[glyexp:experiment]{glyexp::experiment()}}.
+\item \code{cast_plot()}: a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}.
+\item \code{cast_table()}: a \code{\link[tibble:tibble]{tibble::tibble()}}.
+\item \code{cast_data()}: can be any R object.
+}
 }
 \description{
-Helper functions to get processed experiment, plots or tables from a glysmith result object.
-Just a syntax sugar for \verb{$exp}, \verb{$plots$plot_name} and \verb{$tables$table_name}
-elements of a glysmith result object, respectively.
+Helper functions to get processed experiment, plots, tables or data from a glysmith result object.
 }
 \examples{
 library(glyexp)

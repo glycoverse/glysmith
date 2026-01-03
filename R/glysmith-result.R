@@ -12,16 +12,18 @@ print.glysmith_result <- function(x, ...) {
   invisible(x)
 }
 
-#' Get Plots or Tables from GlySmith Result
+#' Get Data from GlySmith Result
 #'
-#' Helper functions to get processed experiment, plots or tables from a glysmith result object.
-#' Just a syntax sugar for `$exp`, `$plots$plot_name` and `$tables$table_name` 
-#' elements of a glysmith result object, respectively.
+#' Helper functions to get processed experiment, plots, tables or data from a glysmith result object.
 #'
 #' @param x A glysmith result object.
 #' @param name The name of the plot or table to get.
 #'
-#' @returns A glyexp_experiment object, a ggplot object or a tibble.
+#' @returns
+#'   - `cast_exp()`: a [glyexp::experiment()].
+#'   - `cast_plot()`: a [ggplot2::ggplot()].
+#'   - `cast_table()`: a [tibble::tibble()].
+#'   - `cast_data()`: can be any R object.
 #' @examples
 #' library(glyexp)
 #' exp <- real_experiment2
@@ -61,4 +63,18 @@ cast_table <- function(x, name) {
     ))
   }
   x$tables[[name]]
+}
+
+#' @rdname cast_exp
+#' @export
+cast_data <- function(x, name) {
+  checkmate::assert_class(x, "glysmith_result")
+  checkmate::assert_string(name)
+  if (!name %in% names(x$data)) {
+    cli::cli_abort(c(
+      "Data '{name}' not found in the result.",
+      "i" = "Available data: {.val {names(x$data)}}"
+    ))
+  }
+  x$data[[name]]
 }
