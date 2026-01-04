@@ -99,7 +99,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [86ms]
+#> ✖ Preprocessing [85ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
@@ -113,10 +113,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [65ms]
+#> ✔ Differential expression analysis (limma) [63ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [580ms]
+#> ✔ Volcano plot [577ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [40ms]
@@ -137,9 +137,9 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [95ms]
+#> ✔ Heatmap of significant traits [96ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmpOGlO33
+#> ✔ Result saved to /tmp/RtmpBsj1WD
 ```
