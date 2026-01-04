@@ -214,7 +214,7 @@ step_preprocess <- function(
         }
         ctx_add_plot(ctx, plot_id, plot, desc)
       }, error = function(e) {
-        cli::warn("Failed to generate plot {plot_id}: {e$message}")
+        cli::cli_warn("Failed to generate plot {plot_id}: {e$message}")
         ctx
       })
     }
