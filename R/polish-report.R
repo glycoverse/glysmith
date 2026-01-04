@@ -403,15 +403,17 @@ polish_report <- function(
 
 .humanize_on_label <- function(on) {
   on <- stringr::str_to_lower(on)
-  switch(on,
-    sig_exp = "significant variables",
-    trait_exp = "traits",
-    sig_trait_exp = "significant traits",
-    motif_exp = "motifs",
-    sig_motif_exp = "significant motifs",
-    exp = "variables",
-    on
-  )
+  purrr::map_chr(on, function(x) {
+    switch(x,
+      sig_exp = "significant variables",
+      trait_exp = "traits",
+      sig_trait_exp = "significant traits",
+      motif_exp = "motifs",
+      sig_motif_exp = "significant motifs",
+      exp = "variables",
+      x
+    )
+  })
 }
 
 .on_suffix_labels <- function() {

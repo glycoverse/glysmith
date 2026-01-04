@@ -163,3 +163,110 @@ test_that("polish_report omits empty step placeholders and humanizes plot titles
   expect_true(any(grepl("comparison of H vs M", output_lines, fixed = TRUE)))
   expect_true(any(grepl("Heatmap of significant variables", output_lines, fixed = TRUE)))
 })
+
+test_that("parse_section_plan handles code fences and items", {
+  output <- paste(
+    "```",
+    "## Preprocessing",
+    "items: step:preprocess; plot:qc_plot",
+    "",
+    "## Results",
+    "items: step:dea; plot:volcano",
+    "```",
+    sep = "\n"
+  )
+  plan <- glysmith:::.parse_section_plan(output)
+  expect_length(plan, 2)
+  expect_equal(plan[[1]]$title, "Preprocessing")
+  expect_equal(plan[[1]]$items[[1]]$type, "step")
+  expect_equal(plan[[1]]$items[[1]]$id, "preprocess")
+  expect_equal(plan[[1]]$items[[2]]$type, "plot")
+  expect_equal(plan[[1]]$items[[2]]$id, "qc_plot")
+  expect_equal(plan[[2]]$title, "Results")
+})
+
+test_that("parse_section_items drops invalid tokens and respects none", {
+  items <- glysmith:::.parse_section_items("step:prep; foo:bar; plot:")
+  expect_length(items, 1)
+  expect_equal(items[[1]]$type, "step")
+  expect_equal(items[[1]]$id, "prep")
+  expect_equal(glysmith:::.parse_section_items("none"), list())
+})
+
+test_that("humanize helpers format plot labels and descriptions", {
+  expect_equal(
+    glysmith:::.humanize_plot_label("volcano_H_vs_M"),
+    "Volcano plot: H vs M"
+  )
+  expect_equal(
+    glysmith:::.humanize_plot_label("heatmap_sig_trait"),
+    "Heatmap of significant traits"
+  )
+  expect_equal(
+    glysmith:::.humanize_plot_label("pca_sig_scores"),
+    "PCA Scores (significant variables)"
+  )
+  expect_equal(
+    glysmith:::.humanize_plot_label("tsne_sig"),
+    "t-SNE (significant variables)"
+  )
+  expect_equal(
+    glysmith:::.humanize_plot_label("umap_trait"),
+    "UMAP (traits)"
+  )
+
+  desc <- "Comparison of sig_exp_vs_trait_exp and motif_exp"
+  expect_equal(
+    glysmith:::.humanize_plot_description(desc),
+    "Comparison of significant variables vs traits and motifs"
+  )
+})
+
+test_that("infer_plot_owner matches prefixes and enrich steps", {
+  plot_ids <- c("pca_scores", "go", "volcano_A_vs_B", "unknown")
+  step_ids <- c("pca", "sig_enrich_go", "volcano")
+  owners <- glysmith:::.infer_plot_owner(plot_ids, step_ids)
+  expect_equal(
+    owners,
+    c("pca", "sig_enrich_go", "volcano", NA_character_)
+  )
+})
+
+test_that("assemble_report_sections assigns additional results", {
+  step_reports <- list(
+    list(id = "preprocess", label = "Preprocess", content = "prep"),
+    list(id = "dea", label = "DEA", content = "dea"),
+    list(id = "unused", label = "Unused", content = "unused")
+  )
+  plot_entries <- list(
+    list(
+      id = "volcano_A_vs_B",
+      label = "Volcano plot: A vs B",
+      description = "desc",
+      plot = ggplot2::ggplot()
+    )
+  )
+  plan <- list(
+    list(
+      title = "Preprocessing",
+      items = list(list(type = "step", id = "preprocess"))
+    ),
+    list(
+      title = "Analysis",
+      items = list(
+        list(type = "step", id = "dea"),
+        list(type = "plot", id = "volcano_A_vs_B")
+      )
+    )
+  )
+
+  sections <- glysmith:::.assemble_report_sections(step_reports, plot_entries, plan)
+  expect_equal(
+    purrr::map_chr(sections, "title"),
+    c("Preprocessing", "Analysis", "Additional results")
+  )
+  expect_equal(sections[[1]]$entries[[1]]$id, "preprocess")
+  expect_equal(sections[[2]]$entries[[1]]$id, "dea")
+  expect_equal(sections[[2]]$entries[[2]]$id, "volcano_A_vs_B")
+  expect_equal(sections[[3]]$entries[[1]]$id, "unused")
+})
