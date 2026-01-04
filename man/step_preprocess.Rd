@@ -5,6 +5,8 @@
 \title{Step: Preprocessing}
 \usage{
 step_preprocess(
+  pre_qc = FALSE,
+  post_qc = TRUE,
   batch_col = "batch",
   qc_name = "QC",
   normalize_to_try = NULL,
@@ -13,12 +15,14 @@ step_preprocess(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  pre_qc = FALSE,
-  post_qc = TRUE,
   rep_col = NULL
 )
 }
 \arguments{
+\item{pre_qc}{Whether to run QC plots before preprocessing.}
+
+\item{post_qc}{Whether to run QC plots after preprocessing.}
+
 \item{batch_col}{The column name in sample_info for batches. Default is "batch".
 Can be NULL when no batch information is available.}
 
@@ -70,10 +74,6 @@ Default to TRUE.}
 
 \item{batch_confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
 Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
-
-\item{pre_qc}{Whether to run QC plots before preprocessing.}
-
-\item{post_qc}{Whether to run QC plots after preprocessing.}
 
 \item{rep_col}{Column name for replicate information (for \code{glyclean::plot_rep_scatter()}).}
 }
