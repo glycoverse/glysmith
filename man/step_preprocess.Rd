@@ -12,7 +12,10 @@ step_preprocess(
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
-  batch_confounding_threshold = 0.4
+  batch_confounding_threshold = 0.4,
+  pre_qc = FALSE,
+  post_qc = TRUE,
+  rep_col = NULL
 )
 }
 \arguments{
@@ -67,12 +70,19 @@ Default to TRUE.}
 
 \item{batch_confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
 Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
+
+\item{pre_qc}{Whether to run QC plots before preprocessing.}
+
+\item{post_qc}{Whether to run QC plots after preprocessing.}
+
+\item{rep_col}{Column name for replicate information (for \code{glyclean::plot_rep_scatter()}).}
 }
 \value{
 A \code{glysmith_step} object.
 }
 \description{
 Preprocess the experiment using \code{glyclean::auto_clean()}.
+Optionally run QC plots before and/or after preprocessing.
 This step can be omitted if the experiment is already preprocessed.
 }
 \details{
@@ -85,6 +95,22 @@ Data generated:
 \itemize{
 \item \code{raw_exp}: The raw experiment (previous \code{exp}, saved for reference)
 }
+
+Plots generated when \code{post_qc = TRUE}:
+\itemize{
+\item \code{qc_missing_heatmap}: Missing value heatmap
+\item \code{qc_missing_samples_bar}: Missing value bar plot on samples
+\item \code{qc_missing_variables_bar}: Missing value bar plot on variables
+\item \code{qc_tic_bar}: Total intensity count bar plot
+\item \code{qc_rank_abundance}: Rank abundance plot
+\item \code{qc_int_boxplot}: Intensity boxplot
+\item \code{qc_rle}: RLE plot
+\item \code{qc_cv_dent}: CV density plot
+\item \code{qc_batch_pca}: PCA score plot colored by batch (if \code{batch_col} provided)
+\item \code{qc_rep_scatter}: Replicate scatter plots (if \code{rep_col} provided)
+}
+
+When \code{pre_qc = TRUE}, the same plots are generated with the \code{qc_pre_} prefix.
 
 This step is special in that it silently overwrites the \code{exp} data with the preprocessed experiment.
 This ensures that no matter if preprocessing is performed or not,

@@ -12,6 +12,20 @@ test_that("step_preprocess overwrites exp and writes raw_exp", {
   expect_false(sum(new_exp$expr_mat, na.rm = TRUE) == old_sum)
 })
 
+test_that("step_preprocess respects pre_qc and post_qc flags", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(10)
+  bp <- blueprint(step_preprocess(pre_qc = TRUE, post_qc = TRUE))
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true("qc_pre_missing_heatmap" %in% names(res$plots))
+  expect_true("qc_missing_heatmap" %in% names(res$plots))
+
+  bp_no_qc <- blueprint(step_preprocess(pre_qc = FALSE, post_qc = FALSE))
+  suppressMessages(res_no_qc <- forge_analysis(exp, bp_no_qc))
+  expect_false("qc_pre_missing_heatmap" %in% names(res_no_qc$plots))
+  expect_false("qc_missing_heatmap" %in% names(res_no_qc$plots))
+})
+
 # ----- step_ident_overview -----
 test_that("step_ident_overview generates summary", {
   exp <- glyexp::real_experiment |>
