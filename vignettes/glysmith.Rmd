@@ -59,7 +59,7 @@ result
 That's it!
 You've completed the following steps in one go:
 
-- Preprocessed your data using `glyclean::auto_clean()`.
+- Preprocessed your data using `glyclean::auto_clean()` and generated QC plots.
 - Summarized the experiment with `glyexp::summarize_experiment()`.
 - Performed principal component analysis with `glystats::gly_pca()`.
 - Conducted differential expression analysis using `glystats::gly_limma()`.
@@ -103,20 +103,6 @@ polish_report(result, "path/to/save/report.html")
 ```
 
 By default, the report will open automatically in your browser when it's finished.
-
-Now for the exciting part!
-Set `use_ai = TRUE` to let a Large Language Model (LLM) help polish your report.
-We currently use `deepseek-chat`, which offers both cost-effectiveness and solid performance.
-To use this feature, you need to provide an API key, either by setting the environment variable `DEEPSEEK_API_KEY`.
-You can obtain an API key from https://platform.deepseek.com.
-
-```r
-Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
-polish_report(result, "path/to/save/report.html", use_ai = TRUE)
-```
-
-We're continually working to make the report generation more readable and informative.
-Check back in a few months to see what's new!
 
 ## About naming
 
@@ -167,8 +153,18 @@ write_blueprint(bp, "path/to/save/bp.rds")
 bp <- read_blueprint("path/to/save/bp.rds")
 ```
 
-You can find references for all available steps in the package (and the list is still growing!).
-Or simply type `step_` and hit TAB in RStudio to view all available step functions.
+Here is a list of all available steps:
+
+- `step_ident_overview()`: Summarize the experiment identification.
+- `step_preprocess()`: Preprocess the experiment data and generate QC plots.
+- `step_pca()`, `step_tsne()`, `step_umap()`: Dimension reduction for data exploration.
+- `step_dea_limma()`, `step_dea_ttest()`, `step_dea_anova()`, `step_dea_wilcox()`, `step_dea_kruskal()`: Differential expression analysis with various methods.
+- `step_volcano()`: Create volcano plots for DEA results.
+- `step_heatmap()`: Generate heatmaps for expression data.
+- `step_roc()`: Perform Receiver Operating Characteristic (ROC) analysis.
+- `step_sig_enrich_go()`, `step_sig_enrich_kegg()`, `step_sig_enrich_reactome()`: Functional enrichment analysis for significant items.
+- `step_derive_traits()`: Calculate glycan derived traits.
+- `step_quantify_motifs()`: Quantify glycan motifs (substructures).
 
 Before you start building your own blueprints, here are a few rules to keep in mind:
 
@@ -181,16 +177,5 @@ Before you start building your own blueprints, here are a few rules to keep in m
 - If a step overwrites data produced by an earlier step, a warning will be issued.
   For example, including both `step_dea_limma()` and then `step_dea_ttest()` will overwrite the `dea_res` data from the former with that from the latter step. Ignore the warning if that's what you intend.
 - You can create branches in a blueprint by using `br()`. Check out its document for examples.
-
-You can also use `inquire_blueprint()` to let a Large Language Model (LLM) help you create a blueprint.
-To use this feature, you need to provide an API key, either by setting the environment variable `DEEPSEEK_API_KEY`.
-You can obtain an API key from https://platform.deepseek.com.
-
-```r
-Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
-bp <- inquire_blueprint("I want to know what pathways are enriched for my significantly differentially expressed glycoforms.")
-```
-
-*NOTE: This function might not be stable. Double check the blueprint before using it.*
 
 **Happy forging!**
