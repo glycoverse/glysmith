@@ -1,11 +1,3 @@
-
-test_that("inquire_blueprint only exposes allowlisted arguments", {
-  args <- list(on = "data source", center = "center data", scale = "scale data")
-  filtered <- glysmith:::.filter_inquire_blueprint_args(args)
-
-  expect_identical(names(filtered), "on")
-})
-
 test_that("inquire_blueprint works with valid AI output", {
   skip_on_ci()
   skip_if_not_installed("ellmer")

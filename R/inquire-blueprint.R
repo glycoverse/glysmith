@@ -140,7 +140,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "Your job is to create a blueprint for glycomics or glycoproteomics data analysis.",
     "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
     "Use `br(\"name\", step_..., step_...)` ONLY for creating parallel analysis branches that represent alternative approaches (e.g., comparing two methods).",
-    "Do NOT use `br()` for grouping sequential steps or organizing the workflow. Prefer a single linear sequence of steps.",
+    "`br()` can also be used for grouping sequential steps or organizing the workflow.",
+    "For example, steps about motif analysis can be grouped into a branch called 'motif analysis',",
+    "and steps about derived traits can be grouped into 'trait analysis'.",
     "Use step arguments with caution: prefer default values unless they are necessary.",
     "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
     "Available analytical steps include:\n",
@@ -227,7 +229,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
         args <- .get_rd_arguments(rd)
         # Filter out "..." and arguments that shouldn't be touched by LLM usually
         args <- args[!names(args) %in% c("...", "signature")]
-        args <- .filter_inquire_blueprint_args(args)
+        args <- .filter_inquire_blueprint_args(func_name, args)
 
         if (length(args) > 0) {
           # Format parameters
@@ -255,9 +257,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   paste(desc_list, collapse = "\n")
 }
 
-.filter_inquire_blueprint_args <- function(args) {
+.filter_inquire_blueprint_args <- function(func_name, args) {
   if (length(args) == 0) return(args)
-  allowed <- "on"
+  allowed <- args  # Currently all args are allowed.
   args[names(args) %in% allowed]
 }
 
