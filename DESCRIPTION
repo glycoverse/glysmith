@@ -47,7 +47,7 @@ Imports:
     fs,
     ggplot2,
     glue,
-    glyclean (>= 0.9.1),
+    glyclean (>= 0.10.0),
     glydet (>= 0.7.0),
     glyexp (>= 0.11.0),
     glystats (>= 0.6.2),
