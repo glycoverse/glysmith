@@ -1,4 +1,8 @@
-# glysmith (development version)
+# glysmith 0.5.1
+
+## Minor improvements and bug fixes
+
+* Depends on `glyclean` 0.10.0.
 
 # glysmith 0.5.0
 
