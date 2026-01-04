@@ -2,12 +2,15 @@
 
 Preprocess the experiment using
 [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
-This step can be omitted if the experiment is already preprocessed.
+Optionally run QC plots before and/or after preprocessing. This step can
+be omitted if the experiment is already preprocessed.
 
 ## Usage
 
 ``` r
 step_preprocess(
+  pre_qc = FALSE,
+  post_qc = TRUE,
   batch_col = "batch",
   qc_name = "QC",
   normalize_to_try = NULL,
@@ -15,11 +18,20 @@ step_preprocess(
   remove_preset = "discovery",
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
-  batch_confounding_threshold = 0.4
+  batch_confounding_threshold = 0.4,
+  rep_col = NULL
 )
 ```
 
 ## Arguments
+
+- pre_qc:
+
+  Whether to run QC plots before preprocessing.
+
+- post_qc:
+
+  Whether to run QC plots after preprocessing.
 
 - batch_col:
 
@@ -127,6 +139,11 @@ step_preprocess(
   highly confounded. Only used when `check_batch_confounding` is TRUE.
   Default to 0.4.
 
+- rep_col:
+
+  Column name for replicate information (for
+  [`glyclean::plot_rep_scatter()`](https://glycoverse.github.io/glyclean/reference/plot_rep_scatter.html)).
+
 ## Value
 
 A `glysmith_step` object.
@@ -140,6 +157,32 @@ Data required:
 Data generated:
 
 - `raw_exp`: The raw experiment (previous `exp`, saved for reference)
+
+Plots generated when `post_qc = TRUE`:
+
+- `qc_missing_heatmap`: Missing value heatmap
+
+- `qc_missing_samples_bar`: Missing value bar plot on samples
+
+- `qc_missing_variables_bar`: Missing value bar plot on variables
+
+- `qc_tic_bar`: Total intensity count bar plot
+
+- `qc_rank_abundance`: Rank abundance plot
+
+- `qc_int_boxplot`: Intensity boxplot
+
+- `qc_rle`: RLE plot
+
+- `qc_cv_dent`: CV density plot
+
+- `qc_batch_pca`: PCA score plot colored by batch (if `batch_col`
+  provided)
+
+- `qc_rep_scatter`: Replicate scatter plots (if `rep_col` provided)
+
+When `pre_qc = TRUE`, the same plots are generated with the `qc_pre_`
+prefix.
 
 This step is special in that it silently overwrites the `exp` data with
 the preprocessed experiment. This ensures that no matter if

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,12 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/glysmith.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/ai.html">AI-Powered Workflow in Glysmith</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -103,8 +109,8 @@ of code.</p>
 <span><span class="va">result</span></span></code></pre></div>
 <p>That’s it! You’ve completed the following steps in one go:</p>
 <ul>
-<li>Preprocessed your data using
-<code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code>.</li>
+<li>Preprocessed your data using <code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code> and
+generated QC plots.</li>
 <li>Summarized the experiment with
 <code><a href="https://glycoverse.github.io/glyexp/reference/summarize_experiment.html" class="external-link">glyexp::summarize_experiment()</a></code>.</li>
 <li>Performed principal component analysis with
@@ -162,17 +168,6 @@ from the results.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"path/to/save/report.html"</span><span class="op">)</span></span></code></pre></div>
 <p>By default, the report will open automatically in your browser when
 it’s finished.</p>
-<p>Now for the exciting part! Set <code>use_ai = TRUE</code> to let a
-Large Language Model (LLM) help polish your report. We currently use
-<code>deepseek-chat</code>, which offers both cost-effectiveness and
-solid performance. To use this feature, you need to provide an API key,
-either by setting the environment variable
-<code>DEEPSEEK_API_KEY</code>. You can obtain an API key from <a href="https://platform.deepseek.com" class="external-link uri">https://platform.deepseek.com</a>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DEEPSEEK_API_KEY <span class="op">=</span> <span class="st">"your_api_key"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"path/to/save/report.html"</span>, use_ai <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>We’re continually working to make the report generation more readable
-and informative. Check back in a few months to see what’s new!</p>
 </div>
 <div class="section level2">
 <h2 id="about-naming">About naming<a class="anchor" aria-label="anchor" href="#about-naming"></a>
@@ -197,7 +192,7 @@ design—a custom blueprint—that the smith can use for your sword.</p>
 <p>Similarly, <code><a href="../reference/forge_analysis.html">forge_analysis()</a></code> uses a default blueprint for
 the analysis pipeline. You can inspect it via
 <code><a href="../reference/blueprint_default.html">blueprint_default()</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint_default.html">blueprint_default</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">12</span><span style="font-weight: bold;"> steps)</span> ──</span></span>
@@ -219,7 +214,7 @@ the analysis pipeline. You can inspect it via
 your own custom blueprint. For instance, if you’d just like to perform
 differential expression analysis and plot the volcano plot, you could
 do:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -228,12 +223,46 @@ do:</p>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">real_experiment</span>, <span class="va">bp</span><span class="op">)</span></span>
 <span><span class="va">result</span></span></code></pre></div>
 <p>You can also save a blueprint to a file and reload it later:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write_blueprint.html">write_blueprint</a></span><span class="op">(</span><span class="va">bp</span>, <span class="st">"path/to/save/bp.rds"</span><span class="op">)</span></span>
 <span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/write_blueprint.html">read_blueprint</a></span><span class="op">(</span><span class="st">"path/to/save/bp.rds"</span><span class="op">)</span></span></code></pre></div>
-<p>You can find references for all available steps in the package (and
-the list is still growing!). Or simply type <code>step_</code> and hit
-TAB in RStudio to view all available step functions.</p>
+<p>Here is a list of all available steps:</p>
+<ul>
+<li>
+<code><a href="../reference/step_ident_overview.html">step_ident_overview()</a></code>: Summarize the experiment
+identification.</li>
+<li>
+<code><a href="../reference/step_preprocess.html">step_preprocess()</a></code>: Preprocess the experiment data and
+generate QC plots.</li>
+<li>
+<code><a href="../reference/step_pca.html">step_pca()</a></code>, <code><a href="../reference/step_tsne.html">step_tsne()</a></code>,
+<code><a href="../reference/step_umap.html">step_umap()</a></code>: Dimension reduction for data exploration.</li>
+<li>
+<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>, <code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code>,
+<code><a href="../reference/step_dea_anova.html">step_dea_anova()</a></code>, <code><a href="../reference/step_dea_wilcox.html">step_dea_wilcox()</a></code>,
+<code><a href="../reference/step_dea_kruskal.html">step_dea_kruskal()</a></code>: Differential expression analysis with
+various methods.</li>
+<li>
+<code><a href="../reference/step_volcano.html">step_volcano()</a></code>: Create volcano plots for DEA
+results.</li>
+<li>
+<code><a href="../reference/step_heatmap.html">step_heatmap()</a></code>: Generate heatmaps for expression
+data.</li>
+<li>
+<code><a href="../reference/step_roc.html">step_roc()</a></code>: Perform Receiver Operating Characteristic
+(ROC) analysis.</li>
+<li>
+<code><a href="../reference/step_sig_enrich_go.html">step_sig_enrich_go()</a></code>,
+<code><a href="../reference/step_sig_enrich_kegg.html">step_sig_enrich_kegg()</a></code>,
+<code><a href="../reference/step_sig_enrich_reactome.html">step_sig_enrich_reactome()</a></code>: Functional enrichment analysis
+for significant items.</li>
+<li>
+<code><a href="../reference/step_derive_traits.html">step_derive_traits()</a></code>: Calculate glycan derived
+traits.</li>
+<li>
+<code><a href="../reference/step_quantify_motifs.html">step_quantify_motifs()</a></code>: Quantify glycan motifs
+(substructures).</li>
+</ul>
 <p>Before you start building your own blueprints, here are a few rules
 to keep in mind:</p>
 <ul>
@@ -257,16 +286,6 @@ from the latter step. Ignore the warning if that’s what you intend.</li>
 <li>You can create branches in a blueprint by using <code><a href="../reference/br.html">br()</a></code>.
 Check out its document for examples.</li>
 </ul>
-<p>You can also use <code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> to let a Large
-Language Model (LLM) help you create a blueprint. To use this feature,
-you need to provide an API key, either by setting the environment
-variable <code>DEEPSEEK_API_KEY</code>. You can obtain an API key from
-<a href="https://platform.deepseek.com" class="external-link uri">https://platform.deepseek.com</a>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DEEPSEEK_API_KEY <span class="op">=</span> <span class="st">"your_api_key"</span><span class="op">)</span></span>
-<span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inquire_blueprint.html">inquire_blueprint</a></span><span class="op">(</span><span class="st">"I want to know what pathways are enriched for my significantly differentially expressed glycoforms."</span><span class="op">)</span></span></code></pre></div>
-<p><em>NOTE: This function might not be stable. Double check the
-blueprint before using it.</em></p>
 <p><strong>Happy forging!</strong></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -59,7 +59,8 @@ result
 That’s it! You’ve completed the following steps in one go:
 
 - Preprocessed your data using
-  [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
+  [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html)
+  and generated QC plots.
 - Summarized the experiment with
   [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html).
 - Performed principal component analysis with
@@ -118,21 +119,6 @@ polish_report(result, "path/to/save/report.html")
 
 By default, the report will open automatically in your browser when it’s
 finished.
-
-Now for the exciting part! Set `use_ai = TRUE` to let a Large Language
-Model (LLM) help polish your report. We currently use `deepseek-chat`,
-which offers both cost-effectiveness and solid performance. To use this
-feature, you need to provide an API key, either by setting the
-environment variable `DEEPSEEK_API_KEY`. You can obtain an API key from
-<https://platform.deepseek.com>.
-
-``` r
-Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
-polish_report(result, "path/to/save/report.html", use_ai = TRUE)
-```
-
-We’re continually working to make the report generation more readable
-and informative. Check back in a few months to see what’s new!
 
 ## About naming
 
@@ -206,9 +192,36 @@ write_blueprint(bp, "path/to/save/bp.rds")
 bp <- read_blueprint("path/to/save/bp.rds")
 ```
 
-You can find references for all available steps in the package (and the
-list is still growing!). Or simply type `step_` and hit TAB in RStudio
-to view all available step functions.
+Here is a list of all available steps:
+
+- [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md):
+  Summarize the experiment identification.
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md):
+  Preprocess the experiment data and generate QC plots.
+- [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md),
+  [`step_tsne()`](https://glycoverse.github.io/glysmith/reference/step_tsne.md),
+  [`step_umap()`](https://glycoverse.github.io/glysmith/reference/step_umap.md):
+  Dimension reduction for data exploration.
+- [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
+  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
+  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md),
+  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md),
+  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md):
+  Differential expression analysis with various methods.
+- [`step_volcano()`](https://glycoverse.github.io/glysmith/reference/step_volcano.md):
+  Create volcano plots for DEA results.
+- [`step_heatmap()`](https://glycoverse.github.io/glysmith/reference/step_heatmap.md):
+  Generate heatmaps for expression data.
+- [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md):
+  Perform Receiver Operating Characteristic (ROC) analysis.
+- [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md),
+  [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md),
+  [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md):
+  Functional enrichment analysis for significant items.
+- [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md):
+  Calculate glycan derived traits.
+- [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md):
+  Quantify glycan motifs (substructures).
 
 Before you start building your own blueprints, here are a few rules to
 keep in mind:
@@ -239,20 +252,5 @@ keep in mind:
 - You can create branches in a blueprint by using
   [`br()`](https://glycoverse.github.io/glysmith/reference/br.md). Check
   out its document for examples.
-
-You can also use
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-to let a Large Language Model (LLM) help you create a blueprint. To use
-this feature, you need to provide an API key, either by setting the
-environment variable `DEEPSEEK_API_KEY`. You can obtain an API key from
-<https://platform.deepseek.com>.
-
-``` r
-Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
-bp <- inquire_blueprint("I want to know what pathways are enriched for my significantly differentially expressed glycoforms.")
-```
-
-*NOTE: This function might not be stable. Double check the blueprint
-before using it.*
 
 **Happy forging!**

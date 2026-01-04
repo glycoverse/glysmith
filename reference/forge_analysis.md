@@ -54,7 +54,7 @@ A `glysmith_result` object, with the following components:
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [95ms]
+#> ✔ Identification overview [93ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -101,11 +101,11 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [123ms]
+#> ✖ Preprocessing [87ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [19ms]
+#> ✖ Principal component analysis [20ms]
 #> 
 #> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
@@ -115,13 +115,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [59ms]
+#> ✔ Differential expression analysis (limma) [62ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [463ms]
+#> ✔ Volcano plot [505ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [39ms]
+#> ✔ Heatmap of significant variables [40ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -136,10 +136,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [53ms]
+#> ✔ Differential trait analysis (limma) [56ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [38ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 print(result)
 #> 

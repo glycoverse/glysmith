@@ -11,11 +11,14 @@
 - [`cast_exp()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   [`cast_plot()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   [`cast_table()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
-  : Get Plots or Tables from GlySmith Result
+  [`cast_data()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
+  : Get Data from GlySmith Result
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md)
   : Perform the Whole Analysis Pipeline
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
   **\[experimental\]** : Create a Blueprint using Natural Language
+- [`modify_blueprint()`](https://glycoverse.github.io/glysmith/reference/modify_blueprint.md)
+  **\[experimental\]** : Modify a Blueprint using Natural Language
 - [`polish_report()`](https://glycoverse.github.io/glysmith/reference/polish_report.md)
   : Render a HTML Report for GlySmith Results
 - [`quench_result()`](https://glycoverse.github.io/glysmith/reference/quench_result.md)

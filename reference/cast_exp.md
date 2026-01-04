@@ -1,18 +1,18 @@
-# Get Plots or Tables from GlySmith Result
+# Get Data from GlySmith Result
 
-Helper functions to get processed experiment, plots or tables from a
-glysmith result object. Just a syntax sugar for `$exp`,
-`$plots$plot_name` and `$tables$table_name` elements of a glysmith
-result object, respectively.
+Helper functions to get processed experiment, plots, tables or data from
+a glysmith result object.
 
 ## Usage
 
 ``` r
 cast_exp(x)
 
-cast_plot(x, name)
+cast_plot(x, name = NULL)
 
-cast_table(x, name)
+cast_table(x, name = NULL)
+
+cast_data(x, name = NULL)
 ```
 
 ## Arguments
@@ -23,11 +23,21 @@ cast_table(x, name)
 
 - name:
 
-  The name of the plot or table to get.
+  The name of the plot or table to get. If not specified, return
+  available names.
 
 ## Value
 
-A glyexp_experiment object, a ggplot object or a tibble.
+- `cast_exp()`: a
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html).
+
+- `cast_plot()`: a
+  [`ggplot2::ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html).
+
+- `cast_table()`: a
+  [`tibble::tibble()`](https://tibble.tidyverse.org/reference/tibble.html).
+
+- `cast_data()`: can be any R object.
 
 ## Examples
 
@@ -36,7 +46,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [85ms]
+#> ✔ Identification overview [84ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -83,11 +93,11 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [132ms]
+#> ✖ Preprocessing [127ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [21ms]
+#> ✖ Principal component analysis [20ms]
 #> 
 #> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
@@ -97,19 +107,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [208ms]
+#> ✔ Differential expression analysis (limma) [231ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [621ms]
+#> ✔ Volcano plot [648ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [76ms]
+#> ✔ Heatmap of significant variables [77ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8.1s]
+#> ✔ Derived trait calculation [8.2s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -121,7 +131,7 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [58ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [72ms]
 #> 
 cast_exp(result)
 #> 
@@ -129,6 +139,8 @@ cast_exp(result)
 #> ℹ Expression matrix: 144 samples, 67 variables
 #> ℹ Sample information fields: group <fct>
 #> ℹ Variable information fields: glycan_composition <comp>, glycan_structure <struct>
+cast_table(result)
+#> [1] "summary"        "dea"            "derived_traits" "dta"           
 cast_table(result, "summary")
 #> # A tibble: 4 × 2
 #>   item                       n
