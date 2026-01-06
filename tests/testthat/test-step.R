@@ -119,6 +119,58 @@ test_that("step_quantify_motifs generates motif_exp and tables", {
   expect_true("quantified_motifs" %in% names(res$tables))
 })
 
+# ----- step_adjust_protein -----
+make_protein_expr <- function(exp) {
+  protein_tbl <- exp$var_info |>
+    dplyr::select(dplyr::all_of(c("variable", "protein")))
+
+  expr_tbl <- tibble::as_tibble(exp$expr_mat, rownames = "variable") |>
+    dplyr::left_join(protein_tbl, by = "variable") |>
+    dplyr::group_by(.data$protein) |>
+    dplyr::summarise(
+      dplyr::across(-dplyr::all_of("variable"), ~ stats::median(.x, na.rm = TRUE)),
+      .groups = "drop"
+    )
+
+  list(
+    tbl = expr_tbl,
+    mat = expr_tbl |>
+      tibble::column_to_rownames("protein") |>
+      as.matrix()
+  )
+}
+
+test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(50)
+
+  pro_expr <- make_protein_expr(exp)
+  csv_path <- tempfile(fileext = ".csv")
+  tsv_path <- tempfile(fileext = ".tsv")
+  rds_path <- tempfile(fileext = ".rds")
+
+  readr::write_csv(pro_expr$tbl, csv_path)
+  readr::write_tsv(pro_expr$tbl, tsv_path)
+  readr::write_rds(pro_expr$mat, rds_path)
+
+  run_adjust <- function(path) {
+    bp <- blueprint(step_adjust_protein(path))
+    suppressMessages(forge_analysis(exp, bp))
+  }
+
+  purrr::walk(c(csv_path, tsv_path, rds_path), function(path) {
+    res <- run_adjust(path)
+    expect_true("raw_exp" %in% names(res$data))
+    expect_true("exp" %in% names(res$data))
+    expect_false(
+      isTRUE(all.equal(
+        sum(res$data$exp$expr_mat, na.rm = TRUE),
+        sum(res$data$raw_exp$expr_mat, na.rm = TRUE)
+      ))
+    )
+  })
+})
+
 # ----- step_heatmap -----
 test_that("step_heatmap generates plot", {
   suppressMessages(
