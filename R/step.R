@@ -58,6 +58,7 @@ print.glysmith_step <- function(x, ...) {
 all_steps <- function() {
   steps <- list(
     step_preprocess(),
+    step_adjust_protein(),
     step_ident_overview(),
     step_pca(),
     step_tsne(),
@@ -261,6 +262,112 @@ step_preprocess <- function(
         text <- stringr::str_replace_all(text, pattern, replacements[[pattern]])
       }
       paste0("<AI>", text, "</AI>")
+    },
+    require = "exp",
+    generate = "raw_exp",
+    signature = signature
+  )
+}
+
+.read_pro_expr_mat <- function(path) {
+  checkmate::assert_character(path, len = 1)
+  if (!fs::file_exists(path)) {
+    cli::cli_abort("Protein expression matrix file not found: {.val {path}}.")
+  }
+
+  ext <- stringr::str_to_lower(fs::path_ext(path))
+  if (ext %in% c("csv", "tsv")) {
+    reader <- if (ext == "csv") readr::read_csv else readr::read_tsv
+    tbl <- reader(path, show_col_types = FALSE)
+    if (ncol(tbl) < 2) {
+      cli::cli_abort("Protein expression file must have at least two columns (protein + samples).")
+    }
+    protein <- tbl[[1]]
+    if (any(is.na(protein) | !nzchar(protein))) {
+      cli::cli_abort("Protein accessions in the first column must be non-empty.")
+    }
+    if (anyDuplicated(protein) > 0) {
+      cli::cli_abort("Protein accessions in the first column must be unique.")
+    }
+    tbl <- tbl[, -1, drop = FALSE]
+    mat <- as.matrix(tbl)
+    rownames(mat) <- protein
+    return(mat)
+  }
+
+  if (ext == "rds") {
+    obj <- readRDS(path)
+    if (is.data.frame(obj)) {
+      if (is.null(rownames(obj)) || any(is.na(rownames(obj)) | !nzchar(rownames(obj)))) {
+        cli::cli_abort("RDS data.frame must have non-empty row names (protein accessions).")
+      }
+      obj <- as.matrix(obj)
+    }
+    if (!is.matrix(obj)) {
+      cli::cli_abort("RDS file must contain a matrix or data.frame with row names.")
+    }
+    if (is.null(rownames(obj)) || any(is.na(rownames(obj)) | !nzchar(rownames(obj)))) {
+      cli::cli_abort("Protein accessions in row names must be non-empty.")
+    }
+    if (anyDuplicated(rownames(obj)) > 0) {
+      cli::cli_abort("Protein accessions in row names must be unique.")
+    }
+    return(obj)
+  }
+
+  cli::cli_abort("Unsupported protein expression file extension: {.val {ext}}. Use .csv, .tsv, or .rds.")
+}
+
+#' Step: Adjust Protein Abundance
+#'
+#' Remove protein abundance from glycoform quantifications using
+#' `glyclean::adjust_protein()`.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to adjust
+#'
+#' Data generated:
+#' - `raw_exp`: The original experiment (previous `exp`, saved for reference)
+#'
+#' File format:
+#' - CSV/TSV: The first column contains protein accessions (row names). Remaining
+#'   columns are sample names that must match `exp`.
+#' - RDS: A matrix or data.frame with row names as protein accessions and columns
+#'   as sample names.
+#'
+#' @param pro_expr_path Path to the protein expression matrix file.
+#' @inheritParams glyclean::adjust_protein
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_adjust_protein("protein_expr.csv")
+#' step_adjust_protein("protein_expr.rds", method = "reg")
+#' @seealso [glyclean::adjust_protein()]
+#' @export
+step_adjust_protein <- function(pro_expr_path, method = c("ratio", "reg")) {
+  signature <- rlang::expr_deparse(match.call())
+
+  step(
+    id = "adjust_protein",
+    label = "Protein adjustment",
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      pro_expr_mat <- .read_pro_expr_mat(pro_expr_path)
+      adj_exp <- glyclean::adjust_protein(exp, pro_expr_mat, method = method)
+      ctx <- ctx_add_data(ctx, "exp", adj_exp)
+      ctx <- ctx_add_data(ctx, "raw_exp", exp)
+      ctx
+    },
+    report = function(x) {
+      logs <- x$meta$logs$adjust_protein %||% list()
+      msg_lines <- logs$message %||% character(0)
+      if (length(msg_lines) == 0) {
+        msg_lines <- logs$output %||% character(0)
+      }
+      base <- "Protein-adjusted glycoform quantification was performed."
+      if (length(msg_lines) == 0) return(base)
+      paste(c(base, msg_lines), collapse = "\n")
     },
     require = "exp",
     generate = "raw_exp",
