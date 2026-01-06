@@ -171,6 +171,13 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
   })
 })
 
+test_that("step_adjust_protein report includes log messages", {
+  step_obj <- step_adjust_protein("dummy.csv")
+  fake_x <- list(meta = list(logs = list(adjust_protein = list(message = "Adjusted proteins: 12 (80%)"))))
+  report <- step_obj$report(fake_x)
+  expect_match(report, "Adjusted proteins: 12 \\(80%\\)")
+})
+
 # ----- step_heatmap -----
 test_that("step_heatmap generates plot", {
   suppressMessages(
