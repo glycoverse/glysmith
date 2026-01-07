@@ -347,12 +347,19 @@ step_preprocess <- function(
 #' @seealso [glyclean::adjust_protein()]
 #' @export
 step_adjust_protein <- function(pro_expr_path, method = "ratio") {
+  checkmate::assert_file_exists(pro_expr_path, access = "r", extension = c("csv", "tsv", "rds"))
   checkmate::assert_choice(method, c("ratio", "reg"))
   signature <- rlang::expr_deparse(match.call())
 
   step(
     id = "adjust_protein",
     label = "Protein adjustment",
+    condition = function(ctx) {
+      if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
+        return(list(check = FALSE, reason = "input is not a glycoproteomics experiment"))
+      }
+      list(check = TRUE, reason = NULL)
+    },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       pro_expr_mat <- .read_pro_expr_mat(pro_expr_path)
