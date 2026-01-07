@@ -270,3 +270,181 @@ test_that("assemble_report_sections assigns additional results", {
   expect_equal(sections[[2]]$entries[[2]]$id, "volcano_A_vs_B")
   expect_equal(sections[[3]]$entries[[1]]$id, "unused")
 })
+
+test_that("build_step_reports handles missing steps and report errors", {
+  bp <- structure(
+    list(
+      step1 = list(
+        id = "step1",
+        label = "Step 1",
+        report = function(x) "Report <AI>remove</AI> end"
+      ),
+      step2 = list(
+        id = "step2",
+        label = "Step 2",
+        report = function(x) stop("boom")
+      )
+    ),
+    class = "glysmith_blueprint"
+  )
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(steps = c("step1", "step2", "missing")),
+      blueprint = bp
+    ),
+    class = "glysmith_result"
+  )
+
+  reports <- glysmith:::.build_step_reports(x, use_ai = FALSE)
+  expect_length(reports, 3)
+  expect_false(grepl("remove", reports[[1]]$content, fixed = TRUE))
+  expect_true(grepl("Report generation failed", reports[[2]]$content, fixed = TRUE))
+  expect_true(grepl("boom", reports[[2]]$content, fixed = TRUE))
+  expect_null(reports[[3]]$content)
+  expect_equal(reports[[3]]$label, "missing")
+})
+
+test_that("build_step_reports uses AI polishing when enabled", {
+  bp <- structure(
+    list(
+      step1 = list(
+        id = "step1",
+        label = "Step 1",
+        report = function(x) "raw text"
+      )
+    ),
+    class = "glysmith_blueprint"
+  )
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(steps = "step1"),
+      blueprint = bp
+    ),
+    class = "glysmith_result"
+  )
+
+  local_mocked_bindings(
+    .polish_text = function(text, api_key, model = "deepseek-chat") {
+      paste0("polished: ", text)
+    },
+    .package = "glysmith"
+  )
+
+  reports <- glysmith:::.build_step_reports(x, use_ai = TRUE, api_key = "key")
+  expect_equal(reports[[1]]$content, "polished: raw text")
+})
+
+test_that("build_plot_entries uses AI descriptions", {
+  plot <- ggplot2::ggplot()
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(volcano_A_vs_B = plot),
+      tables = list(),
+      meta = list(explanation = c("plots$volcano_A_vs_B" = "Volcano plot A_vs_B")),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+
+  captured <- list()
+  local_mocked_bindings(
+    .describe_plot_ai = function(plot, label, description, api_key, model = "deepseek-chat") {
+      captured$label <<- label
+      captured$description <<- description
+      captured$api_key <<- api_key
+      "AI desc"
+    },
+    .package = "glysmith"
+  )
+
+  entries <- glysmith:::.build_plot_entries(x, use_ai = TRUE, api_key = "key")
+  expect_equal(entries[[1]]$description, "AI desc")
+  expect_equal(captured$api_key, "key")
+  expect_true(grepl("Volcano plot", entries[[1]]$label, fixed = TRUE))
+})
+
+test_that("organize_report_sections returns NULL for empty inputs", {
+  expect_null(glysmith:::.organize_report_sections(list(), list(), "key"))
+})
+
+test_that("polish_report aborts when overwrite declined", {
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+  out_dir <- withr::local_tempdir()
+  output_file <- fs::path(out_dir, "report.html")
+  writeLines("existing", output_file)
+
+  local_mocked_bindings(.ask_overwrite_file = function() "n", .package = "glysmith")
+  expect_error(polish_report(x, output_file, open = FALSE), "Operation cancelled")
+  expect_true(fs::file_exists(output_file))
+})
+
+test_that("polish_report overwrites output when confirmed", {
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+  out_dir <- withr::local_tempdir()
+  output_file <- fs::path(out_dir, "report.html")
+  writeLines("existing", output_file)
+
+  local_mocked_bindings(.ask_overwrite_file = function() "y", .package = "glysmith")
+  local_mocked_bindings(
+    render = function(input, output_file, output_dir, params, envir, quiet) {
+      path <- fs::path(output_dir, output_file)
+      writeLines("rendered", path)
+      path
+    },
+    .package = "rmarkdown"
+  )
+
+  rendered <- polish_report(x, output_file, open = FALSE)
+  expect_true(fs::file_exists(rendered))
+})
+
+test_that("polish_report rejects invalid overwrite input", {
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+  out_dir <- withr::local_tempdir()
+  output_file <- fs::path(out_dir, "report.html")
+  writeLines("existing", output_file)
+
+  local_mocked_bindings(.ask_overwrite_file = function() "maybe", .package = "glysmith")
+  expect_error(polish_report(x, output_file, open = FALSE), "Invalid input")
+  expect_true(fs::file_exists(output_file))
+})
