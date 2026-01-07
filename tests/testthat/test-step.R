@@ -160,12 +160,12 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
 
   purrr::walk(c(csv_path, tsv_path, rds_path), function(path) {
     res <- run_adjust(path)
-    expect_true("raw_exp" %in% names(res$data))
+    expect_true("unadj_exp" %in% names(res$data))
     expect_true("exp" %in% names(res$data))
     expect_false(
       isTRUE(all.equal(
         sum(res$data$exp$expr_mat, na.rm = TRUE),
-        sum(res$data$raw_exp$expr_mat, na.rm = TRUE)
+        sum(res$data$unadj_exp$expr_mat, na.rm = TRUE)
       ))
     )
   })

@@ -320,23 +320,24 @@ step_preprocess <- function(
 
 #' Step: Adjust Protein Abundance
 #'
-#' Remove protein abundance from glycoform quantifications using
-#' `glyclean::adjust_protein()`.
+#' Adjust glycoform quantification values by correcting for protein abundance
+#' utilizing `glyclean::adjust_protein()`.
 #'
 #' @details
 #' Data required:
 #' - `exp`: The experiment to adjust
 #'
 #' Data generated:
-#' - `raw_exp`: The original experiment (previous `exp`, saved for reference)
+#' - `unadj_exp`: The original experiment (previous `exp`, saved for reference)
 #'
-#' File format:
-#' - CSV/TSV: The first column contains protein accessions (row names). Remaining
-#'   columns are sample names that must match `exp`.
-#' - RDS: A matrix or data.frame with row names as protein accessions and columns
-#'   as sample names.
+#' This step is special in that it silently overwrites the `exp` data with the adjusted experiment.
+#' This ensures that no matter if adjustment is performed or not,
+#' the "active" experiment is always under the key `exp`.
+#' The previous `exp` is saved as `unadj_exp` for reference.
 #'
-#' @param pro_expr_path Path to the protein expression matrix file.
+#' @param pro_expr_path Path to the protein expression matrix file. Can be:
+#'   - A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
+#'   - An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.
 #' @inheritParams glyclean::adjust_protein
 #'
 #' @return A `glysmith_step` object.
@@ -345,7 +346,8 @@ step_preprocess <- function(
 #' step_adjust_protein("protein_expr.rds", method = "reg")
 #' @seealso [glyclean::adjust_protein()]
 #' @export
-step_adjust_protein <- function(pro_expr_path, method = c("ratio", "reg")) {
+step_adjust_protein <- function(pro_expr_path, method = "ratio") {
+  checkmate::assert_choice(method, c("ratio", "reg"))
   signature <- rlang::expr_deparse(match.call())
 
   step(
@@ -356,7 +358,7 @@ step_adjust_protein <- function(pro_expr_path, method = c("ratio", "reg")) {
       pro_expr_mat <- .read_pro_expr_mat(pro_expr_path)
       adj_exp <- glyclean::adjust_protein(exp, pro_expr_mat, method = method)
       ctx <- ctx_add_data(ctx, "exp", adj_exp)
-      ctx <- ctx_add_data(ctx, "raw_exp", exp)
+      ctx <- ctx_add_data(ctx, "unadj_exp", exp)
       ctx
     },
     report = function(x) {
@@ -370,7 +372,7 @@ step_adjust_protein <- function(pro_expr_path, method = c("ratio", "reg")) {
       paste(c(base, msg_lines), collapse = "\n")
     },
     require = "exp",
-    generate = "raw_exp",
+    generate = "unadj_exp",
     signature = signature
   )
 }

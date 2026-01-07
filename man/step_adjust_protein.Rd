@@ -4,10 +4,14 @@
 \alias{step_adjust_protein}
 \title{Step: Adjust Protein Abundance}
 \usage{
-step_adjust_protein(pro_expr_path, method = c("ratio", "reg"))
+step_adjust_protein(pro_expr_path, method = "ratio")
 }
 \arguments{
-\item{pro_expr_path}{Path to the protein expression matrix file.}
+\item{pro_expr_path}{Path to the protein expression matrix file. Can be:
+\itemize{
+\item A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
+\item An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.
+}}
 
 \item{method}{The method to use for protein adjustment.
 Either "ratio" or "reg". Default is "ratio".}
@@ -16,8 +20,8 @@ Either "ratio" or "reg". Default is "ratio".}
 A \code{glysmith_step} object.
 }
 \description{
-Remove protein abundance from glycoform quantifications using
-\code{glyclean::adjust_protein()}.
+Adjust glycoform quantification values by correcting for protein abundance
+utilizing \code{glyclean::adjust_protein()}.
 }
 \details{
 Data required:
@@ -27,16 +31,13 @@ Data required:
 
 Data generated:
 \itemize{
-\item \code{raw_exp}: The original experiment (previous \code{exp}, saved for reference)
+\item \code{unadj_exp}: The original experiment (previous \code{exp}, saved for reference)
 }
 
-File format:
-\itemize{
-\item CSV/TSV: The first column contains protein accessions (row names). Remaining
-columns are sample names that must match \code{exp}.
-\item RDS: A matrix or data.frame with row names as protein accessions and columns
-as sample names.
-}
+This step is special in that it silently overwrites the \code{exp} data with the adjusted experiment.
+This ensures that no matter if adjustment is performed or not,
+the "active" experiment is always under the key \code{exp}.
+The previous \code{exp} is saved as \code{unadj_exp} for reference.
 }
 \examples{
 step_adjust_protein("protein_expr.csv")
