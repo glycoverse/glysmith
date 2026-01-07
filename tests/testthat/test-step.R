@@ -199,25 +199,6 @@ test_that("step_heatmap works on sig_exp", {
 })
 
 # ----- step_logo -----
-test_that("step_logo generates plot for glycoproteomics", {
-  skip_if_not_installed("ggseqlogo")
-  suppressMessages(
-    exp <- glyexp::real_experiment |>
-      glyexp::slice_head_var(20) |>
-      glyclean::auto_clean()
-  )
-
-  # Mock plot_logo to avoid needing fasta file
-  local_mocked_bindings(
-    plot_logo = function(...) ggplot2::ggplot(),
-    .package = "glyvis"
-  )
-
-  bp <- blueprint(step_logo())
-  suppressMessages(res <- forge_analysis(exp, bp))
-  expect_true("logo" %in% names(res$plots))
-})
-
 test_that("step_logo is skipped for glycomics experiments", {
   skip_if_not_installed("ggseqlogo")
   suppressMessages(

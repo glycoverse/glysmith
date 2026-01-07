@@ -7,7 +7,9 @@
 step_adjust_protein(pro_expr_path = NULL, method = "ratio")
 }
 \arguments{
-\item{pro_expr_path}{MUST PROVIDE. Path to the protein expression matrix file. Can be:
+\item{pro_expr_path}{Path to the protein expression matrix file.
+If \code{NULL}, this step will be skipped.
+Can be:
 \itemize{
 \item A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
 \item An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.

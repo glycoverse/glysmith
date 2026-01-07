@@ -337,7 +337,9 @@ step_preprocess <- function(
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `unadj_exp` for reference.
 #'
-#' @param pro_expr_path MUST PROVIDE. Path to the protein expression matrix file. Can be:
+#' @param pro_expr_path Path to the protein expression matrix file.
+#'   If `NULL`, this step will be skipped.
+#'   Can be:
 #'   - A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
 #'   - An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.
 #' @inheritParams glyclean::adjust_protein
@@ -1757,6 +1759,8 @@ step_heatmap <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp". Default is "exp".
 #' @inheritParams glyvis::plot_logo
+#' @param fasta Path to the FASTA file containing the amino acid sequences.
+#'   If `NULL`, this step will be skipped.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -1767,6 +1771,7 @@ step_heatmap <- function(on = "exp", ...) {
 #' @export
 step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
   rlang::check_installed("ggseqlogo")
+  checkmate::assert_choice(on, c("exp", "sig_exp"))
   signature <- rlang::expr_deparse(match.call())
 
   on_meta <- .resolve_on(on)
@@ -1778,6 +1783,9 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
     label = label,
     condition = function(ctx) {
       exp <- ctx_get_data(ctx, on)
+      if (is.null(fasta)) {
+        return(list(check = FALSE, reason = "fasta is not provided"))
+      }
       if (glyexp::get_exp_type(exp) != "glycoproteomics") {
         return(list(check = FALSE, reason = "logo plot is only applicable for glycoproteomics experiments"))
       }
