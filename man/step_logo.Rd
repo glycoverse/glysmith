@@ -13,8 +13,10 @@ One of "exp", "sig_exp". Default is "exp".}
 \item{n_aa}{The number of amino acids to the left and right of the glycosylation site.
 For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino acids.}
 
-\item{fasta}{Path to the FASTA file containing the amino acid sequences.
-If \code{NULL}, this step will be skipped.}
+\item{fasta}{The path to the FASTA file containing protein sequences.
+If \code{glyclean::add_site_seq()} has been called on the experiment,
+this argument can be omitted. When \code{site_sequence} is missing and \code{fasta}
+is \code{NULL}, UniProt.ws is used to fetch protein sequences automatically.}
 
 \item{...}{Additional arguments passed to \code{\link[ggseqlogo:ggseqlogo]{ggseqlogo::ggseqlogo()}}.}
 }

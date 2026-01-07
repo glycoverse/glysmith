@@ -52,7 +52,7 @@ Imports:
     glydet (>= 0.7.0),
     glyexp (>= 0.11.0),
     glystats (>= 0.6.2),
-    glyvis (>= 0.4.4),
+    glyvis (>= 0.5.0),
     glymotif (>= 0.12.0),
     purrr,
     readr,

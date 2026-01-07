@@ -1874,8 +1874,6 @@ step_heatmap <- function(on = "exp", ...) {
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp". Default is "exp".
 #' @inheritParams glyvis::plot_logo
-#' @param fasta Path to the FASTA file containing the amino acid sequences.
-#'   If `NULL`, this step will be skipped.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -1898,9 +1896,6 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
     label = label,
     condition = function(ctx) {
       exp <- ctx_get_data(ctx, on)
-      if (is.null(fasta)) {
-        return(list(check = FALSE, reason = "fasta is not provided"))
-      }
       if (glyexp::get_exp_type(exp) != "glycoproteomics") {
         return(list(check = FALSE, reason = "logo plot is only applicable for glycoproteomics experiments"))
       }
