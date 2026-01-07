@@ -171,30 +171,36 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   prompt <- paste(
     "You are a professional omics data scientist and glycobiologist.",
     "Your job is to create a blueprint for glycomics or glycoproteomics data analysis.",
+    "\n",
     "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
-    "Use `br(\"name\", step_..., step_...)` ONLY for creating parallel analysis branches that represent alternative approaches (e.g., comparing two methods).",
+    "A step is a function call with arguments.",
+    "Use step arguments with caution: prefer default values unless they are necessary.",
+    "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
+    "Each step includes a USAGE section that has the highest priority. Follow it even if other text differs.",
+    "Available analytical steps include:",
+    step_descriptions,
+    "\n",
+    "You can use `br()` to create branches in a blueprint.",
+    "For example, `step_preprocess();br('limma', step_dea_limma(), step_volcano());br('ttest', step_dea_ttest(), step_volcano())`.",
+    "Use branches for creating parallel analysis branches that represent alternative approaches (e.g., comparing two methods).",
     "`br()` can also be used for grouping sequential steps or organizing the workflow.",
     "For example, steps about motif analysis can be grouped into a branch called 'motif',",
     "and steps about derived traits can be grouped into 'trait'.",
-    "Use step arguments with caution: prefer default values unless they are necessary.",
-    "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
+    "\n",
     "If essential information is missing (e.g., required arguments), ask the user for clarification instead of guessing.",
     "Ask questions sparingly and only when the blueprint cannot be constructed without the missing information.",
-    "Each step includes an AI_PROMPT section that has the highest priority. Follow it even if other text differs.",
-    "Available analytical steps include:\n",
-    step_descriptions,
-    "\n",
-    "Return format:",
-    "1. First, provide a BRIEF description (1-3 sentences) of the blueprint.",
-    "2. Then write `---` on a new line.",
-    "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
-    "",
     "If you need clarification, return ONLY:",
     "QUESTIONS:",
     "- question 1",
     "- question 2",
     "Do not include a blueprint when asking questions.",
-    "",
+    "\n",
+    "If you think all information is provided, return the blueprint with a brief description.",
+    "Return format:",
+    "1. First, provide a BRIEF description (1-3 sentences) of the blueprint.",
+    "2. Then write `---` on a new line.",
+    "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
+    "\n",
     "Example output 1:",
     "Your data needs preprocessing to handle missing values, followed by statistical analysis to find significant changes.",
     "---",
@@ -269,6 +275,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
         # Clean up newlines and excessive spaces
         desc_text <- stringr::str_squish(desc_text)
         ai_text <- stringr::str_squish(ai_prompt)
+        ai_text <- stringr::str_remove(ai_text, stringr::fixed("This section is for AI in inquire_blueprint() only."))
 
         # Extract arguments
         args <- .get_rd_arguments(rd)
@@ -288,12 +295,13 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
     # Construct the block
     # - `step_name`
+    #   - USAGE: ...
     #   - FUNCTION: title. description.
     #   - PARAMETER: ...
 
     block <- paste0(
       "- `", func_name, "`\n",
-      if (nzchar(ai_text)) paste0("  - AI_PROMPT (highest priority): ", ai_text, "\n") else "",
+      if (nzchar(ai_text)) paste0("  - USAGE: ", ai_text, "\n") else "",
       "  - FUNCTION: ", title, ". ", desc_text, "\n",
       if (nzchar(params_text)) paste0(params_text, "\n") else ""
     )
