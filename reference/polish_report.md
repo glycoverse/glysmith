@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [90ms]
+#> ✔ Identification overview [87ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -105,13 +105,23 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [85ms]
+#> ✔ Imputation completed.
+#> ℹ Preprocessing
 #> 
-#> ! `step_preprocess()` failed. Error: 
+#> ℹ Preprocessing
+#> ── Correcting batch effects ──
+#> ℹ Preprocessing
+#> 
+#> ℹ Preprocessing
+#> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ℹ Preprocessing
+#> ✔ Batch correction completed.
+#> ℹ Preprocessing
+#> ✔ Preprocessing [5.8s]
+#> 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [19ms]
+#> ✔ Principal component analysis [270ms]
 #> 
-#> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
 #> ℹ Differential expression analysis (limma)
@@ -119,19 +129,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [59ms]
+#> ✔ Differential expression analysis (limma) [56ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [493ms]
+#> ✔ Volcano plot [517ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [41ms]
+#> ✔ Heatmap of significant variables [42ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.2s]
+#> ✔ Derived trait calculation [1.9s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -143,8 +153,8 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [39ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpN3SKPC/file1d457f4277cb.html"
+#> [1] "/tmp/Rtmpne1CAk/file1ca0433f64a2.html"
 ```

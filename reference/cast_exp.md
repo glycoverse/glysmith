@@ -46,7 +46,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [84ms]
+#> ✔ Identification overview [85ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -93,13 +93,23 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [130ms]
+#> ✔ Imputation completed.
+#> ℹ Preprocessing
 #> 
-#> ! `step_preprocess()` failed. Error: 
+#> ℹ Preprocessing
+#> ── Correcting batch effects ──
+#> ℹ Preprocessing
+#> 
+#> ℹ Preprocessing
+#> ℹ Batch column  not found in sample_info. Skipping batch correction.
+#> ℹ Preprocessing
+#> ✔ Batch correction completed.
+#> ℹ Preprocessing
+#> ✔ Preprocessing [6.1s]
+#> 
 #> ℹ Principal component analysis
-#> ✖ Principal component analysis [21ms]
+#> ✔ Principal component analysis [476ms]
 #> 
-#> ! `step_pca()` failed. Error: infinite or missing values in 'x'
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
 #> ℹ Differential expression analysis (limma)
@@ -107,19 +117,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [206ms]
+#> ✔ Differential expression analysis (limma) [260ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [607ms]
+#> ✔ Volcano plot [579ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [74ms]
+#> ✔ Heatmap of significant variables [45ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8s]
+#> ✔ Derived trait calculation [8.3s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -136,11 +146,12 @@ result <- forge_analysis(exp)
 cast_exp(result)
 #> 
 #> ── Glycomics Experiment ────────────────────────────────────────────────────────
-#> ℹ Expression matrix: 144 samples, 67 variables
+#> ℹ Expression matrix: 144 samples, 57 variables
 #> ℹ Sample information fields: group <fct>
 #> ℹ Variable information fields: glycan_composition <comp>, glycan_structure <struct>
 cast_table(result)
-#> [1] "summary"        "dea"            "derived_traits" "dta"           
+#> [1] "summary"         "pca_samples"     "pca_variables"   "pca_eigenvalues"
+#> [5] "dea"             "derived_traits"  "dta"            
 cast_table(result, "summary")
 #> # A tibble: 4 × 2
 #>   item                       n
