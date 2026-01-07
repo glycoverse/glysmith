@@ -47,6 +47,15 @@ Tables generated:
 \item \code{derived_traits}: A table containing the derived traits.
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step by default if the experiment has glycan structures.
+\item After this step, it should be followed by the DEA and visualization steps.
+}
+}
+
 \examples{
 step_derive_traits()
 }

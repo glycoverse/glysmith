@@ -46,6 +46,14 @@ Plots generated (with suffixes):
 \item \code{tsne}: The t-SNE plot
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step only when the user explicitly asks for t-SNE.
+}
+}
+
 \examples{
 step_tsne()
 step_tsne(perplexity = 30)

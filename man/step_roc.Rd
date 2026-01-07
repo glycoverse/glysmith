@@ -35,6 +35,15 @@ Plots generated:
 \item \code{roc_curves}: ROC curves for the top 10 variables
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step if the user explicitly asks for ROC analysis,
+or if he/she mentions "biomarker(s)" in the prompt.
+}
+}
+
 \examples{
 step_roc()
 }

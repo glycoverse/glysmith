@@ -46,6 +46,14 @@ Plots generated (with suffixes):
 \item \code{umap}: The UMAP plot
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step only when the user explicitly asks for UMAP.
+}
+}
+
 \examples{
 step_umap()
 step_umap(n_neighbors = 15)

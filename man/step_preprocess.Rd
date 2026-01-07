@@ -117,6 +117,21 @@ This ensures that no matter if preprocessing is performed or not,
 the "active" experiment is always under the key \code{exp}.
 The previous \code{exp} is saved as \code{raw_exp} for reference.
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Always include this step by default unless the user explicitly excludes it
+or tell you she/he has already performed preprocessing.
+\item Ask the user about QC samples:
+\enumerate{
+\item whether QC samples are available;
+\item what's the group name of the QC samples in the \code{sample_info} table (for the \code{qc_name} argument).
+}
+\item Use default values for other arguments unless the user explicitly specifies otherwise.
+}
+}
+
 \examples{
 step_preprocess()
 step_preprocess(remove_preset = "discovery")

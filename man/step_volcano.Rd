@@ -39,6 +39,14 @@ Plots generated:
 \item \code{volcano}: A volcano plot
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Always include this step by default if DEA is performed, and the DEA method is not ANOVA or Kruskal-Wallis.
+}
+}
+
 \examples{
 step_volcano()
 step_volcano(log2fc_cutoff = 2)

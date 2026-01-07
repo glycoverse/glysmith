@@ -82,24 +82,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     }
 
     if (result$valid) {
-      missing_questions <- .inquire_blueprint_missing_questions(result$blueprint)
-      if (length(missing_questions) > 0) {
-        question_count <- question_count + 1L
-        if (question_count > max_questions) {
-          cli::cli_abort(c(
-            "Failed to generate a valid blueprint after {max_questions} clarification rounds.",
-            "x" = "Required inputs are still missing.",
-            "i" = "Please provide more details in the description and try again."
-          ))
-        }
-        inquiry <- .ask_inquiry_questions(missing_questions)
-        current_prompt <- paste0(
-          current_prompt,
-          "\nClarifications:\n",
-          .format_inquiry_answers(inquiry$questions, inquiry$answers)
-        )
-        next
-      }
       if (!is.null(result$explanation) && nzchar(result$explanation)) {
         cli::cli_h3("Blueprint Description")
         cli::cli_text(result$explanation)
@@ -198,10 +180,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
     "If essential information is missing (e.g., required arguments), ask the user for clarification instead of guessing.",
     "Ask questions sparingly and only when the blueprint cannot be constructed without the missing information.",
-    "Never include `step_adjust_protein()` without `pro_expr_path`. If protein adjustment is needed and the path",
-    "is not provided, ask for it and explain how to prepare the file:",
-    "- CSV/TSV: first column is protein accessions; remaining columns are sample names.",
-    "- RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.",
+    "Each step includes an AI_PROMPT section that has the highest priority. Follow it even if other text differs.",
     "Available analytical steps include:\n",
     step_descriptions,
     "\n",
@@ -263,6 +242,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     title <- step_obj$label
     desc_text <- "No description available."
     params_text <- ""
+    ai_text <- ""
 
     if (!is.null(rd_db)) {
       # Try to find the Rd file for this function
@@ -284,9 +264,11 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
         title <- .get_rd_tag_text(rd, "\\title")
         description <- .get_rd_tag_text(rd, "\\description")
         details <- .get_rd_tag_text(rd, "\\details")
+        ai_prompt <- .get_rd_section_text(rd, "AI Prompt")
         desc_text <- paste(description, details)
         # Clean up newlines and excessive spaces
         desc_text <- stringr::str_squish(desc_text)
+        ai_text <- stringr::str_squish(ai_prompt)
 
         # Extract arguments
         args <- .get_rd_arguments(rd)
@@ -311,6 +293,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
     block <- paste0(
       "- `", func_name, "`\n",
+      if (nzchar(ai_text)) paste0("  - AI_PROMPT (highest priority): ", ai_text, "\n") else "",
       "  - FUNCTION: ", title, ". ", desc_text, "\n",
       if (nzchar(params_text)) paste0(params_text, "\n") else ""
     )
@@ -371,46 +354,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   list(questions = questions, answers = answers)
 }
 
-.inquire_blueprint_missing_questions <- function(bp) {
-  if (!inherits(bp, "glysmith_blueprint")) return(character(0))
-  missing <- purrr::keep(bp, function(step) {
-    sig <- step$branch_signature %||% step$signature %||% ""
-    .step_adjust_protein_missing_path(sig)
-  })
-  if (length(missing) == 0) return(character(0))
-  paste(
-    "Provide the path to the protein expression matrix for `step_adjust_protein()`.",
-    "Prepare a CSV/TSV with protein accessions in the first column and sample names as columns,",
-    "or an RDS containing a matrix/data.frame with row names as protein accessions and columns as sample names."
-  )
-}
-
-.step_adjust_protein_missing_path <- function(signature) {
-  expr <- tryCatch(rlang::parse_expr(signature), error = function(e) NULL)
-  if (is.null(expr) || !rlang::is_call(expr, "step_adjust_protein")) {
-    return(FALSE)
-  }
-  args <- rlang::call_args(expr)
-  if (length(args) == 0) return(TRUE)
-
-  arg_names <- names(args)
-  if (!is.null(arg_names) && "pro_expr_path" %in% arg_names) {
-    value <- args[["pro_expr_path"]]
-    if (rlang::is_null(value)) return(TRUE)
-    if (is.character(value) && length(value) == 1 && value == "") return(TRUE)
-    return(FALSE)
-  }
-
-  if (is.null(arg_names) || !nzchar(arg_names[1])) {
-    value <- args[[1]]
-    if (rlang::is_null(value)) return(TRUE)
-    if (is.character(value) && length(value) == 1 && value == "") return(TRUE)
-    return(FALSE)
-  }
-
-  FALSE
-}
-
 .get_rd_database <- function() {
   # Try to get Rd database from installed package
   rd_db <- tryCatch(tools::Rd_db("glysmith"), error = function(e) NULL)
@@ -460,19 +403,33 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   }
 }
 
+.clean_rd_text <- function(text) {
+  text <- stringr::str_replace_all(text, "\\\\link\\{(.*?)\\}", "\\1")
+  text <- stringr::str_replace_all(text, "\\\\code\\{(.*?)\\}", "`\\1`")
+  text <- stringr::str_replace_all(text, "\\\\emph\\{(.*?)\\}", "*\\1*")
+  text <- stringr::str_replace_all(text, "\\\\[a-zA-Z]+\\{(.*?)\\}", "\\1")
+  text
+}
+
 .get_rd_tag_text <- function(rd, tag) {
   elements <- .get_rd_tag(rd, tag)
   if (length(elements) == 0) return("")
   # Concatenate all matching elements (usually just one for title/desc)
   text <- paste(purrr::map_chr(elements, .parse_rd_content), collapse = " ")
-  # Simple cleanup of LaTeX-like macros if not handled by recursion
-  # Remove \link{...} keeping content
-  text <- stringr::str_replace_all(text, "\\\\link\\{(.*?)\\}", "\\1")
-  text <- stringr::str_replace_all(text, "\\\\code\\{(.*?)\\}", "`\\1`")
-  text <- stringr::str_replace_all(text, "\\\\emph\\{(.*?)\\}", "*\\1*")
-  # General catch-all for other macros
-  text <- stringr::str_replace_all(text, "\\\\[a-zA-Z]+\\{(.*?)\\}", "\\1")
-  text
+  .clean_rd_text(text)
+}
+
+.get_rd_section_text <- function(rd, section_title) {
+  sections <- rd[purrr::map_lgl(rd, function(x) attr(x, "Rd_tag") == "\\section")]
+  if (length(sections) == 0) return("")
+  for (section in sections) {
+    if (length(section) < 2) next
+    title <- stringr::str_squish(.parse_rd_content(section[[1]]))
+    if (!identical(stringr::str_to_lower(title), stringr::str_to_lower(section_title))) next
+    text <- .parse_rd_content(section[[2]])
+    return(.clean_rd_text(text))
+  }
+  ""
 }
 
 .get_rd_arguments <- function(rd) {

@@ -36,6 +36,16 @@ Tables generated:
 \item \code{go_enrich}: A table containing the GO enrichment results.
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step if needed.
+\item Leave \code{universe} to "all" (by default) unless the user explicitly mentions that
+the background should be the detected variables in \code{exp}.
+}
+}
+
 \examples{
 step_sig_enrich_go()
 step_sig_enrich_go(plot_type = "barplot")

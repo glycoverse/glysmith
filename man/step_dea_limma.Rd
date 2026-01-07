@@ -88,6 +88,14 @@ Tables generated:
 \item \code{dma}: A table containing the DMA (differential motif analysis) result (if \code{on = "motif_exp"})
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Use this step to perform DEA by default, unless the user asks for other methods.
+}
+}
+
 \examples{
 step_dea_limma()
 step_dea_limma(on = "trait_exp")  # Differential trait analysis

@@ -33,6 +33,15 @@ Tables generated:
 \item \code{summary}: A table containing the identification overview of the experiment
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Always include this step by default unless the user explicitly excludes it.
+\item Use it as the first step in the blueprint.
+}
+}
+
 \examples{
 step_ident_overview()
 }

@@ -38,6 +38,14 @@ Plots generated:
 \item \code{sig_logo}: A logo plot (if \code{on = "sig_exp"})
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step if the user explicitly asks for logo plot.
+}
+}
+
 \examples{
 step_logo()
 step_logo(fasta = "proteins.fasta")

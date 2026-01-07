@@ -69,6 +69,14 @@ Tables generated:
 \item \code{dma_main_test}, \code{dma_post_hoc_test}: Tables containing the results (if \code{on = "motif_exp"})
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step only if the user explicitly asks for ANOVA.
+}
+}
+
 \examples{
 step_dea_anova()
 step_dea_anova(on = "trait_exp")  # Differential trait analysis

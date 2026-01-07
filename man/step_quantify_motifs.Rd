@@ -37,6 +37,15 @@ Tables generated:
 \item \code{quantified_motifs}: A table containing the quantified motifs.
 }
 }
+\section{AI Prompt}{
+
+\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
+\itemize{
+\item Include this step if needed.
+\item This step should be followed by the DEA step and visualization steps.
+}
+}
+
 \examples{
 step_quantify_motifs()
 }

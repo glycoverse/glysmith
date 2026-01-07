@@ -114,6 +114,16 @@ all_steps <- function() {
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `raw_exp` for reference.
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Always include this step by default unless the user explicitly excludes it
+#' or tell you she/he has already performed preprocessing.
+#' - Ask the user about QC samples:
+#'   1. whether QC samples are available;
+#'   2. what's the group name of the QC samples in the `sample_info` table (for the `qc_name` argument).
+#' - Use default values for other arguments unless the user explicitly specifies otherwise.
+#'
 #' @param pre_qc Whether to run QC plots before preprocessing.
 #' @param post_qc Whether to run QC plots after preprocessing.
 #' @param rep_col Column name for replicate information (for `glyclean::plot_rep_scatter()`).
@@ -337,6 +347,14 @@ step_preprocess <- function(
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `unadj_exp` for reference.
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only if the user explicitly asks for protein adjustment.
+#' - If protein adjustment is needed and the `pro_expr_path` is not provided, ask for it and explain how to prepare the file:
+#'   - CSV/TSV: first column is protein accessions; remaining columns are sample names.
+#'   - RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.
+#'
 #' @param pro_expr_path Path to the protein expression matrix file.
 #'   If `NULL`, this step will be skipped.
 #'   Can be:
@@ -406,6 +424,12 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
 #' Tables generated:
 #' - `summary`: A table containing the identification overview of the experiment
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Always include this step by default unless the user explicitly excludes it.
+#' - Use it as the first step in the blueprint.
+#'
 #' @inheritParams glyexp::summarize_experiment
 #'
 #' @return A `glysmith_step` object.
@@ -457,6 +481,11 @@ step_ident_overview <- function(count_struct = NULL) {
 #' - `pca_scores`: A PCA score plot colored by group
 #' - `pca_loadings`: A PCA loading plot
 #' - `pca_screeplot`: A PCA screeplot
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if needed.
 #'
 #' @param on Name of the experiment to run PCA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
@@ -558,6 +587,11 @@ step_pca <- function(
 #' Plots generated (with suffixes):
 #' - `tsne`: The t-SNE plot
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only when the user explicitly asks for t-SNE.
+#'
 #' @param on Name of the experiment to run t-SNE on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #' @inheritParams glystats::gly_tsne
@@ -623,6 +657,11 @@ step_tsne <- function(
 #'
 #' Plots generated (with suffixes):
 #' - `umap`: The UMAP plot
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only when the user explicitly asks for UMAP.
 #'
 #' @param on Name of the experiment to run UMAP on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
@@ -695,6 +734,11 @@ step_umap <- function(
 #' - `dea`: A table containing the DEA (differential expression analysis) result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA (differential trait analysis) result (if `on = "trait_exp"`)
 #' - `dma`: A table containing the DMA (differential motif analysis) result (if `on = "motif_exp"`)
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Use this step to perform DEA by default, unless the user asks for other methods.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -773,6 +817,11 @@ step_dea_limma <- function(
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only if the user explicitly asks for t-test.
+#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -841,6 +890,11 @@ step_dea_ttest <- function(
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only if the user explicitly asks for ANOVA.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -913,6 +967,11 @@ step_dea_anova <- function(
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 #' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only if the user explicitly asks for Wilcoxon test.
+#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -982,6 +1041,11 @@ step_dea_wilcox <- function(
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step only if the user explicitly asks for Kruskal-Wallis test.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -1252,6 +1316,11 @@ step_dea_kruskal <- function(
 #' Plots generated:
 #' - `volcano`: A volcano plot
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Always include this step by default if DEA is performed, and the DEA method is not ANOVA or Kruskal-Wallis.
+#'
 #' @inheritParams glyvis::plot_volcano
 #'
 #' @return A `glysmith_step` object.
@@ -1341,6 +1410,13 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ..
 #' Tables generated:
 #' - `go_enrich`: A table containing the GO enrichment results.
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if needed.
+#' - Leave `universe` to "all" (by default) unless the user explicitly mentions that
+#'   the background should be the detected variables in `exp`.
+#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -1380,6 +1456,13 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
 #'
 #' Tables generated:
 #' - `kegg_enrich`: A table containing the KEGG enrichment results.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if needed.
+#' - Leave `universe` to "all" (by default) unless the user explicitly mentions that
+#'   the background should be the detected variables in `exp`.
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
@@ -1421,6 +1504,13 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
 #'
 #' Tables generated:
 #' - `reactome_enrich`: A table containing the Reactome enrichment results.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if needed.
+#' - Leave `universe` to "all" (by default) unless the user explicitly mentions that
+#'   the background should be the detected variables in `exp`.
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
@@ -1556,6 +1646,12 @@ step_sig_enrich <- function(
 #' Tables generated:
 #' - `derived_traits`: A table containing the derived traits.
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step by default if the experiment has glycan structures.
+#' - After this step, it should be followed by the DEA and visualization steps.
+#'
 #' @inheritParams glydet::derive_traits
 #'
 #' @return A `glysmith_step` object.
@@ -1626,6 +1722,12 @@ step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) 
 #'
 #' Tables generated:
 #' - `quantified_motifs`: A table containing the quantified motifs.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if needed.
+#' - This step should be followed by the DEA step and visualization steps.
 #'
 #' @param max_size Maximum size of motifs to extract.
 #' @param method Method for motif quantification ("relative" or "absolute").
@@ -1708,6 +1810,12 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
 #' - `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
 #' - `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
 #'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if needed.
+#' - It is recommended to use this step on significant results (e.g. `on = "sig_exp"`) if available.
+#'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #'   Default is "exp".
@@ -1755,6 +1863,11 @@ step_heatmap <- function(on = "exp", ...) {
 #' Plots generated:
 #' - `logo`: A logo plot (if `on = "exp"`)
 #' - `sig_logo`: A logo plot (if `on = "sig_exp"`)
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if the user explicitly asks for logo plot.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp". Default is "exp".
@@ -1816,6 +1929,12 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
 #'
 #' Plots generated:
 #' - `roc_curves`: ROC curves for the top 10 variables
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if the user explicitly asks for ROC analysis,
+#'   or if he/she mentions "biomarker(s)" in the prompt.
 #'
 #' @inheritParams glystats::gly_roc
 #'
