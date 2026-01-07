@@ -150,7 +150,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     {
       # Parse and evaluate
       step_objects <- purrr::map(steps, function(step_str) {
-        expr <- rlang::parse_expr(step_str)
+        expr <- .parse_step_expr(step_str)
         eval(expr)
       })
 
@@ -163,6 +163,42 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       list(valid = FALSE, error = paste("Error:", conditionMessage(e)))
     }
   )
+}
+
+.parse_step_expr <- function(step_str) {
+  tryCatch(
+    rlang::parse_expr(step_str),
+    error = function(e) {
+      msg <- conditionMessage(e)
+      if (!grepl("used without hex digits|unrecognized escape", msg, ignore.case = TRUE)) {
+        stop(e)
+      }
+      fixed_step <- .normalize_windows_paths(step_str)
+      rlang::parse_expr(fixed_step)
+    }
+  )
+}
+
+.normalize_windows_paths <- function(text) {
+  pattern <- "(['\"])([A-Za-z]:\\\\[^'\"]*|\\\\\\\\[^'\"]*)(\\1)"
+  stringr::str_replace_all(text, pattern, function(match) {
+    quote <- stringr::str_sub(match, 1, 1)
+    path <- stringr::str_sub(match, 2, -2)
+    normalized <- .normalize_windows_path(path)
+    paste0(quote, normalized, quote)
+  })
+}
+
+.normalize_windows_path <- function(path) {
+  if (!stringr::str_detect(path, "\\\\")) return(path)
+  parts <- stringr::str_split(path, "\\\\")[[1]]
+  parts <- parts[parts != ""]
+  if (length(parts) == 0) return(path)
+  normalized <- as.character(do.call(fs::path, as.list(parts)))
+  if (stringr::str_starts(path, "\\\\")) {
+    normalized <- paste0("//", normalized)
+  }
+  normalized
 }
 
 .inquire_blueprint_sys_prompt <- function() {
