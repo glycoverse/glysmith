@@ -119,9 +119,6 @@ all_steps <- function() {
 #'
 #' - Always include this step by default unless the user explicitly excludes it
 #' or tell you she/he has already performed preprocessing.
-#' - Ask the user about QC samples:
-#'   1. whether QC samples are available;
-#'   2. what's the group name of the QC samples in the `sample_info` table (for the `qc_name` argument).
 #' - Use default values for other arguments unless the user explicitly specifies otherwise.
 #'
 #' @param pre_qc Whether to run QC plots before preprocessing.

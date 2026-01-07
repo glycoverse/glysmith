@@ -123,11 +123,6 @@ The previous \code{exp} is saved as \code{raw_exp} for reference.
 \itemize{
 \item Always include this step by default unless the user explicitly excludes it
 or tell you she/he has already performed preprocessing.
-\item Ask the user about QC samples:
-\enumerate{
-\item whether QC samples are available;
-\item what's the group name of the QC samples in the \code{sample_info} table (for the \code{qc_name} argument).
-}
 \item Use default values for other arguments unless the user explicitly specifies otherwise.
 }
 }
