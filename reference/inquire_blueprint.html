@@ -95,7 +95,9 @@ Then set the environment variable <code>DEEPSEEK_API_KEY</code> to your API key 
     <p>LLMs can be unstable. If you get an error, try again with another description.
 Make sure to examine the returned blueprint carefully to ensure it's what you want.
 You can also create parallel analysis branches with <code>br("name", step_..., step_...)</code>,
-which will namespace outputs with the branch prefix.</p>
+which will namespace outputs with the branch prefix.
+If the LLM needs required information to proceed, it may ask clarifying questions
+interactively and then retry with your answers.</p>
 <p>Here are some examples that works:</p><ul><li><p>"I want to know what pathways are enriched for my differentially expressed glycoforms."</p></li>
 <li><p>"I want a heatmap and a pca plot. I have already performed preprocessing myself."</p></li>
 <li><p>"I have a glycomics dataset. I want to calculate derived traits and perform DEA on them."</p></li>

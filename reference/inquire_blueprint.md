@@ -50,7 +50,9 @@ LLMs can be unstable. If you get an error, try again with another
 description. Make sure to examine the returned blueprint carefully to
 ensure it's what you want. You can also create parallel analysis
 branches with `br("name", step_..., step_...)`, which will namespace
-outputs with the branch prefix.
+outputs with the branch prefix. If the LLM needs required information to
+proceed, it may ask clarifying questions interactively and then retry
+with your answers.
 
 Here are some examples that works:
 

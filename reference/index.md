@@ -23,6 +23,8 @@
   : Render a HTML Report for GlySmith Results
 - [`quench_result()`](https://glycoverse.github.io/glysmith/reference/quench_result.md)
   : Save GlySmith Result
+- [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/reference/step_adjust_protein.md)
+  : Step: Adjust Protein Abundance
 - [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md)
   : Step: Differential Expression Analysis (DEA) using ANOVA
 - [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md)
@@ -40,6 +42,8 @@
   : Step: Heatmap
 - [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md)
   : Step: Identification Overview
+- [`step_logo()`](https://glycoverse.github.io/glysmith/reference/step_logo.md)
+  : Step: Logo Plot
 - [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)
   : Step: Principal Component Analysis (PCA)
 - [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)

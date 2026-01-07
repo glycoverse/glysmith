@@ -134,6 +134,15 @@ Tables generated:
 - `dma`: A table containing the DMA (differential motif analysis) result
   (if `on = "motif_exp"`)
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Use this step to perform DEA by default, unless the user asks for
+  other methods.
+
 ## See also
 
 [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)

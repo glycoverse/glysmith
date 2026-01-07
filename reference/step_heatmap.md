@@ -47,6 +47,17 @@ Plots generated:
 
 - `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step if needed.
+
+- It is recommended to use this step on significant results (e.g.
+  `on = "sig_exp"`) if available.
+
 ## See also
 
 [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html)

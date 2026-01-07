@@ -92,6 +92,14 @@ Tables generated:
 
 - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step only if the user explicitly asks for Wilcoxon test.
+
 ## See also
 
 [`glystats::gly_wilcox()`](https://glycoverse.github.io/glystats/reference/gly_wilcox.html)

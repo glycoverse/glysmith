@@ -44,6 +44,16 @@ Tables generated:
 
 - `quantified_motifs`: A table containing the quantified motifs.
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step if needed.
+
+- This step should be followed by the DEA step and visualization steps.
+
 ## See also
 
 [`glydet::quantify_motifs()`](https://glycoverse.github.io/glydet/reference/quantify_motifs.html),

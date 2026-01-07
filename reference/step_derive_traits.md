@@ -58,6 +58,17 @@ Tables generated:
 
 - `derived_traits`: A table containing the derived traits.
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step by default if the experiment has glycan structures.
+
+- After this step, it should be followed by the DEA and visualization
+  steps.
+
 ## See also
 
 [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html)

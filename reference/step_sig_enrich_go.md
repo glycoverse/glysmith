@@ -47,6 +47,18 @@ Tables generated:
 
 - `go_enrich`: A table containing the GO enrichment results.
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step if needed.
+
+- Leave `universe` to "all" (by default) unless the user explicitly
+  mentions that the background should be the detected variables in
+  `exp`.
+
 ## See also
 
 [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html)

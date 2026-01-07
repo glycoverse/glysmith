@@ -54,7 +54,7 @@ A `glysmith_result` object, with the following components:
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [92ms]
+#> ✔ Identification overview [93ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -101,7 +101,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ℹ Sample size > 100, using `impute_miss_forest()`.
 #> ℹ Preprocessing
-#> ✖ Preprocessing [88ms]
+#> ✖ Preprocessing [89ms]
 #> 
 #> ! `step_preprocess()` failed. Error: 
 #> ℹ Principal component analysis
@@ -115,10 +115,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [62ms]
+#> ✔ Differential expression analysis (limma) [61ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [511ms]
+#> ✔ Volcano plot [509ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [40ms]
@@ -136,10 +136,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [55ms]
+#> ✔ Differential trait analysis (limma) [54ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [41ms]
 #> 
 print(result)
 #> 

@@ -99,6 +99,15 @@ Tables generated:
 - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results
   (if `on = "motif_exp"`)
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step only if the user explicitly asks for Kruskal-Wallis
+  test.
+
 ## See also
 
 [`glystats::gly_kruskal()`](https://glycoverse.github.io/glystats/reference/gly_kruskal.html)

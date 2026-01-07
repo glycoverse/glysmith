@@ -52,6 +52,15 @@ Plots generated:
 
 - `volcano`: A volcano plot
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Always include this step by default if DEA is performed, and the DEA
+  method is not ANOVA or Kruskal-Wallis.
+
 ## See also
 
 [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html)

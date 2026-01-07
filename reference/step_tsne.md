@@ -60,6 +60,14 @@ Plots generated (with suffixes):
 
 - `tsne`: The t-SNE plot
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step only when the user explicitly asks for t-SNE.
+
 ## See also
 
 [`glystats::gly_tsne()`](https://glycoverse.github.io/glystats/reference/gly_tsne.html),

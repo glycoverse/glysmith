@@ -38,6 +38,17 @@ Tables generated:
 - `summary`: A table containing the identification overview of the
   experiment
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Always include this step by default unless the user explicitly
+  excludes it.
+
+- Use it as the first step in the blueprint.
+
 ## See also
 
 [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html)

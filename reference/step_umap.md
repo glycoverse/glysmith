@@ -60,6 +60,14 @@ Plots generated (with suffixes):
 
 - `umap`: The UMAP plot
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step only when the user explicitly asks for UMAP.
+
 ## See also
 
 [`glystats::gly_umap()`](https://glycoverse.github.io/glystats/reference/gly_umap.html),

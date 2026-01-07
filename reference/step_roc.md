@@ -38,6 +38,15 @@ Plots generated:
 
 - `roc_curves`: ROC curves for the top 10 variables
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Include this step if the user explicitly asks for ROC analysis, or if
+  he/she mentions "biomarker(s)" in the prompt.
+
 ## See also
 
 [`glystats::gly_roc()`](https://glycoverse.github.io/glystats/reference/gly_roc.html),

@@ -190,6 +190,18 @@ preprocessing is performed or not, the "active" experiment is always
 under the key `exp`. The previous `exp` is saved as `raw_exp` for
 reference.
 
+## AI Prompt
+
+*This section is for AI in
+[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+only.*
+
+- Always include this step by default unless the user explicitly
+  excludes it or tell you she/he has already performed preprocessing.
+
+- Use default values for other arguments unless the user explicitly
+  specifies otherwise.
+
 ## See also
 
 [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html)
