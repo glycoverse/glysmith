@@ -1,5 +1,16 @@
 # glysmith (development version)
 
+## New features
+
+* Add `step_adjust_protein()` to adjust glycoform quantification by protein expression.
+* Add `step_logo()` to generate logo plots.
+* `inquire_blueprint()` now asks questions to better understand users' requirements.
+
+## Minor improvements and bug fixes
+
+* Update system prompt of `inquire_blueprint()` to make it understand the usage of each step better.
+* Fix a bug that `inquire_blueprint()` could not see step parameters.
+
 # glysmith 0.5.1
 
 ## Minor improvements and bug fixes
