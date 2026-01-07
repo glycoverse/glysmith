@@ -177,6 +177,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "Use step arguments with caution: prefer default values unless they are necessary.",
     "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
     "Each step includes a USAGE section that has the highest priority. Follow it even if other text differs.",
+    "\n",
     "Available analytical steps include:",
     step_descriptions,
     "\n",
@@ -247,7 +248,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     # Defaults if documentation not found
     title <- step_obj$label
     desc_text <- "No description available."
-    params_text <- ""
+    params_text <- "  - PARAMETER: Not available."
     ai_text <- ""
 
     if (!is.null(rd_db)) {
@@ -289,6 +290,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
             paste0("    - `", name, "`: ", stringr::str_squish(desc))
           })
           params_text <- paste0("  - PARAMETER:\n", paste(params_lines, collapse = "\n"))
+        } else {
+          params_text <- "  - PARAMETER: None."
         }
       }
     }
@@ -313,8 +316,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
 .filter_inquire_blueprint_args <- function(func_name, args) {
   if (length(args) == 0) return(args)
-  allowed <- args  # Currently all args are allowed.
-  args[names(args) %in% allowed]
+  # Placeholder for future filtering rules; keep all args for now.
+  args
 }
 
 .extract_inquiry_questions <- function(output_clean) {

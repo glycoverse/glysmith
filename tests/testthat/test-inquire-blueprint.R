@@ -320,3 +320,16 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
   expect_equal(bp[[1]]$id, "adjust_protein")
   expect_equal(bp[[2]]$id, "pca")
 })
+
+test_that("inquire_blueprint includes step parameters in system prompt", {
+  prompt <- .inquire_blueprint_sys_prompt()
+
+  block <- regmatches(
+    prompt,
+    regexpr("- `step_heatmap`[\\s\\S]*?(?=- `step_|$)", prompt, perl = TRUE)
+  )
+
+  expect_true(length(block) > 0)
+  expect_true(grepl("PARAMETER:", block))
+  expect_true(grepl("`on`", block))
+})
