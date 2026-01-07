@@ -4,10 +4,10 @@
 \alias{step_adjust_protein}
 \title{Step: Adjust Protein Abundance}
 \usage{
-step_adjust_protein(pro_expr_path, method = "ratio")
+step_adjust_protein(pro_expr_path = NULL, method = "ratio")
 }
 \arguments{
-\item{pro_expr_path}{Path to the protein expression matrix file. Can be:
+\item{pro_expr_path}{MUST PROVIDE. Path to the protein expression matrix file. Can be:
 \itemize{
 \item A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
 \item An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.
@@ -22,6 +22,7 @@ A \code{glysmith_step} object.
 \description{
 Adjust glycoform quantification values by correcting for protein abundance
 utilizing \code{glyclean::adjust_protein()}.
+Usually this step should be run after \code{step_preprocess()}.
 }
 \details{
 Data required:

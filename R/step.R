@@ -323,6 +323,7 @@ step_preprocess <- function(
 #'
 #' Adjust glycoform quantification values by correcting for protein abundance
 #' utilizing `glyclean::adjust_protein()`.
+#' Usually this step should be run after `step_preprocess()`.
 #'
 #' @details
 #' Data required:
@@ -336,7 +337,7 @@ step_preprocess <- function(
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `unadj_exp` for reference.
 #'
-#' @param pro_expr_path Path to the protein expression matrix file. Can be:
+#' @param pro_expr_path MUST PROVIDE. Path to the protein expression matrix file. Can be:
 #'   - A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
 #'   - An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.
 #' @inheritParams glyclean::adjust_protein
@@ -347,8 +348,10 @@ step_preprocess <- function(
 #' step_adjust_protein("protein_expr.rds", method = "reg")
 #' @seealso [glyclean::adjust_protein()]
 #' @export
-step_adjust_protein <- function(pro_expr_path, method = "ratio") {
-  checkmate::assert_file_exists(pro_expr_path, access = "r", extension = c("csv", "tsv", "rds"))
+step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
+  if (!is.null(pro_expr_path)) {
+    checkmate::assert_file_exists(pro_expr_path, access = "r", extension = c("csv", "tsv", "rds"))
+  }
   checkmate::assert_choice(method, c("ratio", "reg"))
   signature <- rlang::expr_deparse(match.call())
 
@@ -356,6 +359,9 @@ step_adjust_protein <- function(pro_expr_path, method = "ratio") {
     id = "adjust_protein",
     label = "Protein adjustment",
     condition = function(ctx) {
+      if (is.null(pro_expr_path)) {
+        return(list(check = FALSE, reason = "protein expression path is not provided"))
+      }
       if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
         return(list(check = FALSE, reason = "input is not a glycoproteomics experiment"))
       }
