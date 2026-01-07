@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [87ms]
+#> ✔ Identification overview [89ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -120,7 +120,7 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.8s]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [270ms]
+#> ✔ Principal component analysis [277ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -129,10 +129,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [56ms]
+#> ✔ Differential expression analysis (limma) [59ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [517ms]
+#> ✔ Volcano plot [518ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [42ms]
@@ -156,5 +156,5 @@ result <- forge_analysis(exp)
 #> ✔ Heatmap of significant traits [39ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/Rtmpne1CAk/file1ca0433f64a2.html"
+#> [1] "/tmp/Rtmp7YR6oF/file1c9713ad19c1.html"
 ```
