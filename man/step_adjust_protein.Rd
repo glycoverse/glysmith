@@ -56,8 +56,13 @@ The previous \code{exp} is saved as \code{unadj_exp} for reference.
 }
 
 \examples{
-step_adjust_protein("protein_expr.csv")
-step_adjust_protein("protein_expr.rds", method = "reg")
+fake_pro_expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+rownames(fake_pro_expr_mat) <- paste0("P", seq_len(10))
+colnames(fake_pro_expr_mat) <- paste0("S", seq_len(10))
+fake_pro_expr_path <- tempfile(fileext = ".rds")
+saveRDS(fake_pro_expr_mat, fake_pro_expr_path)
+step_adjust_protein(fake_pro_expr_path)
+
 }
 \seealso{
 \code{\link[glyclean:adjust_protein]{glyclean::adjust_protein()}}

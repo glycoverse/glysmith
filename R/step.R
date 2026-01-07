@@ -361,8 +361,13 @@ step_preprocess <- function(
 #'
 #' @return A `glysmith_step` object.
 #' @examples
-#' step_adjust_protein("protein_expr.csv")
-#' step_adjust_protein("protein_expr.rds", method = "reg")
+#' fake_pro_expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
+#' rownames(fake_pro_expr_mat) <- paste0("P", seq_len(10))
+#' colnames(fake_pro_expr_mat) <- paste0("S", seq_len(10))
+#' fake_pro_expr_path <- tempfile(fileext = ".rds")
+#' saveRDS(fake_pro_expr_mat, fake_pro_expr_path)
+#' step_adjust_protein(fake_pro_expr_path)
+#'
 #' @seealso [glyclean::adjust_protein()]
 #' @export
 step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
