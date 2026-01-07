@@ -12,6 +12,8 @@
 #' Make sure to examine the returned blueprint carefully to ensure it's what you want.
 #' You can also create parallel analysis branches with `br("name", step_..., step_...)`,
 #' which will namespace outputs with the branch prefix.
+#' If the LLM needs required information to proceed, it may ask clarifying questions
+#' interactively and then retry with your answers.
 #'
 #' Here are some examples that works:
 #'
@@ -48,16 +50,56 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   exp_info <- .generate_exp_info(exp, group_col)
   current_prompt <- paste0(exp_info, "\n", "Requirements: ", description)
 
-  for (i in 0:max_retries) {
-    if (i > 0) {
-      cli::cli_alert_info("Attempt {i}/{max_retries}: Retrying with feedback...")
+  retry_count <- 0L
+  question_count <- 0L
+  max_questions <- max(1L, max_retries)
+
+  repeat {
+    if (retry_count > 0) {
+      cli::cli_alert_info("Attempt {retry_count}/{max_retries}: Retrying with feedback...")
     }
 
     # Call AI
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 
+    if (!is.null(result$questions)) {
+      question_count <- question_count + 1L
+      if (question_count > max_questions) {
+        cli::cli_abort(c(
+          "Failed to generate a valid blueprint after {max_questions} clarification rounds.",
+          "x" = "The LLM keeps requesting more information.",
+          "i" = "Please provide more details in the description and try again."
+        ))
+      }
+      inquiry <- .ask_inquiry_questions(result$questions)
+      current_prompt <- paste0(
+        current_prompt,
+        "\nClarifications:\n",
+        .format_inquiry_answers(inquiry$questions, inquiry$answers)
+      )
+      next
+    }
+
     if (result$valid) {
+      missing_questions <- .inquire_blueprint_missing_questions(result$blueprint)
+      if (length(missing_questions) > 0) {
+        question_count <- question_count + 1L
+        if (question_count > max_questions) {
+          cli::cli_abort(c(
+            "Failed to generate a valid blueprint after {max_questions} clarification rounds.",
+            "x" = "Required inputs are still missing.",
+            "i" = "Please provide more details in the description and try again."
+          ))
+        }
+        inquiry <- .ask_inquiry_questions(missing_questions)
+        current_prompt <- paste0(
+          current_prompt,
+          "\nClarifications:\n",
+          .format_inquiry_answers(inquiry$questions, inquiry$answers)
+        )
+        next
+      }
       if (!is.null(result$explanation) && nzchar(result$explanation)) {
         cli::cli_h3("Blueprint Description")
         cli::cli_text(result$explanation)
@@ -67,7 +109,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
     # Handle failure
     error_msg <- result$error
-    if (i < max_retries) {
+    if (retry_count < max_retries) {
+      retry_count <- retry_count + 1L
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg, "\n",
@@ -87,6 +130,14 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   # Clean up the output - remove backticks and trim whitespace
   output_clean <- stringr::str_remove_all(output, "`")
   output_clean <- stringr::str_trim(output_clean)
+
+  questions <- .extract_inquiry_questions(output_clean)
+  if (!is.null(questions)) {
+    if (length(questions) == 0) {
+      return(list(valid = FALSE, error = "Clarification questions requested but none provided."))
+    }
+    return(list(valid = FALSE, questions = questions, error = "Clarification requested."))
+  }
 
   # Split explanation and steps by "---" delimiter
   explanation <- NULL
@@ -145,6 +196,12 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "and steps about derived traits can be grouped into 'trait'.",
     "Use step arguments with caution: prefer default values unless they are necessary.",
     "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
+    "If essential information is missing (e.g., required arguments), ask the user for clarification instead of guessing.",
+    "Ask questions sparingly and only when the blueprint cannot be constructed without the missing information.",
+    "Never include `step_adjust_protein()` without `pro_expr_path`. If protein adjustment is needed and the path",
+    "is not provided, ask for it and explain how to prepare the file:",
+    "- CSV/TSV: first column is protein accessions; remaining columns are sample names.",
+    "- RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.",
     "Available analytical steps include:\n",
     step_descriptions,
     "\n",
@@ -152,6 +209,12 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "1. First, provide a BRIEF description (1-3 sentences) of the blueprint.",
     "2. Then write `---` on a new line.",
     "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
+    "",
+    "If you need clarification, return ONLY:",
+    "QUESTIONS:",
+    "- question 1",
+    "- question 2",
+    "Do not include a blueprint when asking questions.",
     "",
     "Example output 1:",
     "Your data needs preprocessing to handle missing values, followed by statistical analysis to find significant changes.",
@@ -261,6 +324,91 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   if (length(args) == 0) return(args)
   allowed <- args  # Currently all args are allowed.
   args[names(args) %in% allowed]
+}
+
+.extract_inquiry_questions <- function(output_clean) {
+  lines <- stringr::str_split(output_clean, "\n")[[1]]
+  if (length(lines) == 0) return(NULL)
+  first <- stringr::str_trim(lines[1])
+  if (!stringr::str_detect(first, stringr::regex("^QUESTIONS?:", ignore_case = TRUE))) {
+    return(NULL)
+  }
+
+  rest <- stringr::str_trim(lines[-1])
+  rest <- rest[rest != ""]
+  rest <- stringr::str_remove(rest, "^[-*]\\s*")
+  rest <- rest[rest != ""]
+
+  if (length(rest) == 0) {
+    inline <- stringr::str_trim(stringr::str_remove(first, stringr::regex("^QUESTIONS?:", ignore_case = TRUE)))
+    if (nzchar(inline)) return(inline)
+  }
+
+  rest
+}
+
+.format_inquiry_answers <- function(questions, answers) {
+  entries <- purrr::map2_chr(questions, answers, function(question, answer) {
+    paste0("- Q: ", question, "\n  A: ", answer)
+  })
+  paste(entries, collapse = "\n")
+}
+
+.ask_inquiry_questions <- function(questions) {
+  checkmate::assert_character(questions, min.len = 1)
+  if (!interactive()) {
+    cli::cli_abort(c(
+      "LLM requires more information to continue.",
+      "x" = "This prompt needs interactive input for clarification.",
+      "i" = "Re-run with the missing details included in `description`."
+    ))
+  }
+  cli::cli_h3("Need more information")
+  answers <- purrr::map_chr(questions, function(question) {
+    cli::cli_text(question)
+    readline(prompt = "\u2139 Answer: ")
+  })
+  list(questions = questions, answers = answers)
+}
+
+.inquire_blueprint_missing_questions <- function(bp) {
+  if (!inherits(bp, "glysmith_blueprint")) return(character(0))
+  missing <- purrr::keep(bp, function(step) {
+    sig <- step$branch_signature %||% step$signature %||% ""
+    .step_adjust_protein_missing_path(sig)
+  })
+  if (length(missing) == 0) return(character(0))
+  paste(
+    "Provide the path to the protein expression matrix for `step_adjust_protein()`.",
+    "Prepare a CSV/TSV with protein accessions in the first column and sample names as columns,",
+    "or an RDS containing a matrix/data.frame with row names as protein accessions and columns as sample names."
+  )
+}
+
+.step_adjust_protein_missing_path <- function(signature) {
+  expr <- tryCatch(rlang::parse_expr(signature), error = function(e) NULL)
+  if (is.null(expr) || !rlang::is_call(expr, "step_adjust_protein")) {
+    return(FALSE)
+  }
+  args <- rlang::call_args(expr)
+  if (length(args) == 0) return(TRUE)
+
+  arg_names <- names(args)
+  if (!is.null(arg_names) && "pro_expr_path" %in% arg_names) {
+    value <- args[["pro_expr_path"]]
+    if (rlang::is_null(value)) return(TRUE)
+    if (is.character(value) && length(value) == 1 && value == "") return(TRUE)
+    return(FALSE)
+  }
+
+  if (is.null(arg_names) || !nzchar(arg_names[1])) {
+    value <- args[[1]]
+    if (rlang::is_null(value)) return(TRUE)
+    if (is.character(value) && length(value) == 1 && value == "") return(TRUE)
+    return(FALSE)
+  }
+
+  FALSE
 }
 
 .get_rd_database <- function() {

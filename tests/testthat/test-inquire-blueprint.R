@@ -242,3 +242,86 @@ test_that("inquire_blueprint fails after max retries", {
   # Initial call + 2 retries = 3 calls
   expect_equal(call_count, 3)
 })
+
+test_that("inquire_blueprint handles clarification questions from LLM", {
+  skip_if_not_installed("ellmer")
+
+  call_count <- 0
+  prompt_received <- NULL
+  pro_expr_path <- withr::local_tempfile(fileext = ".csv")
+  writeLines("protein,s1", pro_expr_path)
+
+  mock_chat_fun <- function(prompt) {
+    call_count <<- call_count + 1
+    if (call_count == 1) {
+      return(paste(
+        "QUESTIONS:",
+        "- What is the path to your protein expression matrix?",
+        "- If you haven't prepared it yet, create a CSV/TSV with protein accessions in the first",
+        "  column and sample names as columns, or an RDS with a matrix/data.frame using row names",
+        "  for accessions and columns for samples.",
+        sep = "\n"
+      ))
+    }
+    prompt_received <<- prompt
+    paste0("step_adjust_protein(pro_expr_path = '", pro_expr_path, "'); step_pca()")
+  }
+
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  local_mocked_bindings(
+    .ask_inquiry_questions = function(questions) {
+      list(questions = questions, answers = pro_expr_path)
+    },
+    .package = "glysmith"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
+
+  bp <- inquire_blueprint("test description", max_retries = 1)
+
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_equal(call_count, 2)
+  expect_true(grepl(pro_expr_path, prompt_received, fixed = TRUE))
+})
+
+test_that("inquire_blueprint requests pro_expr_path when missing", {
+  skip_if_not_installed("ellmer")
+
+  call_count <- 0
+  prompt_received <- NULL
+  pro_expr_path <- withr::local_tempfile(fileext = ".csv")
+  writeLines("protein,s1", pro_expr_path)
+
+  mock_chat_fun <- function(prompt) {
+    call_count <<- call_count + 1
+    if (call_count == 1) {
+      return("step_adjust_protein(); step_pca()")
+    }
+    prompt_received <<- prompt
+    paste0("step_adjust_protein(pro_expr_path = '", pro_expr_path, "'); step_pca()")
+  }
+
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  local_mocked_bindings(
+    .ask_inquiry_questions = function(questions) {
+      list(questions = questions, answers = pro_expr_path)
+    },
+    .package = "glysmith"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
+
+  bp <- inquire_blueprint("test description", max_retries = 1)
+
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_equal(call_count, 2)
+  expect_true(grepl(pro_expr_path, prompt_received, fixed = TRUE))
+})
