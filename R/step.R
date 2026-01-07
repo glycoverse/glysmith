@@ -64,6 +64,7 @@ all_steps <- function() {
     step_tsne(),
     step_umap(),
     step_heatmap(),
+    step_logo(),
     step_dea_limma(),
     step_dea_ttest(),
     step_dea_wilcox(),
@@ -1727,6 +1728,59 @@ step_heatmap <- function(on = "exp", ...) {
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_heatmap(exp, ...)
       ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
+    },
+    require = on,
+    signature = signature
+  )
+}
+
+#' Step: Logo Plot
+#'
+#' Create a logo plot for glycosylation sites using `glyvis::plot_logo()`.
+#' The logo plot visualizes the amino acid sequence patterns around glycosylation sites.
+#' This step is only applicable for glycoproteomics experiments.
+#'
+#' @details
+#' Data required:
+#' - Depends on `on` parameter (default: `exp`)
+#'
+#' Plots generated:
+#' - `logo`: A logo plot (if `on = "exp"`)
+#' - `sig_logo`: A logo plot (if `on = "sig_exp"`)
+#'
+#' @param on Name of the experiment data in `ctx$data` to plot.
+#'   One of "exp", "sig_exp". Default is "exp".
+#' @inheritParams glyvis::plot_logo
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_logo()
+#' step_logo(fasta = "proteins.fasta")
+#' step_logo(on = "sig_exp")
+#' @seealso [glyvis::plot_logo()]
+#' @export
+step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
+  rlang::check_installed("ggseqlogo")
+  signature <- rlang::expr_deparse(match.call())
+
+  on_meta <- .resolve_on(on)
+  plot_name <- paste0("logo", on_meta$id_suffix)
+  label <- paste0("Logo plot", on_meta$label_suffix)
+
+  step(
+    id = paste0("logo", on_meta$id_suffix),
+    label = label,
+    condition = function(ctx) {
+      exp <- ctx_get_data(ctx, on)
+      if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+        return(list(check = FALSE, reason = "logo plot is only applicable for glycoproteomics experiments"))
+      }
+      list(check = TRUE, reason = NULL)
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, on)
+      p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
+      ctx_add_plot(ctx, plot_name, p, paste0("Logo plot of glycosylation sites for ", on, "."))
     },
     require = on,
     signature = signature

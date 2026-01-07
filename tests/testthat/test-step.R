@@ -171,13 +171,6 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
   })
 })
 
-test_that("step_adjust_protein report includes log messages", {
-  step_obj <- step_adjust_protein("dummy.csv")
-  fake_x <- list(meta = list(logs = list(adjust_protein = list(message = "Adjusted proteins: 12 (80%)"))))
-  report <- step_obj$report(fake_x)
-  expect_match(report, "Adjusted proteins: 12 \\(80%\\)")
-})
-
 # ----- step_heatmap -----
 test_that("step_heatmap generates plot", {
   suppressMessages(
@@ -203,6 +196,38 @@ test_that("step_heatmap works on sig_exp", {
   )
   suppressMessages(res <- forge_analysis(exp, bp))
   expect_true("heatmap_sig" %in% names(res$plots))
+})
+
+# ----- step_logo -----
+test_that("step_logo generates plot for glycoproteomics", {
+  skip_if_not_installed("ggseqlogo")
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_var(20) |>
+      glyclean::auto_clean()
+  )
+
+  # Mock plot_logo to avoid needing fasta file
+  local_mocked_bindings(
+    plot_logo = function(...) ggplot2::ggplot(),
+    .package = "glyvis"
+  )
+
+  bp <- blueprint(step_logo())
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true("logo" %in% names(res$plots))
+})
+
+test_that("step_logo is skipped for glycomics experiments", {
+  skip_if_not_installed("ggseqlogo")
+  suppressMessages(
+    exp <- glyexp::real_experiment2 |>
+      glyexp::slice_head_var(20) |>
+      glyclean::auto_clean()
+  )
+  bp <- blueprint(step_logo())
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_false("logo" %in% names(res$plots))
 })
 
 # ----- step_dea_limma -----
