@@ -34,14 +34,31 @@
 }
 
 .generate_glycan_fact <- function(api_key, model = "deepseek-chat") {
+  focus <- sample(c(
+    "structural diversity",
+    "biosynthesis",
+    "glycosylation sites",
+    "glycan functions",
+    "analytical methods",
+    "glycoforms",
+    "immune recognition",
+    "glycan degradation",
+    "glycan nomenclature"
+  ), 1)
+  nonce <- sample.int(1000000L, 1)
   system_prompt <- paste(
     "You are a glycobiology tutor.",
     "Provide one accurate, concise fact about glycans.",
     "Use ASCII characters only.",
-    "Return a single sentence that starts with 'Do you know that'.",
+    "Return a single sentence that starts with 'Do you know that' and ends with a question mark.",
     "No bullets, no quotes, no extra text."
   )
-  user_prompt <- "Return one sentence as instructed."
+  user_prompt <- paste(
+    "Return one sentence as instructed.",
+    "Topic:", focus,
+    "Avoid generic or repeated facts; prefer a less common but accurate detail.",
+    "Random seed:", nonce
+  )
   fact <- .ask_ai(system_prompt, user_prompt, api_key, model = model)
   .normalize_glycan_fact(fact)
 }
@@ -54,7 +71,7 @@
     fact <- paste0("Do you know that ", fact)
   }
   if (!stringr::str_detect(fact, "[.!?]$")) {
-    fact <- paste0(fact, ".")
+    fact <- paste0(fact, "?")
   }
   fact
 }
