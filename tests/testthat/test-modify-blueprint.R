@@ -9,7 +9,7 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   prompt_received <- NULL
   mock_chat_fun <- function(prompt) {
     prompt_received <<- prompt
-    "step_preprocess(); step_pca(); step_heatmap()"
+    "{\"explanation\":\"Add heatmap.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_heatmap()\"]}"
   }
 
   local_mocked_bindings(
@@ -37,12 +37,12 @@ test_that("modify_blueprint retries on invalid output", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return("step_heatmap(")
+      return("{\"explanation\":\"Broken JSON\",\"steps\":[\"step_heatmap(\"]}")
     }
-    if (grepl("Invalid format", prompt) || grepl("Error:", prompt)) {
+    if (grepl("Invalid format", prompt) || grepl("Error:", prompt) || grepl("Invalid JSON", prompt)) {
       error_feedback_received <<- TRUE
     }
-    "step_preprocess(); step_pca()"
+    "{\"explanation\":\"Valid JSON\",\"steps\":[\"step_preprocess()\",\"step_pca()\"]}"
   }
 
   local_mocked_bindings(

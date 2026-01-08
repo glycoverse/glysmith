@@ -76,7 +76,7 @@ modify_blueprint <- function(
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg, "\n",
-        "Please fix the blueprint and return the corrected list of steps."
+        "Please fix the output and return a JSON object with `steps`."
       )
     } else {
       cli::cli_abort(c(
@@ -106,9 +106,12 @@ modify_blueprint <- function(
     step_descriptions,
     "\n",
     "Return format:",
-    "1. First, provide a BRIEF description (1-3 sentences) of the updated blueprint.",
-    "2. Then write `---` on a new line.",
-    "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
+    "Return ONLY a JSON object with:",
+    "- `explanation`: a BRIEF description (1-3 sentences) of the updated blueprint.",
+    "- `steps`: an array of strings, each being a `step_...()` call or `br(...)` branch.",
+    "Do not include any extra text outside JSON.",
+    "Example output:",
+    "{\"explanation\":\"Add a heatmap after PCA.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_heatmap()\"]}",
     sep = "\n"
   )
   prompt

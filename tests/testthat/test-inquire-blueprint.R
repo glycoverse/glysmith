@@ -3,7 +3,9 @@ test_that("inquire_blueprint works with valid AI output", {
   skip_if_not_installed("ellmer")
 
   # Mock `ellmer::chat_deepseek` to return a chat object with a mocked `chat` method
-  mock_chat_fun <- function(...) "step_preprocess(); step_pca()"
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Preprocess then run PCA.","steps":["step_preprocess()","step_pca()"]}'
+  }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
     .package = "ellmer"
@@ -24,7 +26,10 @@ test_that("inquire_blueprint supports branches", {
   skip_if_not_installed("ellmer")
 
   mock_chat_fun <- function(...) {
-    "br(\"limma\", step_dea_limma(), step_volcano()); step_pca()"
+    paste0(
+      '{"explanation":"Compare limma and PCA.","steps":["br(\\"limma\\", step_dea_limma(), step_volcano())",',
+      '"step_pca()"]}'
+    )
   }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
@@ -47,7 +52,9 @@ test_that("inquire_blueprint handles single step", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
 
-  mock_chat_fun <- function(...) "step_tsne(on = 'exp')"
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Run t-SNE.","steps":["step_tsne(on = \\"exp\\")"]}'
+  }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
     .package = "ellmer"
@@ -62,11 +69,13 @@ test_that("inquire_blueprint handles single step", {
   expect_equal(bp[[1]]$id, "tsne")
 })
 
-test_that("inquire_blueprint cleans AI output (backticks)", {
+test_that("inquire_blueprint cleans AI output (code fences)", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
 
-  mock_chat_fun <- function(...) "`step_preprocess()`"
+  mock_chat_fun <- function(...) {
+    "```json\n{\"explanation\":\"Preprocess.\",\"steps\":[\"step_preprocess()\"]}\n```"
+  }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
     .package = "ellmer"
@@ -115,7 +124,9 @@ test_that("inquire_blueprint raises error on valid format but execution error", 
   skip_if_not_installed("ellmer")
 
   # step_nonexistent doesn't exist, so eval() should fail
-  mock_chat_fun <- function(...) "step_nonexistent()"
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Try a nonexistent step.","steps":["step_nonexistent()"]}'
+  }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
     .package = "ellmer"
@@ -138,7 +149,7 @@ test_that("inquire_blueprint handles valid output immediately (mocked)", {
   call_count <- 0
   mock_chat_fun <- function(...) {
     call_count <<- call_count + 1
-    "step_ident_overview(); step_pca()"
+    '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
   }
 
   local_mocked_bindings(
@@ -165,13 +176,13 @@ test_that("inquire_blueprint retries on invalid output", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return("step_ident_overview(") # Invalid
+      return("{\"explanation\":\"Broken JSON\",\"steps\":[\"step_ident_overview(\"]}") # Invalid
     } else {
       # Check if we received the error message in prompt
-      if (grepl("Invalid format", prompt) || grepl("Error:", prompt)) {
+      if (grepl("Invalid format", prompt) || grepl("Error:", prompt) || grepl("Invalid JSON", prompt)) {
         error_feedback_received <<- TRUE
       }
-      return("step_ident_overview(); step_pca()") # Valid
+      return("{\"explanation\":\"Valid JSON\",\"steps\":[\"step_ident_overview()\",\"step_pca()\"]}")
     }
   }
 
@@ -199,10 +210,10 @@ test_that("inquire_blueprint reflects full error details back to LLM", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return("step_volcano()")
+      return("{\"explanation\":\"Volcano only.\",\"steps\":[\"step_volcano()\"]}")
     }
     prompt_received <<- prompt
-    "step_dea_ttest(); step_volcano()"
+    "{\"explanation\":\"DEA then volcano.\",\"steps\":[\"step_dea_ttest()\",\"step_volcano()\"]}"
   }
 
   local_mocked_bindings(
@@ -254,17 +265,19 @@ test_that("inquire_blueprint handles clarification questions from LLM", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return(paste(
-        "QUESTIONS:",
-        "- What is the path to your protein expression matrix?",
-        "- If you haven't prepared it yet, create a CSV/TSV with protein accessions in the first",
-        "  column and sample names as columns, or an RDS with a matrix/data.frame using row names",
-        "  for accessions and columns for samples.",
-        sep = "\n"
+      return(paste0(
+        "{\"questions\":[",
+        "\"What is the path to your protein expression matrix?\",",
+        "\"If you haven't prepared it yet, create a CSV/TSV with protein accessions in the first column and sample names as columns, or an RDS with a matrix/data.frame using row names for accessions and columns for samples.\"",
+        "]}"
       ))
     }
     prompt_received <<- prompt
-    paste0("step_adjust_protein(pro_expr_path = '", pro_expr_path, "'); step_pca()")
+    paste0(
+      "{\"explanation\":\"Adjust proteins then PCA.\",\"steps\":[",
+      "\"step_adjust_protein(pro_expr_path = '", pro_expr_path, "')\",",
+      "\"step_pca()\"]}"
+    )
   }
 
   local_mocked_bindings(
@@ -297,7 +310,7 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     prompt_received <<- prompt
-    "step_adjust_protein(); step_pca()"
+    "{\"explanation\":\"Adjust proteins then PCA.\",\"steps\":[\"step_adjust_protein()\",\"step_pca()\"]}"
   }
 
   local_mocked_bindings(

@@ -96,7 +96,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg, "\n",
-        "Please fix the blueprint and return the corrected list of steps."
+        "Please fix the output and return a JSON object with `steps` (or `questions`)."
       )
     } else {
       cli::cli_abort(c(
@@ -109,40 +109,68 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 }
 
 .process_blueprint_response <- function(output) {
-  # Clean up the output - remove backticks and trim whitespace
-  output_clean <- stringr::str_remove_all(output, "`")
-  output_clean <- stringr::str_trim(output_clean)
+  output_clean <- stringr::str_trim(output)
+  json_text <- .extract_json_output(output_clean)
 
-  questions <- .extract_inquiry_questions(output_clean)
+  if (is.null(json_text)) {
+    questions <- .extract_inquiry_questions(output_clean)
+    if (!is.null(questions)) {
+      if (length(questions) == 0) {
+        return(list(valid = FALSE, error = "Clarification questions requested but none provided."))
+      }
+      return(list(valid = FALSE, questions = questions, error = "Clarification requested."))
+    }
+    return(list(
+      valid = FALSE,
+      error = "Invalid JSON output. Return a JSON object with `steps` (array of strings) or `questions` (array of strings)."
+    ))
+  }
+
+  parsed <- tryCatch(
+    jsonlite::fromJSON(json_text),
+    error = function(e) e
+  )
+  if (inherits(parsed, "error")) {
+    return(list(valid = FALSE, error = paste("Invalid JSON output:", conditionMessage(parsed))))
+  }
+  if (!is.list(parsed)) {
+    return(list(valid = FALSE, error = "Invalid JSON output. Expected a JSON object."))
+  }
+
+  questions <- parsed$questions %||% NULL
   if (!is.null(questions)) {
-    if (length(questions) == 0) {
+    if (!is.character(questions) || length(questions) == 0) {
       return(list(valid = FALSE, error = "Clarification questions requested but none provided."))
     }
     return(list(valid = FALSE, questions = questions, error = "Clarification requested."))
   }
 
-  # Split explanation and steps by "---" delimiter
-  explanation <- NULL
-  if (stringr::str_detect(output_clean, "---")) {
-    parts <- stringr::str_split_1(output_clean, "---")
-    if (length(parts) >= 2) {
-      explanation <- stringr::str_trim(parts[1])
-      output_clean <- stringr::str_trim(parts[2])
-    }
+  steps <- parsed$steps %||% character(0)
+  if (!is.character(steps)) {
+    return(list(valid = FALSE, error = "Invalid JSON output. `steps` must be an array of strings."))
   }
-
-  steps <- stringr::str_split_1(output_clean, ";")
+  steps <- stringr::str_remove_all(steps, "`")
   steps <- stringr::str_trim(steps)
+  if (length(steps) == 1 && stringr::str_detect(steps, ";")) {
+    steps <- stringr::str_split_1(steps, ";")
+    steps <- stringr::str_trim(steps)
+  }
+  steps <- stringr::str_remove(steps, ";$")
   steps <- steps[steps != ""]
 
   if (length(steps) == 0) {
-    return(list(valid = FALSE, error = "The output is empty. Please provide a list of steps separated by ';'."))
+    return(list(valid = FALSE, error = "The output is empty. Please provide steps in the JSON `steps` array."))
   }
 
   is_step <- stringr::str_detect(steps, "^step_[a-z0-9_]+\\s*\\(.*\\)$")
   is_branch <- stringr::str_detect(steps, "^br\\s*\\(.*\\)$")
   if (!all(is_step | is_branch)) {
-    return(list(valid = FALSE, error = "Invalid format. Every entry must be a `step_...()` call or a `br(...)` branch. Split entries with ';'."))
+    return(list(valid = FALSE, error = "Invalid format. Every entry must be a `step_...()` call or a `br(...)` branch."))
+  }
+
+  explanation <- parsed$explanation %||% NULL
+  if (!is.null(explanation)) {
+    explanation <- as.character(explanation)
   }
 
   # Try parsing and validation
@@ -163,6 +191,29 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       list(valid = FALSE, error = paste("Error:", conditionMessage(e)))
     }
   )
+}
+
+.extract_json_output <- function(output) {
+  output <- stringr::str_trim(output)
+  if (!nzchar(output)) return(NULL)
+
+  fence_match <- stringr::str_match(
+    output,
+    "(?s)```(?:json)?\\s*(\\{.*\\})\\s*```"
+  )
+  if (!is.na(fence_match[1, 2])) {
+    return(stringr::str_trim(fence_match[1, 2]))
+  }
+
+  start_loc <- stringr::str_locate(output, "\\{")[1]
+  end_locs <- stringr::str_locate_all(output, "\\}")[[1]]
+  if (is.na(start_loc) || nrow(end_locs) == 0) return(NULL)
+
+  end_loc <- end_locs[nrow(end_locs), 2]
+  json_text <- substr(output, start_loc, end_loc)
+  json_text <- stringr::str_trim(json_text)
+  if (!nzchar(json_text)) return(NULL)
+  json_text
 }
 
 .parse_step_expr <- function(step_str) {
@@ -225,27 +276,22 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "and steps about derived traits can be grouped into 'trait'.",
     "\n",
     "If essential information is missing (e.g., required arguments), ask the user for clarification instead of guessing.",
-    "If you need clarification, return ONLY:",
-    "QUESTIONS:",
-    "- question 1",
-    "- question 2",
-    "Do not include a blueprint when asking questions.",
+    "If you need clarification, return ONLY a JSON object with a `questions` array.",
+    "Do not include `steps` when asking questions.",
     "\n",
-    "If you think all information is provided, return the blueprint with a brief description.",
-    "Return format:",
-    "1. First, provide a BRIEF description (1-3 sentences) of the blueprint.",
-    "2. Then write `---` on a new line.",
-    "3. Finally, list analytical steps (or branches) as function calls separated by `;`.",
+    "If you think all information is provided, return a JSON object with:",
+    "- `explanation`: a BRIEF description (1-3 sentences).",
+    "- `steps`: an array of strings, each being a `step_...()` call or `br(...)` branch.",
+    "Do not include any extra text outside JSON.",
     "\n",
     "Example output 1:",
-    "Your data needs preprocessing to handle missing values, followed by statistical analysis to find significant changes.",
-    "---",
-    "step_preprocess();step_pca();step_dea_limma();step_heatmap(on = 'sig_exp')",
+    "{\"explanation\":\"Preprocess, then run PCA and DEA.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_dea_limma()\",\"step_heatmap(on = 'sig_exp')\"]}",
     "",
     "Example output 2 (Branching):",
-    "The blueprint compares two DEA methods after preprocessing.",
-    "---",
-    "step_preprocess();br('limma', step_dea_limma(), step_volcano());br('ttest', step_dea_ttest(), step_volcano())",
+    "{\"explanation\":\"Compare two DEA methods after preprocessing.\",\"steps\":[\"step_preprocess()\",\"br('limma', step_dea_limma(), step_volcano())\",\"br('ttest', step_dea_ttest(), step_volcano())\"]}",
+    "",
+    "Example output 3 (Questions):",
+    "{\"questions\":[\"What is your group column?\",\"Do you want pathway enrichment?\"]}",
     sep = "\n"
   )
   prompt
