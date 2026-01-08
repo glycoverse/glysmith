@@ -357,6 +357,8 @@ step_preprocess <- function(
 #' - If protein adjustment is needed and the `pro_expr_path` is not provided, ask for it and explain how to prepare the file:
 #'   - CSV/TSV: first column is protein accessions; remaining columns are sample names.
 #'   - RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.
+#' - You MUST provide a detailed explanation of how to prepare the file.
+#' - With out the file, the step is invalid.
 #'
 #' @param pro_expr_path Path to the protein expression matrix file.
 #'   If `NULL`, this step will be skipped.

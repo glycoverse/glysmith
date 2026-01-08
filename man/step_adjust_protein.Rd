@@ -52,6 +52,8 @@ The previous \code{exp} is saved as \code{unadj_exp} for reference.
 \item CSV/TSV: first column is protein accessions; remaining columns are sample names.
 \item RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.
 }
+\item You MUST provide a detailed explanation of how to prepare the file.
+\item With out the file, the step is invalid.
 }
 }
 
