@@ -45,6 +45,8 @@ Plots generated:
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
 \item Include this step if the user explicitly asks for logo plot.
+\item If used, ask user if a FASTA file is provided.
+Tell the user that if not, protein sequences will be fetched from Uniprot automatically.
 }
 }
 

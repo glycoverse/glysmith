@@ -225,7 +225,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "and steps about derived traits can be grouped into 'trait'.",
     "\n",
     "If essential information is missing (e.g., required arguments), ask the user for clarification instead of guessing.",
-    "Ask questions sparingly and only when the blueprint cannot be constructed without the missing information.",
     "If you need clarification, return ONLY:",
     "QUESTIONS:",
     "- question 1",
