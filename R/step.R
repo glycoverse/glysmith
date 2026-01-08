@@ -153,22 +153,28 @@ step_preprocess <- function(
 ) {
   signature <- rlang::expr_deparse(match.call())
   run_qc_plots <- function(ctx, exp, stage) {
-    plots <- list(
-      list(
-        id = "qc_missing_heatmap",
-        fun = function() glyclean::plot_missing_heatmap(exp),
-        desc = "Missing value heatmap."
-      ),
-      list(
-        id = "qc_missing_samples_bar",
-        fun = function() glyclean::plot_missing_bar(exp, on = "sample"),
-        desc = "Missing value bar plot on samples."
-      ),
-      list(
-        id = "qc_missing_variables_bar",
-        fun = function() glyclean::plot_missing_bar(exp, on = "variable"),
-        desc = "Missing value bar plot on variables."
-      ),
+    if (stage == "pre") {
+      plots <- list(
+        list(
+          id = "qc_missing_heatmap",
+          fun = function() glyclean::plot_missing_heatmap(exp),
+          desc = "Missing value heatmap."
+        ),
+        list(
+          id = "qc_missing_samples_bar",
+          fun = function() glyclean::plot_missing_bar(exp, on = "sample"),
+          desc = "Missing value bar plot on samples."
+        ),
+        list(
+          id = "qc_missing_variables_bar",
+          fun = function() glyclean::plot_missing_bar(exp, on = "variable"),
+          desc = "Missing value bar plot on variables."
+        )
+      )
+    } else {
+      plots <- list()
+    }
+    plots <- c(plots, list(
       list(
         id = "qc_tic_bar",
         fun = function() glyclean::plot_tic_bar(exp),
@@ -193,7 +199,7 @@ step_preprocess <- function(
         id = "qc_cv_dent",
         fun = function() glyclean::plot_cv_dent(exp, by = "group"),
         desc = "Coefficient of Variation (CV) density plot."
-      )
+      ))
     )
 
     if (!is.null(batch_col) && batch_col %in% colnames(exp$sample_info)) {
