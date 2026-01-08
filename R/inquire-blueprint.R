@@ -83,8 +83,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
     if (result$valid) {
       if (!is.null(result$explanation) && nzchar(result$explanation)) {
-        cli::cli_h3("Blueprint Description")
-        cli::cli_text(result$explanation)
+        .print_blueprint_explanation(result$explanation)
       }
       return(result$blueprint)
     }
@@ -438,12 +437,24 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       "i" = "Re-run with the missing details included in `description`."
     ))
   }
-  cli::cli_h3("Need more information")
+  cli::cli_h3(cli::style_bold(cli::col_blue("Need more information")))
+  cli::cli_text(cli::style_italic(cli::col_silver("Please answer the following questions:")))
+  list_id <- cli::cli_ol(.close = FALSE)
   answers <- purrr::map_chr(questions, function(question) {
-    cli::cli_text(question)
-    readline(prompt = "\u2139 Answer: ")
+    cli::cli_li(cli::style_bold(cli::col_cyan(question)))
+    prompt <- cli::style_bold(cli::col_green("  Answer: "))
+    readline(prompt = prompt)
   })
+  cli::cli_end(list_id)
   list(questions = questions, answers = answers)
+}
+
+.print_blueprint_explanation <- function(explanation) {
+  cli::cli_h3(cli::style_bold(cli::col_blue("Blueprint Description")))
+  desc <- cli::style_italic(cli::col_silver(explanation))
+  desc_id <- cli::cli_ul(.close = FALSE)
+  cli::cli_li(desc)
+  cli::cli_end(desc_id)
 }
 
 .get_rd_database <- function() {

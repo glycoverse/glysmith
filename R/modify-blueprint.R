@@ -65,8 +65,7 @@ modify_blueprint <- function(
 
     if (result$valid) {
       if (!is.null(result$explanation) && nzchar(result$explanation)) {
-        cli::cli_h3("Blueprint Description")
-        cli::cli_text(result$explanation)
+        .print_blueprint_explanation(result$explanation)
       }
       return(result$blueprint)
     }
