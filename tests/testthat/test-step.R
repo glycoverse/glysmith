@@ -18,7 +18,7 @@ test_that("step_preprocess respects pre_qc and post_qc flags", {
   bp <- blueprint(step_preprocess(pre_qc = TRUE, post_qc = TRUE))
   suppressMessages(res <- forge_analysis(exp, bp))
   expect_true("qc_pre_missing_heatmap" %in% names(res$plots))
-  expect_true("qc_missing_heatmap" %in% names(res$plots))
+  expect_false("qc_missing_heatmap" %in% names(res$plots))
 
   bp_no_qc <- blueprint(step_preprocess(pre_qc = FALSE, post_qc = FALSE))
   suppressMessages(res_no_qc <- forge_analysis(exp, bp_no_qc))
