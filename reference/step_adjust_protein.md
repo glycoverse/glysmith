@@ -68,6 +68,10 @@ only.*
   - RDS: a matrix/data.frame with row names as protein accessions and
     columns as sample names.
 
+- You MUST provide a detailed explanation of how to prepare the file.
+
+- With out the file, the step is invalid.
+
 ## See also
 
 [`glyclean::adjust_protein()`](https://glycoverse.github.io/glyclean/reference/adjust_protein.html)

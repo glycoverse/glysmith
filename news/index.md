@@ -15,12 +15,17 @@
 
 ### Minor improvements and bug fixes
 
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  now has a better UI/UX.
 - Update system prompt of
   [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
   to make it understand the usage of each step better.
 - Fix a bug that
   [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
   could not see step parameters.
+- Fix a bug in
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  that the LLM generated file paths could not be parsed on Windows.
 
 ## glysmith 0.5.1
 

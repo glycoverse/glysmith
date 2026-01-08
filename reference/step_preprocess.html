@@ -82,7 +82,7 @@ Can be NULL when no batch information is available.</p></dd>
 
 <dt id="arg-qc-name">qc_name<a class="anchor" aria-label="anchor" href="#arg-qc-name"></a></dt>
 <dd><p>The name of QC samples in the <code>group_col</code> column. Default is "QC".
-Only used when <code>group_col</code> is not NULL.</p></dd>
+Only used when <code>group_col</code> is not NULL. Can be NULL when no QC samples are available.</p></dd>
 
 
 <dt id="arg-normalize-to-try">normalize_to_try<a class="anchor" aria-label="anchor" href="#arg-normalize-to-try"></a></dt>
@@ -171,6 +171,12 @@ The previous <code>exp</code> is saved as <code>raw_exp</code> for reference.</p
 
 <p><em>This section is for AI in <code><a href="inquire_blueprint.html">inquire_blueprint()</a></code> only.</em></p><ul><li><p>Always include this step by default unless the user explicitly excludes it
 or tell you she/he has already performed preprocessing.</p></li>
+<li><p>Ask the user the column name for batch information if not provided.</p></li>
+<li><p>Ask the user if there are QC samples in the experiment if not provided. If so, ask the group name of the QC samples.
+Explain to the user that if it is "QC" for example, the samples with "QC" in the <code>group_col</code> column will be considered as QC samples.
+And these QC samples will be used for choosing the best normalization and imputation methods.
+Also mention that QC samples will be excluded after preprocessing.</p></li>
+<li><p>If the user intents to perform biomarker related analysis, set <code>remove_preset</code> to "biomarker".</p></li>
 <li><p>Use default values for other arguments unless the user explicitly specifies otherwise.</p></li>
 </ul></div>
     <div class="section level2">

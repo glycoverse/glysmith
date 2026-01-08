@@ -62,6 +62,9 @@ only.*
 
 - Include this step if the user explicitly asks for logo plot.
 
+- If used, ask user if a FASTA file is provided. Tell the user that if
+  not, protein sequences will be fetched from Uniprot automatically.
+
 ## See also
 
 [`glyvis::plot_logo()`](https://glycoverse.github.io/glyvis/reference/plot_logo.html)

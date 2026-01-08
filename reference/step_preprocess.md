@@ -41,7 +41,8 @@ step_preprocess(
 - qc_name:
 
   The name of QC samples in the `group_col` column. Default is "QC".
-  Only used when `group_col` is not NULL.
+  Only used when `group_col` is not NULL. Can be NULL when no QC samples
+  are available.
 
 - normalize_to_try:
 
@@ -198,6 +199,19 @@ only.*
 
 - Always include this step by default unless the user explicitly
   excludes it or tell you she/he has already performed preprocessing.
+
+- Ask the user the column name for batch information if not provided.
+
+- Ask the user if there are QC samples in the experiment if not
+  provided. If so, ask the group name of the QC samples. Explain to the
+  user that if it is "QC" for example, the samples with "QC" in the
+  `group_col` column will be considered as QC samples. And these QC
+  samples will be used for choosing the best normalization and
+  imputation methods. Also mention that QC samples will be excluded
+  after preprocessing.
+
+- If the user intents to perform biomarker related analysis, set
+  `remove_preset` to "biomarker".
 
 - Use default values for other arguments unless the user explicitly
   specifies otherwise.

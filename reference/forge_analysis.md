@@ -54,7 +54,7 @@ A `glysmith_result` object, with the following components:
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [127ms]
+#> ✔ Identification overview [91ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -113,10 +113,10 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.8s]
+#> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [266ms]
+#> ✔ Principal component analysis [267ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -128,7 +128,7 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [55ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [505ms]
+#> ✔ Volcano plot [498ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [41ms]
@@ -137,7 +137,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.8s]
+#> ✔ Derived trait calculation [1.9s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -146,10 +146,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [56ms]
+#> ✔ Differential trait analysis (limma) [53ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [76ms]
+#> ✔ Heatmap of significant traits [39ms]
 #> 
 print(result)
 #> 
