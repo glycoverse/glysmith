@@ -8,8 +8,10 @@
 
 ## Minor improvements and bug fixes
 
+* `inquire_blueprint()` now has a better UI/UX.
 * Update system prompt of `inquire_blueprint()` to make it understand the usage of each step better.
 * Fix a bug that `inquire_blueprint()` could not see step parameters.
+* Fix a bug in `inquire_blueprint()` that the LLM generated file paths could not be parsed on Windows.
 
 # glysmith 0.5.1
 
