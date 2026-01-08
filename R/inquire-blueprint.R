@@ -131,6 +131,15 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     error = function(e) e
   )
   if (inherits(parsed, "error")) {
+    normalized_json <- .normalize_windows_paths(json_text)
+    if (!identical(normalized_json, json_text)) {
+      parsed <- tryCatch(
+        jsonlite::fromJSON(normalized_json),
+        error = function(e) e
+      )
+    }
+  }
+  if (inherits(parsed, "error")) {
     return(list(valid = FALSE, error = paste("Invalid JSON output:", conditionMessage(parsed))))
   }
   if (!is.list(parsed)) {
