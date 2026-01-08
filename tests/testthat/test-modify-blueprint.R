@@ -1,5 +1,6 @@
 test_that("modify_blueprint includes current blueprint in prompt", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   bp <- blueprint(
     step_preprocess(),
@@ -29,6 +30,7 @@ test_that("modify_blueprint includes current blueprint in prompt", {
 
 test_that("modify_blueprint retries on invalid output", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   bp <- blueprint(step_preprocess())
   call_count <- 0

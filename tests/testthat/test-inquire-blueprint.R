@@ -1,6 +1,7 @@
 test_that("inquire_blueprint works with valid AI output", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   # Mock `ellmer::chat_deepseek` to return a chat object with a mocked `chat` method
   mock_chat_fun <- function(...) {
@@ -24,6 +25,7 @@ test_that("inquire_blueprint works with valid AI output", {
 test_that("inquire_blueprint supports branches", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) {
     paste0(
@@ -51,6 +53,7 @@ test_that("inquire_blueprint supports branches", {
 test_that("inquire_blueprint handles single step", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) {
     '{"explanation":"Run t-SNE.","steps":["step_tsne(on = \\"exp\\")"]}'
@@ -72,6 +75,7 @@ test_that("inquire_blueprint handles single step", {
 test_that("inquire_blueprint cleans AI output (code fences)", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) {
     "```json\n{\"explanation\":\"Preprocess.\",\"steps\":[\"step_preprocess()\"]}\n```"
@@ -92,6 +96,7 @@ test_that("inquire_blueprint cleans AI output (code fences)", {
 test_that("inquire_blueprint raises error on invalid format", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) "I am not a blueprint"
   local_mocked_bindings(
@@ -110,6 +115,7 @@ test_that("inquire_blueprint raises error on invalid format", {
 test_that("inquire_blueprint raises error on empty output", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) ""
   local_mocked_bindings(
@@ -128,6 +134,7 @@ test_that("inquire_blueprint raises error on empty output", {
 test_that("inquire_blueprint raises error on valid format but execution error", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   # step_nonexistent doesn't exist, so eval() should fail
   mock_chat_fun <- function(...) {
@@ -157,6 +164,7 @@ test_that("inquire_blueprint requires API key", {
 
 test_that("inquire_blueprint handles valid output immediately (mocked)", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   call_count <- 0
   mock_chat_fun <- function(...) {
@@ -181,6 +189,7 @@ test_that("inquire_blueprint handles valid output immediately (mocked)", {
 
 test_that("inquire_blueprint retries on invalid output", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   call_count <- 0
   error_feedback_received <- FALSE
@@ -215,6 +224,7 @@ test_that("inquire_blueprint retries on invalid output", {
 
 test_that("inquire_blueprint reflects full error details back to LLM", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   call_count <- 0
   prompt_received <- NULL
@@ -243,6 +253,7 @@ test_that("inquire_blueprint reflects full error details back to LLM", {
 
 test_that("inquire_blueprint fails after max retries", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   call_count <- 0
   mock_chat_fun <- function(...) {
@@ -268,6 +279,7 @@ test_that("inquire_blueprint fails after max retries", {
 
 test_that("inquire_blueprint handles clarification questions from LLM", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   call_count <- 0
   prompt_received <- NULL
@@ -315,6 +327,7 @@ test_that("inquire_blueprint handles clarification questions from LLM", {
 
 test_that("inquire_blueprint does not auto-ask missing step arguments", {
   skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
 
   call_count <- 0
   prompt_received <- NULL

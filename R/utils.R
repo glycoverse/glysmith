@@ -30,7 +30,8 @@
     .generate_glycan_fact(api_key),
     error = function(e) .glycan_fun_fact()
   )
-  cli::cli_text(cli::style_italic(cli::col_silver(fact)))
+  styled_fact <- cli::style_italic(cli::col_silver(fact))
+  cli::cli_text("{fact}", .envir = rlang::env(fact = styled_fact))
 }
 
 .generate_glycan_fact <- function(api_key, model = "deepseek-chat") {
