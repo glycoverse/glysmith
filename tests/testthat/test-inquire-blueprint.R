@@ -13,7 +13,7 @@ test_that("inquire_blueprint works with valid AI output", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  bp <- inquire_blueprint("dummy description")
+  suppressMessages(bp <- inquire_blueprint("dummy description"))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 2)
@@ -38,7 +38,7 @@ test_that("inquire_blueprint supports branches", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  bp <- inquire_blueprint("dummy description")
+  suppressMessages(bp <- inquire_blueprint("dummy description"))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 3)
@@ -62,7 +62,7 @@ test_that("inquire_blueprint handles single step", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  bp <- inquire_blueprint("dummy description")
+  suppressMessages(bp <- inquire_blueprint("dummy description"))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 1)
@@ -83,7 +83,7 @@ test_that("inquire_blueprint cleans AI output (code fences)", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  bp <- inquire_blueprint("dummy description")
+  suppressMessages(bp <- inquire_blueprint("dummy description"))
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 1)
   expect_equal(bp[[1]]$id, "preprocess")
@@ -101,7 +101,10 @@ test_that("inquire_blueprint raises error on invalid format", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  expect_error(inquire_blueprint("dummy description", max_retries = 0), "Failed to generate a valid blueprint")
+  expect_error(
+    suppressMessages(inquire_blueprint("dummy description", max_retries = 0)),
+    "Failed to generate a valid blueprint"
+  )
 })
 
 test_that("inquire_blueprint raises error on empty output", {
@@ -116,7 +119,10 @@ test_that("inquire_blueprint raises error on empty output", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  expect_error(inquire_blueprint("dummy description", max_retries = 0), "Failed to generate a valid blueprint")
+  expect_error(
+    suppressMessages(inquire_blueprint("dummy description", max_retries = 0)),
+    "Failed to generate a valid blueprint"
+  )
 })
 
 test_that("inquire_blueprint raises error on valid format but execution error", {
@@ -134,13 +140,19 @@ test_that("inquire_blueprint raises error on valid format but execution error", 
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
 
-  expect_error(inquire_blueprint("dummy description", max_retries = 0), "Failed to generate a valid blueprint")
+  expect_error(
+    suppressMessages(inquire_blueprint("dummy description", max_retries = 0)),
+    "Failed to generate a valid blueprint"
+  )
 })
 
 test_that("inquire_blueprint requires API key", {
   # No API key set
   withr::local_envvar(c(DEEPSEEK_API_KEY = ""))
-  expect_error(inquire_blueprint("dummy"), "API key for DeepSeek chat model is not set")
+  expect_error(
+    suppressMessages(inquire_blueprint("dummy")),
+    "API key for DeepSeek chat model is not set"
+  )
 })
 
 test_that("inquire_blueprint handles valid output immediately (mocked)", {
@@ -159,7 +171,7 @@ test_that("inquire_blueprint handles valid output immediately (mocked)", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
-  bp <- inquire_blueprint("test description", max_retries = 2)
+  suppressMessages(bp <- inquire_blueprint("test description", max_retries = 2))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 2)
@@ -294,7 +306,7 @@ test_that("inquire_blueprint handles clarification questions from LLM", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
-  bp <- inquire_blueprint("test description", max_retries = 1)
+  suppressMessages(bp <- inquire_blueprint("test description", max_retries = 1))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_equal(call_count, 2)
@@ -325,7 +337,7 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
-  bp <- inquire_blueprint("test description", max_retries = 1)
+  suppressMessages(bp <- inquire_blueprint("test description", max_retries = 1))
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_equal(call_count, 1)

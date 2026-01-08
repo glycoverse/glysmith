@@ -44,7 +44,7 @@ test_that("quench_result writes README.md based on meta", {
   if (fs::dir_exists(out_dir)) fs::dir_delete(out_dir)
 
   expect_snapshot(
-    quench_result(x, out_dir, plot_ext = "png", table_ext = "csv"),
+    suppressMessages(quench_result(x, out_dir, plot_ext = "png", table_ext = "csv")),
     transform = function(x) stringr::str_replace(x, "'.*'", "'<DIR_PATH>'")
   )
 
@@ -73,7 +73,10 @@ test_that("quench_result cancels when overwrite is declined", {
   writeLines("keep", sentinel)
 
   local_mocked_bindings(.ask_overwrite_dir = function() "n", .package = "glysmith")
-  expect_error(quench_result(x, out_dir), "Operation cancelled")
+  expect_error(
+    suppressMessages(quench_result(x, out_dir)),
+    "Operation cancelled"
+  )
   expect_true(fs::file_exists(sentinel))
 })
 
@@ -85,7 +88,7 @@ test_that("quench_result overwrites existing directory on confirmation", {
   writeLines("old", sentinel)
 
   local_mocked_bindings(.ask_overwrite_dir = function() "y", .package = "glysmith")
-  quench_result(x, out_dir)
+  suppressMessages(quench_result(x, out_dir))
 
   expect_false(fs::file_exists(sentinel))
   expect_true(fs::file_exists(fs::path(out_dir, "README.md")))
@@ -99,7 +102,10 @@ test_that("quench_result rejects invalid overwrite input", {
   writeLines("keep", sentinel)
 
   local_mocked_bindings(.ask_overwrite_dir = function() "maybe", .package = "glysmith")
-  expect_error(quench_result(x, out_dir), "Invalid input")
+  expect_error(
+    suppressMessages(quench_result(x, out_dir)),
+    "Invalid input"
+  )
   expect_true(fs::file_exists(sentinel))
 })
 

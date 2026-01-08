@@ -19,7 +19,7 @@ test_that("modify_blueprint includes current blueprint in prompt", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
-  bp_updated <- modify_blueprint(bp, "add a heatmap")
+  suppressMessages(bp_updated <- modify_blueprint(bp, "add a heatmap"))
 
   expect_true(grepl("step_preprocess\\(\\)", prompt_received))
   expect_true(grepl("step_pca\\(\\)", prompt_received))
@@ -61,5 +61,8 @@ test_that("modify_blueprint retries on invalid output", {
 test_that("modify_blueprint requires API key", {
   bp <- blueprint(step_preprocess())
   withr::local_envvar(c(DEEPSEEK_API_KEY = ""))
-  expect_error(modify_blueprint(bp, "dummy"), "API key for DeepSeek chat model is not set")
+  expect_error(
+    suppressMessages(modify_blueprint(bp, "dummy")),
+    "API key for DeepSeek chat model is not set"
+  )
 })

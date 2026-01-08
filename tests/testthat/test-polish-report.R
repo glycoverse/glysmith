@@ -3,7 +3,7 @@ test_that("polish_report works", {
   suppressMessages(result <- forge_analysis(exp))
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
-  polish_report(result, output_file, open = FALSE)
+  suppressMessages(polish_report(result, output_file, open = FALSE))
   expect_true(fs::file_exists(output_file))
 })
 
@@ -92,7 +92,9 @@ test_that("polish_report raises an error when API key is not set", {
   suppressMessages(result <- forge_analysis(exp, blueprint = bp))
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
-  expect_error(polish_report(result, output_file, open = FALSE, use_ai = TRUE))
+  expect_error(
+    suppressMessages(polish_report(result, output_file, open = FALSE, use_ai = TRUE))
+  )
 })
 
 test_that("polish_report captures AI errors", {
@@ -394,7 +396,10 @@ test_that("polish_report aborts when overwrite declined", {
   writeLines("existing", output_file)
 
   local_mocked_bindings(.ask_overwrite_file = function() "n", .package = "glysmith")
-  expect_error(polish_report(x, output_file, open = FALSE), "Operation cancelled")
+  expect_error(
+    suppressMessages(polish_report(x, output_file, open = FALSE)),
+    "Operation cancelled"
+  )
   expect_true(fs::file_exists(output_file))
 })
 
@@ -424,7 +429,7 @@ test_that("polish_report overwrites output when confirmed", {
     .package = "rmarkdown"
   )
 
-  rendered <- polish_report(x, output_file, open = FALSE)
+  suppressMessages(rendered <- polish_report(x, output_file, open = FALSE))
   expect_true(fs::file_exists(rendered))
 })
 
@@ -445,6 +450,9 @@ test_that("polish_report rejects invalid overwrite input", {
   writeLines("existing", output_file)
 
   local_mocked_bindings(.ask_overwrite_file = function() "maybe", .package = "glysmith")
-  expect_error(polish_report(x, output_file, open = FALSE), "Invalid input")
+  expect_error(
+    suppressMessages(polish_report(x, output_file, open = FALSE)),
+    "Invalid input"
+  )
   expect_true(fs::file_exists(output_file))
 })
