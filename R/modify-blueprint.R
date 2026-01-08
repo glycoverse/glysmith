@@ -60,6 +60,7 @@ modify_blueprint <- function(
       cli::cli_alert_info("Attempt {i}/{max_retries}: Retrying with feedback...")
     }
 
+    .print_ai_thinking(api_key)
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 

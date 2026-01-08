@@ -24,6 +24,52 @@
   readline(prompt = prompt)
 }
 
+.print_ai_thinking <- function(api_key) {
+  cli::cli_text(cli::style_bold(cli::col_blue("AI is thinking...")))
+  fact <- tryCatch(
+    .generate_glycan_fact(api_key),
+    error = function(e) .glycan_fun_fact()
+  )
+  cli::cli_text(cli::style_italic(cli::col_silver(fact)))
+}
+
+.generate_glycan_fact <- function(api_key, model = "deepseek-chat") {
+  system_prompt <- paste(
+    "You are a glycobiology tutor.",
+    "Provide one accurate, concise fact about glycans.",
+    "Use ASCII characters only.",
+    "Return a single sentence that starts with 'Do you know that'.",
+    "No bullets, no quotes, no extra text."
+  )
+  user_prompt <- "Return one sentence as instructed."
+  fact <- .ask_ai(system_prompt, user_prompt, api_key, model = model)
+  .normalize_glycan_fact(fact)
+}
+
+.normalize_glycan_fact <- function(fact) {
+  fact <- stringr::str_squish(as.character(fact))
+  fact <- stringr::str_remove(fact, "^[-*]\\s*")
+  fact <- stringr::str_remove(fact, "^[\"'`]+")
+  if (!stringr::str_detect(fact, stringr::regex("^Do you know that", ignore_case = TRUE))) {
+    fact <- paste0("Do you know that ", fact)
+  }
+  if (!stringr::str_detect(fact, "[.!?]$")) {
+    fact <- paste0(fact, ".")
+  }
+  fact
+}
+
+.glycan_fun_fact <- function() {
+  facts <- c(
+    "Do you know that glycans can be branched, creating huge diversity from a small set of monosaccharides?",
+    "Do you know that N-glycosylation commonly occurs at the sequon Asn-X-Ser/Thr in proteins?",
+    "Do you know that sialic acids often cap glycan chains and influence protein half-life in circulation?",
+    "Do you know that glycan structures are not directly encoded by the genome but assembled by enzymes?",
+    "Do you know that glycosylation can modulate cell-cell recognition and immune responses?"
+  )
+  sample(facts, 1)
+}
+
 .get_api_key <- function() {
   api_key <- Sys.getenv("DEEPSEEK_API_KEY")
   if (api_key == "") {

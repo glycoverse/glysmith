@@ -60,6 +60,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     }
 
     # Call AI
+    .print_ai_thinking(api_key)
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 
@@ -446,6 +447,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     readline(prompt = prompt)
   })
   cli::cli_end(list_id)
+  cat("\n")
   list(questions = questions, answers = answers)
 }
 
