@@ -25,7 +25,19 @@
 }
 
 .print_ai_thinking <- function(api_key) {
-  cli::cli_text(cli::style_bold(cli::col_blue("AI is thinking...")))
+  messages <- c(
+    "Forging the blueprint...",
+    "Hammering out the details...",
+    "Heating up the forge...",
+    "Shaping the workflow...",
+    "Tempering the analysis...",
+    "Burning in the blueprint...",
+    "Melting ideas into form...",
+    "Casting the analysis...",
+    "Analyzing the data...",
+    "Polishing the plan..."
+  )
+  cli::cli_text(cli::style_bold(cli::col_blue(sample(messages, 1))))
   fact <- tryCatch(
     .generate_glycan_fact(api_key),
     error = function(e) .glycan_fun_fact()
