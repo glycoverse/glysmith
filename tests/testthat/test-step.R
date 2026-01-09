@@ -26,6 +26,20 @@ test_that("step_preprocess respects pre_qc and post_qc flags", {
   expect_false("qc_missing_heatmap" %in% names(res_no_qc$plots))
 })
 
+# ----- step_subset_groups -----
+test_that("step_subset_groups filters exp and keeps full_exp", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(10)
+  bp <- blueprint(step_subset_groups(groups = c("H", "C")))
+  suppressMessages(res <- forge_analysis(exp, bp))
+
+  groups <- unique(as.character(res$data$exp$sample_info$group))
+  expect_setequal(groups, c("H", "C"))
+  expect_equal(levels(res$data$exp$sample_info$group), c("H", "C"))
+  expect_true("full_exp" %in% names(res$data))
+  expect_gt(length(unique(as.character(res$data$full_exp$sample_info$group))), length(groups))
+})
+
 # ----- step_ident_overview -----
 test_that("step_ident_overview generates summary", {
   exp <- glyexp::real_experiment |>

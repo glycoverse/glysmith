@@ -73,6 +73,9 @@ Tables generated:
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
 \item Include this step only if the user explicitly asks for t-test.
+\item If the experiment has more than 2 groups but the user wants a specific two-group
+comparison, ask which two groups to compare and include
+\code{step_subset_groups(groups = c("A", "B"))} before this step.
 }
 }
 

@@ -58,6 +58,7 @@ print.glysmith_step <- function(x, ...) {
 all_steps <- function() {
   steps <- list(
     step_preprocess(),
+    step_subset_groups(),
     step_adjust_protein(),
     step_ident_overview(),
     step_pca(),
@@ -285,6 +286,71 @@ step_preprocess <- function(
     },
     require = "exp",
     generate = "raw_exp",
+    signature = signature
+  )
+}
+
+#' Step: Subset Groups
+#'
+#' Subset the experiment to specific groups using the `group` column in sample information.
+#' This is useful when downstream steps require exactly two groups for comparison.
+#' Usually run after `step_preprocess()` and before DEA or enrichment steps.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to subset
+#'
+#' Data generated:
+#' - `full_exp`: The original experiment before subsetting
+#'
+#' This step overwrites `exp` in the context with the subset experiment.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Use this step when the experiment has more than 2 groups but the user wants a specific two-group comparison.
+#' - Ask the user which two groups to compare, and place this step before DEA and enrichment steps.
+#' - Use the order of the user-provided groups to set factor levels.
+#'
+#' @param groups Group names to keep. If `NULL`, this step will be skipped.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_subset_groups(groups = c("H", "C"))
+#' @export
+step_subset_groups <- function(groups = NULL) {
+  checkmate::assert_character(groups, min.len = 1, unique = TRUE, null.ok = TRUE)
+  signature <- rlang::expr_deparse(match.call())
+
+  step(
+    id = "subset_groups",
+    label = "Subset groups",
+    condition = function(ctx) {
+      if (is.null(groups)) {
+        return(list(check = FALSE, reason = "group subset is not provided"))
+      }
+      list(check = TRUE, reason = NULL)
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      available <- unique(as.character(exp$sample_info$group))
+      missing <- setdiff(groups, available)
+      if (length(missing) > 0) {
+        missing_txt <- paste(missing, collapse = ", ")
+        cli::cli_abort("Group(s) not found in experiment: {missing_txt}.")
+      }
+
+      full_exp <- exp
+      exp <- exp |>
+        glyexp::filter_obs(.data$group %in% groups)
+      exp$sample_info$group <- factor(exp$sample_info$group, levels = groups)
+
+      ctx <- ctx_add_data(ctx, "exp", exp)
+      ctx <- ctx_add_data(ctx, "full_exp", full_exp)
+      ctx
+    },
+    require = "exp",
+    generate = "full_exp",
     signature = signature
   )
 }
@@ -837,6 +903,9 @@ step_dea_limma <- function(
 #' *This section is for AI in [inquire_blueprint()] only.*
 #'
 #' - Include this step only if the user explicitly asks for t-test.
+#' - If the experiment has more than 2 groups but the user wants a specific two-group
+#'   comparison, ask which two groups to compare and include
+#'   `step_subset_groups(groups = c("A", "B"))` before this step.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -987,6 +1056,9 @@ step_dea_anova <- function(
 #' *This section is for AI in [inquire_blueprint()] only.*
 #'
 #' - Include this step only if the user explicitly asks for Wilcoxon test.
+#' - If the experiment has more than 2 groups but the user wants a specific two-group
+#'   comparison, ask which two groups to compare and include
+#'   `step_subset_groups(groups = c("A", "B"))` before this step.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -1948,6 +2020,9 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
 #'
 #' - Include this step if the user explicitly asks for ROC analysis,
 #'   or if he/she mentions "biomarker(s)" in the prompt.
+#' - If the experiment has more than 2 groups but the user wants a specific two-group
+#'   comparison, ask which two groups to compare and include
+#'   `step_subset_groups(groups = c("A", "B"))` before this step.
 #'
 #' @inheritParams glystats::gly_roc
 #'
