@@ -5,6 +5,7 @@
 * Add `step_adjust_protein()` for adjusting glycoform quantification by protein expression.
 * Add `step_logo()` for generating logo plots.
 * `inquire_blueprint()` now asks clarifying questions to better understand user requirements.
+* `inquire_blueprint()` now asks the user to confirm the blueprint before returning it.
 
 ## Minor improvements and bug fixes
 
