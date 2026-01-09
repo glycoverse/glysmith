@@ -44,7 +44,19 @@
     "glycoforms",
     "immune recognition",
     "glycan degradation",
-    "glycan nomenclature"
+    "glycan nomenclature",
+    "lectin-glycan interactions",
+    "glycan microarrays",
+    "O-glycosylation",
+    "enzymatic glycan synthesis",
+    "glycan analysis by mass spectrometry",
+    "glycan-mediated cell signaling",
+    "evolution of glycan structures",
+    "sialic acid diversity",
+    "glycan roles in disease",
+    "glycoengineering",
+    "glycan-protein interactions",
+    "therapeutic glycoproteins"
   ), 1)
   nonce <- sample.int(1000000L, 1)
   system_prompt <- paste(
