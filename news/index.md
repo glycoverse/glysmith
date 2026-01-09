@@ -2,6 +2,8 @@
 
 ## glysmith (development version)
 
+## glysmith 0.6.0
+
 ### New features
 
 - Add
