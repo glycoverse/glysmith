@@ -43,6 +43,9 @@ Tables generated:
 \item Include this step if needed.
 \item Leave \code{universe} to "all" (by default) unless the user explicitly mentions that
 the background should be the detected variables in \code{exp}.
+\item If the experiment has more than 2 groups but the user wants enrichment for a
+specific two-group comparison, ask which two groups to compare and include
+\code{step_subset_groups(groups = c("A", "B"))} before DEA and enrichment steps.
 }
 }
 

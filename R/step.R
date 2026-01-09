@@ -1504,6 +1504,9 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ..
 #' - Include this step if needed.
 #' - Leave `universe` to "all" (by default) unless the user explicitly mentions that
 #'   the background should be the detected variables in `exp`.
+#' - If the experiment has more than 2 groups but the user wants enrichment for a
+#'   specific two-group comparison, ask which two groups to compare and include
+#'   `step_subset_groups(groups = c("A", "B"))` before DEA and enrichment steps.
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
@@ -1551,6 +1554,9 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
 #' - Include this step if needed.
 #' - Leave `universe` to "all" (by default) unless the user explicitly mentions that
 #'   the background should be the detected variables in `exp`.
+#' - If the experiment has more than 2 groups but the user wants enrichment for a
+#'   specific two-group comparison, ask which two groups to compare and include
+#'   `step_subset_groups(groups = c("A", "B"))` before DEA and enrichment steps.
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
@@ -1599,6 +1605,9 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
 #' - Include this step if needed.
 #' - Leave `universe` to "all" (by default) unless the user explicitly mentions that
 #'   the background should be the detected variables in `exp`.
+#' - If the experiment has more than 2 groups but the user wants enrichment for a
+#'   specific two-group comparison, ask which two groups to compare and include
+#'   `step_subset_groups(groups = c("A", "B"))` before DEA and enrichment steps.
 #'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
