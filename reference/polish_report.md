@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [87ms]
+#> ✔ Identification overview [88ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -120,7 +120,7 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [314ms]
+#> ✔ Principal component analysis [310ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -129,13 +129,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [53ms]
+#> ✔ Differential expression analysis (limma) [55ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [440ms]
+#> ✔ Volcano plot [450ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [41ms]
+#> ✔ Heatmap of significant variables [42ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -153,8 +153,8 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [39ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmplZqyjg/file1c887667e825.html"
+#> [1] "/tmp/RtmpIhKOSl/file1c9f5da6b3b5.html"
 ```

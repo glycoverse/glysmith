@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [90ms]
+#> ✔ Identification overview [88ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -114,7 +114,7 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [262ms]
+#> ✔ Principal component analysis [269ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,7 +126,7 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [55ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [499ms]
+#> ✔ Volcano plot [495ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [41ms]
@@ -144,12 +144,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [57ms]
+#> ✔ Differential trait analysis (limma) [56ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [39ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmplZqyjg
+#> ✔ Result saved to /tmp/RtmpIhKOSl
 ```
