@@ -145,3 +145,11 @@
   )
   as.character(chat$chat(content, user_prompt))
 }
+
+#' Check interactive session for testable behavior
+#'
+#' @returns `TRUE` when running interactively.
+#' @noRd
+.is_interactive <- function() {
+  interactive() && !nzchar(Sys.getenv("TESTTHAT"))
+}

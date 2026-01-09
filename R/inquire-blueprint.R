@@ -452,7 +452,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
 .ask_inquiry_questions <- function(questions) {
   checkmate::assert_character(questions, min.len = 1)
-  if (!interactive()) {
+  if (!.is_interactive()) {
     cli::cli_abort(c(
       "LLM requires more information to continue.",
       "x" = "This prompt needs interactive input for clarification.",
@@ -491,7 +491,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   if (!is.null(explanation) && nzchar(explanation)) {
     .print_blueprint_explanation(explanation)
   }
-  if (!interactive()) {
+  if (!.is_interactive()) {
     return(bp)
   }
 
