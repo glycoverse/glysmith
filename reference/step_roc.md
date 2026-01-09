@@ -47,6 +47,10 @@ only.*
 - Include this step if the user explicitly asks for ROC analysis, or if
   he/she mentions "biomarker(s)" in the prompt.
 
+- If the experiment has more than 2 groups but the user wants a specific
+  two-group comparison, ask which two groups to compare and include
+  `step_subset_groups(groups = c("A", "B"))` before this step.
+
 ## See also
 
 [`glystats::gly_roc()`](https://glycoverse.github.io/glystats/reference/gly_roc.html),

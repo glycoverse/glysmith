@@ -117,6 +117,8 @@ generation.*
 - [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md)
   : Step: Reactome Enrichment Analysis on Differentially Expressed
   Variables
+- [`step_subset_groups()`](https://glycoverse.github.io/glysmith/reference/step_subset_groups.md)
+  : Step: Subset Groups
 - [`step_tsne()`](https://glycoverse.github.io/glysmith/reference/step_tsne.md)
   : Step: t-SNE
 - [`step_umap()`](https://glycoverse.github.io/glysmith/reference/step_umap.md)

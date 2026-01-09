@@ -125,6 +125,9 @@ If NULL (default), the first level of the group factor is used as the reference.
 
 
 <p><em>This section is for AI in <code><a href="inquire_blueprint.html">inquire_blueprint()</a></code> only.</em></p><ul><li><p>Include this step only if the user explicitly asks for t-test.</p></li>
+<li><p>If the experiment has more than 2 groups but the user wants a specific two-group
+comparison, ask which two groups to compare and include
+<code>step_subset_groups(groups = c("A", "B"))</code> before this step.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
