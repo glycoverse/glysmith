@@ -394,3 +394,89 @@ test_that("ask_inquiry_questions errors when non-interactive", {
   skip_if(interactive())
   expect_error(glysmith:::.ask_inquiry_questions("Question?"), "interactive input")
 })
+
+test_that("ask_blueprint_review uses readline prompt", {
+  prompt_text <- NULL
+  local_mocked_bindings(
+    readline = function(prompt) {
+      prompt_text <<- prompt
+      ""
+    },
+    .package = "base"
+  )
+
+  expect_equal(suppressMessages(glysmith:::.ask_blueprint_review()), "")
+  expect_true(grepl("Press ENTER", prompt_text, fixed = TRUE))
+})
+
+test_that("review_blueprint accepts blueprint on empty input", {
+  bp <- structure(list(), class = "glysmith_blueprint")
+  ask_count <- 0
+
+  local_mocked_bindings(
+    .is_interactive = function() TRUE,
+    .print_blueprint_explanation = function(...) NULL,
+    .ask_blueprint_review = function() {
+      ask_count <<- ask_count + 1
+      ""
+    },
+    modify_blueprint = function(...) stop("Unexpected modification."),
+    .package = "glysmith"
+  )
+
+  result <- suppressMessages(
+    glysmith:::.review_blueprint(
+      bp,
+      explanation = "desc",
+      exp = NULL,
+      group_col = "group",
+      model = "deepseek-reasoner",
+      max_retries = 1
+    )
+  )
+
+  expect_identical(result, bp)
+  expect_equal(ask_count, 1)
+})
+
+test_that("review_blueprint applies multiple refinements", {
+  bp <- structure(list(), class = "glysmith_blueprint")
+  bp_one <- structure(list(list(id = "one")), class = "glysmith_blueprint")
+  bp_two <- structure(list(list(id = "two")), class = "glysmith_blueprint")
+  responses <- c("add pca", "add heatmap", "")
+  call_count <- 0
+
+  local_mocked_bindings(
+    .is_interactive = function() TRUE,
+    .print_blueprint_explanation = function(...) NULL,
+    .ask_blueprint_review = function() {
+      response <- responses[[1]]
+      responses <<- responses[-1]
+      response
+    },
+    modify_blueprint = function(bp, description, exp, group_col, model, max_retries) {
+      call_count <<- call_count + 1
+      if (call_count == 1) {
+        expect_equal(description, "add pca")
+        return(bp_one)
+      }
+      expect_equal(description, "add heatmap")
+      bp_two
+    },
+    .package = "glysmith"
+  )
+
+  result <- suppressMessages(
+    glysmith:::.review_blueprint(
+      bp,
+      explanation = "desc",
+      exp = NULL,
+      group_col = "group",
+      model = "deepseek-reasoner",
+      max_retries = 1
+    )
+  )
+
+  expect_identical(result, bp_two)
+  expect_equal(call_count, 2)
+})

@@ -14,6 +14,9 @@
 #' which will namespace outputs with the branch prefix.
 #' If the LLM needs required information to proceed, it may ask clarifying questions
 #' interactively and then retry with your answers.
+#' After a blueprint is generated, the description is printed and, in interactive
+#' sessions, you can press ENTER to accept it or type new requirements to refine
+#' the blueprint. This review step can repeat until you accept the plan.
 #'
 #' Here are some examples that works:
 #'
@@ -85,10 +88,14 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     }
 
     if (result$valid) {
-      if (!is.null(result$explanation) && nzchar(result$explanation)) {
-        .print_blueprint_explanation(result$explanation)
-      }
-      return(result$blueprint)
+      return(.review_blueprint(
+        result$blueprint,
+        explanation = result$explanation,
+        exp = exp,
+        group_col = group_col,
+        model = model,
+        max_retries = max_retries
+      ))
     }
 
     # Handle failure
@@ -463,6 +470,60 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   cli::cli_end(list_id)
   cat("\n")
   list(questions = questions, answers = answers)
+}
+
+#' Review a blueprint and optionally refine it with new requirements
+#'
+#' Prints the blueprint description, prompts for new requirements, and uses the
+#' LLM to update the blueprint until the user accepts it.
+#'
+#' @param bp A `glysmith_blueprint` object.
+#' @param explanation Optional description returned by the LLM.
+#' @param exp Optional experiment metadata passed to [modify_blueprint()].
+#' @param group_col Group column name passed to [modify_blueprint()].
+#' @param model Model name passed to [modify_blueprint()].
+#' @param max_retries Maximum retries passed to [modify_blueprint()].
+#'
+#' @returns A confirmed `glysmith_blueprint` object.
+#' @noRd
+.review_blueprint <- function(bp, explanation, exp, group_col, model, max_retries) {
+  checkmate::assert_class(bp, "glysmith_blueprint")
+  if (!is.null(explanation) && nzchar(explanation)) {
+    .print_blueprint_explanation(explanation)
+  }
+  if (!interactive()) {
+    return(bp)
+  }
+
+  repeat {
+    response <- .ask_blueprint_review()
+    response <- stringr::str_trim(response)
+    if (!nzchar(response)) {
+      return(bp)
+    }
+    bp <- modify_blueprint(
+      bp = bp,
+      description = response,
+      exp = exp,
+      group_col = group_col,
+      model = model,
+      max_retries = max_retries
+    )
+  }
+}
+
+#' Ask the user to confirm or refine a blueprint
+#'
+#' This helper exists to keep the prompt and input on the same line (via
+#' `readline(prompt = ...)`) and to make the interactive behavior testable.
+#'
+#' @returns User input string. Press ENTER (empty input) to accept.
+#' @noRd
+.ask_blueprint_review <- function() {
+  prompt <- "\nLooks good? Press ENTER to accept, or type new requirements: "
+  response <- readline(prompt = prompt)
+  cat("\n")
+  response
 }
 
 .print_blueprint_explanation <- function(explanation) {
