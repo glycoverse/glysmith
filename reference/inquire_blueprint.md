@@ -52,7 +52,10 @@ ensure it's what you want. You can also create parallel analysis
 branches with `br("name", step_..., step_...)`, which will namespace
 outputs with the branch prefix. If the LLM needs required information to
 proceed, it may ask clarifying questions interactively and then retry
-with your answers.
+with your answers. After a blueprint is generated, the description is
+printed and, in interactive sessions, you can press ENTER to accept it
+or type new requirements to refine the blueprint. This review step can
+repeat until you accept the plan.
 
 Here are some examples that works:
 

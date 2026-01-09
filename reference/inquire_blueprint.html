@@ -97,7 +97,10 @@ Make sure to examine the returned blueprint carefully to ensure it's what you wa
 You can also create parallel analysis branches with <code>br("name", step_..., step_...)</code>,
 which will namespace outputs with the branch prefix.
 If the LLM needs required information to proceed, it may ask clarifying questions
-interactively and then retry with your answers.</p>
+interactively and then retry with your answers.
+After a blueprint is generated, the description is printed and, in interactive
+sessions, you can press ENTER to accept it or type new requirements to refine
+the blueprint. This review step can repeat until you accept the plan.</p>
 <p>Here are some examples that works:</p><ul><li><p>"I want to know what pathways are enriched for my differentially expressed glycoforms."</p></li>
 <li><p>"I want a heatmap and a pca plot. I have already performed preprocessing myself."</p></li>
 <li><p>"I have a glycomics dataset. I want to calculate derived traits and perform DEA on them."</p></li>

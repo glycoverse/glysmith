@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [84ms]
+#> ✔ Identification overview [86ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -123,10 +123,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [54ms]
+#> ✔ Differential expression analysis (limma) [53ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [487ms]
+#> ✔ Volcano plot [503ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [40ms]
@@ -135,7 +135,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.8s]
+#> ✔ Derived trait calculation [1.9s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -144,12 +144,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [52ms]
+#> ✔ Differential trait analysis (limma) [54ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [38ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/Rtmpfe494M
+#> ✔ Result saved to /tmp/RtmpWIgULQ
 ```
