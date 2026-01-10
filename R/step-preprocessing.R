@@ -25,7 +25,7 @@
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
 #'
-#' - By default, include this step after `step_preprocess()`.
+#' - By default, include this step ONLY after `step_preprocess()`.
 #' - You MUST provide the when parameter to specify when the QC is being run.
 #'
 #' @param when Character string indicating when this QC step is run.

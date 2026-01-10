@@ -50,7 +50,7 @@ When \code{when = "post"} or \code{NULL}, plots use the standard \code{qc_} pref
 
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
-\item By default, include this step after \code{step_preprocess()}.
+\item By default, include this step ONLY after \code{step_preprocess()}.
 \item You MUST provide the when parameter to specify when the QC is being run.
 }
 }
