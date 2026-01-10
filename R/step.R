@@ -14,6 +14,9 @@
 #' @param condition Optional function(ctx) returning a list of `check` and `reason`.
 #'   - `check` is TRUE/FALSE to decide execution.
 #'   - `reason` is a human-readable string to explain why `check` is FALSE.
+#' @param repeatable Whether this step can appear multiple times in a blueprint.
+#'   If TRUE, duplicate step IDs are allowed. Default is FALSE.
+#' @param retry Number of retry attempts on failure. Default is 0.
 #' @param signature The original call signature for display in messages.
 #'
 #' @returns A `glysmith_step` object.
@@ -27,6 +30,7 @@ step <- function(
   require = character(0),
   generate = character(0),
   condition = NULL,
+  repeatable = FALSE,
   retry = 0L,
   signature = NULL
 ) {
@@ -39,6 +43,7 @@ step <- function(
       require = require,
       generate = generate,
       condition = condition,
+      repeatable = repeatable,
       retry = retry,
       signature = signature %||% paste0("step_", id, "()")
     ),

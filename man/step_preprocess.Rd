@@ -5,8 +5,6 @@
 \title{Step: Preprocessing}
 \usage{
 step_preprocess(
-  pre_qc = FALSE,
-  post_qc = TRUE,
   batch_col = "batch",
   qc_name = "QC",
   normalize_to_try = NULL,
@@ -19,70 +17,29 @@ step_preprocess(
 )
 }
 \arguments{
-\item{pre_qc}{Whether to run QC plots before preprocessing.}
+\item{batch_col}{Column name for batch information (for QC plots and batch effect handling).}
 
-\item{post_qc}{Whether to run QC plots after preprocessing.}
+\item{qc_name}{Name of QC sample group (used for QC sample detection in preprocessing).}
 
-\item{batch_col}{The column name in sample_info for batches. Default is "batch".
-Can be NULL when no batch information is available.}
+\item{normalize_to_try}{Normalization methods to try during auto_clean.}
 
-\item{qc_name}{The name of QC samples in the \code{group_col} column. Default is "QC".
-Only used when \code{group_col} is not NULL. Can be NULL when no QC samples are available.}
+\item{impute_to_try}{Imputation methods to try during auto_clean.}
 
-\item{normalize_to_try}{Normalization functions to try. A list. Default includes:
-\itemize{
-\item \code{\link[glyclean:normalize_median]{normalize_median()}}: median normalization
-\item \code{\link[glyclean:normalize_median_abs]{normalize_median_abs()}}: absolute median normalization
-\item \code{\link[glyclean:normalize_total_area]{normalize_total_area()}}: total area mormalization
-\item \code{\link[glyclean:normalize_quantile]{normalize_quantile()}}: quantile normalization
-\item \code{\link[glyclean:normalize_loessf]{normalize_loessf()}}: LoessF normalization
-\item \code{\link[glyclean:normalize_loesscyc]{normalize_loesscyc()}}: LoessCyc normalization
-\item \code{\link[glyclean:normalize_rlr]{normalize_rlr()}}: RLR normalization
-\item \code{\link[glyclean:normalize_rlrma]{normalize_rlrma()}}: RLRMA normalization
-\item \code{\link[glyclean:normalize_rlrmacyc]{normalize_rlrmacyc()}}: RLRMAcyc normalization
-}}
+\item{remove_preset}{Preset for data removal: "discovery", "biomarker", or NULL.}
 
-\item{impute_to_try}{Imputation functions to try. A list. Default includes:
-\itemize{
-\item \code{\link[glyclean:impute_zero]{impute_zero()}}: zero imputation
-\item \code{\link[glyclean:impute_sample_min]{impute_sample_min()}}: sample-wise minimum imputation
-\item \code{\link[glyclean:impute_half_sample_min]{impute_half_sample_min()}}: half sample-wise minimum imputation
-\item \code{\link[glyclean:impute_sw_knn]{impute_sw_knn()}}: sample-wise KNN imputation
-\item \code{\link[glyclean:impute_fw_knn]{impute_fw_knn()}}: feature-wise KNN imputation
-\item \code{\link[glyclean:impute_bpca]{impute_bpca()}}: BPCA imputation
-\item \code{\link[glyclean:impute_ppca]{impute_ppca()}}: PPCA imputation
-\item \code{\link[glyclean:impute_svd]{impute_svd()}}: SVD imputation
-\item \code{\link[glyclean:impute_min_prob]{impute_min_prob()}}: minimum probability imputation
-\item \code{\link[glyclean:impute_miss_forest]{impute_miss_forest()}}: MissForest imputation
-}}
+\item{batch_prop_threshold}{Threshold for batch proportion filtering.}
 
-\item{remove_preset}{The preset for removing variables. Default is "discovery".
-Available presets:
-\itemize{
-\item "simple": remove variables with more than 50\% missing values.
-\item "discovery": more lenient, remove variables with more than 80\% missing values,
-but ensure less than 50\% of missing values in at least one group.
-\item "biomarker": more strict, remove variables with more than 40\% missing values,
-and ensure less than 60\% of missing values in all groups.
-}}
+\item{check_batch_confounding}{Whether to check for batch confounding.}
 
-\item{batch_prop_threshold}{The proportion of variables that must show significant batch effects to perform batch correction.
-Default is 0.3 (30\%).}
+\item{batch_confounding_threshold}{Threshold for batch confounding detection.}
 
-\item{check_batch_confounding}{Whether to check for confounding between batch and group variables.
-Default to TRUE.}
-
-\item{batch_confounding_threshold}{The threshold for Cramer's V to consider batch and group variables highly confounded.
-Only used when \code{check_batch_confounding} is TRUE. Default to 0.4.}
-
-\item{rep_col}{Column name for replicate information (for \code{glyclean::plot_rep_scatter()}).}
+\item{rep_col}{Column name for replicate information (for QC plots).}
 }
 \value{
 A \code{glysmith_step} object.
 }
 \description{
 Preprocess the experiment using \code{glyclean::auto_clean()}.
-Optionally run QC plots before and/or after preprocessing.
 This step can be omitted if the experiment is already preprocessed.
 }
 \details{
@@ -96,22 +53,6 @@ Data generated:
 \item \code{raw_exp}: The raw experiment (previous \code{exp}, saved for reference)
 }
 
-Plots generated when \code{post_qc = TRUE}:
-\itemize{
-\item \code{qc_missing_heatmap}: Missing value heatmap
-\item \code{qc_missing_samples_bar}: Missing value bar plot on samples
-\item \code{qc_missing_variables_bar}: Missing value bar plot on variables
-\item \code{qc_tic_bar}: Total intensity count bar plot
-\item \code{qc_rank_abundance}: Rank abundance plot
-\item \code{qc_int_boxplot}: Intensity boxplot
-\item \code{qc_rle}: RLE plot
-\item \code{qc_cv_dent}: CV density plot
-\item \code{qc_batch_pca}: PCA score plot colored by batch (if \code{batch_col} provided)
-\item \code{qc_rep_scatter}: Replicate scatter plots (if \code{rep_col} provided)
-}
-
-When \code{pre_qc = TRUE}, the same plots are generated with the \code{qc_pre_} prefix.
-
 This step is special in that it silently overwrites the \code{exp} data with the preprocessed experiment.
 This ensures that no matter if preprocessing is performed or not,
 the "active" experiment is always under the key \code{exp}.
@@ -123,8 +64,8 @@ The previous \code{exp} is saved as \code{raw_exp} for reference.
 \itemize{
 \item Always include this step by default unless the user explicitly excludes it
 or tell you she/he has already performed preprocessing.
-\item Ask the user the column name for batch information if not provided.
-\item Ask the user if there are QC samples in the experiment if not provided. If so, ask the group name of the QC samples.
+\item Ask for the column name for batch information if not provided.
+\item Ask for QC samples in the experiment if not provided. If so, ask the group name of the QC samples.
 Explain to the user that if it is "QC" for example, the samples with "QC" in the \code{group_col} column will be considered as QC samples.
 And these QC samples will be used for choosing the best normalization and imputation methods.
 Also mention that QC samples will be excluded after preprocessing.

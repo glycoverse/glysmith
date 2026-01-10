@@ -82,23 +82,35 @@ validate_blueprint <- function(blueprint) {
 
 #' Check any duplicated steps in the blueprint.
 #'
+#' Repeatable steps (with `repeatable = TRUE`) are allowed to have duplicate IDs.
+#'
 #' @param blueprint A `glysmith_blueprint` object.
 #'
 #' @returns NULL. Raises an error if the blueprint is not valid.
 #' @noRd
 .validate_blueprint_duplicates <- function(blueprint) {
-  steps <- names(blueprint)
-  duplicated_steps <- names(table(steps))[table(steps) > 1]
-  if (length(duplicated_steps) > 0) {
-    # Find signatures of duplicated steps
-    duplicated_sigs <- purrr::map_chr(
-      blueprint[duplicated_steps],
-      ~ .x$signature
-    )
-    cli::cli_abort(c(
-      "Blueprint cannot contain duplicated steps.",
-      "x" = "{.code {duplicated_sigs}} {?is/are} duplicated."
-    ))
+  step_ids <- names(blueprint)
+  step_counts <- table(step_ids)
+
+  # Find IDs that appear more than once
+  duplicated_ids <- names(step_counts)[step_counts > 1]
+
+  if (length(duplicated_ids) > 0) {
+    # For each duplicated ID, check if all steps with that ID are repeatable
+    for (id in duplicated_ids) {
+      dup_steps <- blueprint[names(blueprint) == id]
+      all_repeatable <- purrr::every(dup_steps, ~ isTRUE(.x$repeatable))
+
+      if (!all_repeatable) {
+        # Find signatures of non-repeatable duplicated steps
+        non_repeatable_dups <- purrr::keep(dup_steps, ~ isFALSE(.x$repeatable))
+        duplicated_sigs <- purrr::map_chr(non_repeatable_dups, ~ .x$signature)
+        cli::cli_abort(c(
+          "Blueprint cannot contain duplicated steps.",
+          "x" = "{.code {duplicated_sigs}} {?is/are} duplicated."
+        ))
+      }
+    }
   }
 }
 
