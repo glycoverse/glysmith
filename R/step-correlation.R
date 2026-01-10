@@ -97,6 +97,35 @@ step_correlation <- function(
       ctx
     },
     require = on,
-    signature = signature
+    signature = signature,
+    report = function(x) {
+      cor_tbl <- x$tables[[id]]
+      if (is.null(cor_tbl) || nrow(cor_tbl) == 0) {
+        return("No correlation results available.")
+      }
+
+      # Calculate median correlation
+      median_cor <- median(cor_tbl$cor, na.rm = TRUE)
+
+      # Find highest correlation pair
+      top_row <- cor_tbl |>
+        dplyr::arrange(dplyr::desc(abs(.data$cor))) |>
+        dplyr::slice_head(n = 1)
+      highest_cor <- top_row$cor
+      item1 <- top_row[[1]]
+      item2 <- top_row[[2]]
+
+      # Determine column names based on on_cor
+      col1 <- if ("variable1" %in% colnames(cor_tbl)) "variable1" else "sample1"
+      col2 <- if ("variable2" %in% colnames(cor_tbl)) "variable2" else "sample2"
+
+      lines <- c(
+        paste0("Correlation analysis was performed on ", on, " (", on_cor, "s) using the ", method, " method."),
+        paste0("Number of pairs analyzed: ", nrow(cor_tbl), "."),
+        paste0("Median correlation coefficient: ", round(median_cor, 3), "."),
+        paste0("Highest correlation: ", round(highest_cor, 3), " between ", top_row[[col1]], " and ", top_row[[col2]], ".")
+      )
+      paste(lines, collapse = "\n")
+    }
   )
 }
