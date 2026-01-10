@@ -554,7 +554,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 #' @returns User input string. Press ENTER (empty input) to accept.
 #' @noRd
 .ask_blueprint_review <- function() {
-  prompt <- "\nLooks good? Press ENTER to accept, or type new requirements: "
+  cli::cli_h3(cli::style_bold(cli::col_blue("Review Blueprint")))
+  prompt <- cli::style_bold(cli::col_green("Looks good? Press ENTER to accept, or type new requirements: "))
   response <- readline(prompt = prompt)
   cat("\n")
   response
