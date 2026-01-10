@@ -22,6 +22,7 @@ all_steps <- function() {
     step_dea_wilcox(),
     step_dea_anova(),
     step_dea_kruskal(),
+    step_cox(),
     step_volcano(),
     step_sig_enrich_go(),
     step_sig_enrich_kegg(),
