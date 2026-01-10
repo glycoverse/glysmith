@@ -562,7 +562,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
 .print_blueprint_explanation <- function(explanation) {
   cli::cli_h3(cli::style_bold(cli::col_blue("Blueprint Description")))
-  desc <- cli::style_italic(cli::col_silver(explanation))
+  desc <- explanation
   desc_id <- cli::cli_ul(.close = FALSE)
   cli::cli_li(desc)
   cli::cli_end(desc_id)
