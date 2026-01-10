@@ -387,10 +387,10 @@ step_plsda <- function(
       q2_cum <- model_df[["Q2(cum)"]][1]
 
       vip_tbl <- x$tables[[paste0(id, "_vip")]]
-      n_vip_gt_1 <- sum(vip_tbl$vip > 1, na.rm = TRUE)
+      n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
 
       top5 <- vip_tbl |>
-        dplyr::arrange(dplyr::desc(vip)) |>
+        dplyr::arrange(dplyr::desc(.data$vip)) |>
         dplyr::slice_head(n = 5)
       top5_vars <- top5$variable
 
@@ -552,10 +552,10 @@ step_oplsda <- function(
       q2_cum <- model_df[["Q2(cum)"]][1]
 
       vip_tbl <- x$tables[[paste0(id, "_vip")]]
-      n_vip_gt_1 <- sum(vip_tbl$vip > 1, na.rm = TRUE)
+      n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
 
       top5 <- vip_tbl |>
-        dplyr::arrange(dplyr::desc(vip)) |>
+        dplyr::arrange(dplyr::desc(.data$vip)) |>
         dplyr::slice_head(n = 5)
       top5_vars <- top5$variable
 

@@ -105,7 +105,7 @@ step_correlation <- function(
       }
 
       # Calculate median correlation
-      median_cor <- median(cor_tbl$cor, na.rm = TRUE)
+      median_cor <- stats::median(cor_tbl$cor, na.rm = TRUE)
 
       # Find highest correlation pair
       top_row <- cor_tbl |>

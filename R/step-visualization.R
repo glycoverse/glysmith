@@ -192,9 +192,9 @@ step_sig_boxplot <- function(on = "sig_exp", n_top = 25, ...) {
         # Select top n_top variables by adjusted p-value (unique)
         top_vars <- tidy_res |>
           dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
-          dplyr::distinct(variable, .keep_all = TRUE) |>
+          dplyr::distinct(.data$variable, .keep_all = TRUE) |>
           dplyr::slice_head(n = min(n_top, 25)) |>
-          dplyr::pull(variable)
+          dplyr::pull(.data$variable)
 
         exp <- exp |>
           glyexp::filter_var(.data$variable %in% top_vars)

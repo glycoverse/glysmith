@@ -354,7 +354,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
   # Use dplyr::glimpse for compact summary
   # Capture output and add highlighting for group column
-  glimpse_output <- capture.output(dplyr::glimpse(tbl))
+  glimpse_output <- utils::capture.output(dplyr::glimpse(tbl))
 
   # Remove header line from glimpse (e.g., "Rows: 100")
   glimpse_output <- glimpse_output[-1]
