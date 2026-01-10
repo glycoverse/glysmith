@@ -428,6 +428,7 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' This blueprint contains the following steps:
 #' - step_ident_overview(): Summarize the experiment using `glyexp::summarize_experiment()`.
 #' - step_preprocess(): Preprocess the data using `glyclean::auto_clean()`.
+#' - step_plot_qc(when = "post"): Plot QC plots using `glyclean::plot_qc()`.
 #' - step_pca(): Principal component analysis using `glystats::gly_pca()`,
 #'   and plot the PCA using `glyvis::plot_pca()`.
 #' - step_dea_limma(): Differential analysis using `glystats::gly_limma()`.
@@ -456,6 +457,7 @@ blueprint_default <- function(preprocess = TRUE, enrich = TRUE, traits = TRUE) {
     steps <- append(steps, list(step_preprocess()))
   }
   steps <- append(steps, list(
+    step_plot_qc(when = "post"),
     step_pca(),
     step_dea_limma(),
     step_volcano(),
