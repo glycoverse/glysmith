@@ -4,10 +4,11 @@
 #' @noRd
 all_steps <- function() {
   steps <- list(
+    step_ident_overview(),
+    step_plot_qc(),
     step_preprocess(),
     step_subset_groups(),
     step_adjust_protein(),
-    step_ident_overview(),
     step_correlation(),
     step_pca(),
     step_tsne(),

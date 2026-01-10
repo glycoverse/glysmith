@@ -12,18 +12,45 @@ test_that("step_preprocess overwrites exp and writes raw_exp", {
   expect_false(sum(new_exp$expr_mat, na.rm = TRUE) == old_sum)
 })
 
-test_that("step_preprocess respects pre_qc and post_qc flags", {
+test_that("step_plot_qc generates plots with correct prefixes", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
-  bp <- blueprint(step_preprocess(pre_qc = TRUE, post_qc = TRUE))
-  suppressMessages(res <- forge_analysis(exp, bp))
-  expect_true("qc_pre_missing_heatmap" %in% names(res$plots))
-  expect_false("qc_missing_heatmap" %in% names(res$plots))
 
-  bp_no_qc <- blueprint(step_preprocess(pre_qc = FALSE, post_qc = FALSE))
-  suppressMessages(res_no_qc <- forge_analysis(exp, bp_no_qc))
-  expect_false("qc_pre_missing_heatmap" %in% names(res_no_qc$plots))
-  expect_false("qc_missing_heatmap" %in% names(res_no_qc$plots))
+  # Test pre-QC with qc_pre_ prefix (includes missing value plots)
+  bp_pre <- blueprint(step_plot_qc(when = "pre"))
+  suppressMessages(res_pre <- forge_analysis(exp, bp_pre))
+  expect_true("qc_pre_missing_heatmap" %in% names(res_pre$plots))
+  expect_false("qc_missing_heatmap" %in% names(res_pre$plots))
+  expect_true("qc_pre_tic_bar" %in% names(res_pre$plots))  # common plot with pre_ prefix
+
+  # Test post-QC with standard qc_ prefix (missing value plots are pre-only)
+  bp_post <- blueprint(step_plot_qc(when = "post"))
+  suppressMessages(res_post <- forge_analysis(exp, bp_post))
+  expect_true("qc_tic_bar" %in% names(res_post$plots))  # common plot uses standard prefix
+  expect_false("qc_pre_tic_bar" %in% names(res_post$plots))
+})
+
+test_that("step_plot_qc can appear twice in a blueprint", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(10)
+
+  bp <- blueprint(
+    step_plot_qc(when = "pre"),
+    step_preprocess(),
+    step_plot_qc(when = "post")
+  )
+  expect_equal(length(bp), 3)
+  expect_equal(names(bp)[1], "plot_qc_pre")
+  expect_equal(names(bp)[3], "plot_qc_post")
+
+  suppressMessages(res <- forge_analysis(exp, bp))
+  # Pre-QC has pre_ prefix for all plots including common ones
+  expect_true("qc_pre_missing_heatmap" %in% names(res$plots))
+  expect_true("qc_pre_tic_bar" %in% names(res$plots))
+  # Post-QC has standard prefix for common plots (missing plots are pre-only)
+  expect_true("qc_tic_bar" %in% names(res$plots))
+  # Both pre and post QC plots exist
+  expect_true("qc_pre_tic_bar" %in% names(res$plots))
 })
 
 # ----- step_subset_groups -----
