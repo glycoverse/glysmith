@@ -15,6 +15,7 @@ all_steps <- function() {
     step_plsda(),
     step_heatmap(),
     step_logo(),
+    step_sig_boxplot(),
     step_dea_limma(),
     step_dea_ttest(),
     step_dea_wilcox(),
