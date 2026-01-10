@@ -273,8 +273,7 @@ step_umap <- function(
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
 #'
-#' - Include this step when users want supervised dimensionality reduction with group information.
-#' - PLS-DA is appropriate when you have known groups and want to find variables that discriminate them.
+#' - Include this step when users explicitly asks for PLS-DA.
 #'
 #' @param on Name of the experiment to run PLS-DA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
@@ -434,9 +433,9 @@ step_plsda <- function(
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
 #'
-#' - Include this step when users want supervised dimensionality reduction for binary classification.
-#' - OPLS-DA is appropriate when you have exactly 2 groups and want to separate predictive from orthogonal variation.
-#' - Consider using this after a DEA step to focus on significant variables.
+#' - Include this step when users explicitly asks for OPLS-DA.
+#' - This step only works with binary classification (exactly 2 groups).
+#'   If multiple groups are found, ask if `step_subset_groups()` should be run first.
 #'
 #' @param on Name of the experiment to run OPLS-DA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".

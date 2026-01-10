@@ -66,7 +66,7 @@ Tables generated (with suffixes):
 \itemize{
 \item Include this step when users want to identify variables associated with survival outcomes.
 \item This step requires survival data (time and event columns) in the sample information.
-\item Use \code{time_col} and \code{event_col} parameters to specify the column names for survival data.
+\item Always ask for the column names for survival data, unless explicitly provided.
 }
 }
 

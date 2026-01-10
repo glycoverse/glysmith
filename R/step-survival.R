@@ -28,7 +28,7 @@
 #'
 #' - Include this step when users want to identify variables associated with survival outcomes.
 #' - This step requires survival data (time and event columns) in the sample information.
-#' - Use `time_col` and `event_col` parameters to specify the column names for survival data.
+#' - Always ask for the column names for survival data, unless explicitly provided.
 #'
 #' @param on Name of the experiment to run Cox regression on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".

@@ -55,9 +55,9 @@ Plots generated (with suffixes):
 
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
-\item Include this step when users want supervised dimensionality reduction for binary classification.
-\item OPLS-DA is appropriate when you have exactly 2 groups and want to separate predictive from orthogonal variation.
-\item Consider using this after a DEA step to focus on significant variables.
+\item Include this step when users explicitly asks for OPLS-DA.
+\item This step only works with binary classification (exactly 2 groups).
+If multiple groups are found, ask if \code{step_subset_groups()} should be run first.
 }
 }
 

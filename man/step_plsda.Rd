@@ -53,8 +53,7 @@ Plots generated (with suffixes):
 
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
-\item Include this step when users want supervised dimensionality reduction with group information.
-\item PLS-DA is appropriate when you have known groups and want to find variables that discriminate them.
+\item Include this step when users explicitly asks for PLS-DA.
 }
 }
 
