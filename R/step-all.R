@@ -8,6 +8,7 @@ all_steps <- function() {
     step_subset_groups(),
     step_adjust_protein(),
     step_ident_overview(),
+    step_correlation(),
     step_pca(),
     step_tsne(),
     step_umap(),
