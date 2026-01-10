@@ -11,6 +11,8 @@ all_steps <- function() {
     step_pca(),
     step_tsne(),
     step_umap(),
+    step_oplsda(),
+    step_plsda(),
     step_heatmap(),
     step_logo(),
     step_dea_limma(),

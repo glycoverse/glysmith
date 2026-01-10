@@ -244,3 +244,304 @@ step_umap <- function(
     signature = signature
   )
 }
+
+#' Step: Partial Least Squares Discriminant Analysis (PLS-DA)
+#'
+#' Perform PLS-DA using `glystats::gly_plsda()` and plot it with `glyvis::plot_plsda()`.
+#' PLS-DA is a supervised method that finds components maximizing covariance between
+#' predictors and the response variable (group membership).
+#'
+#' @details
+#' Data required:
+#' - `exp` (if `on = "exp"`): The experiment to run PLS-DA on
+#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PLS-DA on
+#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run PLS-DA on
+#'
+#' Tables generated (with suffixes):
+#' - `plsda_samples`: A table containing the PLS-DA scores for each sample
+#' - `plsda_variables`: A table containing the PLS-DA loadings for each variable
+#' - `plsda_variance`: A table containing the explained variance for each component
+#' - `plsda_vip`: A table containing the Variable Importance in Projection (VIP) scores
+#' - `plsda_perm_test`: A table containing permutation test results
+#'
+#' Plots generated (with suffixes):
+#' - `plsda_scores`: A PLS-DA score plot colored by group
+#' - `plsda_loadings`: A PLS-DA loading plot
+#' - `plsda_variance`: A PLS-DA variance (scree) plot
+#' - `plsda_vip`: A PLS-DA VIP score plot
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step when users want supervised dimensionality reduction with group information.
+#' - PLS-DA is appropriate when you have known groups and want to find variables that discriminate them.
+#'
+#' @param on Name of the experiment to run PLS-DA on.
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#' @param ncomp Number of components to include. Default is 2.
+#' @param scale Logical indicating whether to scale the data. Default is TRUE.
+#' @param ... Additional arguments passed to `glystats::gly_plsda()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_plsda()
+#' step_plsda(ncomp = 3)
+#' @seealso [glystats::gly_plsda()], [glyvis::plot_plsda()]
+#' @export
+step_plsda <- function(
+  on = "exp",
+  ncomp = 2,
+  scale = TRUE,
+  ...
+) {
+  rlang::check_installed("ropls")
+  signature <- rlang::expr_deparse(match.call())
+  plsda_args <- rlang::list2(...)
+  on_meta <- .resolve_on(on)
+  id <- paste0("plsda", on_meta$id_suffix)
+
+  step(
+    id = id,
+    label = paste0("Partial least squares discriminant analysis", on_meta$label_suffix),
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, on)
+      plsda_res <- rlang::exec(
+        glystats::gly_plsda,
+        exp,
+        ncomp = ncomp,
+        scale = scale,
+        !!!plsda_args
+      )
+      tidy_res <- plsda_res$tidy_result
+
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_samples"),
+        tidy_res$samples,
+        paste0("PLS-DA scores for each sample of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_variables"),
+        tidy_res$variables,
+        paste0("PLS-DA loadings for each variable of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_variance"),
+        tidy_res$variance,
+        paste0("PLS-DA explained variance of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_vip"),
+        tidy_res$vip,
+        paste0("PLS-DA VIP scores of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_perm_test"),
+        tidy_res$perm_test,
+        paste0("PLS-DA permutation test results of ", on, ".")
+      )
+
+      p_scores <- glyvis::plot_plsda(plsda_res, type = "scores")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_scores"),
+        p_scores,
+        paste0("PLS-DA score plot colored by group of ", on, ".")
+      )
+      p_loadings <- glyvis::plot_plsda(plsda_res, type = "loadings")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_loadings"),
+        p_loadings,
+        paste0("PLS-DA loading plot of ", on, ".")
+      )
+      p_variance <- glyvis::plot_plsda(plsda_res, type = "variance")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_variance"),
+        p_variance,
+        paste0("PLS-DA variance plot of ", on, ".")
+      )
+      p_vip <- glyvis::plot_plsda(plsda_res, type = "vip")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_vip"),
+        p_vip,
+        paste0("PLS-DA VIP score plot of ", on, ".")
+      )
+
+      ctx
+    },
+    require = on,
+    signature = signature
+  )
+}
+
+#' Step: Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA)
+#'
+#' Perform OPLS-DA using `glystats::gly_oplsda()` and plot it with `glyvis::plot_oplsda()`.
+#' OPLS-DA separates variation into predictive (related to group) and orthogonal (unrelated) components.
+#' This step only works with binary classification (exactly 2 groups).
+#'
+#' @details
+#' Data required:
+#' - `exp` (if `on = "exp"`): The experiment to run OPLS-DA on
+#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run OPLS-DA on
+#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run OPLS-DA on
+#'
+#' Tables generated (with suffixes):
+#' - `oplsda_samples`: A table containing the OPLS-DA scores for each sample
+#' - `oplsda_variables`: A table containing the OPLS-DA loadings for each variable
+#' - `oplsda_variance`: A table containing the explained variance for each component
+#' - `oplsda_vip`: A table containing the Variable Importance in Projection (VIP) scores
+#' - `oplsda_perm_test`: A table containing permutation test results
+#'
+#' Plots generated (with suffixes):
+#' - `oplsda_scores`: An OPLS-DA score plot colored by group
+#' - `oplsda_loadings`: An OPLS-DA loading plot
+#' - `oplsda_variance`: An OPLS-DA variance (scree) plot
+#' - `oplsda_vip`: An OPLS-DA VIP score plot
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step when users want supervised dimensionality reduction for binary classification.
+#' - OPLS-DA is appropriate when you have exactly 2 groups and want to separate predictive from orthogonal variation.
+#' - Consider using this after a DEA step to focus on significant variables.
+#'
+#' @param on Name of the experiment to run OPLS-DA on.
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#' @param pred_i Number of predictive components to include. Default is 1.
+#' @param ortho_i Number of orthogonal components to include. Default is NA (automatic).
+#' @param scale Logical indicating whether to scale the data. Default is TRUE.
+#' @param ... Additional arguments passed to `glystats::gly_oplsda()`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_oplsda()
+#' step_oplsda(pred_i = 1, ortho_i = 1)
+#' @seealso [glystats::gly_oplsda()], [glyvis::plot_oplsda()]
+#' @export
+step_oplsda <- function(
+  on = "exp",
+  pred_i = 1,
+  ortho_i = NA,
+  scale = TRUE,
+  ...
+) {
+  rlang::check_installed("ropls")
+  signature <- rlang::expr_deparse(match.call())
+  oplsda_args <- rlang::list2(...)
+  on_meta <- .resolve_on(on)
+  id <- paste0("oplsda", on_meta$id_suffix)
+
+  step(
+    id = id,
+    label = paste0("Orthogonal partial least squares discriminant analysis", on_meta$label_suffix),
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, on)
+      oplsda_res <- rlang::exec(
+        glystats::gly_oplsda,
+        exp,
+        pred_i = pred_i,
+        ortho_i = ortho_i,
+        scale = scale,
+        !!!oplsda_args
+      )
+      tidy_res <- oplsda_res$tidy_result
+
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_samples"),
+        tidy_res$samples,
+        paste0("OPLS-DA scores for each sample of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_variables"),
+        tidy_res$variables,
+        paste0("OPLS-DA loadings for each variable of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_variance"),
+        tidy_res$variance,
+        paste0("OPLS-DA explained variance of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_vip"),
+        tidy_res$vip,
+        paste0("OPLS-DA VIP scores of ", on, ".")
+      )
+      ctx <- ctx_add_table(
+        ctx,
+        paste0(id, "_perm_test"),
+        tidy_res$perm_test,
+        paste0("OPLS-DA permutation test results of ", on, ".")
+      )
+
+      p_scores <- glyvis::plot_oplsda(oplsda_res, type = "scores")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_scores"),
+        p_scores,
+        paste0("OPLS-DA score plot colored by group of ", on, ".")
+      )
+      p_loadings <- glyvis::plot_oplsda(oplsda_res, type = "loadings")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_loadings"),
+        p_loadings,
+        paste0("OPLS-DA loading plot of ", on, ".")
+      )
+      p_variance <- glyvis::plot_oplsda(oplsda_res, type = "variance")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_variance"),
+        p_variance,
+        paste0("OPLS-DA variance plot of ", on, ".")
+      )
+      p_vip <- glyvis::plot_oplsda(oplsda_res, type = "vip")
+      ctx <- ctx_add_plot(
+        ctx,
+        paste0(id, "_vip"),
+        p_vip,
+        paste0("OPLS-DA VIP score plot of ", on, ".")
+      )
+
+      ctx
+    },
+    require = on,
+    signature = signature,
+    condition = function(ctx) {
+      exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
+      if (is.null(exp)) {
+        return(list(check = FALSE, reason = "Experiment not found."))
+      }
+      sample_info <- glyexp::get_sample_info(exp)
+      group_col <- ctx$group_col
+      if (!group_col %in% colnames(sample_info)) {
+        return(list(check = FALSE, reason = paste0("Group column '", group_col, "' not found.")))
+      }
+      n_groups <- nlevels(sample_info[[group_col]])
+      if (n_groups != 2) {
+        groups <- levels(sample_info[[group_col]])
+        list(
+          check = FALSE,
+          reason = paste0(
+            "OPLS-DA requires exactly 2 groups, but found ",
+            n_groups, " groups (",
+            paste(groups, collapse = ", "), ")."
+          )
+        )
+      } else {
+        list(check = TRUE, reason = NULL)
+      }
+    }
+  )
+}
