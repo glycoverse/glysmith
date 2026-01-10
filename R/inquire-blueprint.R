@@ -328,6 +328,10 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   has_structure <- "glycan_structure" %in% colnames(exp$var_info)
   n_groups <- length(unique(exp$sample_info[[group_col]]))
 
+  # Generate summaries for sample_info and var_info
+  sample_info_summary <- .summarize_tibble(exp$sample_info, "sample_info", group_col)
+  var_info_summary <- .summarize_tibble(exp$var_info, "var_info")
+
   paste0(
     "\nDataset information:\n",
     "- Number of samples: ", n_samples, "\n",
@@ -335,8 +339,38 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "- Glycan type: ", glycan_type, "\n",
     "- Experiment type: ", exp_type, "\n",
     "- Glycan structure available: ", if (has_structure) "Yes" else "No", "\n",
-    "- Number of groups: ", n_groups, "\n"
+    "- Number of groups: ", n_groups, "\n",
+    sample_info_summary, "\n",
+    var_info_summary, "\n"
   )
+}
+
+#' Summarize a tibble/data.frame for LLM context
+#' @noRd
+.summarize_tibble <- function(tbl, name, highlight_col = NULL) {
+  if (is.null(tbl) || nrow(tbl) == 0) {
+    return(paste0("- ", name, ": (empty)"))
+  }
+
+  # Use dplyr::glimpse for compact summary
+  # Capture output and add highlighting for group column
+  glimpse_output <- capture.output(dplyr::glimpse(tbl))
+
+  # Remove header line from glimpse (e.g., "Rows: 100")
+  glimpse_output <- glimpse_output[-1]
+
+  # Add group column highlight if specified
+  if (!is.null(highlight_col)) {
+    # Match pattern like "$ group <chr>" or "$group <chr>" from glimpse output
+    pattern <- paste0("\\$ ", highlight_col, " <")
+    replacement <- paste0("$ ", highlight_col, " [GROUP COLUMN] <")
+    glimpse_output <- stringr::str_replace(glimpse_output, pattern, replacement)
+  }
+
+  # Prepend tibble name and indent all lines
+  header <- paste0("- ", name, " (", nrow(tbl), " rows, ", ncol(tbl), " columns)")
+  indented <- paste0("    ", glimpse_output, collapse = "\n")
+  paste0(header, "\n", indented)
 }
 
 .generate_step_descriptions <- function() {

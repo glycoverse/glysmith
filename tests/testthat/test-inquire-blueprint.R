@@ -480,3 +480,55 @@ test_that("review_blueprint applies multiple refinements", {
   expect_identical(result, bp_two)
   expect_equal(call_count, 2)
 })
+
+# Tests for .summarize_tibble
+test_that(".summarize_tibble handles NULL and empty tibbles", {
+  expect_equal(glysmith:::.summarize_tibble(NULL, "test"), "- test: (empty)")
+  expect_equal(glysmith:::.summarize_tibble(data.frame(), "test"), "- test: (empty)")
+})
+
+test_that(".summarize_tibble returns formatted output with glimpse-like content", {
+  tbl <- data.frame(
+    id = 1:3,
+    name = c("A", "B", "C"),
+    value = c(1.5, 2.5, 3.5)
+  )
+
+  result <- glysmith:::.summarize_tibble(tbl, "my_data")
+
+  expect_true(grepl("- my_data \\(3 rows, 3 columns\\)", result))
+  expect_true(grepl("\\$ id", result))
+  expect_true(grepl("\\$ name", result))
+  expect_true(grepl("\\$ value", result))
+})
+
+test_that(".summarize_tibble highlights group column", {
+  tbl <- data.frame(
+    group = c("A", "B", "A"),
+    value = c(1, 2, 3)
+  )
+
+  result <- glysmith:::.summarize_tibble(tbl, "sample_info", highlight_col = "group")
+
+  expect_true(grepl("\\[GROUP COLUMN\\]", result))
+  expect_true(grepl("\\$ group \\[GROUP COLUMN\\]", result))
+})
+
+test_that(".summarize_tibble handles different column types", {
+  tbl <- data.frame(
+    int_col = 1:5,
+    dbl_col = c(1.1, 2.2, 3.3, 4.4, 5.5),
+    chr_col = letters[1:5],
+    lgl_col = c(TRUE, FALSE, TRUE, FALSE, TRUE),
+    fct_col = factor(c("a", "b", "a", "b", "a"))
+  )
+
+  result <- glysmith:::.summarize_tibble(tbl, "test_data")
+
+  expect_true(grepl("- test_data \\(5 rows, 5 columns\\)", result))
+  expect_true(grepl("\\$ int_col", result))
+  expect_true(grepl("\\$ dbl_col", result))
+  expect_true(grepl("\\$ chr_col", result))
+  expect_true(grepl("\\$ lgl_col", result))
+  expect_true(grepl("\\$ fct_col", result))
+})
