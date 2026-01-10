@@ -11,6 +11,8 @@
 #' LLMs can be unstable. If you get an error, try again with another description.
 #' Make sure to examine the returned blueprint carefully to ensure it's what you want.
 #' This function is a companion of [inquire_blueprint()].
+#' If the LLM needs required information to proceed, it may ask clarifying questions
+#' interactively and then retry with your answers.
 #'
 #' @param bp A `glysmith_blueprint` object.
 #' @param description A description of how you want to modify the blueprint.
@@ -55,14 +57,38 @@ modify_blueprint <- function(
     "Modification request: ", description
   )
 
-  for (i in 0:max_retries) {
-    if (i > 0) {
-      cli::cli_alert_info("Attempt {i}/{max_retries}: Retrying with feedback...")
+  retry_count <- 0L
+  question_count <- 0L
+  max_questions <- max(1L, max_retries)
+
+  repeat {
+    if (retry_count > 0) {
+      cat("\n")
+      cli::cli_alert_info("Attempt {retry_count}/{max_retries}: Retrying with feedback...")
+      cat("\n")
     }
 
     .print_ai_thinking(api_key)
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
+
+    if (!is.null(result$questions)) {
+      question_count <- question_count + 1L
+      if (question_count > max_questions) {
+        cli::cli_abort(c(
+          "Failed to generate a valid blueprint after {max_questions} clarification rounds.",
+          "x" = "The LLM keeps requesting more information.",
+          "i" = "Please provide more details in the description and try again."
+        ))
+      }
+      inquiry <- .ask_inquiry_questions(result$questions)
+      current_prompt <- paste0(
+        current_prompt,
+        "\nClarifications:\n",
+        .format_inquiry_answers(inquiry$questions, inquiry$answers)
+      )
+      next
+    }
 
     if (result$valid) {
       if (!is.null(result$explanation) && nzchar(result$explanation)) {
@@ -72,11 +98,12 @@ modify_blueprint <- function(
     }
 
     error_msg <- result$error
-    if (i < max_retries) {
+    if (retry_count < max_retries) {
+      retry_count <- retry_count + 1L
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg, "\n",
-        "Please fix the output and return a JSON object with `steps`."
+        "Please fix the output and return a JSON object with `steps` (or `questions`)."
       )
     } else {
       cli::cli_abort(c(
@@ -102,6 +129,10 @@ modify_blueprint <- function(
     "Do NOT use `br()` for grouping sequential steps or organizing the workflow. Prefer a single linear sequence of steps.",
     "Use step arguments with caution: prefer default values unless they are necessary.",
     "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
+    "If essential information is missing to understand the modification request,",
+    "ask the user for clarification instead of guessing.",
+    "If you need clarification, return ONLY a JSON object with a `questions` array.",
+    "Do NOT include `steps` when asking questions.",
     "Available analytical steps include:\n",
     step_descriptions,
     "\n",

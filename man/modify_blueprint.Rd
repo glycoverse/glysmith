@@ -38,4 +38,6 @@ Then set the environment variable \code{DEEPSEEK_API_KEY} to your API key with
 LLMs can be unstable. If you get an error, try again with another description.
 Make sure to examine the returned blueprint carefully to ensure it's what you want.
 This function is a companion of \code{\link[=inquire_blueprint]{inquire_blueprint()}}.
+If the LLM needs required information to proceed, it may ask clarifying questions
+interactively and then retry with your answers.
 }
