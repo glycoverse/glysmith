@@ -314,6 +314,7 @@ step_plsda <- function(
       )
       tidy_res <- plsda_res$tidy_result
 
+      ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), plsda_res$raw_result)
       ctx <- ctx_add_table(
         ctx,
         paste0(id, "_samples"),
@@ -377,7 +378,31 @@ step_plsda <- function(
       ctx
     },
     require = on,
-    signature = signature
+    signature = signature,
+    report = function(x) {
+      raw_res <- x$data[[paste0(id, "_raw_res")]]
+      model_df <- raw_res@modelDF
+      r2y <- model_df[["R2Y"]][1]
+      r2y_cum <- model_df[["R2Y(cum)"]][1]
+      q2 <- model_df[["Q2"]][1]
+      q2_cum <- model_df[["Q2(cum)"]][1]
+
+      vip_tbl <- x$tables[[paste0(id, "_vip")]]
+      n_vip_gt_1 <- sum(vip_tbl$vip > 1, na.rm = TRUE)
+
+      top5 <- vip_tbl |>
+        dplyr::arrange(dplyr::desc(vip)) |>
+        dplyr::slice_head(n = 5)
+      top5_vars <- top5$variable
+
+      lines <- c(
+        paste0("Partial least squares discriminant analysis (PLS-DA) was performed."),
+        paste0("Model fit: R2Y = ", round(r2y, 3), " (cumulative: ", round(r2y_cum, 3), "), Q2 = ", round(q2, 3), " (cumulative: ", round(q2_cum, 3), ")."),
+        paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
+        paste0("Top 5 discriminant variables: ", paste(top5_vars, collapse = ", "), ".")
+      )
+      paste(lines, collapse = "\n")
+    }
   )
 }
 
@@ -454,6 +479,7 @@ step_oplsda <- function(
       )
       tidy_res <- oplsda_res$tidy_result
 
+      ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), oplsda_res$raw_result)
       ctx <- ctx_add_table(
         ctx,
         paste0(id, "_samples"),
@@ -518,6 +544,30 @@ step_oplsda <- function(
     },
     require = on,
     signature = signature,
+    report = function(x) {
+      raw_res <- x$data[[paste0(id, "_raw_res")]]
+      model_df <- raw_res@modelDF
+      r2y <- model_df[["R2Y"]][1]
+      r2y_cum <- model_df[["R2Y(cum)"]][1]
+      q2 <- model_df[["Q2"]][1]
+      q2_cum <- model_df[["Q2(cum)"]][1]
+
+      vip_tbl <- x$tables[[paste0(id, "_vip")]]
+      n_vip_gt_1 <- sum(vip_tbl$vip > 1, na.rm = TRUE)
+
+      top5 <- vip_tbl |>
+        dplyr::arrange(dplyr::desc(vip)) |>
+        dplyr::slice_head(n = 5)
+      top5_vars <- top5$variable
+
+      lines <- c(
+        paste0("Orthogonal partial least squares discriminant analysis (OPLS-DA) was performed."),
+        paste0("Model fit: R2Y = ", round(r2y, 3), " (cumulative: ", round(r2y_cum, 3), "), Q2 = ", round(q2, 3), " (cumulative: ", round(q2_cum, 3), ")."),
+        paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
+        paste0("Top 5 discriminant variables: ", paste(top5_vars, collapse = ", "), ".")
+      )
+      paste(lines, collapse = "\n")
+    },
     condition = function(ctx) {
       exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
       if (is.null(exp)) {
