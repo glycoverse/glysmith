@@ -486,7 +486,7 @@ test_that(".polish_text returns original text on AI error", {
     .package = "glysmith"
   )
 
-  result <- glysmith:::.polish_text("original text", "key")
+  expect_warning(result <- glysmith:::.polish_text("original text", "key"))
   expect_equal(result, "original text")
 })
 
@@ -600,11 +600,11 @@ test_that("organize_report_sections returns NULL on AI error", {
     .package = "glysmith"
   )
 
-  result <- glysmith:::.organize_report_sections(
+  expect_warning(result <- glysmith:::.organize_report_sections(
     list(list(id = "step1", label = "Step 1")),
     list(),
     "key"
-  )
+  ))
   expect_null(result)
 })
 
@@ -727,6 +727,6 @@ test_that(".describe_plot_ai handles AI error gracefully", {
     .package = "glysmith"
   )
 
-  result <- glysmith:::.describe_plot_ai(ggplot2::ggplot(), "label", "existing desc", "key")
+  expect_warning(result <- glysmith:::.describe_plot_ai(ggplot2::ggplot(), "label", "existing desc", "key"))
   expect_equal(result, "existing desc")
 })
