@@ -24,6 +24,8 @@
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #'   Default is "exp".
+#' @param plot_width Width of the plot in inches. Default is 7.
+#' @param plot_height Height of the plot in inches. Default is 7.
 #' @param ... Additional arguments passed to [glyvis::plot_heatmap()].
 #'
 #' @return A `glysmith_step` object.
@@ -33,7 +35,7 @@
 #' step_heatmap(on = "trait_exp")
 #' @seealso [glyvis::plot_heatmap()]
 #' @export
-step_heatmap <- function(on = "exp", ...) {
+step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
   rlang::check_installed("pheatmap")
   rlang::check_installed("ggplotify")
   signature <- rlang::expr_deparse(match.call())
@@ -48,7 +50,7 @@ step_heatmap <- function(on = "exp", ...) {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_heatmap(exp, ...)
-      ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."))
+      ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."), width = plot_width, height = plot_height)
     },
     require = on,
     signature = signature
@@ -78,6 +80,8 @@ step_heatmap <- function(on = "exp", ...) {
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp". Default is "exp".
+#' @param plot_width Width of the plot in inches. Default is 5.
+#' @param plot_height Height of the plot in inches. Default is 3.
 #' @inheritParams glyvis::plot_logo
 #'
 #' @return A `glysmith_step` object.
@@ -87,7 +91,7 @@ step_heatmap <- function(on = "exp", ...) {
 #' step_logo(on = "sig_exp")
 #' @seealso [glyvis::plot_logo()]
 #' @export
-step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
+step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, plot_width = 5, plot_height = 3, ...) {
   rlang::check_installed("ggseqlogo")
   checkmate::assert_choice(on, c("exp", "sig_exp"))
   signature <- rlang::expr_deparse(match.call())
@@ -109,7 +113,7 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
-      ctx_add_plot(ctx, plot_name, p, paste0("Logo plot of glycosylation sites for ", on, "."))
+      ctx_add_plot(ctx, plot_name, p, paste0("Logo plot of glycosylation sites for ", on, "."), width = plot_width, height = plot_height)
     },
     require = on,
     signature = signature
@@ -153,6 +157,12 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
 #' @param n_top Number of top significant variables to plot.
 #'   Must be between 1 and 25 (inclusive).
 #'   Default is 25.
+#' @param panel_width Width of each panel in inches. Default is 1.5.
+#' @param panel_height Height of each panel in inches. Default is 1.2.
+#' @param min_width Minimum plot width in inches. Default is 5.
+#' @param min_height Minimum plot height in inches. Default is 3.
+#' @param max_width Maximum plot width in inches. Default is 14.
+#' @param max_height Maximum plot height in inches. Default is 12.
 #' @param ... Additional arguments passed to [glyvis::plot_boxplot()].
 #'
 #' @return A `glysmith_step` object.
@@ -162,9 +172,25 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, ...) {
 #' step_sig_boxplot(on = "sig_trait_exp")
 #' @seealso [glyvis::plot_boxplot()]
 #' @export
-step_sig_boxplot <- function(on = "sig_exp", n_top = 25, ...) {
+step_sig_boxplot <- function(
+  on = "sig_exp",
+  n_top = 25,
+  panel_width = 1.5,
+  panel_height = 1.2,
+  min_width = 5,
+  min_height = 3,
+  max_width = 14,
+  max_height = 12,
+  ...
+) {
   checkmate::assert_choice(on, c("sig_exp", "sig_trait_exp", "sig_motif_exp"))
   checkmate::assert_int(n_top, lower = 1L, upper = 25L)
+  checkmate::assert_number(panel_width, lower = 0.5)
+  checkmate::assert_number(panel_height, lower = 0.5)
+  checkmate::assert_number(min_width, lower = 1)
+  checkmate::assert_number(min_height, lower = 1)
+  checkmate::assert_number(max_width, lower = 1)
+  checkmate::assert_number(max_height, lower = 1)
   signature <- rlang::expr_deparse(match.call())
 
   on_meta <- .resolve_on(on)
@@ -176,6 +202,7 @@ step_sig_boxplot <- function(on = "sig_exp", n_top = 25, ...) {
     label = label,
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
+      n_vars <- nrow(exp)
 
       # glyvis::plot_boxplot has a limit of 25 variables
       # If experiment has more than 25 variables, select top n_top by p-value
@@ -198,12 +225,45 @@ step_sig_boxplot <- function(on = "sig_exp", n_top = 25, ...) {
 
         exp <- exp |>
           glyexp::filter_var(.data$variable %in% top_vars)
+        n_vars <- length(top_vars)
       }
 
       p <- glyvis::plot_boxplot(exp, group_col = ctx$group_col, ...)
-      ctx_add_plot(ctx, plot_name, p, paste0("Boxplot of significant variables from ", on, "."))
+
+      # Calculate dynamic plot dimensions based on number of variables
+      dims <- .calc_boxplot_dims(n_vars, panel_width, panel_height, min_width, min_height, max_width, max_height)
+
+      ctx_add_plot(ctx, plot_name, p, paste0("Boxplot of significant variables from ", on, "."), width = dims$width, height = dims$height)
     },
     require = on,
     signature = signature
   )
+}
+
+#' Calculate dynamic plot dimensions for boxplot based on number of panels
+#'
+#' @param n_vars Number of variables (panels) to plot.
+#' @param panel_width Width of each panel in inches.
+#' @param panel_height Height of each panel in inches.
+#' @param min_width Minimum plot width in inches.
+#' @param min_height Minimum plot height in inches.
+#' @param max_width Maximum plot width in inches.
+#' @param max_height Maximum plot height in inches.
+#'
+#' @return List with `width` and `height` elements.
+#' @noRd
+.calc_boxplot_dims <- function(n_vars, panel_width, panel_height, min_width, min_height, max_width, max_height) {
+  # Calculate optimal ncol to make the plot roughly square per panel
+  ncol <- ceiling(sqrt(n_vars))
+  nrow <- ceiling(n_vars / ncol)
+
+  # Calculate total dimensions
+  width <- ncol * panel_width + 1.5 # Add margin for axis labels
+  height <- nrow * panel_height + 2 # Add margin for title and legend
+
+  # Apply constraints
+  width <- max(min_width, min(width, max_width))
+  height <- max(min_height, min(height, max_height))
+
+  list(width = width, height = height)
 }

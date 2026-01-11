@@ -4,7 +4,14 @@
 \alias{step_volcano}
 \title{Step: Volcano Plot}
 \usage{
-step_volcano(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...)
+step_volcano(
+  log2fc_cutoff = 1,
+  p_cutoff = 0.05,
+  p_col = "p_adj",
+  plot_width = 5,
+  plot_height = 6,
+  ...
+)
 }
 \arguments{
 \item{log2fc_cutoff}{The log2 fold change cutoff. Defaults to 1.}
@@ -13,6 +20,10 @@ step_volcano(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...)
 
 \item{p_col}{The column name for p-value. Defaults to "p_adj".
 Can also be "p_val" (raw p-values without multiple testing correction).}
+
+\item{plot_width}{Width of the plot in inches. Default is 5.}
+
+\item{plot_height}{Height of the plot in inches. Default is 6.}
 
 \item{...}{Other arguments passed to \code{\link[EnhancedVolcano:EnhancedVolcano]{EnhancedVolcano::EnhancedVolcano()}}.}
 }

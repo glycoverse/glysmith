@@ -4,7 +4,14 @@
 \alias{step_tsne}
 \title{Step: t-SNE}
 \usage{
-step_tsne(on = "exp", dims = 2, perplexity = 30, ...)
+step_tsne(
+  on = "exp",
+  dims = 2,
+  perplexity = 30,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment to run t-SNE on.
@@ -13,6 +20,10 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 \item{dims}{Number of output dimensions. Default is 2.}
 
 \item{perplexity}{Perplexity parameter for t-SNE. Default is 30.}
+
+\item{plot_width}{Width of the plot in inches. Default is 5.}
+
+\item{plot_height}{Height of the plot in inches. Default is 5.}
 
 \item{...}{Additional arguments passed to \code{Rtsne::Rtsne()}.}
 }

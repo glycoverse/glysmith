@@ -27,6 +27,8 @@
 #'
 #' @param on Name of the experiment to run PCA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#' @param plot_width Width of plots in inches. Default is 5.
+#' @param plot_height Height of plots in inches. Default is 5.
 #' @inheritParams glystats::gly_pca
 #'
 #' @return A `glysmith_step` object.
@@ -38,6 +40,8 @@ step_pca <- function(
   on = "exp",
   center = TRUE,
   scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
   ...
 ) {
   rlang::check_installed("factoextra")
@@ -80,21 +84,27 @@ step_pca <- function(
         ctx,
         paste0(id, "_scores"),
         p_scores,
-        paste0("PCA score plot colored by group of ", on, ".")
+        paste0("PCA score plot colored by group of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_loadings <- glyvis::plot_pca(pca_res, type = "variables")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_loadings"),
         p_loadings,
-        paste0("PCA loading plot of ", on, ".")
+        paste0("PCA loading plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_screeplot <- glyvis::plot_pca(pca_res, type = "screeplot")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_screeplot"),
         p_screeplot,
-        paste0("PCA screeplot of ", on, ".")
+        paste0("PCA screeplot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       ctx
     },
@@ -132,6 +142,8 @@ step_pca <- function(
 #'
 #' @param on Name of the experiment to run t-SNE on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#' @param plot_width Width of the plot in inches. Default is 5.
+#' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_tsne
 #'
 #' @return A `glysmith_step` object.
@@ -144,6 +156,8 @@ step_tsne <- function(
   on = "exp",
   dims = 2,
   perplexity = 30,
+  plot_width = 5,
+  plot_height = 5,
   ...
 ) {
   rlang::check_installed("Rtsne")
@@ -166,7 +180,7 @@ step_tsne <- function(
       )
       ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(tsne), paste0("t-SNE result of ", on, "."))
       p <- glyvis::plot_tsne(tsne)
-      ctx <- ctx_add_plot(ctx, id, p, paste0("t-SNE plot of ", on, "."))
+      ctx <- ctx_add_plot(ctx, id, p, paste0("t-SNE plot of ", on, "."), width = plot_width, height = plot_height)
       ctx
     },
     require = on,
@@ -203,6 +217,8 @@ step_tsne <- function(
 #'
 #' @param on Name of the experiment to run UMAP on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#' @param plot_width Width of the plot in inches. Default is 5.
+#' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_umap
 #'
 #' @return A `glysmith_step` object.
@@ -215,6 +231,8 @@ step_umap <- function(
   on = "exp",
   n_neighbors = 15,
   n_components = 2,
+  plot_width = 5,
+  plot_height = 5,
   ...
 ) {
   rlang::check_installed("uwot")
@@ -237,7 +255,7 @@ step_umap <- function(
       )
       ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(umap), paste0("UMAP result of ", on, "."))
       p <- glyvis::plot_umap(umap)
-      ctx <- ctx_add_plot(ctx, id, p, paste0("UMAP plot of ", on, "."))
+      ctx <- ctx_add_plot(ctx, id, p, paste0("UMAP plot of ", on, "."), width = plot_width, height = plot_height)
       ctx
     },
     require = on,
@@ -279,6 +297,8 @@ step_umap <- function(
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #' @param ncomp Number of components to include. Default is 2.
 #' @param scale Logical indicating whether to scale the data. Default is TRUE.
+#' @param plot_width Width of plots in inches. Default is 5.
+#' @param plot_height Height of plots in inches. Default is 5.
 #' @param ... Additional arguments passed to `glystats::gly_plsda()`.
 #'
 #' @return A `glysmith_step` object.
@@ -291,6 +311,8 @@ step_plsda <- function(
   on = "exp",
   ncomp = 2,
   scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
   ...
 ) {
   rlang::check_installed("ropls")
@@ -350,28 +372,36 @@ step_plsda <- function(
         ctx,
         paste0(id, "_scores"),
         p_scores,
-        paste0("PLS-DA score plot colored by group of ", on, ".")
+        paste0("PLS-DA score plot colored by group of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_loadings <- glyvis::plot_plsda(plsda_res, type = "loadings")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_loadings"),
         p_loadings,
-        paste0("PLS-DA loading plot of ", on, ".")
+        paste0("PLS-DA loading plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_variance <- glyvis::plot_plsda(plsda_res, type = "variance")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_variance"),
         p_variance,
-        paste0("PLS-DA variance plot of ", on, ".")
+        paste0("PLS-DA variance plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_vip <- glyvis::plot_plsda(plsda_res, type = "vip")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_vip"),
         p_vip,
-        paste0("PLS-DA VIP score plot of ", on, ".")
+        paste0("PLS-DA VIP score plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
 
       ctx
@@ -442,6 +472,8 @@ step_plsda <- function(
 #' @param pred_i Number of predictive components to include. Default is 1.
 #' @param ortho_i Number of orthogonal components to include. Default is NA (automatic).
 #' @param scale Logical indicating whether to scale the data. Default is TRUE.
+#' @param plot_width Width of plots in inches. Default is 5.
+#' @param plot_height Height of plots in inches. Default is 5.
 #' @param ... Additional arguments passed to `glystats::gly_oplsda()`.
 #'
 #' @return A `glysmith_step` object.
@@ -455,6 +487,8 @@ step_oplsda <- function(
   pred_i = 1,
   ortho_i = NA,
   scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
   ...
 ) {
   rlang::check_installed("ropls")
@@ -515,28 +549,36 @@ step_oplsda <- function(
         ctx,
         paste0(id, "_scores"),
         p_scores,
-        paste0("OPLS-DA score plot colored by group of ", on, ".")
+        paste0("OPLS-DA score plot colored by group of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_loadings <- glyvis::plot_oplsda(oplsda_res, type = "loadings")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_loadings"),
         p_loadings,
-        paste0("OPLS-DA loading plot of ", on, ".")
+        paste0("OPLS-DA loading plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_variance <- glyvis::plot_oplsda(oplsda_res, type = "variance")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_variance"),
         p_variance,
-        paste0("OPLS-DA variance plot of ", on, ".")
+        paste0("OPLS-DA variance plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
       p_vip <- glyvis::plot_oplsda(oplsda_res, type = "vip")
       ctx <- ctx_add_plot(
         ctx,
         paste0(id, "_vip"),
         p_vip,
-        paste0("OPLS-DA VIP score plot of ", on, ".")
+        paste0("OPLS-DA VIP score plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
       )
 
       ctx

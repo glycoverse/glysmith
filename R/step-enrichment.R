@@ -27,6 +27,8 @@
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
+#' @param plot_width Width of the plot in inches. Default is 7.
+#' @param plot_height Height of the plot in inches. Default is 7.
 #' @param ... Additional arguments passed to [glystats::gly_enrich_go()].
 #'
 #' @return A `glysmith_step` object.
@@ -35,7 +37,7 @@
 #' step_sig_enrich_go(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
-step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
+step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
   rlang::check_installed("clusterProfiler")
   rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
@@ -43,6 +45,8 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
     "go",
     universe = universe,
     plot_type = plot_type,
+    plot_width = plot_width,
+    plot_height = plot_height,
     signature = signature,
     ...
   )
@@ -77,6 +81,8 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
+#' @param plot_width Width of the plot in inches. Default is 7.
+#' @param plot_height Height of the plot in inches. Default is 7.
 #' @param ... Additional arguments passed to [glystats::gly_enrich_kegg()].
 #'
 #' @return A `glysmith_step` object.
@@ -85,7 +91,7 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", ...) {
 #' step_sig_enrich_kegg(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
-step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
+step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
   rlang::check_installed("clusterProfiler")
   rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
@@ -93,6 +99,8 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
     "kegg",
     universe = universe,
     plot_type = plot_type,
+    plot_width = plot_width,
+    plot_height = plot_height,
     retry = 2L,
     signature = signature,
     ...
@@ -128,6 +136,8 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
+#' @param plot_width Width of the plot in inches. Default is 7.
+#' @param plot_height Height of the plot in inches. Default is 7.
 #' @param ... Additional arguments passed to [glystats::gly_enrich_reactome()].
 #'
 #' @return A `glysmith_step` object.
@@ -136,7 +146,7 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", ...) {
 #' step_sig_enrich_reactome(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
-step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", ...) {
+step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
   rlang::check_installed("clusterProfiler")
   rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
@@ -144,6 +154,8 @@ step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", ..
     "reactome",
     universe = universe,
     plot_type = plot_type,
+    plot_width = plot_width,
+    plot_height = plot_height,
     retry = 2L,
     signature = signature,
     ...
@@ -165,12 +177,16 @@ step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", ..
 #' @param kind Enrichment type: `"go"`, `"kegg"`, or `"reactome"`.
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
+#' @param plot_width Width of the plot in inches.
+#' @param plot_height Height of the plot in inches.
 #' @param retry Number of retries if the step errors.
 #' @noRd
 step_sig_enrich <- function(
   kind = c("go", "kegg", "reactome"),
   universe = c("all", "detected"),
   plot_type = "dotplot",
+  plot_width = 7,
+  plot_height = 7,
   retry = 0L,
   signature = NULL,
   ...
@@ -220,7 +236,7 @@ step_sig_enrich <- function(
         paste0(toupper(kind), " enrichment analysis results.")
       )
       p <- glyvis::plot_enrich(enrich_res, type = plot_type)
-      ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."))
+      ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."), width = plot_width, height = plot_height)
     },
     report = function(x) {
       tbl <- x$tables[[kind]]

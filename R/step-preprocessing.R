@@ -34,6 +34,8 @@
 #'   Default is `"post"`.
 #' @param batch_col Column name for batch information (for `glyclean::plot_batch_pca()`).
 #' @param rep_col Column name for replicate information (for `glyclean::plot_rep_scatter()`).
+#' @param plot_width Width of plots in inches. Default is 7.
+#' @param plot_height Height of plots in inches. Default is 5.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -44,7 +46,9 @@
 step_plot_qc <- function(
   when = "post",
   batch_col = "batch",
-  rep_col = NULL
+  rep_col = NULL,
+  plot_width = 7,
+  plot_height = 5
 ) {
   checkmate::assert_choice(when, c("pre", "post", "generic"), null.ok = TRUE)
   signature <- rlang::expr_deparse(match.call())
@@ -71,7 +75,7 @@ step_plot_qc <- function(
     repeatable = TRUE,
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      ctx <- .run_qc_plots(ctx, exp, when, batch_col, rep_col)
+      ctx <- .run_qc_plots(ctx, exp, when, batch_col, rep_col, plot_width, plot_height)
       ctx
     },
     require = "exp",
@@ -86,10 +90,12 @@ step_plot_qc <- function(
 #' @param when When the QC is being run: "pre", "post", or "generic".
 #' @param batch_col Column name for batch information.
 #' @param rep_col Column name for replicate information.
+#' @param plot_width Width of plots in inches.
+#' @param plot_height Height of plots in inches.
 #'
 #' @returns Updated context with plots added.
 #' @noRd
-.run_qc_plots <- function(ctx, exp, when, batch_col, rep_col) {
+.run_qc_plots <- function(ctx, exp, when, batch_col, rep_col, plot_width, plot_height) {
   # Define plots that only run in pre stage
   pre_only_plots <- list(
     list(
@@ -180,7 +186,7 @@ step_plot_qc <- function(
       if (identical(when, "pre")) {
         desc <- paste0("Preprocess QC (pre): ", desc)
       }
-      ctx_add_plot(ctx, plot_id, plot, desc)
+      ctx_add_plot(ctx, plot_id, plot, desc, width = plot_width, height = plot_height)
     }, error = function(e) {
       cli::cli_warn("Failed to generate plot {plot_id}: {e$message}")
       ctx

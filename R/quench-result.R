@@ -41,7 +41,16 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
 
   for (plot in names(x$plots)) {
     file_path <- fs::path(dir, "plots", paste0(plot, ".", plot_ext))
-    .quietly(ggplot2::ggsave(file_path, cast_plot(x, plot), width = plot_width, height = plot_height))
+    plot_obj <- x$plots[[plot]]
+    if (is.list(plot_obj) && !is.null(plot_obj$plot)) {
+      # New format: list with plot, width, height
+      width <- plot_obj$width %||% plot_width
+      height <- plot_obj$height %||% plot_height
+      .quietly(ggplot2::ggsave(file_path, plot_obj$plot, width = width, height = height))
+    } else {
+      # Legacy format: just the ggplot object
+      .quietly(ggplot2::ggsave(file_path, cast_plot(x, plot), width = plot_width, height = plot_height))
+    }
   }
 
   for (table in names(x$tables)) {

@@ -4,7 +4,13 @@
 \alias{step_plot_qc}
 \title{Step: Plot QC}
 \usage{
-step_plot_qc(when = "post", batch_col = "batch", rep_col = NULL)
+step_plot_qc(
+  when = "post",
+  batch_col = "batch",
+  rep_col = NULL,
+  plot_width = 7,
+  plot_height = 5
+)
 }
 \arguments{
 \item{when}{Character string indicating when this QC step is run.
@@ -15,6 +21,10 @@ Default is \code{"post"}.}
 \item{batch_col}{Column name for batch information (for \code{glyclean::plot_batch_pca()}).}
 
 \item{rep_col}{Column name for replicate information (for \code{glyclean::plot_rep_scatter()}).}
+
+\item{plot_width}{Width of plots in inches. Default is 7.}
+
+\item{plot_height}{Height of plots in inches. Default is 5.}
 }
 \value{
 A \code{glysmith_step} object.

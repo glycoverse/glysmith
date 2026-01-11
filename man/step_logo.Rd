@@ -4,7 +4,14 @@
 \alias{step_logo}
 \title{Step: Logo Plot}
 \usage{
-step_logo(on = "exp", n_aa = 5L, fasta = NULL, ...)
+step_logo(
+  on = "exp",
+  n_aa = 5L,
+  fasta = NULL,
+  plot_width = 5,
+  plot_height = 3,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to plot.
@@ -17,6 +24,10 @@ For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino ac
 If \code{glyclean::add_site_seq()} has been called on the experiment,
 this argument can be omitted. When \code{site_sequence} is missing and \code{fasta}
 is \code{NULL}, UniProt.ws is used to fetch protein sequences automatically.}
+
+\item{plot_width}{Width of the plot in inches. Default is 5.}
+
+\item{plot_height}{Height of the plot in inches. Default is 3.}
 
 \item{...}{Additional arguments passed to \code{\link[ggseqlogo:ggseqlogo]{ggseqlogo::ggseqlogo()}}.}
 }

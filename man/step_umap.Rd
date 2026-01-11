@@ -4,7 +4,14 @@
 \alias{step_umap}
 \title{Step: UMAP}
 \usage{
-step_umap(on = "exp", n_neighbors = 15, n_components = 2, ...)
+step_umap(
+  on = "exp",
+  n_neighbors = 15,
+  n_components = 2,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment to run UMAP on.
@@ -13,6 +20,10 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 \item{n_neighbors}{Number of neighbors to consider for each point. Default is 15.}
 
 \item{n_components}{Number of output dimensions. Default is 2.}
+
+\item{plot_width}{Width of the plot in inches. Default is 5.}
+
+\item{plot_height}{Height of the plot in inches. Default is 5.}
 
 \item{...}{Additional arguments passed to \code{uwot::umap()}.}
 }

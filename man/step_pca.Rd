@@ -4,7 +4,14 @@
 \alias{step_pca}
 \title{Step: Principal Component Analysis (PCA)}
 \usage{
-step_pca(on = "exp", center = TRUE, scale = TRUE, ...)
+step_pca(
+  on = "exp",
+  center = TRUE,
+  scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment to run PCA on.
@@ -13,6 +20,10 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 \item{center}{A logical indicating whether to center the data. Default is TRUE.}
 
 \item{scale}{A logical indicating whether to scale the data. Default is TRUE.}
+
+\item{plot_width}{Width of plots in inches. Default is 5.}
+
+\item{plot_height}{Height of plots in inches. Default is 5.}
 
 \item{...}{Additional arguments passed to \code{prcomp()}.}
 }

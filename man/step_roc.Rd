@@ -4,12 +4,16 @@
 \alias{step_roc}
 \title{Step: ROC Analysis}
 \usage{
-step_roc(pos_class = NULL)
+step_roc(pos_class = NULL, plot_width = 5, plot_height = 5)
 }
 \arguments{
 \item{pos_class}{A character string specifying which group level should be treated as
 the positive class. If \code{NULL} (default), the second level (alphabetically) will be
 used as the positive class.}
+
+\item{plot_width}{Width of the plot in inches. Default is 5.}
+
+\item{plot_height}{Height of the plot in inches. Default is 5.}
 }
 \value{
 A \code{glysmith_step} object.

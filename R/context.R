@@ -23,11 +23,16 @@ new_ctx <- function(exp, group_col) {
 #' @param id Plot id.
 #' @param p A ggplot object.
 #' @param explanation Optional explanation string.
+#' @param width Plot width in inches for export. Default is NULL (uses global default).
+#' @param height Plot height in inches for export. Default is NULL (uses global default).
 #'
 #' @returns Updated context.
 #' @noRd
-ctx_add_plot <- function(ctx, id, p, explanation = NULL) {
-  ctx$plots[[id]] <- p
+ctx_add_plot <- function(ctx, id, p, explanation = NULL, width = NULL, height = NULL) {
+  plot_info <- list(plot = p)
+  if (!is.null(width)) plot_info$width <- width
+  if (!is.null(height)) plot_info$height <- height
+  ctx$plots[[id]] <- plot_info
   if (!is.null(explanation)) {
     ctx$meta$explanation[[paste0("plots$", id)]] <- explanation
   }

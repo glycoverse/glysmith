@@ -4,7 +4,14 @@
 \alias{step_plsda}
 \title{Step: Partial Least Squares Discriminant Analysis (PLS-DA)}
 \usage{
-step_plsda(on = "exp", ncomp = 2, scale = TRUE, ...)
+step_plsda(
+  on = "exp",
+  ncomp = 2,
+  scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment to run PLS-DA on.
@@ -13,6 +20,10 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 \item{ncomp}{Number of components to include. Default is 2.}
 
 \item{scale}{Logical indicating whether to scale the data. Default is TRUE.}
+
+\item{plot_width}{Width of plots in inches. Default is 5.}
+
+\item{plot_height}{Height of plots in inches. Default is 5.}
 
 \item{...}{Additional arguments passed to \code{glystats::gly_plsda()}.}
 }

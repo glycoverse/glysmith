@@ -4,7 +4,15 @@
 \alias{step_oplsda}
 \title{Step: Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA)}
 \usage{
-step_oplsda(on = "exp", pred_i = 1, ortho_i = NA, scale = TRUE, ...)
+step_oplsda(
+  on = "exp",
+  pred_i = 1,
+  ortho_i = NA,
+  scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment to run OPLS-DA on.
@@ -15,6 +23,10 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 \item{ortho_i}{Number of orthogonal components to include. Default is NA (automatic).}
 
 \item{scale}{Logical indicating whether to scale the data. Default is TRUE.}
+
+\item{plot_width}{Width of plots in inches. Default is 5.}
+
+\item{plot_height}{Height of plots in inches. Default is 5.}
 
 \item{...}{Additional arguments passed to \code{glystats::gly_oplsda()}.}
 }

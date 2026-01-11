@@ -360,7 +360,7 @@ test_that("build_plot_entries uses AI descriptions", {
 
   captured <- list()
   local_mocked_bindings(
-    .describe_plot_ai = function(plot, label, description, api_key, model = "deepseek-chat") {
+    .describe_plot_ai = function(plot, label, description, api_key, width = NULL, height = NULL, model = "deepseek-chat") {
       captured$label <<- label
       captured$description <<- description
       captured$api_key <<- api_key

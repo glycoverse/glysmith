@@ -203,12 +203,26 @@ polish_report <- function(
       desc <- NULL
     }
     label <- .humanize_plot_label(id, desc)
+
+    # Handle new format (list with plot, width, height) vs legacy format (just plot)
+    plot_obj <- p
+    plot <- NULL
+    width <- NULL
+    height <- NULL
+    if (is.list(p) && !is.null(p$plot)) {
+      plot <- p$plot
+      width <- p$width
+      height <- p$height
+    } else {
+      plot <- p
+    }
+
     if (isTRUE(use_ai)) {
-      desc <- .describe_plot_ai(p, label, desc, api_key)
+      desc <- .describe_plot_ai(plot, label, desc, api_key, width = width, height = height)
     }
     desc <- .humanize_plot_description(desc)
     label <- .humanize_plot_label(id, desc)
-    list(id = id, label = label, description = desc, plot = p)
+    list(id = id, label = label, description = desc, plot = plot)
   })
 }
 
@@ -324,7 +338,7 @@ polish_report <- function(
   desc
 }
 
-.describe_plot_ai <- function(plot, label, description, api_key, model = "deepseek-chat") {
+.describe_plot_ai <- function(plot, label, description, api_key, width = NULL, height = NULL, model = "deepseek-chat") {
   if (is.null(plot)) {
     return(description)
   }
@@ -350,7 +364,7 @@ polish_report <- function(
 
   tryCatch(
     {
-      content <- .plot_to_content(plot)
+      content <- .plot_to_content(plot, width = width, height = height)
       if (is.null(content)) {
         return(description)
       }
@@ -372,8 +386,11 @@ polish_report <- function(
   )
 }
 
-.plot_to_content <- function(plot, width = 768, height = 768) {
+.plot_to_content <- function(plot, width = NULL, height = NULL) {
   rlang::check_installed("ellmer")
+  # Default dimensions for AI description if not specified
+  width <- width %||% 768
+  height <- height %||% 768
   tmp_file <- tempfile("glysmith-plot-", fileext = ".png")
   old_dev <- grDevices::dev.cur()
   grDevices::png(tmp_file, width = width, height = height)

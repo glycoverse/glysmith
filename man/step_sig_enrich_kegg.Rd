@@ -4,13 +4,23 @@
 \alias{step_sig_enrich_kegg}
 \title{Step: KEGG Enrichment Analysis on Differentially Expressed Variables}
 \usage{
-step_sig_enrich_kegg(universe = "all", plot_type = "dotplot", ...)
+step_sig_enrich_kegg(
+  universe = "all",
+  plot_type = "dotplot",
+  plot_width = 7,
+  plot_height = 7,
+  ...
+)
 }
 \arguments{
 \item{universe}{The universe (background) to use for enrichment analysis.
 One of "all" (all genes in OrgDb), "detected" (detected variables in \code{exp}).}
 
 \item{plot_type}{Plot type for enrichment results ("dotplot", "barplot", etc.).}
+
+\item{plot_width}{Width of the plot in inches. Default is 7.}
+
+\item{plot_height}{Height of the plot in inches. Default is 7.}
 
 \item{...}{Additional arguments passed to \code{\link[glystats:gly_enrich_go]{glystats::gly_enrich_kegg()}}.}
 }

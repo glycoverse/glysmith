@@ -38,6 +38,8 @@
 #' @param p_adj_method A character string specifying the method to adjust p-values.
 #'   See `p.adjust.methods` for available methods. Default is "BH".
 #'   If NULL, no adjustment is performed.
+#' @param plot_width Width of the plot in inches. Default is 7.
+#' @param plot_height Height of the plot in inches. Default is 7.
 #' @param ... Additional arguments passed to `glystats::gly_cor()`.
 #'
 #' @return A `glysmith_step` object.
@@ -52,6 +54,8 @@ step_correlation <- function(
   on_cor = c("variable", "sample"),
   method = c("pearson", "spearman"),
   p_adj_method = "BH",
+  plot_width = 7,
+  plot_height = 7,
   ...
 ) {
   rlang::check_installed("Hmisc")
@@ -91,7 +95,9 @@ step_correlation <- function(
         ctx,
         id,
         p,
-        paste0("Correlation matrix heatmap of ", on, " (", on_cor, "s).")
+        paste0("Correlation matrix heatmap of ", on, " (", on_cor, "s)."),
+        width = plot_width,
+        height = plot_height
       )
 
       ctx

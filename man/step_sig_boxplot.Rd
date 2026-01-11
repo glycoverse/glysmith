@@ -4,7 +4,17 @@
 \alias{step_sig_boxplot}
 \title{Step: Significant Variables Boxplot}
 \usage{
-step_sig_boxplot(on = "sig_exp", n_top = 25, ...)
+step_sig_boxplot(
+  on = "sig_exp",
+  n_top = 25,
+  panel_width = 1.5,
+  panel_height = 1.2,
+  min_width = 5,
+  min_height = 3,
+  max_width = 14,
+  max_height = 12,
+  ...
+)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to plot.
@@ -14,6 +24,18 @@ Default is "sig_exp".}
 \item{n_top}{Number of top significant variables to plot.
 Must be between 1 and 25 (inclusive).
 Default is 25.}
+
+\item{panel_width}{Width of each panel in inches. Default is 1.5.}
+
+\item{panel_height}{Height of each panel in inches. Default is 1.2.}
+
+\item{min_width}{Minimum plot width in inches. Default is 5.}
+
+\item{min_height}{Minimum plot height in inches. Default is 3.}
+
+\item{max_width}{Maximum plot width in inches. Default is 14.}
+
+\item{max_height}{Maximum plot height in inches. Default is 12.}
 
 \item{...}{Additional arguments passed to \code{\link[glyvis:plot_boxplot]{glyvis::plot_boxplot()}}.}
 }

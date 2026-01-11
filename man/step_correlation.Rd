@@ -9,6 +9,8 @@ step_correlation(
   on_cor = c("variable", "sample"),
   method = c("pearson", "spearman"),
   p_adj_method = "BH",
+  plot_width = 7,
+  plot_height = 7,
   ...
 )
 }
@@ -25,6 +27,10 @@ One of "pearson" (default) or "spearman".}
 \item{p_adj_method}{A character string specifying the method to adjust p-values.
 See \code{p.adjust.methods} for available methods. Default is "BH".
 If NULL, no adjustment is performed.}
+
+\item{plot_width}{Width of the plot in inches. Default is 7.}
+
+\item{plot_height}{Height of the plot in inches. Default is 7.}
 
 \item{...}{Additional arguments passed to \code{glystats::gly_cor()}.}
 }

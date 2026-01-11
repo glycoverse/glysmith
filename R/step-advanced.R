@@ -186,6 +186,8 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
 #'   comparison, ask which two groups to compare and include
 #'   `step_subset_groups(groups = c("A", "B"))` before this step.
 #'
+#' @param plot_width Width of the plot in inches. Default is 5.
+#' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_roc
 #'
 #' @return A `glysmith_step` object.
@@ -193,7 +195,7 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
 #' step_roc()
 #' @seealso [glystats::gly_roc()], [glyvis::plot_roc()]
 #' @export
-step_roc <- function(pos_class = NULL) {
+step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
   rlang::check_installed("pROC")
   signature <- rlang::expr_deparse(match.call())
 
@@ -234,7 +236,9 @@ step_roc <- function(pos_class = NULL) {
         ctx,
         "roc_curves",
         p_roc,
-        "ROC curves for top 10 variables."
+        "ROC curves for top 10 variables.",
+        width = plot_width,
+        height = plot_height
       )
 
       ctx
