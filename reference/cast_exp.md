@@ -105,13 +105,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [6.6s]
+#> ✔ Preprocessing [7.1s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [153ms]
+#> ✔ QC (post-preprocessing) [163ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [603ms]
+#> ✔ Principal component analysis [574ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> Registered S3 methods overwritten by 'FSA':
@@ -124,19 +124,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [194ms]
+#> ✔ Differential expression analysis (limma) [200ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [547ms]
+#> ✔ Volcano plot [571ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [96ms]
+#> ✔ Heatmap of significant variables [100ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [7.7s]
+#> ✔ Derived trait calculation [8.1s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -145,10 +145,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [84ms]
+#> ✔ Differential trait analysis (limma) [86ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [41ms]
+#> ✔ Heatmap of significant traits [43ms]
 #> 
 cast_exp(result)
 #> 

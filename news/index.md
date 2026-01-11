@@ -1,5 +1,7 @@
 # Changelog
 
+## glysmith (development version)
+
 ## glysmith 0.7.0
 
 ### Breaking changes
