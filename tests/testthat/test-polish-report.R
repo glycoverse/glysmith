@@ -340,7 +340,9 @@ test_that("build_step_reports uses AI polishing when enabled", {
     .package = "glysmith"
   )
 
-  reports <- glysmith:::.build_step_reports(x, use_ai = TRUE, api_key = "key")
+  suppressMessages(
+    reports <- glysmith:::.build_step_reports(x, use_ai = TRUE, api_key = "key")
+  )
   expect_equal(reports[[1]]$content, "polished: raw text")
 })
 
@@ -369,7 +371,9 @@ test_that("build_plot_entries uses AI descriptions", {
     .package = "glysmith"
   )
 
-  entries <- glysmith:::.build_plot_entries(x, use_ai = TRUE, api_key = "key")
+  suppressMessages(
+    entries <- glysmith:::.build_plot_entries(x, use_ai = TRUE, api_key = "key")
+  )
   expect_equal(entries[[1]]$description, "AI desc")
   expect_equal(captured$api_key, "key")
   expect_true(grepl("Volcano plot", entries[[1]]$label, fixed = TRUE))

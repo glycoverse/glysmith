@@ -96,15 +96,17 @@ test_that("step_cox report function works with results", {
   exp$sample_info$time <- runif(n_samples, 1, 100)
   exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
 
+  suppressMessages(
   exp <- exp |>
-    glyexp::slice_head_var(10) |>
-    glyclean::auto_clean()
+      glyexp::slice_head_var(10) |>
+      glyclean::auto_clean()
+  )
 
   bp <- blueprint(step_cox())
   suppressMessages(res <- forge_analysis(exp, bp))
 
   step <- res$blueprint$cox
-  report_output <- step$report(res)
+  suppressMessages(report_output <- step$report(res))
   expect_type(report_output, "character")
   expect_true(nchar(report_output) > 0)
   expect_true(grepl("Cox", report_output))
@@ -145,9 +147,11 @@ test_that("step_cox generates table with expected columns", {
   exp$sample_info$time <- runif(n_samples, 1, 100)
   exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
 
-  exp <- exp |>
-    glyexp::slice_head_var(5) |>
-    glyclean::auto_clean()
+  suppressMessages(
+    exp <- exp |>
+      glyexp::slice_head_var(5) |>
+      glyclean::auto_clean()
+  )
 
   bp <- blueprint(step_cox())
   suppressMessages(res <- forge_analysis(exp, bp))
@@ -170,9 +174,11 @@ test_that("step_cox stores raw result", {
   exp$sample_info$time <- runif(n_samples, 1, 100)
   exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
 
-  exp <- exp |>
-    glyexp::slice_head_var(5) |>
-    glyclean::auto_clean()
+  suppressMessages(
+    exp <- exp |>
+      glyexp::slice_head_var(5) |>
+      glyclean::auto_clean()
+  )
 
   bp <- blueprint(step_cox())
   suppressMessages(res <- forge_analysis(exp, bp))
