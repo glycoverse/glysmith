@@ -46,10 +46,14 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
       # New format: list with plot, width, height
       width <- plot_obj$width %||% plot_width
       height <- plot_obj$height %||% plot_height
-      .quietly(ggplot2::ggsave(file_path, plot_obj$plot, width = width, height = height))
+      # Force evaluation to handle lazy promises on older R versions
+      plot_to_save <- ggplot2::ggplotGrob(plot_obj$plot)
+      .quietly(ggplot2::ggsave(file_path, plot_to_save, width = width, height = height))
     } else {
       # Legacy format: just the ggplot object
-      .quietly(ggplot2::ggsave(file_path, cast_plot(x, plot), width = plot_width, height = plot_height))
+      # Force evaluation to handle lazy promises on older R versions
+      plot_to_save <- ggplot2::ggplotGrob(cast_plot(x, plot))
+      .quietly(ggplot2::ggsave(file_path, plot_to_save, width = plot_width, height = plot_height))
     }
   }
 
