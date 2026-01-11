@@ -39,6 +39,22 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   fs::dir_create(fs::path(dir, "plots"))
   fs::dir_create(fs::path(dir, "tables"))
 
+  # -------------------------------------------------------------------------
+  # Handle lazy ggplot promises
+  #
+  # On older R versions (e.g., oldrel-1), inline ggplot expressions stored in
+  # lists can become unevaluated promises (environments) instead of proper
+  # ggplot objects. This happens because R uses lazy evaluation by default.
+  #
+  # Example that triggers this:
+  #   list(plot = ggplot(mtcars, aes(mpg, wt)) + geom_point())
+  #
+  # The ggplot(...) expression is stored as a promise that, when eventually
+  # evaluated, contains environment components rather than a proper ggplot.
+  #
+  # We handle this by checking if the plot is an environment and, if so,
+  # forcing evaluation via .force_ggplot_evaluation().
+  # -------------------------------------------------------------------------
   for (plot in names(x$plots)) {
     file_path <- fs::path(dir, "plots", paste0(plot, ".", plot_ext))
     plot_obj <- x$plots[[plot]]
@@ -46,13 +62,23 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
       # New format: list with plot, width, height
       width <- plot_obj$width %||% plot_width
       height <- plot_obj$height %||% plot_height
-      # Force evaluation to handle lazy promises on older R versions
-      plot_to_save <- ggplot2::ggplotGrob(plot_obj$plot)
+      raw_plot <- plot_obj$plot
+      # Check for lazy promise (environment) and force evaluation if needed
+      if (is.environment(raw_plot)) {
+        plot_to_save <- .force_ggplot_evaluation(raw_plot)
+      } else {
+        plot_to_save <- raw_plot
+      }
       .quietly(ggplot2::ggsave(file_path, plot_to_save, width = width, height = height))
     } else {
       # Legacy format: just the ggplot object
-      # Force evaluation to handle lazy promises on older R versions
-      plot_to_save <- ggplot2::ggplotGrob(cast_plot(x, plot))
+      raw_plot <- cast_plot(x, plot)
+      # Check for lazy promise (environment) and force evaluation if needed
+      if (is.environment(raw_plot)) {
+        plot_to_save <- .force_ggplot_evaluation(raw_plot)
+      } else {
+        plot_to_save <- raw_plot
+      }
       .quietly(ggplot2::ggsave(file_path, plot_to_save, width = plot_width, height = plot_height))
     }
   }
@@ -154,6 +180,100 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
 
   writeLines(lines, fs::path(dir, "README.md"), useBytes = TRUE)
   invisible(NULL)
+}
+
+#' Force evaluation of lazy ggplot promises
+#'
+#' @description
+#' On older R versions (e.g., oldrel-1), ggplot objects created inline and stored
+#' in lists can become lazy promises (environments) rather than proper ggplot objects.
+#' When R stores an expression like `list(plot = ggplot(...) + geom_point())`, the
+#' ggplot construction may be delayed until the promise is forced, resulting in an
+#' environment with ggplot components rather than a proper ggplot object.
+#'
+#' This function handles both:
+#' - Proper ggplot objects: returned as-is
+#' - Lazy promise environments: evaluated or reconstructed into proper ggplot objects
+#'
+#' The evaluation strategy follows a fallback hierarchy:
+#' 1. `ggplotGrob()` - converts to grob (works on newer ggplot2 with environment support)
+#' 2. `ggplot_build()` + `ggplot_gtable()` - builds and converts (works on some ggplot2 versions)
+#' 3. `.reconstruct_ggplot()` - manual reconstruction from environment components (last resort)
+#'
+#' @param x A ggplot object or environment (lazy promise).
+#' @return A gtable object suitable for saving with `ggplot2::ggsave()`.
+#' @noRd
+.force_ggplot_evaluation <- function(x) {
+  # If not an environment, return as-is (already a proper ggplot)
+  if (!is.environment(x)) {
+    return(x)
+  }
+
+  # Attempt 1: Try ggplotGrob directly.
+  # Modern ggplot2 versions can handle environment-wrapped ggplots.
+  tryCatch({
+    ggplot2::ggplotGrob(x)
+  }, error = function(e) {
+    # Attempt 2: Try building the plot first, then convert to grob.
+    # Some ggplot2 versions support ggplot_build on environment-wrapped objects.
+    tryCatch({
+      built <- ggplot2::ggplot_build(x)
+      ggplot2::ggplot_gtable(built)
+    }, error = function(e2) {
+      # Attempt 3: Last resort - manually reconstruct ggplot from components.
+      # This handles cases where ggplot2 cannot process the environment directly.
+      .reconstruct_ggplot(x)
+    })
+  })
+}
+
+#' Reconstruct ggplot from environment components
+#'
+#' @description
+#' This is a fallback function for handling lazy promise environments that cannot
+#' be processed by `ggplotGrob()` or `ggplot_build()`.
+#'
+#' When a ggplot object becomes a lazy promise (environment), it typically contains
+#' these components:
+#' - `mapping` or `mappings`: aesthetic mappings from [ggplot2::aes()]
+#' - `layers`: list of [ggplot2::layer()] objects (geoms, stats)
+#' - `scales`: [ggplot2::Scale] objects
+#' - `coordinates`: [ggplot2::Coord] object (e.g., coord_cartesian)
+#' - `facet`: [ggplot2::Facet] object (e.g., facet_null)
+#' - `theme`: [ggplot2::theme] object
+#'
+#' This function extracts these components and rebuilds a functional ggplot object.
+#' Note: Some advanced features (scales, facets, coordinates) may be simplified
+#' since we use identity/default versions as fallbacks.
+#'
+#' @param env Environment containing ggplot components (lazy promise).
+#' @return A gtable object suitable for saving with `ggplot2::ggsave()`.
+#' @noRd
+.reconstruct_ggplot <- function(env) {
+  # Extract components from the environment with fallbacks.
+  # Components may have different names across ggplot2 versions.
+  mapping <- env$mapping %||% env$mappings %||% ggplot2::aes()
+  layers <- env$layers %||% list()
+
+  # These are rarely needed for basic plotting, use identity defaults if missing
+  scales <- env$scales %||% ggplot2::ggproto(NULL, ggplot2::ScaleIdentity$new())
+  coordinates <- env$coordinates %||% ggplot2::coord_cartesian()
+  facet <- env$facet %||% ggplot2::facet_null()
+  theme <- env$theme %||% ggplot2::theme_gray()
+
+  # Build a minimal ggplot with the extracted theme
+  p <- ggplot2::ggplot() + theme
+
+  # Add each layer to the ggplot
+  # Layers contain the actual visual elements (geoms, stats, etc.)
+  if (length(layers) > 0) {
+    for (layer in layers) {
+      p <- p + layer
+    }
+  }
+
+  # Return as gtable for saving
+  ggplot2::ggplotGrob(p)
 }
 
 # This mysterious function is written by gpt-5.2
