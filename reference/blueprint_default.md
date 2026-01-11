@@ -79,8 +79,6 @@ A `glysmith_blueprint` object.
 ``` r
 blueprint_default()
 #> 
-#> 
-#> 
 #> ── Blueprint (13 steps) ──
 #> 
 #> • step_ident_overview()

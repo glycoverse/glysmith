@@ -118,7 +118,6 @@ only.*
 
 ``` r
 step_oplsda()
-#> Warning: replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’
 #> <step "step_oplsda()"> Orthogonal partial least squares discriminant analysis
 step_oplsda(pred_i = 1, ortho_i = 1)
 #> <step "step_oplsda(pred_i = 1, ortho_i = 1)"> Orthogonal partial least squares

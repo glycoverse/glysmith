@@ -116,10 +116,6 @@ only.*
 
 ``` r
 step_dea_kruskal()
-#> Registered S3 methods overwritten by 'FSA':
-#>   method       from
-#>   confint.boot car 
-#>   hist.boot    car 
 #> <step "step_dea_kruskal()"> Differential expression analysis (kruskal)
 step_dea_kruskal(on = "trait_exp")  # Differential trait analysis
 #> <step "step_dea_kruskal(on = \"trait_exp\")"> Differential trait analysis
