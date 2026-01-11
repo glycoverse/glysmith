@@ -59,6 +59,7 @@ step_correlation <- function(
   ...
 ) {
   rlang::check_installed("Hmisc")
+  rlang::check_installed("GGally")
   on_cor <- rlang::arg_match(on_cor)
   method <- rlang::arg_match(method)
   signature <- rlang::expr_deparse(match.call())

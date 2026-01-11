@@ -36,6 +36,9 @@ Suggests:
     ggseqlogo,
     missForest,
     Hmisc,
+    GGally,
+    survival,
+    UniProt.ws,
     ropls,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

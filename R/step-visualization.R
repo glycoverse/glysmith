@@ -93,6 +93,7 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' @export
 step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, plot_width = 5, plot_height = 3, ...) {
   rlang::check_installed("ggseqlogo")
+  rlang::check_installed("UniProt.ws")
   checkmate::assert_choice(on, c("exp", "sig_exp"))
   signature <- rlang::expr_deparse(match.call())
 
