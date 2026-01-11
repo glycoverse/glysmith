@@ -715,69 +715,46 @@ polish_report <- function(
   plot_owner <- .infer_plot_owner(plot_ids, step_ids)
   names(plot_owner) <- plot_ids
 
-  plot_section_map <- rlang::set_names(rep(NA_character_, length(plot_ids)), plot_ids)
-  for (plot_id in plot_ids) {
+  # Build plot section map using purrr for cleaner iteration
+  plot_section_map <- purrr::map(plot_ids, function(plot_id) {
     owner <- plot_owner[[plot_id]]
     if (!is.na(owner) && owner %in% names(step_sections)) {
-      plot_section_map[[plot_id]] <- step_sections[[owner]]
+      step_sections[[owner]]
     } else if (plot_id %in% names(plot_sections)) {
-      plot_section_map[[plot_id]] <- plot_sections[[plot_id]]
+      plot_sections[[plot_id]]
+    } else {
+      NA_character_
     }
-  }
+  })
+  names(plot_section_map) <- plot_ids
 
+  # Build named sections
   used_plots <- character(0)
   sections <- list()
 
   for (title in section_titles) {
-    entries <- list()
-    for (step in step_reports) {
-      if (!step$id %in% names(step_sections) || step_sections[[step$id]] != title) {
-        next
-      }
-      if (.has_report_content(step$content)) {
-        entries <- append(entries, list(.step_entry(step)))
-      }
-      owned_plots <- plot_ids[!is.na(plot_owner) & !is.na(plot_section_map) &
-        plot_owner == step$id & plot_section_map == title]
-      for (plot_id in owned_plots) {
-        entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
-        used_plots <- c(used_plots, plot_id)
-      }
-    }
-
-    extra_plots <- plot_ids[is.na(plot_owner) & !is.na(plot_section_map) &
-      plot_section_map == title & !plot_ids %in% used_plots]
-    for (plot_id in extra_plots) {
-      entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
-      used_plots <- c(used_plots, plot_id)
-    }
+    result <- .build_section_entries(
+      step_reports, step_sections, plot_map, plot_ids,
+      plot_owner, plot_section_map, title, used_plots
+    )
+    entries <- result$entries
+    used_plots <- c(used_plots, result$used_plots)
 
     if (length(entries) > 0) {
-      sections <- append(sections, list(list(title = title, entries = entries)))
+      sections <- c(sections, list(list(title = title, entries = entries)))
     }
   }
 
-  remaining_steps <- step_ids[!step_ids %in% names(step_sections)]
+  # Build additional results section for unassigned steps/plots
   remaining_plots <- plot_ids[!plot_ids %in% used_plots]
+  remaining_steps <- step_ids[!step_ids %in% names(step_sections)]
   if (length(remaining_steps) > 0 || length(remaining_plots) > 0) {
-    entries <- list()
-    for (step_id in remaining_steps) {
-      step <- step_map[[step_id]]
-      if (.has_report_content(step$content)) {
-        entries <- append(entries, list(.step_entry(step)))
-      }
-      owned_plots <- plot_ids[!is.na(plot_owner) & plot_owner == step_id & plot_ids %in% remaining_plots]
-      for (plot_id in owned_plots) {
-        entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
-        used_plots <- c(used_plots, plot_id)
-      }
-    }
-    remaining_plots <- plot_ids[!plot_ids %in% used_plots]
-    for (plot_id in remaining_plots) {
-      entries <- append(entries, list(.plot_entry(plot_map[[plot_id]])))
-    }
-    if (length(entries) > 0) {
-      sections <- append(sections, list(list(title = "Additional results", entries = entries)))
+    remaining_section <- .build_remaining_section(
+      step_reports, step_sections, step_ids, plot_map, plot_ids,
+      plot_owner, step_map, remaining_plots, used_plots
+    )
+    if (!is.null(remaining_section)) {
+      sections <- c(sections, remaining_section)
     }
   }
 
@@ -807,6 +784,108 @@ polish_report <- function(
 
 .has_report_content <- function(content) {
   is.character(content) && length(content) == 1 && nzchar(content)
+}
+
+#' Collect step entries for a given section title.
+#' @noRd
+.get_step_entries_for_section <- function(step_reports, step_sections, title) {
+  steps_in_section <- purrr::keep(step_reports, ~ {
+    .x$id %in% names(step_sections) && step_sections[[.x$id]] == title
+  })
+  purrr::map(steps_in_section, .step_entry)
+}
+
+#' Collect owned plot IDs for a step in a specific section.
+#' @noRd
+.get_owned_plot_ids <- function(step_id, title, plot_ids, plot_owner, plot_section_map, used_plots) {
+  idx <- !is.na(plot_owner) & !is.na(plot_section_map) &
+    plot_owner == step_id & plot_section_map == title &
+    !plot_ids %in% used_plots
+  plot_ids[idx]
+}
+
+#' Collect unowned plot IDs for a section (plots not assigned to any step).
+#' @noRd
+.get_unowned_plot_ids <- function(title, plot_ids, plot_owner, plot_section_map, used_plots) {
+  idx <- is.na(plot_owner) & !is.na(plot_section_map) &
+    plot_section_map == title & !plot_ids %in% used_plots
+  plot_ids[idx]
+}
+
+#' Build entries for a single section.
+#' @noRd
+.build_section_entries <- function(
+  step_reports,
+  step_sections,
+  plot_map,
+  plot_ids,
+  plot_owner,
+  plot_section_map,
+  title, used_plots
+) {
+  entries <- .get_step_entries_for_section(step_reports, step_sections, title)
+
+  # Add plots owned by steps in this section
+  steps_in_section <- purrr::keep(step_reports, ~ {
+    .x$id %in% names(step_sections) && step_sections[[.x$id]] == title
+  })
+  for (step in steps_in_section) {
+    owned_ids <- .get_owned_plot_ids(step$id, title, plot_ids,
+                                     plot_owner, plot_section_map, used_plots)
+    plot_entries <- purrr::map(owned_ids, ~ .plot_entry(plot_map[[.x]]))
+    entries <- c(entries, plot_entries)
+    used_plots <- c(used_plots, owned_ids)
+  }
+
+  # Add unowned plots assigned to this section
+  unowned_ids <- .get_unowned_plot_ids(title, plot_ids, plot_owner,
+                                        plot_section_map, used_plots)
+  plot_entries <- purrr::map(unowned_ids, ~ .plot_entry(plot_map[[.x]]))
+  entries <- c(entries, plot_entries)
+  used_plots <- c(used_plots, unowned_ids)
+
+  list(entries = entries, used_plots = used_plots)
+}
+
+#' Build additional results section from remaining steps and plots.
+#' @noRd
+.build_remaining_section <- function(
+  step_reports,
+  step_sections,
+  step_ids,
+  plot_map,
+  plot_ids,
+  plot_owner,
+  step_map,
+  remaining_plots,
+  used_plots
+) {
+  entries <- list()
+
+  remaining_steps <- step_ids[!step_ids %in% names(step_sections)]
+  for (step_id in remaining_steps) {
+    step <- step_map[[step_id]]
+    if (.has_report_content(step$content)) {
+      entries <- c(entries, list(.step_entry(step)))
+    }
+    owned_ids <- plot_ids[!is.na(plot_owner) & plot_owner == step_id &
+                           plot_ids %in% remaining_plots &
+                           !plot_ids %in% used_plots]
+    plot_entries <- purrr::map(owned_ids, ~ .plot_entry(plot_map[[.x]]))
+    entries <- c(entries, plot_entries)
+    used_plots <- c(used_plots, owned_ids)
+  }
+
+  # Add any remaining unassigned plots
+  final_remaining <- plot_ids[!plot_ids %in% used_plots]
+  plot_entries <- purrr::map(final_remaining, ~ .plot_entry(plot_map[[.x]]))
+  entries <- c(entries, plot_entries)
+
+  if (length(entries) > 0) {
+    list(list(title = "Additional results", entries = entries))
+  } else {
+    NULL
+  }
 }
 
 .step_entry <- function(step) {
