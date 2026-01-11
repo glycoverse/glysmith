@@ -43,6 +43,10 @@
   dependency.
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
   UI has been optimized.
+- Optimize the speed of
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  and
+  [`modify_blueprint()`](https://glycoverse.github.io/glysmith/reference/modify_blueprint.md).
 - AI prompts of some steps have been updated.
 - Per-plot width and height are now customizable in step functions.
 
