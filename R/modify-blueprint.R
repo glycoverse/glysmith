@@ -63,9 +63,9 @@ modify_blueprint <- function(
 
   repeat {
     if (retry_count > 0) {
-      cat("\n")
+      cli::cli_text("\n")
       cli::cli_alert_info("Attempt {retry_count}/{max_retries}: Retrying with feedback...")
-      cat("\n")
+      cli::cli_text("\n")
     }
 
     .print_ai_thinking(api_key)

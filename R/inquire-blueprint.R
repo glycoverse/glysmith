@@ -59,9 +59,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
   repeat {
     if (retry_count > 0) {
-      cat("\n")
+      cli::cli_text("\n")
       cli::cli_alert_info("Attempt {retry_count}/{max_retries}: Retrying with feedback...")
-      cat("\n")
+      cli::cli_text("\n")
     }
 
     # Call AI
@@ -507,7 +507,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     readline(prompt = prompt)
   })
   cli::cli_end(list_id)
-  cat("\n")
+  cli::cli_text("\n")
   list(questions = questions, answers = answers)
 }
 
@@ -562,7 +562,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   cli::cli_h3(cli::style_bold(cli::col_blue("Review Blueprint")))
   prompt <- cli::style_bold(cli::col_green("Looks good? Press ENTER to accept, or type new requirements: "))
   response <- readline(prompt = prompt)
-  cat("\n")
+  cli::cli_text("\n")
   response
 }
 
