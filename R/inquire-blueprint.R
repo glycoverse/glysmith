@@ -574,31 +574,43 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   cli::cli_end(desc_id)
 }
 
-.get_rd_database <- function() {
-  # Try to get Rd database from installed package
-  rd_db <- tryCatch(tools::Rd_db("glysmith"), error = function(e) NULL)
+.get_rd_database <- local({
+  # Private cache environment for session-scoped caching
+  cache <- new.env(parent = emptyenv())
 
-  if (length(rd_db) == 0) {
-    # Fallback for devtools::load_all() environment
-    # Try to find man directory in package path
-    # We assume we are in the package root or standard structure
-    man_path <- system.file("man", package = "glysmith")
-    if (!nzchar(man_path)) {
-      # If system.file fails (e.g. not installed), try generic relative path if working dir is root
-      if (dir.exists("man")) man_path <- "man"
+  function() {
+    # Check cache first
+    if (exists("rd_db", envir = cache, inherits = FALSE)) {
+      return(cache$rd_db)
     }
 
-    if (nzchar(man_path) && dir.exists(man_path)) {
-      rd_files <- list.files(man_path, pattern = "\\.Rd$", full.names = TRUE)
-      if (length(rd_files) > 0) {
-        rd_db <- lapply(rd_files, tools::parse_Rd)
-        names(rd_db) <- basename(rd_files)
+    # Try to get Rd database from installed package
+    rd_db <- tryCatch(tools::Rd_db("glysmith"), error = function(e) NULL)
+
+    if (length(rd_db) == 0) {
+      # Fallback for devtools::load_all() environment
+      # Try to find man directory in package path
+      # We assume we are in the package root or standard structure
+      man_path <- system.file("man", package = "glysmith")
+      if (!nzchar(man_path)) {
+        # If system.file fails (e.g. not installed), try generic relative path if working dir is root
+        if (dir.exists("man")) man_path <- "man"
+      }
+
+      if (nzchar(man_path) && dir.exists(man_path)) {
+        rd_files <- list.files(man_path, pattern = "\\.Rd$", full.names = TRUE)
+        if (length(rd_files) > 0) {
+          rd_db <- lapply(rd_files, tools::parse_Rd)
+          names(rd_db) <- basename(rd_files)
+        }
       }
     }
-  }
 
-  rd_db
-}
+    # Store in cache for subsequent calls
+    cache$rd_db <- rd_db
+    rd_db
+  }
+})
 
 .get_rd_tag <- function(rd, tag) {
   # Find all elements with matching Rd_tag
