@@ -19,6 +19,7 @@
 * Improved LLM prompt for vague inputs and minimal blueprints in `inquire_blueprint()`.
 * Added Hmisc to Suggests for `step_correlation()` dependency.
 * `inquire_blueprint()` UI has been optimized.
+* Optimize the speed of `inquire_blueprint()` and `modify_blueprint()`.
 * AI prompts of some steps have been updated.
 * Per-plot width and height are now customizable in step functions.
 
