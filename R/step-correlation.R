@@ -57,8 +57,6 @@ step_correlation <- function(
   plot_height = 7,
   ...
 ) {
-  rlang::check_installed("Hmisc")
-  rlang::check_installed("GGally")
   on_cor <- rlang::arg_match(on_cor)
   method <- rlang::arg_match(method)
   signature <- rlang::expr_deparse(match.call())
@@ -70,6 +68,8 @@ step_correlation <- function(
     id = id,
     label = paste0("Correlation analysis", on_meta$label_suffix),
     run = function(ctx) {
+      rlang::check_installed("Hmisc")
+      rlang::check_installed("GGally")
       exp <- ctx_get_data(ctx, on)
       cor_res <- rlang::exec(
         glystats::gly_cor,

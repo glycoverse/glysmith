@@ -36,8 +36,6 @@
 #' @seealso [glyvis::plot_heatmap()]
 #' @export
 step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
-  rlang::check_installed("pheatmap")
-  rlang::check_installed("ggplotify")
   signature <- rlang::expr_deparse(match.call())
 
   on_meta <- .resolve_on(on)
@@ -48,6 +46,8 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
     id = paste0("heatmap", on_meta$id_suffix),
     label = label,
     run = function(ctx) {
+      rlang::check_installed("pheatmap")
+      rlang::check_installed("ggplotify")
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_heatmap(exp, ...)
       ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."), width = plot_width, height = plot_height)
@@ -92,8 +92,6 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' @seealso [glyvis::plot_logo()]
 #' @export
 step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, plot_width = 5, plot_height = 3, ...) {
-  rlang::check_installed("ggseqlogo")
-  rlang::check_installed("UniProt.ws")
   checkmate::assert_choice(on, c("exp", "sig_exp"))
   signature <- rlang::expr_deparse(match.call())
 
@@ -112,6 +110,8 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, plot_width = 5, plot_
       list(check = TRUE, reason = NULL)
     },
     run = function(ctx) {
+      rlang::check_installed("ggseqlogo")
+      rlang::check_installed("UniProt.ws")
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
       ctx_add_plot(ctx, plot_name, p, paste0("Logo plot of glycosylation sites for ", on, "."), width = plot_width, height = plot_height)

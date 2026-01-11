@@ -54,7 +54,6 @@ step_cox <- function(
   p_adj_method = "BH",
   ...
 ) {
-  rlang::check_installed("survival")
   signature <- rlang::expr_deparse(match.call())
   cox_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -64,6 +63,7 @@ step_cox <- function(
     id = id,
     label = paste0("Cox proportional hazards model", on_meta$label_suffix),
     run = function(ctx) {
+      rlang::check_installed("survival")
       exp <- ctx_get_data(ctx, on)
       cox_res <- rlang::exec(
         glystats::gly_cox,

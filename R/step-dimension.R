@@ -44,7 +44,6 @@ step_pca <- function(
   plot_height = 5,
   ...
 ) {
-  rlang::check_installed("factoextra")
   signature <- rlang::expr_deparse(match.call())
   pca_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -53,6 +52,7 @@ step_pca <- function(
     id = id,
     label = paste0("Principal component analysis", on_meta$label_suffix),
     run = function(ctx) {
+      rlang::check_installed("factoextra")
       exp <- ctx_get_data(ctx, on)
       pca_res <- rlang::exec(
         glystats::gly_pca,
@@ -160,7 +160,6 @@ step_tsne <- function(
   plot_height = 5,
   ...
 ) {
-  rlang::check_installed("Rtsne")
   signature <- rlang::expr_deparse(match.call())
   tsne_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -170,6 +169,7 @@ step_tsne <- function(
     id = id,
     label = "t-SNE",
     run = function(ctx) {
+      rlang::check_installed("Rtsne")
       exp <- ctx_get_data(ctx, on)
       tsne <- rlang::exec(
         glystats::gly_tsne,
@@ -235,7 +235,6 @@ step_umap <- function(
   plot_height = 5,
   ...
 ) {
-  rlang::check_installed("uwot")
   signature <- rlang::expr_deparse(match.call())
   umap_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -245,6 +244,7 @@ step_umap <- function(
     id = id,
     label = "UMAP",
     run = function(ctx) {
+      rlang::check_installed("uwot")
       exp <- ctx_get_data(ctx, on)
       umap <- rlang::exec(
         glystats::gly_umap,
@@ -315,7 +315,6 @@ step_plsda <- function(
   plot_height = 5,
   ...
 ) {
-  rlang::check_installed("ropls")
   signature <- rlang::expr_deparse(match.call())
   plsda_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -325,6 +324,7 @@ step_plsda <- function(
     id = id,
     label = paste0("Partial least squares discriminant analysis", on_meta$label_suffix),
     run = function(ctx) {
+      rlang::check_installed("ropls")
       exp <- ctx_get_data(ctx, on)
       plsda_res <- rlang::exec(
         glystats::gly_plsda,
@@ -491,7 +491,6 @@ step_oplsda <- function(
   plot_height = 5,
   ...
 ) {
-  rlang::check_installed("ropls")
   signature <- rlang::expr_deparse(match.call())
   oplsda_args <- rlang::list2(...)
   on_meta <- .resolve_on(on)
@@ -501,6 +500,7 @@ step_oplsda <- function(
     id = id,
     label = paste0("Orthogonal partial least squares discriminant analysis", on_meta$label_suffix),
     run = function(ctx) {
+      rlang::check_installed("ropls")
       exp <- ctx_get_data(ctx, on)
       oplsda_res <- rlang::exec(
         glystats::gly_oplsda,

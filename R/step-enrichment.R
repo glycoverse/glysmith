@@ -38,8 +38,6 @@
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
 step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
-  rlang::check_installed("clusterProfiler")
-  rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich(
     "go",
@@ -92,8 +90,6 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", plot_wid
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
 step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
-  rlang::check_installed("clusterProfiler")
-  rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich(
     "kegg",
@@ -147,8 +143,6 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", plot_w
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
 step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
-  rlang::check_installed("clusterProfiler")
-  rlang::check_installed("org.Hs.eg.db")
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich(
     "reactome",
@@ -216,6 +210,8 @@ step_sig_enrich <- function(
       }
     },
     run = function(ctx) {
+      rlang::check_installed("clusterProfiler")
+      rlang::check_installed("org.Hs.eg.db")
       sig_exp <- ctx_get_data(ctx, "sig_exp")
       call_args <- enrich_args
       if (universe == "detected") {

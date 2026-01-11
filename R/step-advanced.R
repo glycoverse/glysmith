@@ -196,7 +196,6 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
 #' @seealso [glystats::gly_roc()], [glyvis::plot_roc()]
 #' @export
 step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
-  rlang::check_installed("pROC")
   signature <- rlang::expr_deparse(match.call())
 
   step(
@@ -210,6 +209,7 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
       }
     },
     run = function(ctx) {
+      rlang::check_installed("pROC")
       exp <- ctx_get_data(ctx, "exp")
       roc_res <- glystats::gly_roc(exp, pos_class = pos_class)
 

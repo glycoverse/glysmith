@@ -372,7 +372,6 @@ step_dea_kruskal <- function(
   filter_comparison = NULL,
   ...
 ) {
-  rlang::check_installed("FSA")
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(p_adj_method = p_adj_method, ...)
   filter_args <- list(
@@ -538,6 +537,7 @@ step_dea_kruskal <- function(
     id = paste0(meta$prefix, "_", method),
     label = paste0(meta$label, " analysis (", method, ")"),
     run = function(ctx) {
+      rlang::check_installed("FSA")
       exp <- ctx_get_data(ctx, on)
       # Apply filtering for trait_exp if needed
       if (on == "trait_exp") {
