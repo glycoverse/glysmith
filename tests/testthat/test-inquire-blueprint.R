@@ -532,3 +532,250 @@ test_that(".summarize_tibble handles different column types", {
   expect_true(grepl("\\$ lgl_col", result))
   expect_true(grepl("\\$ fct_col", result))
 })
+
+# Tests for helper functions
+test_that(".extract_json_output finds JSON without fences", {
+  output <- "Some text before\n{\"steps\":[\"step_a()\"]}\nSome text after"
+  json_text <- glysmith:::.extract_json_output(output)
+  expect_true(grepl("steps", json_text))
+})
+
+test_that(".extract_json_output returns NULL for empty output", {
+  expect_null(glysmith:::.extract_json_output(""))
+  expect_null(glysmith:::.extract_json_output("   "))
+})
+
+test_that(".extract_json_output handles code fences with json lang", {
+  output <- "```json\n{\"steps\":[\"step_a()\"]}\n```"
+  json_text <- glysmith:::.extract_json_output(output)
+  expect_true(grepl("steps", json_text))
+})
+
+test_that(".parse_step_expr handles backslash escapes", {
+  # This should not error - the function handles escape sequences
+  expect_error(glysmith:::.parse_step_expr('step_heatmap(on = "sig_exp")'), NA)
+})
+
+test_that(".normalize_windows_paths handles basic paths", {
+  # Test that it doesn't break normal text
+  result <- glysmith:::.normalize_windows_paths("normal text")
+  expect_equal(result, "normal text")
+})
+
+test_that(".normalize_windows_path normalizes forward slashes", {
+  # Forward slashes should stay as-is
+  result <- glysmith:::.normalize_windows_path("a/b/c")
+  expect_equal(result, as.character(fs::path("a", "b", "c")))
+})
+
+test_that(".normalize_windows_path handles double backslashes", {
+  # Double backslashes should be converted
+  result <- glysmith:::.normalize_windows_path("a\\\\b\\\\c")
+  expect_true(grepl("/", result))
+})
+
+test_that(".filter_inquire_blueprint_args returns all args", {
+  args <- c("on" = "Name of the experiment", "method" = "Computation method")
+  result <- glysmith:::.filter_inquire_blueprint_args("step_pca", args)
+  expect_equal(names(result), c("on", "method"))
+})
+
+test_that(".process_blueprint_response handles JSON with explanation", {
+  local_mock_glycan_fact()
+
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Preprocess then analyze.","steps":["step_preprocess()"]}'
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  suppressMessages(bp <- inquire_blueprint("dummy"))
+  expect_s3_class(bp, "glysmith_blueprint")
+})
+
+test_that(".process_blueprint_response handles semicolon-separated steps", {
+  local_mock_glycan_fact()
+
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Multiple steps.","steps":["step_preprocess(); step_pca()"]}'
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  suppressMessages(bp <- inquire_blueprint("dummy"))
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_length(bp, 2)
+})
+
+test_that(".process_blueprint_response handles semicolon at end", {
+  local_mock_glycan_fact()
+
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Steps with trailing semicolon.","steps":["step_preprocess();"]}'
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  suppressMessages(bp <- inquire_blueprint("dummy"))
+  expect_s3_class(bp, "glysmith_blueprint")
+})
+
+test_that(".process_blueprint_response rejects invalid step format", {
+  result <- glysmith:::.process_blueprint_response('{"steps":["not_a_step()"]}')
+  expect_false(result$valid)
+  expect_true(grepl("Invalid format", result$error))
+})
+
+test_that(".process_blueprint_response rejects empty steps array", {
+  result <- glysmith:::.process_blueprint_response('{"steps":[]}')
+  expect_false(result$valid)
+  expect_true(grepl("output", tolower(result$error)))
+})
+
+test_that(".process_blueprint_response handles quoted steps", {
+  local_mock_glycan_fact()
+
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Preprocess.","steps":["step_preprocess()"]}'
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  suppressMessages(bp <- inquire_blueprint("dummy"))
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_equal(bp[[1]]$id, "preprocess")
+})
+
+test_that(".process_blueprint_response handles step with quoted arguments", {
+  local_mock_glycan_fact()
+
+  mock_chat_fun <- function(...) {
+    '```json\n{"explanation":"DEA then heatmap.","steps":["step_dea_limma()","step_heatmap(on = \\"sig_exp\\")"]}\n```'
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  suppressMessages(bp <- inquire_blueprint("dummy"))
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_length(bp, 2)
+})
+
+test_that(".process_blueprint_response rejects non-array steps", {
+  # When JSON parses but steps is not an array, it may still be valid if it's a string
+  # The function converts semicolon-separated strings to arrays
+  result <- glysmith:::.process_blueprint_response('{"steps":123}')
+  expect_false(result$valid)
+})
+
+test_that(".generate_exp_info returns empty for NULL experiment", {
+  result <- glysmith:::.generate_exp_info(NULL, "group")
+  expect_equal(result, "")
+})
+
+test_that(".get_rd_database returns database or NULL", {
+  # This should either return a list or NULL depending on environment
+  rd_db <- glysmith:::.get_rd_database()
+  # Just check it doesn't error
+  expect_true(is.list(rd_db) || is.null(rd_db))
+})
+
+test_that(".get_rd_tag finds matching tags", {
+  skip_if_not_installed("tools")
+  rd_db <- glysmith:::.get_rd_database()
+  if (is.null(rd_db)) skip("Rd database not available")
+
+  # Find the preprocess Rd file
+  rd <- rd_db[["step_preprocess.Rd"]]
+  if (is.null(rd)) skip("step_preprocess.Rd not found")
+
+  tags <- glysmith:::.get_rd_tag(rd, "\\title")
+  expect_length(tags, 1)
+})
+
+test_that(".get_rd_tag_values extracts alias values", {
+  skip_if_not_installed("tools")
+  rd_db <- glysmith:::.get_rd_database()
+  if (is.null(rd_db)) skip("Rd database not available")
+
+  rd <- rd_db[["step_preprocess.Rd"]]
+  if (is.null(rd)) skip("step_preprocess.Rd not found")
+
+  aliases <- glysmith:::.get_rd_tag_values(rd, "\\alias")
+  expect_true("step_preprocess" %in% aliases)
+})
+
+test_that(".parse_rd_content handles nested structures", {
+  result <- glysmith:::.parse_rd_content("simple text")
+  expect_equal(result, "simple text")
+
+  # Test with a list
+  nested <- list("part1", list("part2"))
+  result <- glysmith:::.parse_rd_content(nested)
+  expect_equal(result, "part1part2")
+})
+
+test_that(".clean_rd_text removes Rd markup", {
+  text <- "\\code{some_code} and \\link{some_function}"
+  result <- glysmith:::.clean_rd_text(text)
+  # Backticks are kept for code formatting
+  expect_true(grepl("some_code", result))
+  expect_true(grepl("some_function", result))
+})
+
+test_that(".get_rd_tag_text extracts title", {
+  skip_if_not_installed("tools")
+  rd_db <- glysmith:::.get_rd_database()
+  if (is.null(rd_db)) skip("Rd database not available")
+
+  rd <- rd_db[["step_preprocess.Rd"]]
+  if (is.null(rd)) skip("step_preprocess.Rd not found")
+
+  title <- glysmith:::.get_rd_tag_text(rd, "\\title")
+  expect_true(nzchar(title))
+})
+
+test_that(".get_rd_section_text extracts AI Prompt section", {
+  skip_if_not_installed("tools")
+  rd_db <- glysmith:::.get_rd_database()
+  if (is.null(rd_db)) skip("Rd database not available")
+
+  rd <- rd_db[["step_correlation.Rd"]]
+  if (is.null(rd)) skip("step_correlation.Rd not found")
+
+  ai_text <- glysmith:::.get_rd_section_text(rd, "AI Prompt")
+  # AI Prompt may or may not be present
+  expect_true(is.character(ai_text))
+})
+
+test_that(".get_rd_arguments extracts argument descriptions", {
+  skip_if_not_installed("tools")
+  rd_db <- glysmith:::.get_rd_database()
+  if (is.null(rd_db)) skip("Rd database not available")
+
+  rd <- rd_db[["step_preprocess.Rd"]]
+  if (is.null(rd)) skip("step_preprocess.Rd not found")
+
+  args <- glysmith:::.get_rd_arguments(rd)
+  # Arguments section returns a named list
+  expect_true(is.list(args))
+})

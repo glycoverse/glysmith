@@ -456,3 +456,277 @@ test_that("polish_report rejects invalid overwrite input", {
   )
   expect_true(fs::file_exists(output_file))
 })
+
+# Tests for .polish_text
+test_that(".polish_text returns original text for NULL or empty input", {
+  expect_null(glysmith:::.polish_text(NULL, "key"))
+  expect_equal(glysmith:::.polish_text("", "key"), "")
+})
+
+test_that(".polish_text calls ask_ai with correct prompts", {
+  captured <- list()
+  local_mocked_bindings(
+    .ask_ai = function(system_prompt, user_prompt, api_key, model) {
+      captured$system_prompt <<- system_prompt
+      captured$user_prompt <<- user_prompt
+      "polished text"
+    },
+    .package = "glysmith"
+  )
+
+  result <- glysmith:::.polish_text("original text", "key")
+  expect_equal(result, "polished text")
+  expect_true(grepl("scientific writing assistant", captured$system_prompt))
+  expect_equal(captured$user_prompt, "original text")
+})
+
+test_that(".polish_text returns original text on AI error", {
+  local_mocked_bindings(
+    .ask_ai = function(...) stop("AI failed"),
+    .package = "glysmith"
+  )
+
+  result <- glysmith:::.polish_text("original text", "key")
+  expect_equal(result, "original text")
+})
+
+# Tests for .humanize_on_label
+test_that(".humanize_on_label maps experiment types correctly", {
+  expect_equal(glysmith:::.humanize_on_label("sig_exp"), "significant variables")
+  expect_equal(glysmith:::.humanize_on_label("trait_exp"), "traits")
+  expect_equal(glysmith:::.humanize_on_label("sig_trait_exp"), "significant traits")
+  expect_equal(glysmith:::.humanize_on_label("motif_exp"), "motifs")
+  expect_equal(glysmith:::.humanize_on_label("sig_motif_exp"), "significant motifs")
+  expect_equal(glysmith:::.humanize_on_label("exp"), "variables")
+})
+
+# Tests for .on_suffix_labels
+test_that(".on_suffix_labels returns expected labels", {
+  labels <- glysmith:::.on_suffix_labels()
+  expect_equal(labels[["sig"]], "significant variables")
+  expect_equal(labels[["trait"]], "traits")
+  expect_equal(labels[["sig_trait"]], "significant traits")
+  expect_equal(labels[["motif"]], "motifs")
+  expect_equal(labels[["sig_motif"]], "significant motifs")
+})
+
+# Tests for .extract_on_suffix
+test_that(".extract_on_suffix extracts suffix and rest correctly", {
+  result <- glysmith:::.extract_on_suffix(c("sig", "exp"))
+  expect_equal(result$suffix, "sig")
+  expect_equal(result$rest, "exp")
+
+  result <- glysmith:::.extract_on_suffix(c("sig_trait", "exp"))
+  expect_equal(result$suffix, "sig_trait")
+  expect_equal(result$rest, "exp")
+
+  result <- glysmith:::.extract_on_suffix(c("scores"))
+  expect_null(result$suffix)
+  expect_equal(result$rest, "scores")
+
+  result <- glysmith:::.extract_on_suffix(character(0))
+  expect_null(result$suffix)
+  expect_equal(result$rest, character(0))
+})
+
+# Tests for .fix_plot_abbrev
+test_that(".fix_plot_abbrev fixes common abbreviations", {
+  expect_equal(glysmith:::.fix_plot_abbrev("Pca Plot"), "PCA Plot")
+  expect_equal(glysmith:::.fix_plot_abbrev("Umap Analysis"), "UMAP Analysis")
+  expect_equal(glysmith:::.fix_plot_abbrev("Tsne Visualization"), "t-SNE Visualization")
+  expect_equal(glysmith:::.fix_plot_abbrev("Dea Results"), "DEA Results")
+  expect_equal(glysmith:::.fix_plot_abbrev("Go Enrichment"), "GO Enrichment")
+  expect_equal(glysmith:::.fix_plot_abbrev("Kegg Pathway"), "KEGG Pathway")
+  expect_equal(glysmith:::.fix_plot_abbrev("Sig Genes"), "Significant Genes")
+  expect_equal(glysmith:::.fix_plot_abbrev("A vs B"), "A vs B")  # Vs already replaced
+})
+
+# Tests for .parse_section_items edge cases
+test_that("parse_section_items handles semicolon-separated items", {
+  items <- glysmith:::.parse_section_items("step:a; step:b; plot:c")
+  expect_length(items, 3)
+  expect_equal(items[[1]]$type, "step")
+  expect_equal(items[[1]]$id, "a")
+  expect_equal(items[[2]]$id, "b")
+  expect_equal(items[[3]]$type, "plot")
+  expect_equal(items[[3]]$id, "c")
+})
+
+test_that("parse_section_items trims whitespace", {
+  items <- glysmith:::.parse_section_items("  step:a  ;  plot:b  ")
+  expect_equal(items[[1]]$id, "a")
+  expect_equal(items[[2]]$id, "b")
+})
+
+test_that("parse_section_items handles na and n/a", {
+  expect_equal(glysmith:::.parse_section_items("n/a"), list())
+  expect_equal(glysmith:::.parse_section_items("NA"), list())
+  expect_equal(glysmith:::.parse_section_items("none"), list())
+})
+
+# Tests for .parse_section_plan edge cases
+test_that("parse_section_plan handles empty output", {
+  expect_null(glysmith:::.parse_section_plan(""))
+  expect_null(glysmith:::.parse_section_plan(NULL))
+})
+
+test_that("parse_section_plan handles output without items line", {
+  output <- "## Section Title\nSome other content"
+  plan <- glysmith:::.parse_section_plan(output)
+  expect_length(plan, 1)
+  expect_equal(plan[[1]]$title, "Section Title")
+  expect_equal(plan[[1]]$items, list())
+})
+
+test_that("parse_section_plan handles multiple sections", {
+  output <- paste(
+    "## First Section",
+    "items: step:a; plot:b",
+    "",
+    "## Second Section",
+    "items: step:c",
+    sep = "\n"
+  )
+  plan <- glysmith:::.parse_section_plan(output)
+  expect_length(plan, 2)
+  expect_equal(plan[[1]]$title, "First Section")
+  expect_equal(plan[[2]]$title, "Second Section")
+})
+
+# Tests for .organize_report_sections error handling
+test_that("organize_report_sections returns NULL on AI error", {
+  local_mocked_bindings(
+    .ask_ai = function(...) stop("AI error"),
+    .package = "glysmith"
+  )
+
+  result <- glysmith:::.organize_report_sections(
+    list(list(id = "step1", label = "Step 1")),
+    list(),
+    "key"
+  )
+  expect_null(result)
+})
+
+# Tests for .default_report_sections
+test_that("default_report_sections groups plots separately", {
+  step_reports <- list(
+    list(id = "step1", label = "Step 1", content = "content")
+  )
+  plot_entries <- list(
+    list(id = "plot1", label = "Plot 1", description = "desc", plot = ggplot2::ggplot())
+  )
+
+  sections <- glysmith:::.default_report_sections(step_reports, plot_entries)
+  expect_length(sections, 2)
+  expect_equal(sections[[1]]$title, "Analysis narrative")
+  expect_equal(sections[[2]]$title, "Plots")
+})
+
+test_that("default_report_sections skips empty steps", {
+  step_reports <- list(
+    list(id = "step1", label = "Step 1", content = "")  # Empty content
+  )
+  plot_entries <- list()
+
+  sections <- glysmith:::.default_report_sections(step_reports, plot_entries)
+  expect_length(sections, 0)  # No sections because step has no content
+})
+
+test_that("default_report_sections handles empty inputs", {
+  sections <- glysmith:::.default_report_sections(list(), list())
+  expect_length(sections, 0)
+})
+
+# Tests for .step_entry and .plot_entry
+test_that(".step_entry creates correct structure", {
+  step <- list(id = "test", label = "Test Step", content = "Test content")
+  entry <- glysmith:::.step_entry(step)
+  expect_equal(entry$type, "step")
+  expect_equal(entry$id, "test")
+  expect_equal(entry$label, "Test Step")
+  expect_true(entry$has_content)
+})
+
+test_that(".step_entry handles missing content", {
+  step <- list(id = "test", label = "Test Step", content = NULL)
+  entry <- glysmith:::.step_entry(step)
+  expect_false(entry$has_content)
+})
+
+test_that(".plot_entry creates correct structure", {
+  plot_obj <- list(id = "plot1", label = "Plot 1", description = "desc", plot = ggplot2::ggplot())
+  entry <- glysmith:::.plot_entry(plot_obj)
+  expect_equal(entry$type, "plot")
+  expect_equal(entry$id, "plot1")
+  expect_equal(entry$label, "Plot 1")
+})
+
+# Tests for .has_report_content
+test_that(".has_report_content correctly identifies content", {
+  expect_true(glysmith:::.has_report_content("valid content"))
+  expect_false(glysmith:::.has_report_content(""))
+  expect_false(glysmith:::.has_report_content(NULL))
+  expect_false(glysmith:::.has_report_content(character(0)))
+  expect_false(glysmith:::.has_report_content(c("a", "b")))  # Multiple elements
+})
+
+# Tests for .section_titles
+test_that(".section_titles extracts unique titles", {
+  plan <- list(
+    list(title = "Section 1"),
+    list(title = "Section 2"),
+    list(title = "Section 1")  # Duplicate
+  )
+  titles <- glysmith:::.section_titles(plan)
+  expect_equal(titles, c("Section 1", "Section 2"))
+})
+
+# Tests for .plan_step_sections and .plan_plot_sections
+test_that(".plan_step_sections maps steps to sections", {
+  plan <- list(
+    list(
+      title = "Analysis",
+      items = list(
+        list(type = "step", id = "step1"),
+        list(type = "step", id = "step2")
+      )
+    )
+  )
+  step_sections <- glysmith:::.plan_step_sections(plan, c("step1", "step2", "step3"))
+  expect_equal(step_sections[["step1"]], "Analysis")
+  expect_equal(step_sections[["step2"]], "Analysis")
+  # step3 is not in the plan, so it should not be in step_sections
+  expect_false("step3" %in% names(step_sections))
+})
+
+test_that(".plan_plot_sections maps plots to sections", {
+  plan <- list(
+    list(
+      title = "Results",
+      items = list(
+        list(type = "plot", id = "volcano")
+      )
+    )
+  )
+  plot_sections <- glysmith:::.plan_plot_sections(plan, c("volcano", "heatmap"))
+  expect_equal(plot_sections[["volcano"]], "Results")
+  # heatmap is not in the plan, so it should not be in plot_sections
+  expect_false("heatmap" %in% names(plot_sections))
+})
+
+# Tests for .describe_plot_ai
+test_that(".describe_plot_ai returns description when plot is NULL", {
+  result <- glysmith:::.describe_plot_ai(NULL, "label", "existing desc", "key")
+  expect_equal(result, "existing desc")
+})
+
+test_that(".describe_plot_ai handles AI error gracefully", {
+  local_mocked_bindings(
+    .ask_ai_multimodal = function(...) stop("AI error"),
+    .package = "glysmith"
+  )
+
+  result <- glysmith:::.describe_plot_ai(ggplot2::ggplot(), "label", "existing desc", "key")
+  expect_equal(result, "existing desc")
+})
