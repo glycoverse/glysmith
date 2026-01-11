@@ -72,9 +72,8 @@ Plots generated (with suffixes):
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
 \item Include this step to explore relationships between variables or samples.
-\item Use \code{on = "sample"} to see how samples cluster based on their expression profiles.
-\item Use \code{on = "variable"} (default) to find highly correlated features.
-\item This step is useful for identifying potential co-regulated glycans or glycopeptides.
+\item Be careful to use when sample size or variable number is large (> 50).
+Before using this step for large data, ask the user if they want to proceed.
 }
 }
 
