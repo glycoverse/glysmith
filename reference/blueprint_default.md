@@ -8,6 +8,9 @@ This blueprint contains the following steps:
 - step_preprocess(): Preprocess the data using
   [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
 
+- step_plot_qc(when = "post"): Plot QC plots using
+  `glyclean::plot_qc()`.
+
 - step_pca(): Principal component analysis using
   [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html),
   and plot the PCA using
@@ -78,10 +81,11 @@ blueprint_default()
 #> 
 #> 
 #> 
-#> ── Blueprint (12 steps) ──
+#> ── Blueprint (13 steps) ──
 #> 
 #> • step_ident_overview()
 #> • step_preprocess()
+#> • step_plot_qc(when = "post")
 #> • step_pca()
 #> • step_dea_limma()
 #> • step_volcano()

@@ -13,7 +13,14 @@ with different `n_neighbors` values to find the best one.
 ## Usage
 
 ``` r
-step_umap(on = "exp", n_neighbors = 15, n_components = 2, ...)
+step_umap(
+  on = "exp",
+  n_neighbors = 15,
+  n_components = 2,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 ```
 
 ## Arguments
@@ -30,6 +37,14 @@ step_umap(on = "exp", n_neighbors = 15, n_components = 2, ...)
 - n_components:
 
   Number of output dimensions. Default is 2.
+
+- plot_width:
+
+  Width of the plot in inches. Default is 5.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 5.
 
 - ...:
 

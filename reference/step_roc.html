@@ -11,7 +11,7 @@ and plot ROC curves for these variables using glyvis::plot_roc()."><meta propert
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ and plot ROC curves for these variables using <code><a href="https://glycoverse.
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_roc</span><span class="op">(</span>pos_class <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_roc</span><span class="op">(</span>pos_class <span class="op">=</span> <span class="cn">NULL</span>, plot_width <span class="op">=</span> <span class="fl">5</span>, plot_height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,6 +59,14 @@ and plot ROC curves for these variables using <code><a href="https://glycoverse.
 <dd><p>A character string specifying which group level should be treated as
 the positive class. If <code>NULL</code> (default), the second level (alphabetically) will be
 used as the positive class.</p></dd>
+
+
+<dt id="arg-plot-width">plot_width<a class="anchor" aria-label="anchor" href="#arg-plot-width"></a></dt>
+<dd><p>Width of the plot in inches. Default is 5.</p></dd>
+
+
+<dt id="arg-plot-height">plot_height<a class="anchor" aria-label="anchor" href="#arg-plot-height"></a></dt>
+<dd><p>Height of the plot in inches. Default is 5.</p></dd>
 
 </dl></div>
     <div class="section level2">

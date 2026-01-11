@@ -14,7 +14,14 @@ This step requires one of the DEA steps to be run:
 ## Usage
 
 ``` r
-step_volcano(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...)
+step_volcano(
+  log2fc_cutoff = 1,
+  p_cutoff = 0.05,
+  p_col = "p_adj",
+  plot_width = 5,
+  plot_height = 6,
+  ...
+)
 ```
 
 ## Arguments
@@ -31,6 +38,14 @@ step_volcano(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", ...)
 
   The column name for p-value. Defaults to "p_adj". Can also be "p_val"
   (raw p-values without multiple testing correction).
+
+- plot_width:
+
+  Width of the plot in inches. Default is 5.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 6.
 
 - ...:
 

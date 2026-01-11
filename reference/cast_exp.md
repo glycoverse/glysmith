@@ -46,7 +46,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [86ms]
+#> ✔ Identification overview [85ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -105,10 +105,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.9s]
+#> ✔ Preprocessing [5.6s]
+#> 
+#> ℹ QC (post-preprocessing)
+#> ✔ QC (post-preprocessing) [154ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [476ms]
+#> ✔ Principal component analysis [505ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -120,16 +123,16 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [189ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [601ms]
+#> ✔ Volcano plot [578ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [80ms]
+#> ✔ Heatmap of significant variables [77ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8.4s]
+#> ✔ Derived trait calculation [7.6s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -141,7 +144,7 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [39ms]
+#> ✔ Heatmap of significant traits [38ms]
 #> 
 cast_exp(result)
 #> 

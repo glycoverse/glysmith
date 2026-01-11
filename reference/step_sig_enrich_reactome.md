@@ -11,7 +11,13 @@ background.
 ## Usage
 
 ``` r
-step_sig_enrich_reactome(universe = "all", plot_type = "dotplot", ...)
+step_sig_enrich_reactome(
+  universe = "all",
+  plot_type = "dotplot",
+  plot_width = 7,
+  plot_height = 7,
+  ...
+)
 ```
 
 ## Arguments
@@ -24,6 +30,14 @@ step_sig_enrich_reactome(universe = "all", plot_type = "dotplot", ...)
 - plot_type:
 
   Plot type for enrichment results ("dotplot", "barplot", etc.).
+
+- plot_width:
+
+  Width of the plot in inches. Default is 7.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 7.
 
 - ...:
 

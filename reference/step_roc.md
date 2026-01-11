@@ -9,7 +9,7 @@ variables using
 ## Usage
 
 ``` r
-step_roc(pos_class = NULL)
+step_roc(pos_class = NULL, plot_width = 5, plot_height = 5)
 ```
 
 ## Arguments
@@ -19,6 +19,14 @@ step_roc(pos_class = NULL)
   A character string specifying which group level should be treated as
   the positive class. If `NULL` (default), the second level
   (alphabetically) will be used as the positive class.
+
+- plot_width:
+
+  Width of the plot in inches. Default is 5.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 5.
 
 ## Value
 

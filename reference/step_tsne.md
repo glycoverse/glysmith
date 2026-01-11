@@ -13,7 +13,14 @@ with different `perplexity` values to find the best one.
 ## Usage
 
 ``` r
-step_tsne(on = "exp", dims = 2, perplexity = 30, ...)
+step_tsne(
+  on = "exp",
+  dims = 2,
+  perplexity = 30,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 ```
 
 ## Arguments
@@ -30,6 +37,14 @@ step_tsne(on = "exp", dims = 2, perplexity = 30, ...)
 - perplexity:
 
   Perplexity parameter for t-SNE. Default is 30.
+
+- plot_width:
+
+  Width of the plot in inches. Default is 5.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 5.
 
 - ...:
 

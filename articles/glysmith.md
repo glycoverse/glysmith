@@ -153,10 +153,11 @@ via
 ``` r
 blueprint_default()
 #> 
-#> ── Blueprint (12 steps) ──
+#> ── Blueprint (13 steps) ──
 #> 
 #> • step_ident_overview()
 #> • step_preprocess()
+#> • step_plot_qc(when = "post")
 #> • step_pca()
 #> • step_dea_limma()
 #> • step_volcano()

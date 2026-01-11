@@ -7,7 +7,7 @@ The heatmap visualizes expression values across samples.
 ## Usage
 
 ``` r
-step_heatmap(on = "exp", ...)
+step_heatmap(on = "exp", plot_width = 7, plot_height = 7, ...)
 ```
 
 ## Arguments
@@ -17,6 +17,14 @@ step_heatmap(on = "exp", ...)
   Name of the experiment data in `ctx$data` to plot. One of "exp",
   "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
   Default is "exp".
+
+- plot_width:
+
+  Width of the plot in inches. Default is 7.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 7.
 
 - ...:
 

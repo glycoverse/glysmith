@@ -83,6 +83,10 @@ generation.*
   : Save GlySmith Result
 - [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/reference/step_adjust_protein.md)
   : Step: Adjust Protein Abundance
+- [`step_correlation()`](https://glycoverse.github.io/glysmith/reference/step_correlation.md)
+  : Step: Correlation Analysis
+- [`step_cox()`](https://glycoverse.github.io/glysmith/reference/step_cox.md)
+  : Step: Cox Proportional Hazards Model
 - [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md)
   : Step: Differential Expression Analysis (DEA) using ANOVA
 - [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md)
@@ -102,14 +106,23 @@ generation.*
   : Step: Identification Overview
 - [`step_logo()`](https://glycoverse.github.io/glysmith/reference/step_logo.md)
   : Step: Logo Plot
+- [`step_oplsda()`](https://glycoverse.github.io/glysmith/reference/step_oplsda.md)
+  : Step: Orthogonal Partial Least Squares Discriminant Analysis
+  (OPLS-DA)
 - [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)
   : Step: Principal Component Analysis (PCA)
+- [`step_plot_qc()`](https://glycoverse.github.io/glysmith/reference/step_plot_qc.md)
+  : Step: Plot QC
+- [`step_plsda()`](https://glycoverse.github.io/glysmith/reference/step_plsda.md)
+  : Step: Partial Least Squares Discriminant Analysis (PLS-DA)
 - [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
   : Step: Preprocessing
 - [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
   : Step: Quantify Motifs
 - [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md)
   : Step: ROC Analysis
+- [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.md)
+  : Step: Significant Variables Boxplot
 - [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md)
   : Step: GO Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md)

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -195,10 +195,11 @@ the analysis pipeline. You can inspect it via
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint_default.html">blueprint_default</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">12</span><span style="font-weight: bold;"> steps)</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">13</span><span style="font-weight: bold;"> steps)</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • step_ident_overview()</span></span>
 <span><span class="co">#&gt; • step_preprocess()</span></span>
+<span><span class="co">#&gt; • step_plot_qc(when = "post")</span></span>
 <span><span class="co">#&gt; • step_pca()</span></span>
 <span><span class="co">#&gt; • step_dea_limma()</span></span>
 <span><span class="co">#&gt; • step_volcano()</span></span>

@@ -9,7 +9,14 @@ experiments.
 ## Usage
 
 ``` r
-step_logo(on = "exp", n_aa = 5L, fasta = NULL, ...)
+step_logo(
+  on = "exp",
+  n_aa = 5L,
+  fasta = NULL,
+  plot_width = 5,
+  plot_height = 3,
+  ...
+)
 ```
 
 ## Arguments
@@ -32,6 +39,14 @@ step_logo(on = "exp", n_aa = 5L, fasta = NULL, ...)
   has been called on the experiment, this argument can be omitted. When
   `site_sequence` is missing and `fasta` is `NULL`, UniProt.ws is used
   to fetch protein sequences automatically.
+
+- plot_width:
+
+  Width of the plot in inches. Default is 5.
+
+- plot_height:
+
+  Height of the plot in inches. Default is 3.
 
 - ...:
 

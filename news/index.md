@@ -1,5 +1,51 @@
 # Changelog
 
+## glysmith (development version)
+
+### Breaking changes
+
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
+  now does not generate QC plots anymore. The QC plots are now generated
+  by
+  [`step_plot_qc()`](https://glycoverse.github.io/glysmith/reference/step_plot_qc.md).
+
+### New features
+
+- Add
+  [`step_plot_qc()`](https://glycoverse.github.io/glysmith/reference/step_plot_qc.md)
+  for generating Quality Control plots.
+- Add
+  [`step_cox()`](https://glycoverse.github.io/glysmith/reference/step_cox.md)
+  for Cox proportional hazards survival analysis.
+- Add
+  [`step_correlation()`](https://glycoverse.github.io/glysmith/reference/step_correlation.md)
+  for correlation analysis.
+- Add
+  [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.md)
+  for generating boxplots of significant variables.
+- Add
+  [`step_plsda()`](https://glycoverse.github.io/glysmith/reference/step_plsda.md)
+  and
+  [`step_oplsda()`](https://glycoverse.github.io/glysmith/reference/step_oplsda.md)
+  for supervised dimensionality reduction.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  now includes sample_info and var_info summaries in LLM context for
+  better suggestions.
+- [`modify_blueprint()`](https://glycoverse.github.io/glysmith/reference/modify_blueprint.md)
+  now has clarification question capability.
+
+### Minor improvements and bug fixes
+
+- Improved LLM prompt for vague inputs and minimal blueprints in
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md).
+- Added Hmisc to Suggests for
+  [`step_correlation()`](https://glycoverse.github.io/glysmith/reference/step_correlation.md)
+  dependency.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
+  UI has been optimized.
+- AI prompts of some steps have been updated.
+- Per-plot width and height are now customizable in step functions.
+
 ## glysmith 0.6.0
 
 ### New features

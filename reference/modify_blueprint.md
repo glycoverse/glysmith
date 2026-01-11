@@ -55,3 +55,5 @@ LLMs can be unstable. If you get an error, try again with another
 description. Make sure to examine the returned blueprint carefully to
 ensure it's what you want. This function is a companion of
 [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md).
+If the LLM needs required information to proceed, it may ask clarifying
+questions interactively and then retry with your answers.

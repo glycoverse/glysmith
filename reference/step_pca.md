@@ -10,7 +10,14 @@ variables. Ignore the resulting plot if it is not informative.
 ## Usage
 
 ``` r
-step_pca(on = "exp", center = TRUE, scale = TRUE, ...)
+step_pca(
+  on = "exp",
+  center = TRUE,
+  scale = TRUE,
+  plot_width = 5,
+  plot_height = 5,
+  ...
+)
 ```
 
 ## Arguments
@@ -27,6 +34,14 @@ step_pca(on = "exp", center = TRUE, scale = TRUE, ...)
 - scale:
 
   A logical indicating whether to scale the data. Default is TRUE.
+
+- plot_width:
+
+  Width of plots in inches. Default is 5.
+
+- plot_height:
+
+  Height of plots in inches. Default is 5.
 
 - ...:
 
