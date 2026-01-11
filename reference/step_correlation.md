@@ -101,13 +101,9 @@ only.*
 - Include this step to explore relationships between variables or
   samples.
 
-- Use `on = "sample"` to see how samples cluster based on their
-  expression profiles.
-
-- Use `on = "variable"` (default) to find highly correlated features.
-
-- This step is useful for identifying potential co-regulated glycans or
-  glycopeptides.
+- Be careful to use when sample size or variable number is large (\>
+  50). Before using this step for large data, ask the user if they want
+  to proceed.
 
 ## See also
 

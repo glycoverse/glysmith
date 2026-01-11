@@ -120,9 +120,8 @@ If NULL, no adjustment is performed.</p></dd>
 
 
 <p><em>This section is for AI in <code><a href="inquire_blueprint.html">inquire_blueprint()</a></code> only.</em></p><ul><li><p>Include this step to explore relationships between variables or samples.</p></li>
-<li><p>Use <code>on = "sample"</code> to see how samples cluster based on their expression profiles.</p></li>
-<li><p>Use <code>on = "variable"</code> (default) to find highly correlated features.</p></li>
-<li><p>This step is useful for identifying potential co-regulated glycans or glycopeptides.</p></li>
+<li><p>Be careful to use when sample size or variable number is large (&gt; 50).
+Before using this step for large data, ask the user if they want to proceed.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
