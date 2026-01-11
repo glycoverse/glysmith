@@ -118,7 +118,8 @@ only.*
 
 ``` r
 step_oplsda()
-#> Error in step_oplsda(): The package "ropls" is required.
+#> <step "step_oplsda()"> Orthogonal partial least squares discriminant analysis
 step_oplsda(pred_i = 1, ortho_i = 1)
-#> Error in step_oplsda(pred_i = 1, ortho_i = 1): The package "ropls" is required.
+#> <step "step_oplsda(pred_i = 1, ortho_i = 1)"> Orthogonal partial least squares
+#> discriminant analysis
 ```

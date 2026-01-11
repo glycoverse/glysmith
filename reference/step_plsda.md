@@ -107,7 +107,7 @@ only.*
 
 ``` r
 step_plsda()
-#> Error in step_plsda(): The package "ropls" is required.
+#> <step "step_plsda()"> Partial least squares discriminant analysis
 step_plsda(ncomp = 3)
-#> Error in step_plsda(ncomp = 3): The package "ropls" is required.
+#> <step "step_plsda(ncomp = 3)"> Partial least squares discriminant analysis
 ```
