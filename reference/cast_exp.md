@@ -108,10 +108,10 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [6.4s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [150ms]
+#> ✔ QC (post-preprocessing) [148ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [544ms]
+#> ✔ Principal component analysis [581ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> Registered S3 methods overwritten by 'FSA':
@@ -124,10 +124,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [194ms]
+#> ✔ Differential expression analysis (limma) [192ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [538ms]
+#> ✔ Volcano plot [532ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [95ms]
@@ -145,10 +145,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [82ms]
+#> ✔ Differential trait analysis (limma) [78ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [41ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 cast_exp(result)
 #> 
