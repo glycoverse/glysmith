@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [113ms]
+#> ✔ Identification overview [118ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -111,13 +111,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.6s]
+#> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [121ms]
+#> ✔ QC (post-preprocessing) [123ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [291ms]
+#> ✔ Principal component analysis [306ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,13 +126,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [81ms]
+#> ✔ Differential expression analysis (limma) [83ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [516ms]
+#> ✔ Volcano plot [528ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [67ms]
+#> ✔ Heatmap of significant variables [68ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -147,7 +147,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [55ms]
+#> ✔ Differential trait analysis (limma) [56ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [40ms]
@@ -155,5 +155,5 @@ result <- forge_analysis(exp)
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
 #> Warning: Ignoring empty aesthetic: `width`.
-#> ✔ Result saved to /tmp/RtmpUskqli
+#> ✔ Result saved to /tmp/RtmpBhAHwM
 ```
