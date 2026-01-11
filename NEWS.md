@@ -20,6 +20,7 @@
 * Added Hmisc to Suggests for `step_correlation()` dependency.
 * `inquire_blueprint()` UI has been optimized.
 * AI prompts of some steps have been updated.
+* Per-plot width and height are now customizable in step functions.
 
 # glysmith 0.6.0
 
