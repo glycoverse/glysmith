@@ -294,6 +294,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     "and steps about derived traits can be grouped into 'trait'.",
     "\n",
     "When in doubt, ASK! Clarifying questions lead to better analysis plans.",
+    "You are ENCOURAGED to ask as many questions as possible to understand the user's request.",
     "If the user's request is vague, unclear, or appears to be a greeting, ask what they want to accomplish.",
     "NEEDLESS steps like PCA, heatmap, correlation, derived traits, or motif analysis are NOT necessary by default.",
     "Only include a step if the user explicitly requests it or if it's clearly required for their stated goal.",
