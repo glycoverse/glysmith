@@ -27,11 +27,11 @@
 #' @param description A description of what you want to analysis.
 #' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
 #' @param group_col The column name of the group variable in the experiment. Default to "group".
-#' @param model Model to use. Default to "deepseek-reasoner".
+#' @param model Model to use. Default to "deepseek-chat".
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #'
 #' @export
-inquire_blueprint <- function(description, exp = NULL, group_col = "group", model = "deepseek-reasoner", max_retries = 3) {
+inquire_blueprint <- function(description, exp = NULL, group_col = "group", model = "deepseek-chat", max_retries = 3) {
   checkmate::assert_string(description)
   checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
   checkmate::assert_string(group_col)

@@ -8,7 +8,7 @@ inquire_blueprint(
   description,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-reasoner",
+  model = "deepseek-chat",
   max_retries = 3
 )
 }
@@ -19,7 +19,7 @@ inquire_blueprint(
 
 \item{group_col}{The column name of the group variable in the experiment. Default to "group".}
 
-\item{model}{Model to use. Default to "deepseek-reasoner".}
+\item{model}{Model to use. Default to "deepseek-chat".}
 
 \item{max_retries}{Maximum number of retries when the AI output is invalid. Default to 3.}
 }

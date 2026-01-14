@@ -18,7 +18,7 @@
 #' @param description A description of how you want to modify the blueprint.
 #' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
 #' @param group_col The column name of the group variable in the experiment. Default to "group".
-#' @param model Model to use. Default to "deepseek-reasoner".
+#' @param model Model to use. Default to "deepseek-chat".
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #'
 #' @export
@@ -27,7 +27,7 @@ modify_blueprint <- function(
   description,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-reasoner",
+  model = "deepseek-chat",
   max_retries = 3
 ) {
   checkmate::assert_class(bp, "glysmith_blueprint")
