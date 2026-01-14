@@ -505,7 +505,10 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   answers <- purrr::map_chr(questions, function(question) {
     cli::cli_li(cli::style_bold(cli::col_cyan(question)))
     prompt <- cli::style_bold(cli::col_green("  Answer: "))
-    readline(prompt = prompt)
+    answer <- readline(prompt = prompt)
+    # Add a blank line between Q&A blocks
+    cli::cli_text("")
+    answer
   })
   cli::cli_end(list_id)
   cli::cli_text("\n")
