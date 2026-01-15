@@ -357,10 +357,10 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
 test_that("system prompt uses single-question format", {
   prompt <- .inquire_blueprint_sys_prompt()
 
-  # Should mention "one question" or similar single-question language
+  # Should mention "atomic question" or similar single-question language
   expect_true(
-    grepl("one question", prompt, ignore.case = TRUE),
-    info = "System prompt should mention asking one question at a time"
+    grepl("atomic", prompt, ignore.case = TRUE),
+    info = "System prompt should mention atomic questions"
   )
 
   # Should show example with "question" field (not "questions" array)
@@ -373,6 +373,12 @@ test_that("system prompt uses single-question format", {
   expect_false(
     grepl('"questions":\\s*\\[', prompt),
     info = "System prompt should not use 'questions' array format"
+  )
+
+  # Should show BAD vs GOOD examples for compound questions
+  expect_true(
+    grepl("BAD:", prompt) && grepl("GOOD:", prompt),
+    info = "System prompt should show bad vs good question examples"
   )
 
   # Example flow should be present
