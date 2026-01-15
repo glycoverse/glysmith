@@ -339,7 +339,7 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
   )
 
   local_mocked_bindings(
-    .ask_inquiry_questions = function(...) stop("Unexpected clarification request."),
+    .ask_single_question = function(...) stop("Unexpected clarification request."),
     .package = "glysmith"
   )
 
@@ -395,27 +395,9 @@ test_that("inquire_blueprint includes step parameters in system prompt", {
   expect_true(grepl("`on`", block))
 })
 
-test_that("extract_inquiry_questions parses list and inline formats", {
-  list_output <- "QUESTIONS:\n- first question\n- second question"
-  questions <- glysmith:::.extract_inquiry_questions(list_output)
-  expect_equal(questions, c("first question", "second question"))
-
-  inline_output <- "QUESTIONS: provide the group column"
-  inline <- glysmith:::.extract_inquiry_questions(inline_output)
-  expect_equal(inline, "provide the group column")
-
-  expect_null(glysmith:::.extract_inquiry_questions("No questions here"))
-})
-
-test_that("format_inquiry_answers formats question and answer pairs", {
-  formatted <- glysmith:::.format_inquiry_answers(c("Q1", "Q2"), c("A1", "A2"))
-  expect_true(grepl("- Q: Q1", formatted, fixed = TRUE))
-  expect_true(grepl("A: A2", formatted, fixed = TRUE))
-})
-
-test_that("ask_inquiry_questions errors when non-interactive", {
+test_that("ask_single_question errors when non-interactive", {
   skip_if(interactive())
-  expect_error(glysmith:::.ask_inquiry_questions("Question?"), "interactive input")
+  expect_error(glysmith:::.ask_single_question("Question?"), "interactive input")
 })
 
 test_that("ask_blueprint_review uses readline prompt", {

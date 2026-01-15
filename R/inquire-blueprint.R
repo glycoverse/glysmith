@@ -118,16 +118,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   json_text <- .extract_json_output(output_clean)
 
   if (is.null(json_text)) {
-    questions <- .extract_inquiry_questions(output_clean)
-    if (!is.null(questions)) {
-      if (length(questions) == 0) {
-        return(list(valid = FALSE, error = "Clarification questions requested but none provided."))
-      }
-      return(list(valid = FALSE, questions = questions, error = "Clarification requested."))
-    }
     return(list(
       valid = FALSE,
-      error = "Invalid JSON output. Return a JSON object with `steps` (array of strings) or `questions` (array of strings)."
+      error = "Invalid JSON output. Return a JSON object with `steps` (array of strings) or `question` (single string)."
     ))
   }
 
@@ -470,34 +463,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   args
 }
 
-.extract_inquiry_questions <- function(output_clean) {
-  lines <- stringr::str_split(output_clean, "\n")[[1]]
-  if (length(lines) == 0) return(NULL)
-  first <- stringr::str_trim(lines[1])
-  if (!stringr::str_detect(first, stringr::regex("^QUESTIONS?:", ignore_case = TRUE))) {
-    return(NULL)
-  }
-
-  rest <- stringr::str_trim(lines[-1])
-  rest <- rest[rest != ""]
-  rest <- stringr::str_remove(rest, "^[-*]\\s*")
-  rest <- rest[rest != ""]
-
-  if (length(rest) == 0) {
-    inline <- stringr::str_trim(stringr::str_remove(first, stringr::regex("^QUESTIONS?:", ignore_case = TRUE)))
-    if (nzchar(inline)) return(inline)
-  }
-
-  rest
-}
-
-.format_inquiry_answers <- function(questions, answers) {
-  entries <- purrr::map2_chr(questions, answers, function(question, answer) {
-    paste0("- Q: ", question, "\n  A: ", answer)
-  })
-  paste(entries, collapse = "\n")
-}
-
 #' Ask a single clarification question to the user
 #' @noRd
 .ask_single_question <- function(question) {
@@ -515,31 +480,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   answer <- readline(prompt = prompt)
   cli::cli_text("\n")
   answer
-}
-
-.ask_inquiry_questions <- function(questions) {
-  checkmate::assert_character(questions, min.len = 1)
-  if (!.is_interactive()) {
-    cli::cli_abort(c(
-      "LLM requires more information to continue.",
-      "x" = "This prompt needs interactive input for clarification.",
-      "i" = "Re-run with the missing details included in `description`."
-    ))
-  }
-  cli::cli_h3(cli::style_bold(cli::col_blue("Need more information")))
-  cli::cli_text(cli::style_italic(cli::col_silver("Please answer the following questions:")))
-  list_id <- cli::cli_ol(.close = FALSE)
-  answers <- purrr::map_chr(questions, function(question) {
-    cli::cli_li(cli::style_bold(cli::col_cyan(question)))
-    prompt <- cli::style_bold(cli::col_green("  Answer: "))
-    answer <- readline(prompt = prompt)
-    # Add a blank line between Q&A blocks
-    cli::cli_text("")
-    answer
-  })
-  cli::cli_end(list_id)
-  cli::cli_text("\n")
-  list(questions = questions, answers = answers)
 }
 
 #' Review a blueprint and optionally refine it with new requirements
