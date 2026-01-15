@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [127ms]
+#> ✔ Identification overview [129ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -120,10 +120,10 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.6s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [118ms]
+#> ✔ QC (post-preprocessing) [126ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [289ms]
+#> ✔ Principal component analysis [300ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -132,19 +132,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [56ms]
+#> ✔ Differential expression analysis (limma) [58ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [515ms]
+#> ✔ Volcano plot [536ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [65ms]
+#> ✔ Heatmap of significant variables [66ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.1s]
+#> ✔ Derived trait calculation [2.2s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -156,8 +156,8 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [56ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [66ms]
+#> ✔ Heatmap of significant traits [74ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpCAflTR/file1cd57a4e0dc5.html"
+#> [1] "/tmp/RtmpBgHsNs/file1c902434a622.html"
 ```
