@@ -55,7 +55,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
   retry_count <- 0L
   question_count <- 0L
-  max_questions <- max(1L, max_retries)
+  max_questions <- 20L
 
   repeat {
     if (retry_count > 0) {
@@ -69,21 +69,17 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 
-    if (!is.null(result$questions)) {
+    if (!is.null(result$question)) {
       question_count <- question_count + 1L
       if (question_count > max_questions) {
         cli::cli_abort(c(
-          "Failed to generate a valid blueprint after {max_questions} clarification rounds.",
+          "Failed to generate a valid blueprint after {max_questions} questions.",
           "x" = "The LLM keeps requesting more information.",
           "i" = "Please provide more details in the description and try again."
         ))
       }
-      inquiry <- .ask_inquiry_questions(result$questions)
-      current_prompt <- paste0(
-        current_prompt,
-        "\nClarifications:\n",
-        .format_inquiry_answers(inquiry$questions, inquiry$answers)
-      )
+      answer <- .ask_single_question(result$question)
+      current_prompt <- paste0(current_prompt, "\nAnswer: ", answer)
       next
     }
 
@@ -105,7 +101,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg, "\n",
-        "Please fix the output and return a JSON object with `steps` (or `questions`)."
+        "Please fix the output and return a JSON object with `steps` (or `question`)."
       )
     } else {
       cli::cli_abort(c(
@@ -155,12 +151,13 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     return(list(valid = FALSE, error = "Invalid JSON output. Expected a JSON object."))
   }
 
-  questions <- parsed$questions %||% NULL
-  if (!is.null(questions)) {
-    if (!is.character(questions) || length(questions) == 0) {
-      return(list(valid = FALSE, error = "Clarification questions requested but none provided."))
+  # Check for single question format (new style)
+  question <- parsed$question %||% NULL
+  if (!is.null(question)) {
+    if (!is.character(question) || length(question) == 0 || !nzchar(question)) {
+      return(list(valid = FALSE, error = "Clarification question requested but none provided."))
     }
-    return(list(valid = FALSE, questions = questions, error = "Clarification requested."))
+    return(list(valid = FALSE, question = question, error = "Clarification requested."))
   }
 
   steps <- parsed$steps %||% character(0)
@@ -499,6 +496,25 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     paste0("- Q: ", question, "\n  A: ", answer)
   })
   paste(entries, collapse = "\n")
+}
+
+#' Ask a single clarification question to the user
+#' @noRd
+.ask_single_question <- function(question) {
+  checkmate::assert_string(question)
+  if (!.is_interactive()) {
+    cli::cli_abort(c(
+      "LLM requires more information to continue.",
+      "x" = "This prompt needs interactive input for clarification.",
+      "i" = "Re-run with the missing details included in `description`."
+    ))
+  }
+  cli::cli_h3(cli::style_bold(cli::col_blue("Question")))
+  cli::cli_text(cli::style_italic(cli::col_silver(question)))
+  prompt <- cli::style_bold(cli::col_green("Answer: "))
+  answer <- readline(prompt = prompt)
+  cli::cli_text("\n")
+  answer
 }
 
 .ask_inquiry_questions <- function(questions) {

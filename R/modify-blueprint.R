@@ -59,7 +59,7 @@ modify_blueprint <- function(
 
   retry_count <- 0L
   question_count <- 0L
-  max_questions <- max(1L, max_retries)
+  max_questions <- 20L
 
   repeat {
     if (retry_count > 0) {
@@ -72,21 +72,17 @@ modify_blueprint <- function(
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 
-    if (!is.null(result$questions)) {
+    if (!is.null(result$question)) {
       question_count <- question_count + 1L
       if (question_count > max_questions) {
         cli::cli_abort(c(
-          "Failed to generate a valid blueprint after {max_questions} clarification rounds.",
+          "Failed to generate a valid blueprint after {max_questions} questions.",
           "x" = "The LLM keeps requesting more information.",
           "i" = "Please provide more details in the description and try again."
         ))
       }
-      inquiry <- .ask_inquiry_questions(result$questions)
-      current_prompt <- paste0(
-        current_prompt,
-        "\nClarifications:\n",
-        .format_inquiry_answers(inquiry$questions, inquiry$answers)
-      )
+      answer <- .ask_single_question(result$question)
+      current_prompt <- paste0(current_prompt, "\nAnswer: ", answer)
       next
     }
 

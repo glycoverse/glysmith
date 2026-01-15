@@ -69,7 +69,7 @@ test_that("modify_blueprint requires API key", {
   )
 })
 
-test_that("modify_blueprint handles clarification questions from LLM", {
+test_that("modify_blueprint handles single clarification question from LLM", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()
 
@@ -83,7 +83,7 @@ test_that("modify_blueprint handles clarification questions from LLM", {
     call_count <<- call_count + 1
     prompt_received <<- prompt
     if (call_count == 1) {
-      return('{"questions":["What is the path to the protein expression file?"]}')
+      return('{"question":"What is the path to the protein expression file?"}')
     }
     # Second call should include the clarification
     expect_true(grepl(pro_expr_path, prompt, fixed = TRUE))
@@ -96,8 +96,8 @@ test_that("modify_blueprint handles clarification questions from LLM", {
   )
 
   local_mocked_bindings(
-    .ask_inquiry_questions = function(questions) {
-      list(questions = questions, answers = pro_expr_path)
+    .ask_single_question = function(question) {
+      pro_expr_path
     },
     .package = "glysmith"
   )

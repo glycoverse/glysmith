@@ -277,7 +277,7 @@ test_that("inquire_blueprint fails after max retries", {
   expect_equal(call_count, 3)
 })
 
-test_that("inquire_blueprint handles clarification questions from LLM", {
+test_that("inquire_blueprint handles single clarification question from LLM", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()
 
@@ -289,18 +289,13 @@ test_that("inquire_blueprint handles clarification questions from LLM", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return(paste0(
-        "{\"questions\":[",
-        "\"What is the path to your protein expression matrix?\",",
-        "\"If you haven't prepared it yet, create a CSV/TSV with protein accessions in the first column and sample names as columns, or an RDS with a matrix/data.frame using row names for accessions and columns for samples.\"",
-        "]}"
-      ))
+      return('{"question":"What is the path to your protein expression matrix?"}')
     }
     prompt_received <<- prompt
     paste0(
-      "{\"explanation\":\"Adjust proteins then PCA.\",\"steps\":[",
-      "\"step_adjust_protein(pro_expr_path = '", pro_expr_path, "')\",",
-      "\"step_pca()\"]}"
+      '{"explanation":"Adjust proteins then PCA.","steps":[',
+      '"step_adjust_protein(pro_expr_path = \'', pro_expr_path, '\')",',
+      '"step_pca()"]}'
     )
   }
 
@@ -310,8 +305,8 @@ test_that("inquire_blueprint handles clarification questions from LLM", {
   )
 
   local_mocked_bindings(
-    .ask_inquiry_questions = function(questions) {
-      list(questions = questions, answers = pro_expr_path)
+    .ask_single_question = function(question) {
+      pro_expr_path
     },
     .package = "glysmith"
   )
