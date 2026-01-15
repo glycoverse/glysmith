@@ -16,6 +16,7 @@
 #'
 #' @param bp A `glysmith_blueprint` object.
 #' @param description A description of how you want to modify the blueprint.
+#' @param qa_history Character vector of Q&A pairs from [inquire_blueprint()].
 #' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
 #' @param group_col The column name of the group variable in the experiment. Default to "group".
 #' @param model Model to use. Default to "deepseek-chat".
@@ -25,6 +26,7 @@
 modify_blueprint <- function(
   bp,
   description,
+  qa_history = NULL,
   exp = NULL,
   group_col = "group",
   model = "deepseek-chat",
@@ -32,6 +34,7 @@ modify_blueprint <- function(
 ) {
   checkmate::assert_class(bp, "glysmith_blueprint")
   checkmate::assert_string(description)
+  checkmate::assert_character(qa_history, null.ok = TRUE)
   checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
   checkmate::assert_string(group_col)
   checkmate::assert_choice(model, c("deepseek-reasoner", "deepseek-chat"))
@@ -50,8 +53,20 @@ modify_blueprint <- function(
 
   exp_info <- .generate_exp_info(exp, group_col)
   bp_info <- .format_blueprint_for_prompt(bp)
+
+  # Include Q&A history if available
+  qa_context <- ""
+  if (!is.null(qa_history) && length(qa_history) > 0) {
+    qa_context <- paste0(
+      "\n\nPREVIOUS Q&A CONTEXT (already answered, do not ask again):\n",
+      paste(qa_history, collapse = "\n"),
+      "\n"
+    )
+  }
+
   current_prompt <- paste0(
     exp_info, "\n",
+    qa_context,
     "Current blueprint:\n",
     bp_info, "\n",
     "Modification request: ", description
@@ -127,7 +142,12 @@ modify_blueprint <- function(
     "Do NOT use `br()` for grouping sequential steps or organizing the workflow. Prefer a single linear sequence of steps.",
     "Use step arguments with caution: prefer default values unless they are necessary.",
     "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
-    "If essential information is missing to understand the modification request,",
+    "\n",
+    "IMPORTANT: The user has already answered questions about their experiment (shown in PREVIOUS Q&A CONTEXT).",
+    "Do NOT ask questions that have already been answered in that context!",
+    "For example, if the user already answered 'no' to batch information, do not ask about batch information again.",
+    "\n",
+    "If essential information is missing and cannot be inferred from the context or modification request,",
     "ask the user for clarification instead of guessing.",
     "\n",
     "ASK ONE SIMPLE, ATOMIC QUESTION AT A TIME.",

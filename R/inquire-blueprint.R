@@ -53,6 +53,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   exp_info <- .generate_exp_info(exp, group_col)
   current_prompt <- paste0(exp_info, "\n", "Requirements: ", description)
 
+  # Track Q&A history for passing to modify_blueprint during review
+  qa_history <- character(0)
+
   retry_count <- 0L
   question_count <- 0L
   max_questions <- 20L
@@ -82,6 +85,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       }
       answer <- .ask_single_question(result$question)
       current_prompt <- paste0(current_prompt, "\nAnswer: ", answer)
+      # Track Q&A for modify_blueprint
+      qa_history <- c(qa_history, paste0("Q: ", result$question), paste0("A: ", answer))
       next
     }
 
@@ -89,6 +94,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       return(.review_blueprint(
         result$blueprint,
         explanation = result$explanation,
+        qa_history = qa_history,
         exp = exp,
         group_col = group_col,
         model = model,
@@ -499,6 +505,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 #'
 #' @param bp A `glysmith_blueprint` object.
 #' @param explanation Optional description returned by the LLM.
+#' @param qa_history Character vector of Q&A pairs from [inquire_blueprint()].
 #' @param exp Optional experiment metadata passed to [modify_blueprint()].
 #' @param group_col Group column name passed to [modify_blueprint()].
 #' @param model Model name passed to [modify_blueprint()].
@@ -506,7 +513,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 #'
 #' @returns A confirmed `glysmith_blueprint` object.
 #' @noRd
-.review_blueprint <- function(bp, explanation, exp, group_col, model, max_retries) {
+.review_blueprint <- function(bp, explanation, qa_history, exp, group_col, model, max_retries) {
   checkmate::assert_class(bp, "glysmith_blueprint")
   if (!is.null(explanation) && nzchar(explanation)) {
     .print_blueprint_explanation(explanation)
@@ -524,6 +531,7 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     bp <- modify_blueprint(
       bp = bp,
       description = response,
+      qa_history = qa_history,
       exp = exp,
       group_col = group_col,
       model = model,

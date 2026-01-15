@@ -7,6 +7,7 @@
 modify_blueprint(
   bp,
   description,
+  qa_history = NULL,
   exp = NULL,
   group_col = "group",
   model = "deepseek-chat",
@@ -17,6 +18,8 @@ modify_blueprint(
 \item{bp}{A \code{glysmith_blueprint} object.}
 
 \item{description}{A description of how you want to modify the blueprint.}
+
+\item{qa_history}{Character vector of Q&A pairs from \code{\link[=inquire_blueprint]{inquire_blueprint()}}.}
 
 \item{exp}{Optional. A \code{glyexp::experiment()} object to provide more context to the LLM.}
 

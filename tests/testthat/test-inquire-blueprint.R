@@ -439,6 +439,7 @@ test_that("review_blueprint accepts blueprint on empty input", {
     glysmith:::.review_blueprint(
       bp,
       explanation = "desc",
+      qa_history = NULL,
       exp = NULL,
       group_col = "group",
       model = "deepseek-reasoner",
@@ -465,7 +466,7 @@ test_that("review_blueprint applies multiple refinements", {
       responses <<- responses[-1]
       response
     },
-    modify_blueprint = function(bp, description, exp, group_col, model, max_retries) {
+    modify_blueprint = function(bp, description, qa_history = NULL, exp, group_col, model, max_retries) {
       call_count <<- call_count + 1
       if (call_count == 1) {
         expect_equal(description, "add pca")
@@ -481,6 +482,7 @@ test_that("review_blueprint applies multiple refinements", {
     glysmith:::.review_blueprint(
       bp,
       explanation = "desc",
+      qa_history = NULL,
       exp = NULL,
       group_col = "group",
       model = "deepseek-reasoner",
