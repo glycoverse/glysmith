@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [127ms]
+#> ✔ Identification overview [146ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -111,13 +111,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [6s]
+#> ✔ Preprocessing [5.8s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [133ms]
+#> ✔ QC (post-preprocessing) [125ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [313ms]
+#> ✔ Principal component analysis [320ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -129,16 +129,16 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [89ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [563ms]
+#> ✔ Volcano plot [588ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [71ms]
+#> ✔ Heatmap of significant variables [79ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.3s]
+#> ✔ Derived trait calculation [2.4s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -147,7 +147,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [61ms]
+#> ✔ Differential trait analysis (limma) [59ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [42ms]
@@ -155,5 +155,5 @@ result <- forge_analysis(exp)
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
 #> Warning: Ignoring empty aesthetic: `width`.
-#> ✔ Result saved to /tmp/RtmpY4Igjv
+#> ✔ Result saved to /tmp/Rtmpu4Wzse
 ```

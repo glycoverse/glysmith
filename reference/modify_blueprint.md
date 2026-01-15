@@ -13,9 +13,10 @@ environment variable `DEEPSEEK_API_KEY` to your API key with
 modify_blueprint(
   bp,
   description,
+  qa_history = NULL,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-reasoner",
+  model = "deepseek-chat",
   max_retries = 3
 )
 ```
@@ -30,6 +31,11 @@ modify_blueprint(
 
   A description of how you want to modify the blueprint.
 
+- qa_history:
+
+  Character vector of Q&A pairs from
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md).
+
 - exp:
 
   Optional. A
@@ -43,7 +49,7 @@ modify_blueprint(
 
 - model:
 
-  Model to use. Default to "deepseek-reasoner".
+  Model to use. Default to "deepseek-chat".
 
 - max_retries:
 

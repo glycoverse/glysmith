@@ -14,7 +14,7 @@ inquire_blueprint(
   description,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-reasoner",
+  model = "deepseek-chat",
   max_retries = 3
 )
 ```
@@ -38,7 +38,7 @@ inquire_blueprint(
 
 - model:
 
-  Model to use. Default to "deepseek-reasoner".
+  Model to use. Default to "deepseek-chat".
 
 - max_retries:
 
