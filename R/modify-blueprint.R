@@ -61,6 +61,9 @@ modify_blueprint <- function(
   question_count <- 0L
   max_questions <- 20L
 
+  # Print fun fact only once at the start
+  .print_ai_thinking(api_key)
+
   repeat {
     if (retry_count > 0) {
       cli::cli_text("\n")
@@ -68,7 +71,6 @@ modify_blueprint <- function(
       cli::cli_text("\n")
     }
 
-    .print_ai_thinking(api_key)
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 

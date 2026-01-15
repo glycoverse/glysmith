@@ -57,6 +57,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   question_count <- 0L
   max_questions <- 20L
 
+  # Print fun fact only once at the start
+  .print_ai_thinking(api_key)
+
   repeat {
     if (retry_count > 0) {
       cli::cli_text("\n")
@@ -65,7 +68,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     }
 
     # Call AI
-    .print_ai_thinking(api_key)
     output <- as.character(chat$chat(current_prompt))
     result <- .process_blueprint_response(output)
 
@@ -487,7 +489,6 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   cli::cli_text(cli::style_italic(cli::col_silver(question)))
   prompt <- cli::style_bold(cli::col_green("Answer: "))
   answer <- readline(prompt = prompt)
-  cli::cli_text("\n")
   answer
 }
 
