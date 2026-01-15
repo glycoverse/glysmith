@@ -1,4 +1,13 @@
-# glysmith (development version)
+# glysmith 0.8.0
+
+## Minor improvements and bug fixes
+
+* Implemented single-question flow in `inquire_blueprint()` and `modify_blueprint()` for a more streamlined user experience.
+* Q&A context is now preserved when modifying blueprints with `modify_blueprint()`.
+* Improved error messages for steps in branches with missing dependencies.
+* Fun fact now displays only once at the start of AI interactions.
+* Enhanced LLM prompting with atomic question guidance for better clarification questions.
+* Changed default model from deepseek-reasoner to deepseek-chat.
 
 # glysmith 0.7.0
 
