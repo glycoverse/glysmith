@@ -80,3 +80,24 @@ test_that("br inherits dependencies from main flow", {
     "missing step dependencies"
   )
 })
+
+test_that("branch step error shows unprefixed key and placement hint", {
+  # When a step inside a branch has a missing dependency, the error should:
+  # 1. Show the original step (step_volcano()) with branch context
+  # 2. Show the unprefixed key (dea_res, not d__dea_res)
+  # 3. Include a hint about where to place generating steps
+  err <- tryCatch(
+    blueprint(br("d", step_volcano())),
+    error = identity
+  )
+
+  expect_true(inherits(err, "rlang_error"))
+  msg <- conditionMessage(err)
+
+  # Should show the original step name with branch context
+  expect_true(grepl('step_volcano\\(\\).*in the "d" branch', msg))
+  # Should show unprefixed key
+  expect_true(grepl("dea_res", msg))
+  # Should include placement hint
+  expect_true(grepl("The required step should be placed before.*step_volcano", msg))
+})
