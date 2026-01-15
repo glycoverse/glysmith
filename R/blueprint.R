@@ -123,10 +123,23 @@ validate_blueprint <- function(blueprint) {
 #' @returns NULL. Raises an error if the blueprint is not valid.
 #' @noRd
 .validate_blueprint_dependencies <- function(blueprint) {
-  initial_data <- character(0)
-  known <- initial_data
+  missing_keys <- .collect_missing_keys(blueprint)
 
-  # `missing_keys[step_id]` is a character vector of missing keys for the step.
+  if (length(missing_keys) == 0) {
+    return(invisible())
+  }
+
+  .abort_dependency_error(blueprint, missing_keys)
+}
+
+#' Collect missing data keys for all steps in a blueprint.
+#'
+#' @param blueprint A `glysmith_blueprint` object.
+#'
+#' @returns A list where names are step IDs and values are character vectors of missing keys.
+#' @noRd
+.collect_missing_keys <- function(blueprint) {
+  known <- character(0)
   missing_keys <- list()
 
   for (s in blueprint) {
@@ -144,24 +157,15 @@ validate_blueprint <- function(blueprint) {
       missing <- setdiff(require, known)
       missing <- setdiff(missing, "exp")  # exp is always present
 
-      # If the step is in a branch, check if the missing keys can be resolved from global data.
+      # If the step is in a branch, check if missing keys can be resolved from global data.
       # This allows branches to "inherit" dependencies from the main flow.
       if (!is.null(s$branch) && length(missing) > 0) {
-        prefix <- paste0(s$branch, "__")
-        # Identify missing keys that have the branch prefix
-        prefixed_missing <- missing[startsWith(missing, prefix)]
-        if (length(prefixed_missing) > 0) {
-          # Strip prefix to get the "global" key
-          unprefixed <- substr(prefixed_missing, nchar(prefix) + 1, nchar(prefixed_missing))
-          # Check if the global key is known
-          found_globally <- unprefixed %in% known
-          # Remove resolved keys from missing list
-          resolved <- prefixed_missing[found_globally]
-          missing <- setdiff(missing, resolved)
-        }
+        missing <- .resolve_branch_dependencies(missing, known, s$branch)
       }
 
-      missing_keys[[s$id]] <- missing
+      if (length(missing) > 0) {
+        missing_keys[[s$id]] <- missing
+      }
     }
 
     if (length(generate) > 0) {
@@ -169,81 +173,130 @@ validate_blueprint <- function(blueprint) {
     }
   }
 
-  unique_missing_keys <- unique(unlist(missing_keys))
-  if (length(unique_missing_keys) > 0) {
-    msg <- "Blueprint is not valid due to missing step dependencies."
+  missing_keys
+}
 
-    # For steps inside a branch, strip branch prefixes from keys for clearer messaging
-    # Map from prefixed keys to unprefixed keys
-    key_map <- list()
-    for (k in unique_missing_keys) {
-      # Try to find which step has this key and if it has a branch
-      for (s in blueprint) {
-        if (k %in% (s$require %||% character(0)) && !is.null(s$branch)) {
-          prefix <- paste0(s$branch, "__")
-          if (startsWith(k, prefix)) {
-            unprefixed <- substr(k, nchar(prefix) + 1, nchar(k))
-            key_map[[k]] <- unprefixed
-            break
-          }
-        }
-      }
-      if (is.null(key_map[[k]])) {
-        key_map[[k]] <- k  # Keep as-is if no branch prefix found
-      }
-    }
+#' Resolve branch-prefixed dependencies that may exist globally.
+#'
+#' @param missing Character vector of missing keys.
+#' @param known Character vector of known/available keys.
+#' @param branch Branch name.
+#'
+#' @returns A character vector of still-missing keys.
+#' @noRd
+.resolve_branch_dependencies <- function(missing, known, branch) {
+  prefix <- paste0(branch, "__")
+  prefixed_missing <- missing[startsWith(missing, prefix)]
 
-    # Use unprefixed keys for display and lookup
-    lookup_keys <- unique(unlist(key_map))
-
-    # Track steps with missing deps for the placement hint
-    steps_with_missing <- list()
-
-    for (i in seq_along(blueprint)) {
-      s <- blueprint[[i]]
-      if (length(missing_keys[[s$id]]) > 0) {
-        # Use branch_signature for steps inside branches to show the original step
-        if (!is.null(s$branch_signature)) {
-          step_sig <- s$branch_signature
-        } else {
-          step_sig <- s$signature
-        }
-
-        # Store for later hint
-        steps_with_missing[[length(steps_with_missing) + 1]] <- step_sig
-
-        # Show unprefixed keys in error message
-        display_keys <- purrr::map_chr(missing_keys[[s$id]], ~ key_map[[.x]] %||% .x)
-
-        if (!is.null(s$branch)) {
-          new_part <- c("x" = paste0("Step {.code ", step_sig, "} in the {.val ", s$branch, "} branch requires missing data: {.field {display_keys}}." ))
-        } else {
-          new_part <- c("x" = paste0("Step {.code ", step_sig, "} requires missing data: {.field {display_keys}}." ))
-        }
-        msg <- c(msg, new_part)
-      }
-    }
-
-    key_steps <- .get_key_steps(lookup_keys)
-    extract_signatures <- function(steps) purrr::map_chr(steps, "signature")
-    sigs <- purrr::map(key_steps, extract_signatures)
-    for (k in lookup_keys) {
-      if (k %in% names(sigs)) {
-        new_part <- c("i" = paste0("Data {.field ", k, "} can be generated by {.code {sigs[['", k, "']]}}." ))
-        msg <- c(msg, new_part)
-      }
-    }
-
-    # Add hint about where to place generating steps
-    if (length(steps_with_missing) == 1) {
-      msg <- c(msg, "i" = paste0("The required step should be placed before {.code ", steps_with_missing[[1]], "}, either inside or outside the branch."))
-    } else {
-      # For multiple steps, show a general hint
-      msg <- c(msg, "i" = "The required step should be placed before these steps, either inside or outside the branch.")
-    }
-
-    cli::cli_abort(msg)
+  if (length(prefixed_missing) == 0) {
+    return(missing)
   }
+
+  # Strip prefix to get the "global" key
+  unprefixed <- substr(prefixed_missing, nchar(prefix) + 1, nchar(prefixed_missing))
+  # Check if the global key is known
+  found_globally <- unprefixed %in% known
+  # Remove resolved keys from missing list
+  resolved <- prefixed_missing[found_globally]
+
+  setdiff(missing, resolved)
+}
+
+#' Format and abort with a dependency error message.
+#'
+#' @param blueprint A `glysmith_blueprint` object.
+#' @param missing_keys A list of missing keys per step.
+#'
+#' @returns Does not return.
+#' @noRd
+.abort_dependency_error <- function(blueprint, missing_keys) {
+  unique_missing_keys <- unique(unlist(missing_keys))
+  key_map <- .build_key_map(blueprint, unique_missing_keys)
+  lookup_keys <- unique(unlist(key_map))
+
+  msg <- "Blueprint is not valid due to missing step dependencies."
+  steps_with_missing <- character(0)
+
+  for (s in blueprint) {
+    if (length(missing_keys[[s$id]]) == 0) next
+
+    step_sig <- .get_step_display_name(s)
+    steps_with_missing <- c(steps_with_missing, step_sig)
+    display_keys <- purrr::map_chr(missing_keys[[s$id]], ~ key_map[[.x]] %||% .x)
+
+    if (!is.null(s$branch)) {
+      part <- paste0("Step {.code ", step_sig, "} in the {.val ", s$branch, "} branch requires missing data: {.field {display_keys}}.")
+    } else {
+      part <- paste0("Step {.code ", step_sig, "} requires missing data: {.field {display_keys}}.")
+    }
+    msg <- c(msg, "x" = part)
+  }
+
+  key_steps <- .get_key_steps(lookup_keys)
+  extract_signatures <- function(steps) purrr::map_chr(steps, "signature")
+  sigs <- purrr::map(key_steps, extract_signatures)
+
+  for (k in lookup_keys) {
+    if (k %in% names(sigs)) {
+      part <- paste0("Data {.field ", k, "} can be generated by {.code {sigs[['", k, "']]}}.")
+      msg <- c(msg, "i" = part)
+    }
+  }
+
+  # Add placement hint
+  if (length(steps_with_missing) == 1) {
+    msg <- c(msg, "i" = paste0("The required step should be placed before {.code ", steps_with_missing, "}, either inside or outside the branch."))
+  } else {
+    msg <- c(msg, "i" = "The required step should be placed before these steps, either inside or outside the branch.")
+  }
+
+  cli::cli_abort(msg)
+}
+
+#' Get the display name for a step in error messages.
+#'
+#' For steps inside branches, returns the original step signature without branch wrapper.
+#'
+#' @param step A step object.
+#'
+#' @returns A character string for display.
+#' @noRd
+.get_step_display_name <- function(step) {
+  if (!is.null(step$branch_signature)) {
+    step$branch_signature
+  } else {
+    step$signature
+  }
+}
+
+#' Build a map from prefixed to unprefixed keys for display.
+#'
+#' @param blueprint A `glysmith_blueprint` object.
+#' @param keys Character vector of keys to map.
+#'
+#' @returns A named list where names are original keys and values are display keys.
+#' @noRd
+.build_key_map <- function(blueprint, keys) {
+  key_map <- list()
+
+  for (k in keys) {
+    mapped <- FALSE
+    for (s in blueprint) {
+      if (k %in% (s$require %||% character(0)) && !is.null(s$branch)) {
+        prefix <- paste0(s$branch, "__")
+        if (startsWith(k, prefix)) {
+          key_map[[k]] <- substr(k, nchar(prefix) + 1, nchar(k))
+          mapped <- TRUE
+          break
+        }
+      }
+    }
+    if (!mapped) {
+      key_map[[k]] <- k
+    }
+  }
+
+  key_map
 }
 
 #' Check any overwrite of existing data in the blueprint.
