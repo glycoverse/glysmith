@@ -17,8 +17,14 @@ function call.
 
 ## Installation
 
-You can install the development version of glysmith from
-[GitHub](https://github.com/) with:
+You can install the latest release of glysmith from
+[r-universe](https://glycoverse.r-universe.dev/glysmith):
+
+``` r
+install.packages('glysmith', repos = c('https://glycoverse.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+Or from [GitHub](https://github.com/glycoverse/glysmith):
 
 ``` r
 # install.packages("pak")
