@@ -1,5 +1,10 @@
 # glysmith (development version)
 
+## Minor improvements and bug fixes
+
+* Fix a bug in `step_quantify_motifs()` that bisecting GlcNAc was regarded as a branching GlcNAc.
+* Fix a failing test introduced be dplyr 1.2.0.
+
 # glysmith 0.8.0
 
 ## Minor improvements and bug fixes
