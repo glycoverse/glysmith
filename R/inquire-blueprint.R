@@ -380,12 +380,12 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   # Capture output and add highlighting for group column
   glimpse_output <- utils::capture.output(dplyr::glimpse(tbl))
 
-  # Remove header line from glimpse (e.g., "Rows: 100")
-  glimpse_output <- glimpse_output[-1]
+  # Remove header lines from glimpse (e.g., "Rows: 100", "Columns: 2")
+  glimpse_output <- glimpse_output[-c(1, 2)]
 
   # Add group column highlight if specified
   if (!is.null(highlight_col)) {
-    # Match pattern like "$ group <chr>" or "$group <chr>" from glimpse output
+    # Match pattern like "$ group <chr>" from glimpse output
     pattern <- paste0("\\$ ", highlight_col, " <")
     replacement <- paste0("$ ", highlight_col, " [GROUP COLUMN] <")
     glimpse_output <- stringr::str_replace(glimpse_output, pattern, replacement)

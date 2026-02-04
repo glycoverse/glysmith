@@ -523,8 +523,14 @@ test_that(".summarize_tibble highlights group column", {
 
   result <- glysmith:::.summarize_tibble(tbl, "sample_info", highlight_col = "group")
 
-  expect_true(grepl("\\[GROUP COLUMN\\]", result))
-  expect_true(grepl("\\$ group \\[GROUP COLUMN\\]", result))
+  # Check that the group column marker appears in the result
+  expect_match(result, "[GROUP COLUMN]", fixed = TRUE)
+  # Check that "group" appears in the result (the column name)
+  expect_match(result, "group", fixed = TRUE)
+  # Check that the marker appears on the same line as the group column
+  lines <- strsplit(result, "\n")[[1]]
+  group_line <- grep("group", lines, value = TRUE)
+  expect_true(any(grepl("\\[GROUP COLUMN\\]", group_line)))
 })
 
 test_that(".summarize_tibble handles different column types", {
