@@ -76,8 +76,8 @@ step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) 
 #' Step: Quantify Motifs
 #'
 #' Quantify glycan motifs using `glydet::quantify_motifs()`.
-#' The motifs are extracted using `glymotif::extract_branch_motif()` for N-glycans
-#' and `glymotif::extract_motif()` for others.
+#' The motifs are extracted using `glymotif::branch_motifs()` for N-glycans
+#' and `glymotif::dynamic_motifs()` for others.
 #' Advanced glycan motif analysis that quantify glycan motifs (substructures) of a glycome or each glycosite.
 #' Need glycan structure information.
 #'
@@ -103,7 +103,7 @@ step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) 
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_quantify_motifs()
-#' @seealso [glydet::quantify_motifs()], [glymotif::extract_motif()], [glymotif::extract_branch_motif()]
+#' @seealso [glydet::quantify_motifs()], [glymotif::dynamic_motifs()], [glymotif::branch_motifs()]
 #' @export
 step_quantify_motifs <- function(max_size = 3, method = "relative") {
   signature <- rlang::expr_deparse(match.call())
@@ -121,18 +121,15 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
       type <- glyexp::get_glycan_type(exp)
 
       if (type == "N") {
-        motifs <- glymotif::extract_branch_motif(exp$var_info$glycan_structure)
-        alignment <- "exact"
+        motifs <- glymotif::branch_motifs()
       } else {
-        motifs <- glymotif::extract_motif(exp$var_info$glycan_structure, max_size = max_size)
-        alignment <- "substructure"
+        motifs <- glymotif::dynamic_motifs()
       }
 
       motif_exp <- glydet::quantify_motifs(
         exp,
         motifs = motifs,
         method = method,
-        alignments = alignment,
         ignore_linkages = FALSE
       )
 

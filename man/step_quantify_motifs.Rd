@@ -16,8 +16,8 @@ A \code{glysmith_step} object.
 }
 \description{
 Quantify glycan motifs using \code{glydet::quantify_motifs()}.
-The motifs are extracted using \code{glymotif::extract_branch_motif()} for N-glycans
-and \code{glymotif::extract_motif()} for others.
+The motifs are extracted using \code{glymotif::branch_motifs()} for N-glycans
+and \code{glymotif::dynamic_motifs()} for others.
 Advanced glycan motif analysis that quantify glycan motifs (substructures) of a glycome or each glycosite.
 Need glycan structure information.
 }
@@ -50,5 +50,5 @@ Tables generated:
 step_quantify_motifs()
 }
 \seealso{
-\code{\link[glydet:quantify_motifs]{glydet::quantify_motifs()}}, \code{\link[glymotif:extract_motif]{glymotif::extract_motif()}}, \code{\link[glymotif:extract_branch_motif]{glymotif::extract_branch_motif()}}
+\code{\link[glydet:quantify_motifs]{glydet::quantify_motifs()}}, \code{\link[glymotif:dynamic_motifs]{glymotif::dynamic_motifs()}}, \code{\link[glymotif:branch_motifs]{glymotif::branch_motifs()}}
 }
