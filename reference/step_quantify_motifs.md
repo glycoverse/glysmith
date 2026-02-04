@@ -2,13 +2,10 @@
 
 Quantify glycan motifs using
 [`glydet::quantify_motifs()`](https://glycoverse.github.io/glydet/reference/quantify_motifs.html).
-The motifs are extracted using
-[`glymotif::extract_branch_motif()`](https://glycoverse.github.io/glymotif/reference/extract_branch_motif.html)
-for N-glycans and
-[`glymotif::extract_motif()`](https://glycoverse.github.io/glymotif/reference/extract_motif.html)
-for others. Advanced glycan motif analysis that quantify glycan motifs
-(substructures) of a glycome or each glycosite. Need glycan structure
-information.
+The motifs are extracted using `glymotif::branch_motifs()` for N-glycans
+and `glymotif::dynamic_motifs()` for others. Advanced glycan motif
+analysis that quantify glycan motifs (substructures) of a glycome or
+each glycosite. Need glycan structure information.
 
 ## Usage
 
@@ -57,8 +54,7 @@ only.*
 ## See also
 
 [`glydet::quantify_motifs()`](https://glycoverse.github.io/glydet/reference/quantify_motifs.html),
-[`glymotif::extract_motif()`](https://glycoverse.github.io/glymotif/reference/extract_motif.html),
-[`glymotif::extract_branch_motif()`](https://glycoverse.github.io/glymotif/reference/extract_branch_motif.html)
+`glymotif::dynamic_motifs()`, `glymotif::branch_motifs()`
 
 ## Examples
 
