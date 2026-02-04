@@ -1,6 +1,13 @@
 # Changelog
 
-## glysmith (development version)
+## glysmith 0.8.1
+
+### Minor improvements and bug fixes
+
+- Fix a bug in
+  [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
+  that bisecting GlcNAc was regarded as a branching GlcNAc.
+- Fix a failing test introduced be dplyr 1.2.0.
 
 ## glysmith 0.8.0
 
