@@ -1,5 +1,7 @@
 # Changelog
 
+## glysmith (development version)
+
 ## glysmith 0.8.1
 
 ### Minor improvements and bug fixes

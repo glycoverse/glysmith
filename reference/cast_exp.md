@@ -105,13 +105,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [6.4s]
+#> ✔ Preprocessing [6.5s]
 #> 
 #> ℹ QC (post-preprocessing)
 #> ✔ QC (post-preprocessing) [148ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [528ms]
+#> ✔ Principal component analysis [565ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> Registered S3 methods overwritten by 'FSA':
@@ -124,19 +124,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [194ms]
+#> ✔ Differential expression analysis (limma) [191ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [546ms]
+#> ✔ Volcano plot [534ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [96ms]
+#> ✔ Heatmap of significant variables [93ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [10.7s]
+#> ✔ Derived trait calculation [10.6s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -145,10 +145,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [56ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [42ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 cast_exp(result)
 #> 
