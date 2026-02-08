@@ -29,6 +29,7 @@ Suggests:
     EnhancedVolcano,
     org.Hs.eg.db,
     clusterProfiler,
+    ReactomePA,
     ggplotify,
     pheatmap,
     factoextra,
