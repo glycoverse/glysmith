@@ -31,6 +31,14 @@ function call.
 
 ## Installation
 
+`glysmith` is a high-level package, depending on quite a lot mature
+packages. For best user experimence, please install the following
+packages before installing `glysmith`: `pROC`, `Rtsne`, `uwot`,
+`EnhancedVolcano`, `org.Hs.eg.db`, `clusterProfiler`, `ReactomePA`,
+`ggplotify`, `pheatmap`, `factoextra`, `FSA`, `ggseqlogo`, `missForest`,
+`Hmisc`, `GGally`, `survival`, `UniProt.ws`, `ropls`. We recommend using
+`pak::pak()` to install these packages.
+
 You can install the latest release of glysmith from
 [r-universe](https://glycoverse.r-universe.dev/glysmith):
 
@@ -42,7 +50,7 @@ Or from [GitHub](https://github.com/glycoverse/glysmith):
 
 ``` r
 # install.packages("pak")
-pak::pak("glycoverse/glysmith")
+pak::pak("glycoverse/glysmith@*release")
 ```
 
 ## Example
