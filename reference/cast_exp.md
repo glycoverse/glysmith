@@ -46,7 +46,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [82ms]
+#> ✔ Identification overview [109ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -108,10 +108,10 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [6.5s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [148ms]
+#> ✔ QC (post-preprocessing) [194ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [565ms]
+#> ✔ Principal component analysis [683ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> Registered S3 methods overwritten by 'FSA':
@@ -124,10 +124,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [191ms]
+#> ✔ Differential expression analysis (limma) [220ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [534ms]
+#> ✔ Volcano plot [513ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [93ms]
@@ -136,7 +136,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [10.6s]
+#> ✔ Derived trait calculation [10.3s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4

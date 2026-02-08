@@ -72,13 +72,14 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p><code>glysmith</code> is a high-level package, depending on quite a lot mature packages. For best user experimence, please install the following packages before installing <code>glysmith</code>: <code>pROC</code>, <code>Rtsne</code>, <code>uwot</code>, <code>EnhancedVolcano</code>, <code>org.Hs.eg.db</code>, <code>clusterProfiler</code>, <code>ReactomePA</code>, <code>ggplotify</code>, <code>pheatmap</code>, <code>factoextra</code>, <code>FSA</code>, <code>ggseqlogo</code>, <code>missForest</code>, <code>Hmisc</code>, <code>GGally</code>, <code>survival</code>, <code>UniProt.ws</code>, <code>ropls</code>. We recommend using <code><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak::pak()</a></code> to install these packages.</p>
 <p>You can install the latest release of glysmith from <a href="https://glycoverse.r-universe.dev/glysmith" class="external-link">r-universe</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'glysmith'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://glycoverse.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Or from <a href="https://github.com/glycoverse/glysmith" class="external-link">GitHub</a>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"glycoverse/glysmith"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"glycoverse/glysmith@*release"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
