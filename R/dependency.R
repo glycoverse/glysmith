@@ -29,10 +29,10 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
   action <- rlang::arg_match(action)
 
   suggests_pkgs <- get_suggests_packages()
+  missing <- suggests_pkgs[!purrr::map_lgl(suggests_pkgs, rlang::is_installed)]
 
   switch(action,
     ask = {
-      missing <- suggests_pkgs[!rlang::is_installed(suggests_pkgs)]
       if (length(missing) > 0) {
         rlang::check_installed(suggests_pkgs)
       } else {
@@ -41,7 +41,6 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
       invisible(TRUE)
     },
     error = {
-      missing <- suggests_pkgs[!rlang::is_installed(suggests_pkgs)]
       if (length(missing) > 0) {
         cli::cli_abort(c(
           "The following packages are not installed: {.pkg {missing}}",
@@ -51,7 +50,6 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
       invisible(TRUE)
     },
     note = {
-      missing <- suggests_pkgs[!rlang::is_installed(suggests_pkgs)]
       if (length(missing) > 0) {
         cli::cli_alert_warning("Missing Suggests packages: {.pkg {missing}}")
         cli::cli_inform("Install with: {.code pak::pkg_install(c({paste0('\"', missing, '\"', collapse = ', ')}))}")
