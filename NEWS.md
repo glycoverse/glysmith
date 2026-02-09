@@ -1,4 +1,14 @@
-# glysmith (development version)
+# glysmith 0.9.0
+
+## New features
+
+* Add `loadings` and `screeplot` parameters to `step_pca()` for optional generation of loading plots and scree plots.
+* Add `check_glysmith_deps()` for checking and installing optional dependencies required by blueprint steps.
+* `forge_analysis()` now checks if all dependencies are installed before the actual analysis.
+
+## Minor improvements and bug fixes
+
+* Add `ReactomePA` to Suggests for pathway enrichment analysis.
 
 # glysmith 0.8.1
 
