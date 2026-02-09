@@ -40,6 +40,8 @@ step_pca <- function(
   on = "exp",
   center = TRUE,
   scale = TRUE,
+  loadings = FALSE,
+  screeplot = TRUE,
   plot_width = 5,
   plot_height = 5,
   ...
@@ -87,24 +89,28 @@ step_pca <- function(
         width = plot_width,
         height = plot_height
       )
-      p_loadings <- glyvis::plot_pca(pca_res, type = "variables")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_loadings"),
-        p_loadings,
-        paste0("PCA loading plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_screeplot <- glyvis::plot_pca(pca_res, type = "screeplot")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_screeplot"),
-        p_screeplot,
-        paste0("PCA screeplot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
+      if (loadings) {
+        p_loadings <- glyvis::plot_pca(pca_res, type = "variables")
+        ctx <- ctx_add_plot(
+          ctx,
+          paste0(id, "_loadings"),
+          p_loadings,
+          paste0("PCA loading plot of ", on, "."),
+          width = plot_width,
+          height = plot_height
+        )
+      }
+      if (screeplot) {
+        p_screeplot <- glyvis::plot_pca(pca_res, type = "screeplot")
+        ctx <- ctx_add_plot(
+          ctx,
+          paste0(id, "_screeplot"),
+          p_screeplot,
+          paste0("PCA screeplot of ", on, "."),
+          width = plot_width,
+          height = plot_height
+        )
+      }
       ctx
     },
     require = on,
