@@ -210,8 +210,6 @@ step_sig_enrich <- function(
       }
     },
     run = function(ctx) {
-      rlang::check_installed("clusterProfiler")
-      rlang::check_installed("org.Hs.eg.db")
       sig_exp <- ctx_get_data(ctx, "sig_exp")
       call_args <- enrich_args
       if (universe == "detected") {

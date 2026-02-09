@@ -206,7 +206,6 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
       }
     },
     run = function(ctx) {
-      rlang::check_installed("pROC")
       exp <- ctx_get_data(ctx, "exp")
       roc_res <- glystats::gly_roc(exp, pos_class = pos_class)
 

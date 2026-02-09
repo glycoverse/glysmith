@@ -41,7 +41,6 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", pl
       list(check = check, reason = reason)
     },
     run = function(ctx) {
-      rlang::check_installed("EnhancedVolcano")
       dea_res <- ctx_get_data(ctx, "dea_res")
       if (inherits(dea_res, "glystats_limma_res")) {
         .run_step_volcano_limma(ctx, log2fc_cutoff, p_cutoff, p_col, plot_width, plot_height, ...)

@@ -63,7 +63,6 @@ step_cox <- function(
     id = id,
     label = paste0("Cox proportional hazards model", on_meta$label_suffix),
     run = function(ctx) {
-      rlang::check_installed("survival")
       exp <- ctx_get_data(ctx, on)
       cox_res <- rlang::exec(
         glystats::gly_cox,
