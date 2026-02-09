@@ -43,7 +43,10 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
     error = {
       missing <- suggests_pkgs[!rlang::is_installed(suggests_pkgs)]
       if (length(missing) > 0) {
-        cli::cli_abort("The following packages are not installed: {.pkg {missing}}")
+        cli::cli_abort(c(
+          "The following packages are not installed: {.pkg {missing}}",
+          "i" = "Use {.fn check_glysmith_deps} to install the missing packages."
+        ))
       }
       invisible(TRUE)
     },
