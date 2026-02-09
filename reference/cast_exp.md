@@ -48,7 +48,7 @@ result <- forge_analysis(exp)
 #> 
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [82ms]
+#> ✔ Identification overview [81ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -110,14 +110,14 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.6s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [128ms]
+#> ✔ QC (post-preprocessing) [129ms]
 #> 
 #> ℹ Principal component analysis
 #> Registered S3 methods overwritten by 'car':
 #>   method       from
 #>   hist.boot    FSA 
 #>   confint.boot FSA 
-#> ✔ Principal component analysis [433ms]
+#> ✔ Principal component analysis [289ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,13 +126,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [83ms]
+#> ✔ Differential expression analysis (limma) [73ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [596ms]
+#> ✔ Volcano plot [667ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [82ms]
+#> ✔ Heatmap of significant variables [79ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -147,7 +147,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [55ms]
+#> ✔ Differential trait analysis (limma) [57ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [39ms]

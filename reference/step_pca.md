@@ -14,6 +14,8 @@ step_pca(
   on = "exp",
   center = TRUE,
   scale = TRUE,
+  loadings = FALSE,
+  screeplot = TRUE,
   plot_width = 5,
   plot_height = 5,
   ...
@@ -34,6 +36,16 @@ step_pca(
 - scale:
 
   A logical indicating whether to scale the data. Default is TRUE.
+
+- loadings:
+
+  Logical indicating whether to generate the loading plot. Default is
+  `FALSE` since loading plots for glycoproteomics data can be crowded.
+
+- screeplot:
+
+  Logical indicating whether to generate the screeplot. Default is
+  `TRUE`.
 
 - plot_width:
 
@@ -74,11 +86,11 @@ Tables generated (with suffixes):
 
 Plots generated (with suffixes):
 
-- `pca_scores`: A PCA score plot colored by group
+- `pca_scores`: A PCA score plot colored by group (always generated)
 
-- `pca_loadings`: A PCA loading plot
+- `pca_loadings`: A PCA loading plot (if `loadings = TRUE`)
 
-- `pca_screeplot`: A PCA screeplot
+- `pca_screeplot`: A PCA screeplot (if `screeplot = TRUE`)
 
 ## AI Prompt
 

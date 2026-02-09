@@ -52,6 +52,8 @@ Ignore the resulting plot if it is not informative.</p>
 <span>  on <span class="op">=</span> <span class="st">"exp"</span>,</span>
 <span>  center <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  loadings <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  screeplot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot_width <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  plot_height <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -73,6 +75,16 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
 <dd><p>A logical indicating whether to scale the data. Default is TRUE.</p></dd>
+
+
+<dt id="arg-loadings">loadings<a class="anchor" aria-label="anchor" href="#arg-loadings"></a></dt>
+<dd><p>Logical indicating whether to generate the loading plot.
+Default is <code>FALSE</code> since loading plots for glycoproteomics data can be crowded.</p></dd>
+
+
+<dt id="arg-screeplot">screeplot<a class="anchor" aria-label="anchor" href="#arg-screeplot"></a></dt>
+<dd><p>Logical indicating whether to generate the screeplot.
+Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-plot-width">plot_width<a class="anchor" aria-label="anchor" href="#arg-plot-width"></a></dt>
@@ -99,9 +111,9 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 </ul><p>Tables generated (with suffixes):</p><ul><li><p><code>pca_samples</code>: A table containing the PCA scores for each sample</p></li>
 <li><p><code>pca_variables</code>: A table containing the PCA loadings for each variable</p></li>
 <li><p><code>pca_eigenvalues</code>: A table containing the PCA eigenvalues</p></li>
-</ul><p>Plots generated (with suffixes):</p><ul><li><p><code>pca_scores</code>: A PCA score plot colored by group</p></li>
-<li><p><code>pca_loadings</code>: A PCA loading plot</p></li>
-<li><p><code>pca_screeplot</code>: A PCA screeplot</p></li>
+</ul><p>Plots generated (with suffixes):</p><ul><li><p><code>pca_scores</code>: A PCA score plot colored by group (always generated)</p></li>
+<li><p><code>pca_loadings</code>: A PCA loading plot (if <code>loadings = TRUE</code>)</p></li>
+<li><p><code>pca_screeplot</code>: A PCA screeplot (if <code>screeplot = TRUE</code>)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="ai-prompt">AI Prompt<a class="anchor" aria-label="anchor" href="#ai-prompt"></a></h2>

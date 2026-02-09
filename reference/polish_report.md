@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [807ms]
+#> ✔ Identification overview [862ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -117,13 +117,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.5s]
+#> ✔ Preprocessing [5.8s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [94ms]
+#> ✔ QC (post-preprocessing) [95ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [411ms]
+#> ✔ Principal component analysis [349ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -132,10 +132,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [127ms]
+#> ✔ Differential expression analysis (limma) [73ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [455ms]
+#> ✔ Volcano plot [518ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [41ms]
@@ -153,11 +153,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [182ms]
+#> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [41ms]
+#> ✔ Heatmap of significant traits [39ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpZuQoDX/file31fe3dfe2964.html"
+#> [1] "/tmp/RtmpBALif6/file2f74787c1131.html"
 ```

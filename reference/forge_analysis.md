@@ -54,7 +54,7 @@ A `glysmith_result` object, with the following components:
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [822ms]
+#> ✔ Identification overview [922ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -113,13 +113,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.6s]
+#> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [92ms]
+#> ✔ QC (post-preprocessing) [154ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [411ms]
+#> ✔ Principal component analysis [345ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -128,13 +128,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [72ms]
+#> ✔ Differential expression analysis (limma) [74ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [499ms]
+#> ✔ Volcano plot [509ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
+#> ✔ Heatmap of significant variables [41ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -149,7 +149,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [55ms]
+#> ✔ Differential trait analysis (limma) [54ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [39ms]
@@ -157,5 +157,5 @@ result <- forge_analysis(exp)
 print(result)
 #> 
 #> ── GlySmith Analysis Result 
-#> Plots: 16, Tables: 7, Data: 7
+#> Plots: 15, Tables: 7, Data: 7
 ```
