@@ -1,6 +1,23 @@
 # Changelog
 
-## glysmith (development version)
+## glysmith 0.9.0
+
+### New features
+
+- Add `loadings` and `screeplot` parameters to
+  [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)
+  for optional generation of loading plots and scree plots.
+- Add
+  [`check_glysmith_deps()`](https://glycoverse.github.io/glysmith/reference/check_glysmith_deps.md)
+  for checking and installing optional dependencies required by
+  blueprint steps.
+- [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md)
+  now checks if all dependencies are installed before the actual
+  analysis.
+
+### Minor improvements and bug fixes
+
+- Add `ReactomePA` to Suggests for pathway enrichment analysis.
 
 ## glysmith 0.8.1
 
