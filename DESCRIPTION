@@ -23,7 +23,6 @@ License: MIT + file LICENSE
 Suggests:
     knitr,
     withr,
-    desc,
     pROC,
     Rtsne,
     uwot,
@@ -68,7 +67,8 @@ Imports:
     rlang,
     rmarkdown,
     stringr,
-    tibble
+    tibble,
+    desc
 Remotes: 
     glycoverse/glyclean@*release,
     glycoverse/glydet@*release,

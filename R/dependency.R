@@ -72,30 +72,11 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
 #' @return Character vector of package names
 #' @keywords internal
 get_suggests_packages <- function() {
-  if (!rlang::is_installed("desc")) {
-    # Fallback: parse DESCRIPTION manually
-    desc_path <- system.file("DESCRIPTION", package = "glysmith")
-    if (desc_path == "") {
-      # Development mode - look in package root
-      desc_path <- file.path("DESCRIPTION")
-    }
-    suggests_field <- read.dcf(desc_path, fields = "Suggests")[1, 1]
-    if (is.na(suggests_field)) {
-      return(character())
-    }
-    # Parse comma-separated list, remove version constraints
-    pkgs <- strsplit(suggests_field, ",")[[1]]
-    pkgs <- trimws(pkgs)
-    pkgs <- sub("\\s*\\(.*\\)$", "", pkgs)  # Remove (>= version) constraints
-    pkgs <- pkgs[pkgs != ""]
-    pkgs <- setdiff(pkgs, c("knitr", "withr", "testthat"))
-    return(pkgs)
-  }
-
-  desc::desc_get_field("Suggests", file = system.file("DESCRIPTION", package = "glysmith")) |>
+  pkgs <- desc::desc_get_field("Suggests", file = system.file("DESCRIPTION", package = "glysmith")) |>
     strsplit(",") |>
     unlist() |>
     trimws() |>
     sub(pattern = "\\s*\\(.*\\)$", replacement = "") |>
     purrr::keep(~ .x != "")
+  setdiff(pkgs, c("knitr", "withr", "testthat"))
 }
