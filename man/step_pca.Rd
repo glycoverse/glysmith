@@ -8,6 +8,8 @@ step_pca(
   on = "exp",
   center = TRUE,
   scale = TRUE,
+  loadings = FALSE,
+  screeplot = TRUE,
   plot_width = 5,
   plot_height = 5,
   ...
@@ -20,6 +22,12 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
 \item{center}{A logical indicating whether to center the data. Default is TRUE.}
 
 \item{scale}{A logical indicating whether to scale the data. Default is TRUE.}
+
+\item{loadings}{Logical indicating whether to generate the loading plot.
+Default is \code{FALSE} since loading plots for glycoproteomics data can be crowded.}
+
+\item{screeplot}{Logical indicating whether to generate the screeplot.
+Default is \code{TRUE}.}
 
 \item{plot_width}{Width of plots in inches. Default is 5.}
 
@@ -52,9 +60,9 @@ Tables generated (with suffixes):
 
 Plots generated (with suffixes):
 \itemize{
-\item \code{pca_scores}: A PCA score plot colored by group
-\item \code{pca_loadings}: A PCA loading plot
-\item \code{pca_screeplot}: A PCA screeplot
+\item \code{pca_scores}: A PCA score plot colored by group (always generated)
+\item \code{pca_loadings}: A PCA loading plot (if \code{loadings = TRUE})
+\item \code{pca_screeplot}: A PCA screeplot (if \code{screeplot = TRUE})
 }
 }
 \section{AI Prompt}{

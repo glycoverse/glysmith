@@ -16,9 +16,9 @@
 #' - `pca_eigenvalues`: A table containing the PCA eigenvalues
 #'
 #' Plots generated (with suffixes):
-#' - `pca_scores`: A PCA score plot colored by group
-#' - `pca_loadings`: A PCA loading plot
-#' - `pca_screeplot`: A PCA screeplot
+#' - `pca_scores`: A PCA score plot colored by group (always generated)
+#' - `pca_loadings`: A PCA loading plot (if `loadings = TRUE`)
+#' - `pca_screeplot`: A PCA screeplot (if `screeplot = TRUE`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -29,6 +29,10 @@
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
 #' @param plot_width Width of plots in inches. Default is 5.
 #' @param plot_height Height of plots in inches. Default is 5.
+#' @param loadings Logical indicating whether to generate the loading plot.
+#'   Default is `FALSE` since loading plots for glycoproteomics data can be crowded.
+#' @param screeplot Logical indicating whether to generate the screeplot.
+#'   Default is `TRUE`.
 #' @inheritParams glystats::gly_pca
 #'
 #' @return A `glysmith_step` object.
