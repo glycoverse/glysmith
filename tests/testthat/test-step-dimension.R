@@ -31,6 +31,26 @@ test_that("step_pca works on sig_exp", {
   expect_true("pca_sig_screeplot" %in% names(res$plots))
 })
 
+test_that("step_pca does not generate loadings plot when loadings = FALSE", {
+  data(toy_experiment, package = "glyexp")
+  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  step <- step_pca(on = "exp", loadings = FALSE)
+  ctx_new <- step$run(ctx)
+  expect_null(ctx_new$plots$pcaexp_loadings)
+  expect_true(!is.null(ctx_new$plots$pcaexp_scores))
+  expect_true(!is.null(ctx_new$plots$pcaexp_screeplot))
+})
+
+test_that("step_pca generates loadings plot when loadings = TRUE", {
+  data(toy_experiment, package = "glyexp")
+  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  step <- step_pca(on = "exp", loadings = TRUE)
+  ctx_new <- step$run(ctx)
+  expect_true(!is.null(ctx_new$plots$pcaexp_loadings))
+  expect_true(!is.null(ctx_new$plots$pcaexp_scores))
+  expect_true(!is.null(ctx_new$plots$pcaexp_screeplot))
+})
+
 # ----- step_tsne -----
 test_that("step_tsne generates plots and tables", {
   suppressMessages(
