@@ -51,6 +51,26 @@ test_that("step_pca generates loadings plot when loadings = TRUE", {
   expect_true(!is.null(ctx_new$plots$pca_screeplot))
 })
 
+test_that("step_pca does not generate screeplot when screeplot = FALSE", {
+  data(toy_experiment, package = "glyexp")
+  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  step <- step_pca(on = "exp", screeplot = FALSE)
+  ctx_new <- step$run(ctx)
+  expect_null(ctx_new$plots$pca_screeplot)
+  expect_true(!is.null(ctx_new$plots$pca_scores))
+  expect_null(ctx_new$plots$pca_loadings)
+})
+
+test_that("step_pca generates screeplot when screeplot = TRUE", {
+  data(toy_experiment, package = "glyexp")
+  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  step <- step_pca(on = "exp", screeplot = TRUE)
+  ctx_new <- step$run(ctx)
+  expect_true(!is.null(ctx_new$plots$pca_screeplot))
+  expect_true(!is.null(ctx_new$plots$pca_scores))
+  expect_null(ctx_new$plots$pca_loadings)
+})
+
 # ----- step_tsne -----
 test_that("step_tsne generates plots and tables", {
   suppressMessages(
