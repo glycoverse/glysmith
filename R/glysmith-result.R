@@ -1,6 +1,13 @@
 glysmith_result <- function(exp, data, plots, tables, meta, blueprint) {
   structure(
-    list(exp = exp, data = data, plots = plots, tables = tables, meta = meta, blueprint = blueprint),
+    list(
+      exp = exp,
+      data = data,
+      plots = plots,
+      tables = tables,
+      meta = meta,
+      blueprint = blueprint
+    ),
     class = "glysmith_result"
   )
 }
@@ -8,7 +15,9 @@ glysmith_result <- function(exp, data, plots, tables, meta, blueprint) {
 #' @export
 print.glysmith_result <- function(x, ...) {
   cli::cli_h3("GlySmith Analysis Result")
-  cli::cli_text("Plots: {.val {length(x$plots)}}, Tables: {.val {length(x$tables)}}, Data: {.val {length(x$data)}}")
+  cli::cli_text(
+    "Plots: {.val {length(x$plots)}}, Tables: {.val {length(x$tables)}}, Data: {.val {length(x$data)}}"
+  )
   invisible(x)
 }
 
@@ -56,7 +65,13 @@ cast_data <- function(x, name = NULL) {
   cast_component(x, "data", name, "Data")
 }
 
-cast_component <- function(x, component, name, label, call = rlang::caller_env()) {
+cast_component <- function(
+  x,
+  component,
+  name,
+  label,
+  call = rlang::caller_env()
+) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(name, null.ok = TRUE)
 
@@ -67,10 +82,13 @@ cast_component <- function(x, component, name, label, call = rlang::caller_env()
   }
 
   if (!name %in% names(items)) {
-    cli::cli_abort(c(
-      "{label} '{name}' not found in the result.",
-      "i" = "Available {component}: {.val {names(items)}}"
-    ), call = call)
+    cli::cli_abort(
+      c(
+        "{label} '{name}' not found in the result.",
+        "i" = "Available {component}: {.val {names(items)}}"
+      ),
+      call = call
+    )
   }
 
   items[[name]]

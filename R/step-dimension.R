@@ -52,7 +52,6 @@ step_pca <- function(
     id = id,
     label = paste0("Principal component analysis", on_meta$label_suffix),
     run = function(ctx) {
-      rlang::check_installed("factoextra")
       exp <- ctx_get_data(ctx, on)
       pca_res <- rlang::exec(
         glystats::gly_pca,
@@ -169,7 +168,6 @@ step_tsne <- function(
     id = id,
     label = "t-SNE",
     run = function(ctx) {
-      rlang::check_installed("Rtsne")
       exp <- ctx_get_data(ctx, on)
       tsne <- rlang::exec(
         glystats::gly_tsne,
@@ -178,9 +176,21 @@ step_tsne <- function(
         perplexity = perplexity,
         !!!tsne_args
       )
-      ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(tsne), paste0("t-SNE result of ", on, "."))
+      ctx <- ctx_add_table(
+        ctx,
+        id,
+        glystats::get_tidy_result(tsne),
+        paste0("t-SNE result of ", on, ".")
+      )
       p <- glyvis::plot_tsne(tsne)
-      ctx <- ctx_add_plot(ctx, id, p, paste0("t-SNE plot of ", on, "."), width = plot_width, height = plot_height)
+      ctx <- ctx_add_plot(
+        ctx,
+        id,
+        p,
+        paste0("t-SNE plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
+      )
       ctx
     },
     require = on,
@@ -244,7 +254,6 @@ step_umap <- function(
     id = id,
     label = "UMAP",
     run = function(ctx) {
-      rlang::check_installed("uwot")
       exp <- ctx_get_data(ctx, on)
       umap <- rlang::exec(
         glystats::gly_umap,
@@ -253,9 +262,21 @@ step_umap <- function(
         n_components = n_components,
         !!!umap_args
       )
-      ctx <- ctx_add_table(ctx, id, glystats::get_tidy_result(umap), paste0("UMAP result of ", on, "."))
+      ctx <- ctx_add_table(
+        ctx,
+        id,
+        glystats::get_tidy_result(umap),
+        paste0("UMAP result of ", on, ".")
+      )
       p <- glyvis::plot_umap(umap)
-      ctx <- ctx_add_plot(ctx, id, p, paste0("UMAP plot of ", on, "."), width = plot_width, height = plot_height)
+      ctx <- ctx_add_plot(
+        ctx,
+        id,
+        p,
+        paste0("UMAP plot of ", on, "."),
+        width = plot_width,
+        height = plot_height
+      )
       ctx
     },
     require = on,
@@ -322,9 +343,11 @@ step_plsda <- function(
 
   step(
     id = id,
-    label = paste0("Partial least squares discriminant analysis", on_meta$label_suffix),
+    label = paste0(
+      "Partial least squares discriminant analysis",
+      on_meta$label_suffix
+    ),
     run = function(ctx) {
-      rlang::check_installed("ropls")
       exp <- ctx_get_data(ctx, on)
       plsda_res <- rlang::exec(
         glystats::gly_plsda,
@@ -425,10 +448,26 @@ step_plsda <- function(
       top5_vars <- top5$variable
 
       lines <- c(
-        paste0("Partial least squares discriminant analysis (PLS-DA) was performed."),
-        paste0("Model fit: R2Y = ", round(r2y, 3), " (cumulative: ", round(r2y_cum, 3), "), Q2 = ", round(q2, 3), " (cumulative: ", round(q2_cum, 3), ")."),
+        paste0(
+          "Partial least squares discriminant analysis (PLS-DA) was performed."
+        ),
+        paste0(
+          "Model fit: R2Y = ",
+          round(r2y, 3),
+          " (cumulative: ",
+          round(r2y_cum, 3),
+          "), Q2 = ",
+          round(q2, 3),
+          " (cumulative: ",
+          round(q2_cum, 3),
+          ")."
+        ),
         paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
-        paste0("Top 5 discriminant variables: ", paste(top5_vars, collapse = ", "), ".")
+        paste0(
+          "Top 5 discriminant variables: ",
+          paste(top5_vars, collapse = ", "),
+          "."
+        )
       )
       paste(lines, collapse = "\n")
     }
@@ -498,9 +537,11 @@ step_oplsda <- function(
 
   step(
     id = id,
-    label = paste0("Orthogonal partial least squares discriminant analysis", on_meta$label_suffix),
+    label = paste0(
+      "Orthogonal partial least squares discriminant analysis",
+      on_meta$label_suffix
+    ),
     run = function(ctx) {
-      rlang::check_installed("ropls")
       exp <- ctx_get_data(ctx, on)
       oplsda_res <- rlang::exec(
         glystats::gly_oplsda,
@@ -602,10 +643,26 @@ step_oplsda <- function(
       top5_vars <- top5$variable
 
       lines <- c(
-        paste0("Orthogonal partial least squares discriminant analysis (OPLS-DA) was performed."),
-        paste0("Model fit: R2Y = ", round(r2y, 3), " (cumulative: ", round(r2y_cum, 3), "), Q2 = ", round(q2, 3), " (cumulative: ", round(q2_cum, 3), ")."),
+        paste0(
+          "Orthogonal partial least squares discriminant analysis (OPLS-DA) was performed."
+        ),
+        paste0(
+          "Model fit: R2Y = ",
+          round(r2y, 3),
+          " (cumulative: ",
+          round(r2y_cum, 3),
+          "), Q2 = ",
+          round(q2, 3),
+          " (cumulative: ",
+          round(q2_cum, 3),
+          ")."
+        ),
         paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
-        paste0("Top 5 discriminant variables: ", paste(top5_vars, collapse = ", "), ".")
+        paste0(
+          "Top 5 discriminant variables: ",
+          paste(top5_vars, collapse = ", "),
+          "."
+        )
       )
       paste(lines, collapse = "\n")
     },
@@ -617,7 +674,10 @@ step_oplsda <- function(
       sample_info <- glyexp::get_sample_info(exp)
       group_col <- ctx$group_col
       if (!group_col %in% colnames(sample_info)) {
-        return(list(check = FALSE, reason = paste0("Group column '", group_col, "' not found.")))
+        return(list(
+          check = FALSE,
+          reason = paste0("Group column '", group_col, "' not found.")
+        ))
       }
       n_groups <- nlevels(sample_info[[group_col]])
       if (n_groups != 2) {
@@ -626,8 +686,10 @@ step_oplsda <- function(
           check = FALSE,
           reason = paste0(
             "OPLS-DA requires exactly 2 groups, but found ",
-            n_groups, " groups (",
-            paste(groups, collapse = ", "), ")."
+            n_groups,
+            " groups (",
+            paste(groups, collapse = ", "),
+            ")."
           )
         )
       } else {

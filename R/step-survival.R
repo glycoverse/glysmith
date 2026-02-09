@@ -63,7 +63,6 @@ step_cox <- function(
     id = id,
     label = paste0("Cox proportional hazards model", on_meta$label_suffix),
     run = function(ctx) {
-      rlang::check_installed("survival")
       exp <- ctx_get_data(ctx, on)
       cox_res <- rlang::exec(
         glystats::gly_cox,
@@ -105,8 +104,20 @@ step_cox <- function(
       lines <- c(
         paste0("Cox proportional hazards model was performed on ", on, "."),
         paste0("Number of variables analyzed: ", n_total, "."),
-        paste0("Number of significant variables (adjusted p < 0.05): ", n_sig, "."),
-        paste0("Top associated variable: ", top_var, " (HR = ", round(top_hr, 3), ", adjusted p = ", format(top_p_adj, scientific = TRUE, digits = 3), ").")
+        paste0(
+          "Number of significant variables (adjusted p < 0.05): ",
+          n_sig,
+          "."
+        ),
+        paste0(
+          "Top associated variable: ",
+          top_var,
+          " (HR = ",
+          round(top_hr, 3),
+          ", adjusted p = ",
+          format(top_p_adj, scientific = TRUE, digits = 3),
+          ")."
+        )
       )
       paste(lines, collapse = "\n")
     },
@@ -117,10 +128,24 @@ step_cox <- function(
       }
       sample_info <- glyexp::get_sample_info(exp)
       if (!time_col %in% colnames(sample_info)) {
-        return(list(check = FALSE, reason = paste0("Time column '", time_col, "' not found in sample info.")))
+        return(list(
+          check = FALSE,
+          reason = paste0(
+            "Time column '",
+            time_col,
+            "' not found in sample info."
+          )
+        ))
       }
       if (!event_col %in% colnames(sample_info)) {
-        return(list(check = FALSE, reason = paste0("Event column '", event_col, "' not found in sample info.")))
+        return(list(
+          check = FALSE,
+          reason = paste0(
+            "Event column '",
+            event_col,
+            "' not found in sample info."
+          )
+        ))
       }
       list(check = TRUE, reason = NULL)
     }

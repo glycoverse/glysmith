@@ -30,7 +30,10 @@ test_that("get_api_key reads from environment", {
 
 test_that("get_api_key errors when missing", {
   withr::local_envvar(c(DEEPSEEK_API_KEY = ""))
-  expect_error(glysmith:::.get_api_key(), "API key for DeepSeek chat model is not set")
+  expect_error(
+    glysmith:::.get_api_key(),
+    "API key for DeepSeek chat model is not set"
+  )
 })
 
 test_that("ask_ai uses ellmer chat", {
@@ -120,7 +123,9 @@ test_that(".generate_glycan_fact returns a question starting with 'Do you know t
   skip_if_not_installed("ellmer")
 
   local_mocked_bindings(
-    .ask_ai = function(...) "Do you know that glycans are important for cell recognition?",
+    .ask_ai = function(...) {
+      "Do you know that glycans are important for cell recognition?"
+    },
     .package = "glysmith"
   )
 
@@ -160,7 +165,9 @@ test_that(".normalize_glycan_fact squishes whitespace", {
 })
 
 test_that(".normalize_glycan_fact preserves valid format", {
-  result <- glysmith:::.normalize_glycan_fact("Do you know that glycans are diverse?")
+  result <- glysmith:::.normalize_glycan_fact(
+    "Do you know that glycans are diverse?"
+  )
   expect_equal(result, "Do you know that glycans are diverse?")
 })
 
@@ -169,13 +176,16 @@ test_that(".glycan_fun_fact returns a valid fact", {
   fact <- glysmith:::.glycan_fun_fact()
   expect_true(grepl("^Do you know that", fact))
   expect_true(grepl("\\?$", fact))
-  expect_true(any(c(
-    "glycans can be branched" = fact,
-    "N-glycosylation" = fact,
-    "sialic acids" = fact,
-    "genome" = fact,
-    "glycosylation" = fact
-  ) %in% fact))
+  expect_true(any(
+    c(
+      "glycans can be branched" = fact,
+      "N-glycosylation" = fact,
+      "sialic acids" = fact,
+      "genome" = fact,
+      "glycosylation" = fact
+    ) %in%
+      fact
+  ))
 })
 
 # Tests for .is_interactive

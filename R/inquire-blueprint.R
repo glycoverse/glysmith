@@ -31,7 +31,13 @@
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #'
 #' @export
-inquire_blueprint <- function(description, exp = NULL, group_col = "group", model = "deepseek-chat", max_retries = 3) {
+inquire_blueprint <- function(
+  description,
+  exp = NULL,
+  group_col = "group",
+  model = "deepseek-chat",
+  max_retries = 3
+) {
   checkmate::assert_string(description)
   checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
   checkmate::assert_string(group_col)
@@ -66,7 +72,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   repeat {
     if (retry_count > 0) {
       cli::cli_text("\n")
-      cli::cli_alert_info("Attempt {retry_count}/{max_retries}: Retrying with feedback...")
+      cli::cli_alert_info(
+        "Attempt {retry_count}/{max_retries}: Retrying with feedback..."
+      )
       cli::cli_text("\n")
     }
 
@@ -86,7 +94,11 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       answer <- .ask_single_question(result$question)
       current_prompt <- paste0(current_prompt, "\nAnswer: ", answer)
       # Track Q&A for modify_blueprint
-      qa_history <- c(qa_history, paste0("Q: ", result$question), paste0("A: ", answer))
+      qa_history <- c(
+        qa_history,
+        paste0("Q: ", result$question),
+        paste0("A: ", answer)
+      )
       next
     }
 
@@ -108,7 +120,8 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       retry_count <- retry_count + 1L
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
-        error_msg, "\n",
+        error_msg,
+        "\n",
         "Please fix the output and return a JSON object with `steps` (or `question`)."
       )
     } else {
@@ -146,24 +159,40 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     }
   }
   if (inherits(parsed, "error")) {
-    return(list(valid = FALSE, error = paste("Invalid JSON output:", conditionMessage(parsed))))
+    return(list(
+      valid = FALSE,
+      error = paste("Invalid JSON output:", conditionMessage(parsed))
+    ))
   }
   if (!is.list(parsed)) {
-    return(list(valid = FALSE, error = "Invalid JSON output. Expected a JSON object."))
+    return(list(
+      valid = FALSE,
+      error = "Invalid JSON output. Expected a JSON object."
+    ))
   }
 
   # Check for single question format (new style)
   question <- parsed$question %||% NULL
   if (!is.null(question)) {
     if (!is.character(question) || length(question) == 0 || !nzchar(question)) {
-      return(list(valid = FALSE, error = "Clarification question requested but none provided."))
+      return(list(
+        valid = FALSE,
+        error = "Clarification question requested but none provided."
+      ))
     }
-    return(list(valid = FALSE, question = question, error = "Clarification requested."))
+    return(list(
+      valid = FALSE,
+      question = question,
+      error = "Clarification requested."
+    ))
   }
 
   steps <- parsed$steps %||% character(0)
   if (!is.character(steps)) {
-    return(list(valid = FALSE, error = "Invalid JSON output. `steps` must be an array of strings."))
+    return(list(
+      valid = FALSE,
+      error = "Invalid JSON output. `steps` must be an array of strings."
+    ))
   }
   steps <- stringr::str_remove_all(steps, "`")
   steps <- stringr::str_trim(steps)
@@ -175,13 +204,19 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   steps <- steps[steps != ""]
 
   if (length(steps) == 0) {
-    return(list(valid = FALSE, error = "The output is empty. Please provide steps in the JSON `steps` array."))
+    return(list(
+      valid = FALSE,
+      error = "The output is empty. Please provide steps in the JSON `steps` array."
+    ))
   }
 
   is_step <- stringr::str_detect(steps, "^step_[a-z0-9_]+\\s*\\(.*\\)$")
   is_branch <- stringr::str_detect(steps, "^br\\s*\\(.*\\)$")
   if (!all(is_step | is_branch)) {
-    return(list(valid = FALSE, error = "Invalid format. Every entry must be a `step_...()` call or a `br(...)` branch."))
+    return(list(
+      valid = FALSE,
+      error = "Invalid format. Every entry must be a `step_...()` call or a `br(...)` branch."
+    ))
   }
 
   explanation <- parsed$explanation %||% NULL
@@ -211,7 +246,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
 .extract_json_output <- function(output) {
   output <- stringr::str_trim(output)
-  if (!nzchar(output)) return(NULL)
+  if (!nzchar(output)) {
+    return(NULL)
+  }
 
   fence_match <- stringr::str_match(
     output,
@@ -223,12 +260,16 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
   start_loc <- stringr::str_locate(output, "\\{")[1]
   end_locs <- stringr::str_locate_all(output, "\\}")[[1]]
-  if (is.na(start_loc) || nrow(end_locs) == 0) return(NULL)
+  if (is.na(start_loc) || nrow(end_locs) == 0) {
+    return(NULL)
+  }
 
   end_loc <- end_locs[nrow(end_locs), 2]
   json_text <- substr(output, start_loc, end_loc)
   json_text <- stringr::str_trim(json_text)
-  if (!nzchar(json_text)) return(NULL)
+  if (!nzchar(json_text)) {
+    return(NULL)
+  }
   json_text
 }
 
@@ -237,7 +278,13 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     rlang::parse_expr(step_str),
     error = function(e) {
       msg <- conditionMessage(e)
-      if (!grepl("used without hex digits|unrecognized escape", msg, ignore.case = TRUE)) {
+      if (
+        !grepl(
+          "used without hex digits|unrecognized escape",
+          msg,
+          ignore.case = TRUE
+        )
+      ) {
         stop(e)
       }
       fixed_step <- .normalize_windows_paths(step_str)
@@ -257,10 +304,14 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 }
 
 .normalize_windows_path <- function(path) {
-  if (!stringr::str_detect(path, "\\\\")) return(path)
+  if (!stringr::str_detect(path, "\\\\")) {
+    return(path)
+  }
   parts <- stringr::str_split(path, "\\\\")[[1]]
   parts <- parts[parts != ""]
-  if (length(parts) == 0) return(path)
+  if (length(parts) == 0) {
+    return(path)
+  }
   normalized <- as.character(do.call(fs::path, as.list(parts)))
   if (stringr::str_starts(path, "\\\\")) {
     normalized <- paste0("//", normalized)
@@ -343,7 +394,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 }
 
 .generate_exp_info <- function(exp, group_col) {
-  if (is.null(exp)) return("")
+  if (is.null(exp)) {
+    return("")
+  }
 
   n_samples <- ncol(exp)
   n_variables <- nrow(exp)
@@ -353,19 +406,37 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   n_groups <- length(unique(exp$sample_info[[group_col]]))
 
   # Generate summaries for sample_info and var_info
-  sample_info_summary <- .summarize_tibble(exp$sample_info, "sample_info", group_col)
+  sample_info_summary <- .summarize_tibble(
+    exp$sample_info,
+    "sample_info",
+    group_col
+  )
   var_info_summary <- .summarize_tibble(exp$var_info, "var_info")
 
   paste0(
     "\nDataset information:\n",
-    "- Number of samples: ", n_samples, "\n",
-    "- Number of variables (glycans/glycopeptides): ", n_variables, "\n",
-    "- Glycan type: ", glycan_type, "\n",
-    "- Experiment type: ", exp_type, "\n",
-    "- Glycan structure available: ", if (has_structure) "Yes" else "No", "\n",
-    "- Number of groups: ", n_groups, "\n",
-    sample_info_summary, "\n",
-    var_info_summary, "\n"
+    "- Number of samples: ",
+    n_samples,
+    "\n",
+    "- Number of variables (glycans/glycopeptides): ",
+    n_variables,
+    "\n",
+    "- Glycan type: ",
+    glycan_type,
+    "\n",
+    "- Experiment type: ",
+    exp_type,
+    "\n",
+    "- Glycan structure available: ",
+    if (has_structure) "Yes" else "No",
+    "\n",
+    "- Number of groups: ",
+    n_groups,
+    "\n",
+    sample_info_summary,
+    "\n",
+    var_info_summary,
+    "\n"
   )
 }
 
@@ -392,7 +463,15 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
   }
 
   # Prepend tibble name and indent all lines
-  header <- paste0("- ", name, " (", nrow(tbl), " rows, ", ncol(tbl), " columns)")
+  header <- paste0(
+    "- ",
+    name,
+    " (",
+    nrow(tbl),
+    " rows, ",
+    ncol(tbl),
+    " columns)"
+  )
   indented <- paste0("    ", glimpse_output, collapse = "\n")
   paste0(header, "\n", indented)
 }
@@ -436,7 +515,10 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
         # Clean up newlines and excessive spaces
         desc_text <- stringr::str_squish(desc_text)
         ai_text <- stringr::str_squish(ai_prompt)
-        ai_text <- stringr::str_remove(ai_text, stringr::fixed("This section is for AI in inquire_blueprint() only."))
+        ai_text <- stringr::str_remove(
+          ai_text,
+          stringr::fixed("This section is for AI in inquire_blueprint() only.")
+        )
 
         # Extract arguments
         args <- .get_rd_arguments(rd)
@@ -449,7 +531,10 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
           params_lines <- purrr::imap_chr(args, function(desc, name) {
             paste0("    - `", name, "`: ", stringr::str_squish(desc))
           })
-          params_text <- paste0("  - PARAMETER:\n", paste(params_lines, collapse = "\n"))
+          params_text <- paste0(
+            "  - PARAMETER:\n",
+            paste(params_lines, collapse = "\n")
+          )
         } else {
           params_text <- "  - PARAMETER: None."
         }
@@ -463,9 +548,15 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
     #   - PARAMETER: ...
 
     block <- paste0(
-      "- `", func_name, "`\n",
+      "- `",
+      func_name,
+      "`\n",
       if (nzchar(ai_text)) paste0("  - USAGE: ", ai_text, "\n") else "",
-      "  - FUNCTION: ", title, ". ", desc_text, "\n",
+      "  - FUNCTION: ",
+      title,
+      ". ",
+      desc_text,
+      "\n",
       if (nzchar(params_text)) paste0(params_text, "\n") else ""
     )
     block
@@ -475,7 +566,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 }
 
 .filter_inquire_blueprint_args <- function(func_name, args) {
-  if (length(args) == 0) return(args)
+  if (length(args) == 0) {
+    return(args)
+  }
   # Placeholder for future filtering rules; keep all args for now.
   args
 }
@@ -513,7 +606,15 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 #'
 #' @returns A confirmed `glysmith_blueprint` object.
 #' @noRd
-.review_blueprint <- function(bp, explanation, qa_history, exp, group_col, model, max_retries) {
+.review_blueprint <- function(
+  bp,
+  explanation,
+  qa_history,
+  exp,
+  group_col,
+  model,
+  max_retries
+) {
   checkmate::assert_class(bp, "glysmith_blueprint")
   if (!is.null(explanation) && nzchar(explanation)) {
     .print_blueprint_explanation(explanation)
@@ -549,7 +650,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 #' @noRd
 .ask_blueprint_review <- function() {
   cli::cli_h3(cli::style_bold(cli::col_blue("Review Blueprint")))
-  prompt <- cli::style_bold(cli::col_green("Looks good? Press ENTER to accept, or type new requirements: "))
+  prompt <- cli::style_bold(cli::col_green(
+    "Looks good? Press ENTER to accept, or type new requirements: "
+  ))
   response <- readline(prompt = prompt)
   cli::cli_text("\n")
   response
@@ -634,19 +737,34 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
 .get_rd_tag_text <- function(rd, tag) {
   elements <- .get_rd_tag(rd, tag)
-  if (length(elements) == 0) return("")
+  if (length(elements) == 0) {
+    return("")
+  }
   # Concatenate all matching elements (usually just one for title/desc)
   text <- paste(purrr::map_chr(elements, .parse_rd_content), collapse = " ")
   .clean_rd_text(text)
 }
 
 .get_rd_section_text <- function(rd, section_title) {
-  sections <- rd[purrr::map_lgl(rd, function(x) attr(x, "Rd_tag") == "\\section")]
-  if (length(sections) == 0) return("")
+  sections <- rd[purrr::map_lgl(rd, function(x) {
+    attr(x, "Rd_tag") == "\\section"
+  })]
+  if (length(sections) == 0) {
+    return("")
+  }
   for (section in sections) {
-    if (length(section) < 2) next
+    if (length(section) < 2) {
+      next
+    }
     title <- stringr::str_squish(.parse_rd_content(section[[1]]))
-    if (!identical(stringr::str_to_lower(title), stringr::str_to_lower(section_title))) next
+    if (
+      !identical(
+        stringr::str_to_lower(title),
+        stringr::str_to_lower(section_title)
+      )
+    ) {
+      next
+    }
     text <- .parse_rd_content(section[[2]])
     return(.clean_rd_text(text))
   }
@@ -655,7 +773,9 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
 
 .get_rd_arguments <- function(rd) {
   args_tag <- .get_rd_tag(rd, "\\arguments")
-  if (length(args_tag) == 0) return(character(0))
+  if (length(args_tag) == 0) {
+    return(character(0))
+  }
 
   # \arguments is a list of \item{name}{desc}
   # Actually it's a list where some elements are \item and some are newlines
@@ -671,11 +791,27 @@ inquire_blueprint <- function(description, exp = NULL, group_col = "group", mode
       arg_desc <- .parse_rd_content(el[[2]])
       # Remove newlines for cleaner text
       arg_name <- stringr::str_trim(arg_name)
-      arg_name <- stringr::str_replace_all(arg_name, "\\\\[a-zA-Z]+\\{(.*?)\\}", "\\1")
+      arg_name <- stringr::str_replace_all(
+        arg_name,
+        "\\\\[a-zA-Z]+\\{(.*?)\\}",
+        "\\1"
+      )
       arg_desc <- stringr::str_replace_all(arg_desc, "\\n", " ")
-      arg_desc <- stringr::str_replace_all(arg_desc, "\\\\link\\{(.*?)\\}", "\\1")
-      arg_desc <- stringr::str_replace_all(arg_desc, "\\\\code\\{(.*?)\\}", "`\\1`")
-      arg_desc <- stringr::str_replace_all(arg_desc, "\\\\[a-zA-Z]+\\{(.*?)\\}", "\\1")
+      arg_desc <- stringr::str_replace_all(
+        arg_desc,
+        "\\\\link\\{(.*?)\\}",
+        "\\1"
+      )
+      arg_desc <- stringr::str_replace_all(
+        arg_desc,
+        "\\\\code\\{(.*?)\\}",
+        "`\\1`"
+      )
+      arg_desc <- stringr::str_replace_all(
+        arg_desc,
+        "\\\\[a-zA-Z]+\\{(.*?)\\}",
+        "\\1"
+      )
       items[[arg_name]] <- arg_desc
     }
   }

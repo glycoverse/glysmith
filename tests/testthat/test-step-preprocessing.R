@@ -21,12 +21,12 @@ test_that("step_plot_qc generates plots with correct prefixes", {
   suppressMessages(res_pre <- forge_analysis(exp, bp_pre))
   expect_true("qc_pre_missing_heatmap" %in% names(res_pre$plots))
   expect_false("qc_missing_heatmap" %in% names(res_pre$plots))
-  expect_true("qc_pre_tic_bar" %in% names(res_pre$plots))  # common plot with pre_ prefix
+  expect_true("qc_pre_tic_bar" %in% names(res_pre$plots)) # common plot with pre_ prefix
 
   # Test post-QC with standard qc_ prefix (missing value plots are pre-only)
   bp_post <- blueprint(step_plot_qc(when = "post"))
   suppressMessages(res_post <- forge_analysis(exp, bp_post))
-  expect_true("qc_tic_bar" %in% names(res_post$plots))  # common plot uses standard prefix
+  expect_true("qc_tic_bar" %in% names(res_post$plots)) # common plot uses standard prefix
   expect_false("qc_pre_tic_bar" %in% names(res_post$plots))
 })
 
@@ -64,7 +64,10 @@ test_that("step_subset_groups filters exp and keeps full_exp", {
   expect_setequal(groups, c("H", "C"))
   expect_equal(levels(res$data$exp$sample_info$group), c("H", "C"))
   expect_true("full_exp" %in% names(res$data))
-  expect_gt(length(unique(as.character(res$data$full_exp$sample_info$group))), length(groups))
+  expect_gt(
+    length(unique(as.character(res$data$full_exp$sample_info$group))),
+    length(groups)
+  )
 })
 
 # ----- step_ident_overview -----
@@ -85,7 +88,10 @@ make_protein_expr <- function(exp) {
     dplyr::left_join(protein_tbl, by = "variable") |>
     dplyr::group_by(.data$protein) |>
     dplyr::summarise(
-      dplyr::across(-dplyr::all_of("variable"), ~ stats::median(.x, na.rm = TRUE)),
+      dplyr::across(
+        -dplyr::all_of("variable"),
+        ~ stats::median(.x, na.rm = TRUE)
+      ),
       .groups = "drop"
     )
 

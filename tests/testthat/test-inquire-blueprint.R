@@ -197,13 +197,21 @@ test_that("inquire_blueprint retries on invalid output", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return("{\"explanation\":\"Broken JSON\",\"steps\":[\"step_ident_overview(\"]}") # Invalid
+      return(
+        "{\"explanation\":\"Broken JSON\",\"steps\":[\"step_ident_overview(\"]}"
+      ) # Invalid
     } else {
       # Check if we received the error message in prompt
-      if (grepl("Invalid format", prompt) || grepl("Error:", prompt) || grepl("Invalid JSON", prompt)) {
+      if (
+        grepl("Invalid format", prompt) ||
+          grepl("Error:", prompt) ||
+          grepl("Invalid JSON", prompt)
+      ) {
         error_feedback_received <<- TRUE
       }
-      return("{\"explanation\":\"Valid JSON\",\"steps\":[\"step_ident_overview()\",\"step_pca()\"]}")
+      return(
+        "{\"explanation\":\"Valid JSON\",\"steps\":[\"step_ident_overview()\",\"step_pca()\"]}"
+      )
     }
   }
 
@@ -232,7 +240,9 @@ test_that("inquire_blueprint reflects full error details back to LLM", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return("{\"explanation\":\"Volcano only.\",\"steps\":[\"step_volcano()\"]}")
+      return(
+        "{\"explanation\":\"Volcano only.\",\"steps\":[\"step_volcano()\"]}"
+      )
     }
     prompt_received <<- prompt
     "{\"explanation\":\"DEA then volcano.\",\"steps\":[\"step_dea_ttest()\",\"step_volcano()\"]}"
@@ -289,12 +299,16 @@ test_that("inquire_blueprint handles single clarification question from LLM", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     if (call_count == 1) {
-      return('{"question":"What is the path to your protein expression matrix?"}')
+      return(
+        '{"question":"What is the path to your protein expression matrix?"}'
+      )
     }
     prompt_received <<- prompt
     paste0(
       '{"explanation":"Adjust proteins then PCA.","steps":[',
-      '"step_adjust_protein(pro_expr_path = \'', pro_expr_path, '\')",',
+      '"step_adjust_protein(pro_expr_path = \'',
+      pro_expr_path,
+      '\')",',
       '"step_pca()"]}'
     )
   }
@@ -339,7 +353,9 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
   )
 
   local_mocked_bindings(
-    .ask_single_question = function(...) stop("Unexpected clarification request."),
+    .ask_single_question = function(...) {
+      stop("Unexpected clarification request.")
+    },
     .package = "glysmith"
   )
 
@@ -403,7 +419,10 @@ test_that("inquire_blueprint includes step parameters in system prompt", {
 
 test_that("ask_single_question errors when non-interactive", {
   skip_if(interactive())
-  expect_error(glysmith:::.ask_single_question("Question?"), "interactive input")
+  expect_error(
+    glysmith:::.ask_single_question("Question?"),
+    "interactive input"
+  )
 })
 
 test_that("ask_blueprint_review uses readline prompt", {
@@ -466,7 +485,15 @@ test_that("review_blueprint applies multiple refinements", {
       responses <<- responses[-1]
       response
     },
-    modify_blueprint = function(bp, description, qa_history = NULL, exp, group_col, model, max_retries) {
+    modify_blueprint = function(
+      bp,
+      description,
+      qa_history = NULL,
+      exp,
+      group_col,
+      model,
+      max_retries
+    ) {
       call_count <<- call_count + 1
       if (call_count == 1) {
         expect_equal(description, "add pca")
@@ -497,7 +524,10 @@ test_that("review_blueprint applies multiple refinements", {
 # Tests for .summarize_tibble
 test_that(".summarize_tibble handles NULL and empty tibbles", {
   expect_equal(glysmith:::.summarize_tibble(NULL, "test"), "- test: (empty)")
-  expect_equal(glysmith:::.summarize_tibble(data.frame(), "test"), "- test: (empty)")
+  expect_equal(
+    glysmith:::.summarize_tibble(data.frame(), "test"),
+    "- test: (empty)"
+  )
 })
 
 test_that(".summarize_tibble returns formatted output with glimpse-like content", {
@@ -521,7 +551,11 @@ test_that(".summarize_tibble highlights group column", {
     value = c(1, 2, 3)
   )
 
-  result <- glysmith:::.summarize_tibble(tbl, "sample_info", highlight_col = "group")
+  result <- glysmith:::.summarize_tibble(
+    tbl,
+    "sample_info",
+    highlight_col = "group"
+  )
 
   # Check that the group column marker appears in the result
   expect_match(result, "[GROUP COLUMN]", fixed = TRUE)
@@ -721,11 +755,15 @@ test_that(".get_rd_database returns database or NULL", {
 test_that(".get_rd_tag finds matching tags", {
   skip_if_not_installed("tools")
   rd_db <- glysmith:::.get_rd_database()
-  if (is.null(rd_db)) skip("Rd database not available")
+  if (is.null(rd_db)) {
+    skip("Rd database not available")
+  }
 
   # Find the preprocess Rd file
   rd <- rd_db[["step_preprocess.Rd"]]
-  if (is.null(rd)) skip("step_preprocess.Rd not found")
+  if (is.null(rd)) {
+    skip("step_preprocess.Rd not found")
+  }
 
   tags <- glysmith:::.get_rd_tag(rd, "\\title")
   expect_length(tags, 1)
@@ -734,10 +772,14 @@ test_that(".get_rd_tag finds matching tags", {
 test_that(".get_rd_tag_values extracts alias values", {
   skip_if_not_installed("tools")
   rd_db <- glysmith:::.get_rd_database()
-  if (is.null(rd_db)) skip("Rd database not available")
+  if (is.null(rd_db)) {
+    skip("Rd database not available")
+  }
 
   rd <- rd_db[["step_preprocess.Rd"]]
-  if (is.null(rd)) skip("step_preprocess.Rd not found")
+  if (is.null(rd)) {
+    skip("step_preprocess.Rd not found")
+  }
 
   aliases <- glysmith:::.get_rd_tag_values(rd, "\\alias")
   expect_true("step_preprocess" %in% aliases)
@@ -764,10 +806,14 @@ test_that(".clean_rd_text removes Rd markup", {
 test_that(".get_rd_tag_text extracts title", {
   skip_if_not_installed("tools")
   rd_db <- glysmith:::.get_rd_database()
-  if (is.null(rd_db)) skip("Rd database not available")
+  if (is.null(rd_db)) {
+    skip("Rd database not available")
+  }
 
   rd <- rd_db[["step_preprocess.Rd"]]
-  if (is.null(rd)) skip("step_preprocess.Rd not found")
+  if (is.null(rd)) {
+    skip("step_preprocess.Rd not found")
+  }
 
   title <- glysmith:::.get_rd_tag_text(rd, "\\title")
   expect_true(nzchar(title))
@@ -776,10 +822,14 @@ test_that(".get_rd_tag_text extracts title", {
 test_that(".get_rd_section_text extracts AI Prompt section", {
   skip_if_not_installed("tools")
   rd_db <- glysmith:::.get_rd_database()
-  if (is.null(rd_db)) skip("Rd database not available")
+  if (is.null(rd_db)) {
+    skip("Rd database not available")
+  }
 
   rd <- rd_db[["step_correlation.Rd"]]
-  if (is.null(rd)) skip("step_correlation.Rd not found")
+  if (is.null(rd)) {
+    skip("step_correlation.Rd not found")
+  }
 
   ai_text <- glysmith:::.get_rd_section_text(rd, "AI Prompt")
   # AI Prompt may or may not be present
@@ -789,10 +839,14 @@ test_that(".get_rd_section_text extracts AI Prompt section", {
 test_that(".get_rd_arguments extracts argument descriptions", {
   skip_if_not_installed("tools")
   rd_db <- glysmith:::.get_rd_database()
-  if (is.null(rd_db)) skip("Rd database not available")
+  if (is.null(rd_db)) {
+    skip("Rd database not available")
+  }
 
   rd <- rd_db[["step_preprocess.Rd"]]
-  if (is.null(rd)) skip("step_preprocess.Rd not found")
+  if (is.null(rd)) {
+    skip("step_preprocess.Rd not found")
+  }
 
   args <- glysmith:::.get_rd_arguments(rd)
   # Arguments section returns a named list

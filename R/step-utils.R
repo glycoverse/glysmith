@@ -1,5 +1,12 @@
 .on_choices <- function() {
-  c("exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp")
+  c(
+    "exp",
+    "sig_exp",
+    "trait_exp",
+    "sig_trait_exp",
+    "motif_exp",
+    "sig_motif_exp"
+  )
 }
 
 .has_glycan_structure <- function(exp) {
@@ -14,7 +21,8 @@
 .resolve_on <- function(on) {
   checkmate::assert_choice(on, .on_choices())
   list(
-    id_suffix = switch(on,
+    id_suffix = switch(
+      on,
       exp = "",
       sig_exp = "_sig",
       trait_exp = "_trait",
@@ -22,7 +30,8 @@
       motif_exp = "_motif",
       sig_motif_exp = "_sig_motif"
     ),
-    label_suffix = switch(on,
+    label_suffix = switch(
+      on,
       exp = "",
       sig_exp = " of significant variables",
       trait_exp = " of traits",

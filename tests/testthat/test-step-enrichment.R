@@ -21,7 +21,9 @@ run_sig_enrich_step <- function(step_fun, kind) {
   local_mocked_bindings(
     gly_enrich_go = function(...) structure(list(), class = "mock_enrich"),
     gly_enrich_kegg = function(...) structure(list(), class = "mock_enrich"),
-    gly_enrich_reactome = function(...) structure(list(), class = "mock_enrich"),
+    gly_enrich_reactome = function(...) {
+      structure(list(), class = "mock_enrich")
+    },
     get_tidy_result = function(...) mock_tbl,
     .package = "glystats"
   )

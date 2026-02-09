@@ -41,7 +41,11 @@ test_that("modify_blueprint retries on invalid output", {
     if (call_count == 1) {
       return("{\"explanation\":\"Broken JSON\",\"steps\":[\"step_heatmap(\"]}")
     }
-    if (grepl("Invalid format", prompt) || grepl("Error:", prompt) || grepl("Invalid JSON", prompt)) {
+    if (
+      grepl("Invalid format", prompt) ||
+        grepl("Error:", prompt) ||
+        grepl("Invalid JSON", prompt)
+    ) {
       error_feedback_received <<- TRUE
     }
     "{\"explanation\":\"Valid JSON\",\"steps\":[\"step_preprocess()\",\"step_pca()\"]}"
@@ -104,7 +108,13 @@ test_that("modify_blueprint handles single clarification question from LLM", {
 
   withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
 
-  suppressMessages(bp_updated <- modify_blueprint(bp, "add protein adjustment", max_retries = 1))
+  suppressMessages(
+    bp_updated <- modify_blueprint(
+      bp,
+      "add protein adjustment",
+      max_retries = 1
+    )
+  )
 
   expect_s3_class(bp_updated, "glysmith_blueprint")
   expect_equal(call_count, 2)

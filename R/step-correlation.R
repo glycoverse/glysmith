@@ -68,8 +68,6 @@ step_correlation <- function(
     id = id,
     label = paste0("Correlation analysis", on_meta$label_suffix),
     run = function(ctx) {
-      rlang::check_installed("Hmisc")
-      rlang::check_installed("GGally")
       exp <- ctx_get_data(ctx, on)
       cor_res <- rlang::exec(
         glystats::gly_cor,
@@ -126,10 +124,26 @@ step_correlation <- function(
       col2 <- if ("variable2" %in% colnames(cor_tbl)) "variable2" else "sample2"
 
       lines <- c(
-        paste0("Correlation analysis was performed on ", on, " (", on_cor, "s) using the ", method, " method."),
+        paste0(
+          "Correlation analysis was performed on ",
+          on,
+          " (",
+          on_cor,
+          "s) using the ",
+          method,
+          " method."
+        ),
         paste0("Number of pairs analyzed: ", nrow(cor_tbl), "."),
         paste0("Median correlation coefficient: ", round(median_cor, 3), "."),
-        paste0("Highest correlation: ", round(highest_cor, 3), " between ", top_row[[col1]], " and ", top_row[[col2]], ".")
+        paste0(
+          "Highest correlation: ",
+          round(highest_cor, 3),
+          " between ",
+          top_row[[col1]],
+          " and ",
+          top_row[[col2]],
+          "."
+        )
       )
       paste(lines, collapse = "\n")
     }

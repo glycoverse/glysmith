@@ -99,5 +99,8 @@ test_that("branch step error shows unprefixed key and placement hint", {
   # Should show unprefixed key
   expect_true(grepl("dea_res", msg))
   # Should include placement hint
-  expect_true(grepl("The required step should be placed before.*step_volcano", msg))
+  expect_true(grepl(
+    "The required step should be placed before.*step_volcano",
+    msg
+  ))
 })

@@ -509,16 +509,33 @@ step_dea_kruskal <- function(
   lines <- c(paste0(meta$label, " analysis was performed."))
 
   if (sig_total == 0) {
-    lines <- c(lines, paste0("No significant ", item_name, " (adjusted p < 0.05)."))
+    lines <- c(
+      lines,
+      paste0("No significant ", item_name, " (adjusted p < 0.05).")
+    )
     return(paste(lines, collapse = "\n"))
   }
 
-  lines <- c(lines, paste0("Number of significant ", item_name, " (adjusted p < 0.05): ", sig_total, "."))
+  lines <- c(
+    lines,
+    paste0(
+      "Number of significant ",
+      item_name,
+      " (adjusted p < 0.05): ",
+      sig_total,
+      "."
+    )
+  )
 
   if (is_multigroup) {
     sig_per_contrast <- .dea_count_sig_per_contrast(tbl)
     if (length(sig_per_contrast) > 0) {
-      contrast_lines <- paste0("- ", names(sig_per_contrast), ": ", as.integer(sig_per_contrast))
+      contrast_lines <- paste0(
+        "- ",
+        names(sig_per_contrast),
+        ": ",
+        as.integer(sig_per_contrast)
+      )
       lines <- c(lines, "", "Breakdown by contrast:", "", contrast_lines)
     }
   }
@@ -528,7 +545,14 @@ step_dea_kruskal <- function(
 
 #' Internal helper for DEA steps
 #' @noRd
-.step_dea <- function(method, label, on = "exp", signature = NULL, dea_args, filter_args) {
+.step_dea <- function(
+  method,
+  label,
+  on = "exp",
+  signature = NULL,
+  dea_args,
+  filter_args
+) {
   meta <- .get_dea_meta(on)
   dea_args <- dea_args %||% list()
   filter_args <- filter_args %||% list()
@@ -537,7 +561,6 @@ step_dea_kruskal <- function(
     id = paste0(meta$prefix, "_", method),
     label = paste0(meta$label, " analysis (", method, ")"),
     run = function(ctx) {
-      rlang::check_installed("FSA")
       exp <- ctx_get_data(ctx, on)
       # Apply filtering for trait_exp if needed
       if (on == "trait_exp") {
@@ -559,20 +582,31 @@ step_dea_kruskal <- function(
           ctx,
           paste0(meta$prefix, "_main_test"),
           glystats::get_tidy_result(dea_res, "main_test"),
-          paste0("Main test results of ANOVA or Kruskal-Wallis test for ", meta$label, " analysis.")
+          paste0(
+            "Main test results of ANOVA or Kruskal-Wallis test for ",
+            meta$label,
+            " analysis."
+          )
         )
         ctx <- ctx_add_table(
           ctx,
           paste0(meta$prefix, "_post_hoc_test"),
           glystats::get_tidy_result(dea_res, "post_hoc_test"),
-          paste0("Post-hoc test results of ANOVA or Kruskal-Wallis test for ", meta$label, " analysis.")
+          paste0(
+            "Post-hoc test results of ANOVA or Kruskal-Wallis test for ",
+            meta$label,
+            " analysis."
+          )
         )
       } else {
         ctx <- ctx_add_table(
           ctx,
           meta$prefix,
           glystats::get_tidy_result(dea_res),
-          paste0(meta$label, " analysis results of all comparisons for all variables.")
+          paste0(
+            meta$label,
+            " analysis results of all comparisons for all variables."
+          )
         )
       }
       sig_exp <- rlang::exec(

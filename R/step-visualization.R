@@ -46,11 +46,16 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
     id = paste0("heatmap", on_meta$id_suffix),
     label = label,
     run = function(ctx) {
-      rlang::check_installed("pheatmap")
-      rlang::check_installed("ggplotify")
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_heatmap(exp, ...)
-      ctx_add_plot(ctx, plot_name, p, paste0("Heatmap of ", on, "."), width = plot_width, height = plot_height)
+      ctx_add_plot(
+        ctx,
+        plot_name,
+        p,
+        paste0("Heatmap of ", on, "."),
+        width = plot_width,
+        height = plot_height
+      )
     },
     require = on,
     signature = signature
@@ -91,7 +96,14 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' step_logo(on = "sig_exp")
 #' @seealso [glyvis::plot_logo()]
 #' @export
-step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, plot_width = 5, plot_height = 3, ...) {
+step_logo <- function(
+  on = "exp",
+  n_aa = 5L,
+  fasta = NULL,
+  plot_width = 5,
+  plot_height = 3,
+  ...
+) {
   checkmate::assert_choice(on, c("exp", "sig_exp"))
   signature <- rlang::expr_deparse(match.call())
 
@@ -105,16 +117,24 @@ step_logo <- function(on = "exp", n_aa = 5L, fasta = NULL, plot_width = 5, plot_
     condition = function(ctx) {
       exp <- ctx_get_data(ctx, on)
       if (glyexp::get_exp_type(exp) != "glycoproteomics") {
-        return(list(check = FALSE, reason = "logo plot is only applicable for glycoproteomics experiments"))
+        return(list(
+          check = FALSE,
+          reason = "logo plot is only applicable for glycoproteomics experiments"
+        ))
       }
       list(check = TRUE, reason = NULL)
     },
     run = function(ctx) {
-      rlang::check_installed("ggseqlogo")
-      rlang::check_installed("UniProt.ws")
       exp <- ctx_get_data(ctx, on)
       p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
-      ctx_add_plot(ctx, plot_name, p, paste0("Logo plot of glycosylation sites for ", on, "."), width = plot_width, height = plot_height)
+      ctx_add_plot(
+        ctx,
+        plot_name,
+        p,
+        paste0("Logo plot of glycosylation sites for ", on, "."),
+        width = plot_width,
+        height = plot_height
+      )
     },
     require = on,
     signature = signature
@@ -209,7 +229,8 @@ step_sig_boxplot <- function(
       # If experiment has more than 25 variables, select top n_top by p-value
       if (nrow(exp) > 25) {
         # Get DEA results to select top by p-value
-        dea_key <- switch(on,
+        dea_key <- switch(
+          on,
           sig_exp = "dea_res",
           sig_trait_exp = "dta_res",
           sig_motif_exp = "dma_res"
@@ -232,9 +253,24 @@ step_sig_boxplot <- function(
       p <- glyvis::plot_boxplot(exp, group_col = ctx$group_col, ...)
 
       # Calculate dynamic plot dimensions based on number of variables
-      dims <- .calc_boxplot_dims(n_vars, panel_width, panel_height, min_width, min_height, max_width, max_height)
+      dims <- .calc_boxplot_dims(
+        n_vars,
+        panel_width,
+        panel_height,
+        min_width,
+        min_height,
+        max_width,
+        max_height
+      )
 
-      ctx_add_plot(ctx, plot_name, p, paste0("Boxplot of significant variables from ", on, "."), width = dims$width, height = dims$height)
+      ctx_add_plot(
+        ctx,
+        plot_name,
+        p,
+        paste0("Boxplot of significant variables from ", on, "."),
+        width = dims$width,
+        height = dims$height
+      )
     },
     require = on,
     signature = signature
@@ -253,7 +289,15 @@ step_sig_boxplot <- function(
 #'
 #' @return List with `width` and `height` elements.
 #' @noRd
-.calc_boxplot_dims <- function(n_vars, panel_width, panel_height, min_width, min_height, max_width, max_height) {
+.calc_boxplot_dims <- function(
+  n_vars,
+  panel_width,
+  panel_height,
+  min_width,
+  min_height,
+  max_width,
+  max_height
+) {
   # Calculate optimal ncol to make the plot roughly square per panel
   ncol <- ceiling(sqrt(n_vars))
   nrow <- ceiling(n_vars / ncol)

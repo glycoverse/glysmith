@@ -14,9 +14,12 @@ test_that("run_blueprint handles missing dependencies", {
   ctx <- list(meta = list(logs = list(), steps = character(0)), data = list())
   bp_req <- glysmith:::new_blueprint(list(step_req))
 
-  expect_message({
-    ctx_result <- glysmith:::run_blueprint(bp_req, ctx)
-  }, "Skipping .* due to missing ctx\\$data keys")
+  expect_message(
+    {
+      ctx_result <- glysmith:::run_blueprint(bp_req, ctx)
+    },
+    "Skipping .* due to missing ctx\\$data keys"
+  )
 
   expect_false("step_req" %in% ctx_result$meta$steps)
 })
@@ -99,7 +102,10 @@ test_that("warnings from step execution are captured and suppressed", {
   logs <- result_ctx$meta$logs$test_warning
   expect_true(length(logs$warning) > 0)
   expect_s3_class(logs$warning[[1]], "simpleWarning")
-  expect_match(conditionMessage(logs$warning[[1]]), "This is a test warning that should be captured")
+  expect_match(
+    conditionMessage(logs$warning[[1]]),
+    "This is a test warning that should be captured"
+  )
 })
 
 test_that("multiple warnings from step execution are all captured", {
@@ -168,7 +174,10 @@ test_that("warnings from nested function calls are captured", {
   # Verify the warning was captured
   logs <- result_ctx$meta$logs$test_nested_warning
   expect_true(length(logs$warning) > 0)
-  expect_match(conditionMessage(logs$warning[[1]]), "Warning from nested function")
+  expect_match(
+    conditionMessage(logs$warning[[1]]),
+    "Warning from nested function"
+  )
 
   # Verify the function still executed correctly
   expect_equal(result_ctx$data$result, 42)
@@ -208,7 +217,9 @@ test_that("branch steps namespace outputs", {
   )
   ctx <- run_blueprint(bp, ctx, quiet = TRUE)
 
-  expect_true(all(c("one__x", "one__y", "two__x", "two__y") %in% names(ctx$data)))
+  expect_true(all(
+    c("one__x", "one__y", "two__x", "two__y") %in% names(ctx$data)
+  ))
   expect_false("x" %in% names(ctx$data))
   expect_equal(ctx$data[["one__y"]], 2)
   expect_equal(ctx$data[["two__y"]], 2)
