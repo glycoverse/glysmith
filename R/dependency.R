@@ -88,6 +88,7 @@ get_suggests_packages <- function() {
     pkgs <- trimws(pkgs)
     pkgs <- sub("\\s*\\(.*\\)$", "", pkgs)  # Remove (>= version) constraints
     pkgs <- pkgs[pkgs != ""]
+    pkgs <- setdiff(pkgs, c("knitr", "withr", "testthat"))
     return(pkgs)
   }
 
