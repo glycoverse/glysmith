@@ -65,11 +65,14 @@ modify_blueprint <- function(
   }
 
   current_prompt <- paste0(
-    exp_info, "\n",
+    exp_info,
+    "\n",
     qa_context,
     "Current blueprint:\n",
-    bp_info, "\n",
-    "Modification request: ", description
+    bp_info,
+    "\n",
+    "Modification request: ",
+    description
   )
 
   retry_count <- 0L
@@ -82,7 +85,9 @@ modify_blueprint <- function(
   repeat {
     if (retry_count > 0) {
       cli::cli_text("\n")
-      cli::cli_alert_info("Attempt {retry_count}/{max_retries}: Retrying with feedback...")
+      cli::cli_alert_info(
+        "Attempt {retry_count}/{max_retries}: Retrying with feedback..."
+      )
       cli::cli_text("\n")
     }
 
@@ -115,7 +120,8 @@ modify_blueprint <- function(
       retry_count <- retry_count + 1L
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
-        error_msg, "\n",
+        error_msg,
+        "\n",
         "Please fix the output and return a JSON object with `steps` (or `questions`)."
       )
     } else {

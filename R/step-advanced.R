@@ -27,7 +27,11 @@
 #' step_derive_traits()
 #' @seealso [glydet::derive_traits()]
 #' @export
-step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) {
+step_derive_traits <- function(
+  trait_fns = NULL,
+  mp_fns = NULL,
+  mp_cols = NULL
+) {
   signature <- rlang::expr_deparse(match.call())
   step(
     id = "derive_traits",
@@ -46,7 +50,12 @@ step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) 
         mp_cols = mp_cols
       )
       ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
-      ctx <- ctx_add_table(ctx, "derived_traits", tibble::as_tibble(trait_exp), "Derived trait calculation results.")
+      ctx <- ctx_add_table(
+        ctx,
+        "derived_traits",
+        tibble::as_tibble(trait_exp),
+        "Derived trait calculation results."
+      )
       ctx
     },
     report = function(x) {
@@ -58,11 +67,18 @@ step_derive_traits <- function(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL) 
       }
       msg <- paste0(
         "Derived traits were calculated. ",
-        "Number of derived traits: ", length(unique(tbl$trait)), "."
+        "Number of derived traits: ",
+        length(unique(tbl$trait)),
+        "."
       )
       trait_definition_tbl <- tbl |>
         dplyr::distinct(.data$trait, .data$explanation)
-      definition_parts <- paste0("- ", trait_definition_tbl$trait, ": ", trait_definition_tbl$explanation)
+      definition_parts <- paste0(
+        "- ",
+        trait_definition_tbl$trait,
+        ": ",
+        trait_definition_tbl$explanation
+      )
       definition_parts <- paste(definition_parts, collapse = "\n")
       msg <- paste0(msg, "\n\n", "Trait definitions:\n\n", definition_parts)
       msg
@@ -134,7 +150,12 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
       )
 
       ctx <- ctx_add_data(ctx, "motif_exp", motif_exp)
-      ctx <- ctx_add_table(ctx, "quantified_motifs", tibble::as_tibble(motif_exp), "Motif quantification results.")
+      ctx <- ctx_add_table(
+        ctx,
+        "quantified_motifs",
+        tibble::as_tibble(motif_exp),
+        "Motif quantification results."
+      )
       ctx
     },
     report = function(x) {
@@ -148,7 +169,9 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
       msg <- paste0(
         "Motif quantification was performed. ",
         motif_type_msg,
-        "Number of quantified motifs: ", n_motifs, "."
+        "Number of quantified motifs: ",
+        n_motifs,
+        "."
       )
       msg
     },

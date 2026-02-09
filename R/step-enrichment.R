@@ -37,7 +37,13 @@
 #' step_sig_enrich_go(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_go()]
 #' @export
-step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
+step_sig_enrich_go <- function(
+  universe = "all",
+  plot_type = "dotplot",
+  plot_width = 7,
+  plot_height = 7,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich(
     "go",
@@ -89,7 +95,13 @@ step_sig_enrich_go <- function(universe = "all", plot_type = "dotplot", plot_wid
 #' step_sig_enrich_kegg(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_kegg()]
 #' @export
-step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
+step_sig_enrich_kegg <- function(
+  universe = "all",
+  plot_type = "dotplot",
+  plot_width = 7,
+  plot_height = 7,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich(
     "kegg",
@@ -142,7 +154,13 @@ step_sig_enrich_kegg <- function(universe = "all", plot_type = "dotplot", plot_w
 #' step_sig_enrich_reactome(plot_type = "barplot")
 #' @seealso [glystats::gly_enrich_reactome()]
 #' @export
-step_sig_enrich_reactome <- function(universe = "all", plot_type = "dotplot", plot_width = 7, plot_height = 7, ...) {
+step_sig_enrich_reactome <- function(
+  universe = "all",
+  plot_type = "dotplot",
+  plot_width = 7,
+  plot_height = 7,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
   step_sig_enrich(
     "reactome",
@@ -195,7 +213,8 @@ step_sig_enrich <- function(
     id = step_id,
     label = label,
     condition = function(ctx) {
-      check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics"
+      check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) ==
+        "glycoproteomics"
       reason1 <- "input is not a glycoproteomics experiment"
       check2 <- length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2
       reason2 <- "input has more than 2 groups"
@@ -221,7 +240,11 @@ step_sig_enrich <- function(
         kind,
         go = rlang::exec(glystats::gly_enrich_go, sig_exp, !!!call_args),
         kegg = rlang::exec(glystats::gly_enrich_kegg, sig_exp, !!!call_args),
-        reactome = rlang::exec(glystats::gly_enrich_reactome, sig_exp, !!!call_args)
+        reactome = rlang::exec(
+          glystats::gly_enrich_reactome,
+          sig_exp,
+          !!!call_args
+        )
       )
       ctx <- ctx_add_table(
         ctx,
@@ -230,18 +253,42 @@ step_sig_enrich <- function(
         paste0(toupper(kind), " enrichment analysis results.")
       )
       p <- glyvis::plot_enrich(enrich_res, type = plot_type)
-      ctx_add_plot(ctx, kind, p, paste0(toupper(kind), " enrichment analysis plot."), width = plot_width, height = plot_height)
+      ctx_add_plot(
+        ctx,
+        kind,
+        p,
+        paste0(toupper(kind), " enrichment analysis plot."),
+        width = plot_width,
+        height = plot_height
+      )
     },
     report = function(x) {
       tbl <- x$tables[[kind]]
       n_sig <- sum(tbl$p_adj < 0.05)
-      msg <- paste0("Enrichment analysis was performed on differentially expressed variables.")
+      msg <- paste0(
+        "Enrichment analysis was performed on differentially expressed variables."
+      )
       if (n_sig > 0) {
-        msg <- paste0(msg, " Number of significant items (adjusted p < 0.05): ", n_sig, ".\n\n")
+        msg <- paste0(
+          msg,
+          " Number of significant items (adjusted p < 0.05): ",
+          n_sig,
+          ".\n\n"
+        )
         all_sig_terms <- tbl$description[tbl$p_adj < 0.05]
         all_sig_terms_part <- paste(all_sig_terms, collapse = ", ")
-        msg <- paste0(msg, glue::glue("<AI>Summarize these terms in 1 sentence: {all_sig_terms_part}</AI>"))
-        msg <- paste0(msg, "Top terms: \n\n", paste("- ", tbl$description[1:min(5, n_sig)], collapse = "\n"), "\n")
+        msg <- paste0(
+          msg,
+          glue::glue(
+            "<AI>Summarize these terms in 1 sentence: {all_sig_terms_part}</AI>"
+          )
+        )
+        msg <- paste0(
+          msg,
+          "Top terms: \n\n",
+          paste("- ", tbl$description[1:min(5, n_sig)], collapse = "\n"),
+          "\n"
+        )
       } else {
         msg <- paste0(msg, " No significant items (adjusted p < 0.05).\n")
       }

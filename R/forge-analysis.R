@@ -24,18 +24,33 @@
 #' print(result)
 #'
 #' @export
-forge_analysis <- function(exp, blueprint = blueprint_default(), group_col = "group") {
+forge_analysis <- function(
+  exp,
+  blueprint = blueprint_default(),
+  group_col = "group"
+) {
   check_glysmith_deps(action = "error")
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col)
   if (!group_col %in% colnames(exp$sample_info)) {
-    cli::cli_abort("Column name '{group_col}' is not found in the sample information.")
+    cli::cli_abort(
+      "Column name '{group_col}' is not found in the sample information."
+    )
   }
-  exp$sample_info[["group"]] <- droplevels(as.factor(exp$sample_info[[group_col]]))
+  exp$sample_info[["group"]] <- droplevels(as.factor(exp$sample_info[[
+    group_col
+  ]]))
 
   ctx <- new_ctx(exp, group_col)
   ctx <- run_blueprint(blueprint, ctx)
 
   exp <- ctx_get_data(ctx, "exp")
-  glysmith_result(exp = exp, data = ctx$data, plots = ctx$plots, tables = ctx$tables, meta = ctx$meta, blueprint = blueprint)
+  glysmith_result(
+    exp = exp,
+    data = ctx$data,
+    plots = ctx$plots,
+    tables = ctx$tables,
+    meta = ctx$meta,
+    blueprint = blueprint
+  )
 }

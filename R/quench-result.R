@@ -17,7 +17,14 @@
 #' quench_result(result, tempdir())
 #'
 #' @export
-quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_width = 5, plot_height = 5) {
+quench_result <- function(
+  x,
+  dir,
+  plot_ext = "pdf",
+  table_ext = "csv",
+  plot_width = 5,
+  plot_height = 5
+) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(dir)
   checkmate::assert_choice(plot_ext, c("pdf", "png", "svg"))
@@ -48,18 +55,32 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
       height <- plot_obj$height %||% plot_height
       # Force evaluation to handle lazy promises on older R versions
       plot_to_save <- ggplot2::ggplotGrob(plot_obj$plot)
-      .quietly(ggplot2::ggsave(file_path, plot_to_save, width = width, height = height))
+      .quietly(ggplot2::ggsave(
+        file_path,
+        plot_to_save,
+        width = width,
+        height = height
+      ))
     } else {
       # Legacy format: just the ggplot object
       # Force evaluation to handle lazy promises on older R versions
       plot_to_save <- ggplot2::ggplotGrob(cast_plot(x, plot))
-      .quietly(ggplot2::ggsave(file_path, plot_to_save, width = plot_width, height = plot_height))
+      .quietly(ggplot2::ggsave(
+        file_path,
+        plot_to_save,
+        width = plot_width,
+        height = plot_height
+      ))
     }
   }
 
   for (table in names(x$tables)) {
     file_path <- fs::path(dir, "tables", paste0(table, ".", table_ext))
-    writer <- switch(table_ext, "csv" = readr::write_csv, "tsv" = readr::write_tsv)
+    writer <- switch(
+      table_ext,
+      "csv" = readr::write_csv,
+      "tsv" = readr::write_tsv
+    )
     .quietly(writer(cast_table(x, table), file_path))
   }
 
@@ -89,11 +110,15 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
     explanation <- x$meta$explanation
     steps <- x$meta$steps
   }
-  if (is.null(explanation)) explanation <- character(0)
+  if (is.null(explanation)) {
+    explanation <- character(0)
+  }
 
   .explain <- function(key, default) {
     # Safely get explanation text by key.
-    if (is.null(explanation)) return(default)
+    if (is.null(explanation)) {
+      return(default)
+    }
     if (is.list(explanation)) {
       if (key %in% names(explanation)) {
         val <- explanation[[key]]
@@ -102,7 +127,9 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
       return(default)
     }
     val <- explanation[key]
-    if (length(val) == 1 && !is.na(val) && nzchar(val)) return(unname(val))
+    if (length(val) == 1 && !is.na(val) && nzchar(val)) {
+      return(unname(val))
+    }
     default
   }
 
@@ -167,13 +194,20 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
   msg0 <- sink.number(type = "message")
   sink(con)
   sink(con, type = "message")
-  on.exit({
-    # Restore sinks created in this helper only.
-    while (sink.number(type = "message") > msg0) sink(type = "message")
-    while (sink.number() > out0) sink()
-    close(con)
-    unlink(tmp)
-  }, add = TRUE)
+  on.exit(
+    {
+      # Restore sinks created in this helper only.
+      while (sink.number(type = "message") > msg0) {
+        sink(type = "message")
+      }
+      while (sink.number() > out0) {
+        sink()
+      }
+      close(con)
+      unlink(tmp)
+    },
+    add = TRUE
+  )
 
   # Capture result or error, selectively suppress harmless warnings
   result <- withCallingHandlers(
@@ -181,8 +215,12 @@ quench_result <- function(x, dir, plot_ext = "pdf", table_ext = "csv", plot_widt
       eval(expr, envir = parent.frame()),
       error = function(e) {
         # Restore sinks before re-throwing error
-        while (sink.number(type = "message") > msg0) sink(type = "message")
-        while (sink.number() > out0) sink()
+        while (sink.number(type = "message") > msg0) {
+          sink(type = "message")
+        }
+        while (sink.number() > out0) {
+          sink()
+        }
         stop(e$message, call. = FALSE)
       }
     ),

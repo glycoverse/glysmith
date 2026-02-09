@@ -47,29 +47,32 @@
 }
 
 .generate_glycan_fact <- function(api_key, model = "deepseek-chat") {
-  focus <- sample(c(
-    "structural diversity",
-    "biosynthesis",
-    "glycosylation sites",
-    "glycan functions",
-    "analytical methods",
-    "glycoforms",
-    "immune recognition",
-    "glycan degradation",
-    "glycan nomenclature",
-    "lectin-glycan interactions",
-    "glycan microarrays",
-    "O-glycosylation",
-    "enzymatic glycan synthesis",
-    "glycan analysis by mass spectrometry",
-    "glycan-mediated cell signaling",
-    "evolution of glycan structures",
-    "sialic acid diversity",
-    "glycan roles in disease",
-    "glycoengineering",
-    "glycan-protein interactions",
-    "therapeutic glycoproteins"
-  ), 1)
+  focus <- sample(
+    c(
+      "structural diversity",
+      "biosynthesis",
+      "glycosylation sites",
+      "glycan functions",
+      "analytical methods",
+      "glycoforms",
+      "immune recognition",
+      "glycan degradation",
+      "glycan nomenclature",
+      "lectin-glycan interactions",
+      "glycan microarrays",
+      "O-glycosylation",
+      "enzymatic glycan synthesis",
+      "glycan analysis by mass spectrometry",
+      "glycan-mediated cell signaling",
+      "evolution of glycan structures",
+      "sialic acid diversity",
+      "glycan roles in disease",
+      "glycoengineering",
+      "glycan-protein interactions",
+      "therapeutic glycoproteins"
+    ),
+    1
+  )
   nonce <- sample.int(1000000L, 1)
   system_prompt <- paste(
     "You are a glycobiology tutor.",
@@ -80,9 +83,11 @@
   )
   user_prompt <- paste(
     "Return one sentence as instructed.",
-    "Topic:", focus,
+    "Topic:",
+    focus,
     "Avoid generic or repeated facts; prefer a less common but accurate detail.",
-    "Random seed:", nonce
+    "Random seed:",
+    nonce
   )
   fact <- .ask_ai(system_prompt, user_prompt, api_key, model = model)
   .normalize_glycan_fact(fact)
@@ -92,7 +97,12 @@
   fact <- stringr::str_squish(as.character(fact))
   fact <- stringr::str_remove(fact, "^[-*]\\s*")
   fact <- stringr::str_remove(fact, "^[\"'`]+")
-  if (!stringr::str_detect(fact, stringr::regex("^Do you know that", ignore_case = TRUE))) {
+  if (
+    !stringr::str_detect(
+      fact,
+      stringr::regex("^Do you know that", ignore_case = TRUE)
+    )
+  ) {
     fact <- paste0("Do you know that ", fact)
   }
   if (!stringr::str_detect(fact, "[.!?]$")) {
@@ -124,7 +134,12 @@
   api_key
 }
 
-.ask_ai <- function(system_prompt, user_prompt, api_key, model = "deepseek-chat") {
+.ask_ai <- function(
+  system_prompt,
+  user_prompt,
+  api_key,
+  model = "deepseek-chat"
+) {
   rlang::check_installed("ellmer")
   chat <- ellmer::chat_deepseek(
     system_prompt = system_prompt,
@@ -135,7 +150,13 @@
   as.character(chat$chat(user_prompt))
 }
 
-.ask_ai_multimodal <- function(system_prompt, user_prompt, content, api_key, model = "deepseek-chat") {
+.ask_ai_multimodal <- function(
+  system_prompt,
+  user_prompt,
+  content,
+  api_key,
+  model = "deepseek-chat"
+) {
   rlang::check_installed("ellmer")
   chat <- ellmer::chat_deepseek(
     system_prompt = system_prompt,

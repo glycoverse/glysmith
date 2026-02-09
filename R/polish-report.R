@@ -36,7 +36,11 @@ polish_report <- function(
   checkmate::assert_flag(open)
   checkmate::assert_flag(use_ai)
 
-  template <- system.file("templates", "polish_report.Rmd", package = "glysmith")
+  template <- system.file(
+    "templates",
+    "polish_report.Rmd",
+    package = "glysmith"
+  )
   out_dir <- fs::path_dir(output_file)
   if (!fs::dir_exists(out_dir)) {
     fs::dir_create(out_dir, recurse = TRUE)
@@ -76,7 +80,9 @@ polish_report <- function(
   )
 
   rendered <- normalizePath(rendered, winslash = "/", mustWork = TRUE)
-  if (isTRUE(open)) utils::browseURL(rendered)
+  if (isTRUE(open)) {
+    utils::browseURL(rendered)
+  }
   rendered
 }
 
@@ -114,7 +120,9 @@ polish_report <- function(
         s$report(x),
         error = function(e) {
           paste0(
-            "Report generation failed for step `", id, "`: ",
+            "Report generation failed for step `",
+            id,
+            "`: ",
             conditionMessage(e)
           )
         }
@@ -150,7 +158,11 @@ polish_report <- function(
 
   section_plan <- NULL
   if (isTRUE(use_ai)) {
-    section_plan <- .organize_report_sections(step_reports, plot_entries, api_key)
+    section_plan <- .organize_report_sections(
+      step_reports,
+      plot_entries,
+      api_key
+    )
   }
 
   if (!is.null(section_plan)) {
@@ -218,7 +230,14 @@ polish_report <- function(
     }
 
     if (isTRUE(use_ai)) {
-      desc <- .describe_plot_ai(plot, label, desc, api_key, width = width, height = height)
+      desc <- .describe_plot_ai(
+        plot,
+        label,
+        desc,
+        api_key,
+        width = width,
+        height = height
+      )
     }
     desc <- .humanize_plot_description(desc)
     label <- .humanize_plot_label(id, desc)
@@ -315,7 +334,11 @@ polish_report <- function(
     "Sig" = "Significant"
   )
   for (from in names(replacements)) {
-    label <- stringr::str_replace_all(label, paste0("\\b", from, "\\b"), replacements[[from]])
+    label <- stringr::str_replace_all(
+      label,
+      paste0("\\b", from, "\\b"),
+      replacements[[from]]
+    )
   }
   label
 }
@@ -338,7 +361,15 @@ polish_report <- function(
   desc
 }
 
-.describe_plot_ai <- function(plot, label, description, api_key, width = NULL, height = NULL, model = "deepseek-chat") {
+.describe_plot_ai <- function(
+  plot,
+  label,
+  description,
+  api_key,
+  width = NULL,
+  height = NULL,
+  model = "deepseek-chat"
+) {
   if (is.null(plot)) {
     return(description)
   }
@@ -368,7 +399,13 @@ polish_report <- function(
       if (is.null(content)) {
         return(description)
       }
-      response <- .ask_ai_multimodal(system_prompt, user_prompt, content, api_key, model)
+      response <- .ask_ai_multimodal(
+        system_prompt,
+        user_prompt,
+        content,
+        api_key,
+        model
+      )
       response <- stringr::str_squish(response)
       if (!nzchar(response)) {
         description
@@ -421,7 +458,8 @@ polish_report <- function(
 .humanize_on_label <- function(on) {
   on <- stringr::str_to_lower(on)
   purrr::map_chr(on, function(x) {
-    switch(x,
+    switch(
+      x,
       sig_exp = "significant variables",
       trait_exp = "traits",
       sig_trait_exp = "significant traits",
@@ -471,7 +509,12 @@ polish_report <- function(
 #' @param api_key API key for the LLM.
 #' @param model AI model to use.
 #' @noRd
-.organize_report_sections <- function(step_reports, plot_entries, api_key, model = "deepseek-chat") {
+.organize_report_sections <- function(
+  step_reports,
+  plot_entries,
+  api_key,
+  model = "deepseek-chat"
+) {
   if (length(step_reports) == 0 && length(plot_entries) == 0) {
     return(NULL)
   }
@@ -490,10 +533,18 @@ polish_report <- function(
 
   user_prompt <- paste(
     "Steps (in execution order):",
-    if (length(step_lines) > 0) paste(step_lines, collapse = "\n") else "(none)",
+    if (length(step_lines) > 0) {
+      paste(step_lines, collapse = "\n")
+    } else {
+      "(none)"
+    },
     "",
     "Plots:",
-    if (length(plot_lines) > 0) paste(plot_lines, collapse = "\n") else "(none)",
+    if (length(plot_lines) > 0) {
+      paste(plot_lines, collapse = "\n")
+    } else {
+      "(none)"
+    },
     "",
     "Return format (no code fences):",
     "## <Section title>",
@@ -534,7 +585,9 @@ polish_report <- function(
 
   plan <- .parse_section_plan(output)
   if (is.null(plan) || length(plan) == 0) {
-    cli::cli_warn("AI section organization returned an invalid plan; using default order.")
+    cli::cli_warn(
+      "AI section organization returned an invalid plan; using default order."
+    )
     return(NULL)
   }
   plan
@@ -627,7 +680,9 @@ polish_report <- function(
 #' @param section_plan Parsed section plan.
 #' @noRd
 .section_titles <- function(section_plan) {
-  titles <- purrr::map_chr(section_plan, function(section) section$title %||% "Analysis")
+  titles <- purrr::map_chr(section_plan, function(section) {
+    section$title %||% "Analysis"
+  })
   titles[!duplicated(titles)]
 }
 
@@ -702,7 +757,11 @@ polish_report <- function(
 #' @param plot_entries Plot entries.
 #' @param section_plan Parsed section plan.
 #' @noRd
-.assemble_report_sections <- function(step_reports, plot_entries, section_plan) {
+.assemble_report_sections <- function(
+  step_reports,
+  plot_entries,
+  section_plan
+) {
   step_ids <- purrr::map_chr(step_reports, "id")
   plot_ids <- purrr::map_chr(plot_entries, "id")
   step_map <- rlang::set_names(step_reports, step_ids)
@@ -734,8 +793,14 @@ polish_report <- function(
 
   for (title in section_titles) {
     result <- .build_section_entries(
-      step_reports, step_sections, plot_map, plot_ids,
-      plot_owner, plot_section_map, title, used_plots
+      step_reports,
+      step_sections,
+      plot_map,
+      plot_ids,
+      plot_owner,
+      plot_section_map,
+      title,
+      used_plots
     )
     entries <- result$entries
     used_plots <- c(used_plots, result$used_plots)
@@ -750,8 +815,15 @@ polish_report <- function(
   remaining_steps <- step_ids[!step_ids %in% names(step_sections)]
   if (length(remaining_steps) > 0 || length(remaining_plots) > 0) {
     remaining_section <- .build_remaining_section(
-      step_reports, step_sections, step_ids, plot_map, plot_ids,
-      plot_owner, step_map, remaining_plots, used_plots
+      step_reports,
+      step_sections,
+      step_ids,
+      plot_map,
+      plot_ids,
+      plot_owner,
+      step_map,
+      remaining_plots,
+      used_plots
     )
     if (!is.null(remaining_section)) {
       sections <- c(sections, remaining_section)
@@ -772,7 +844,10 @@ polish_report <- function(
     entries <- purrr::map(step_reports, .step_entry)
     entries <- purrr::keep(entries, ~ isTRUE(.x$has_content))
     if (length(entries) > 0) {
-      sections <- append(sections, list(list(title = "Analysis narrative", entries = entries)))
+      sections <- append(
+        sections,
+        list(list(title = "Analysis narrative", entries = entries))
+      )
     }
   }
   if (length(plot_entries) > 0) {
@@ -789,26 +864,46 @@ polish_report <- function(
 #' Collect step entries for a given section title.
 #' @noRd
 .get_step_entries_for_section <- function(step_reports, step_sections, title) {
-  steps_in_section <- purrr::keep(step_reports, ~ {
-    .x$id %in% names(step_sections) && step_sections[[.x$id]] == title
-  })
+  steps_in_section <- purrr::keep(
+    step_reports,
+    ~ {
+      .x$id %in% names(step_sections) && step_sections[[.x$id]] == title
+    }
+  )
   purrr::map(steps_in_section, .step_entry)
 }
 
 #' Collect owned plot IDs for a step in a specific section.
 #' @noRd
-.get_owned_plot_ids <- function(step_id, title, plot_ids, plot_owner, plot_section_map, used_plots) {
-  idx <- !is.na(plot_owner) & !is.na(plot_section_map) &
-    plot_owner == step_id & plot_section_map == title &
+.get_owned_plot_ids <- function(
+  step_id,
+  title,
+  plot_ids,
+  plot_owner,
+  plot_section_map,
+  used_plots
+) {
+  idx <- !is.na(plot_owner) &
+    !is.na(plot_section_map) &
+    plot_owner == step_id &
+    plot_section_map == title &
     !plot_ids %in% used_plots
   plot_ids[idx]
 }
 
 #' Collect unowned plot IDs for a section (plots not assigned to any step).
 #' @noRd
-.get_unowned_plot_ids <- function(title, plot_ids, plot_owner, plot_section_map, used_plots) {
-  idx <- is.na(plot_owner) & !is.na(plot_section_map) &
-    plot_section_map == title & !plot_ids %in% used_plots
+.get_unowned_plot_ids <- function(
+  title,
+  plot_ids,
+  plot_owner,
+  plot_section_map,
+  used_plots
+) {
+  idx <- is.na(plot_owner) &
+    !is.na(plot_section_map) &
+    plot_section_map == title &
+    !plot_ids %in% used_plots
   plot_ids[idx]
 }
 
@@ -821,25 +916,40 @@ polish_report <- function(
   plot_ids,
   plot_owner,
   plot_section_map,
-  title, used_plots
+  title,
+  used_plots
 ) {
   entries <- .get_step_entries_for_section(step_reports, step_sections, title)
 
   # Add plots owned by steps in this section
-  steps_in_section <- purrr::keep(step_reports, ~ {
-    .x$id %in% names(step_sections) && step_sections[[.x$id]] == title
-  })
+  steps_in_section <- purrr::keep(
+    step_reports,
+    ~ {
+      .x$id %in% names(step_sections) && step_sections[[.x$id]] == title
+    }
+  )
   for (step in steps_in_section) {
-    owned_ids <- .get_owned_plot_ids(step$id, title, plot_ids,
-                                     plot_owner, plot_section_map, used_plots)
+    owned_ids <- .get_owned_plot_ids(
+      step$id,
+      title,
+      plot_ids,
+      plot_owner,
+      plot_section_map,
+      used_plots
+    )
     plot_entries <- purrr::map(owned_ids, ~ .plot_entry(plot_map[[.x]]))
     entries <- c(entries, plot_entries)
     used_plots <- c(used_plots, owned_ids)
   }
 
   # Add unowned plots assigned to this section
-  unowned_ids <- .get_unowned_plot_ids(title, plot_ids, plot_owner,
-                                        plot_section_map, used_plots)
+  unowned_ids <- .get_unowned_plot_ids(
+    title,
+    plot_ids,
+    plot_owner,
+    plot_section_map,
+    used_plots
+  )
   plot_entries <- purrr::map(unowned_ids, ~ .plot_entry(plot_map[[.x]]))
   entries <- c(entries, plot_entries)
   used_plots <- c(used_plots, unowned_ids)
@@ -868,9 +978,12 @@ polish_report <- function(
     if (.has_report_content(step$content)) {
       entries <- c(entries, list(.step_entry(step)))
     }
-    owned_ids <- plot_ids[!is.na(plot_owner) & plot_owner == step_id &
-                           plot_ids %in% remaining_plots &
-                           !plot_ids %in% used_plots]
+    owned_ids <- plot_ids[
+      !is.na(plot_owner) &
+        plot_owner == step_id &
+        plot_ids %in% remaining_plots &
+        !plot_ids %in% used_plots
+    ]
     plot_entries <- purrr::map(owned_ids, ~ .plot_entry(plot_map[[.x]]))
     entries <- c(entries, plot_entries)
     used_plots <- c(used_plots, owned_ids)

@@ -16,7 +16,6 @@ new_ctx <- function(exp, group_col) {
 }
 
 
-
 #' Add a plot to context
 #'
 #' @param ctx Context list.
@@ -28,10 +27,21 @@ new_ctx <- function(exp, group_col) {
 #'
 #' @returns Updated context.
 #' @noRd
-ctx_add_plot <- function(ctx, id, p, explanation = NULL, width = NULL, height = NULL) {
+ctx_add_plot <- function(
+  ctx,
+  id,
+  p,
+  explanation = NULL,
+  width = NULL,
+  height = NULL
+) {
   plot_info <- list(plot = p)
-  if (!is.null(width)) plot_info$width <- width
-  if (!is.null(height)) plot_info$height <- height
+  if (!is.null(width)) {
+    plot_info$width <- width
+  }
+  if (!is.null(height)) {
+    plot_info$height <- height
+  }
   ctx$plots[[id]] <- plot_info
   if (!is.null(explanation)) {
     ctx$meta$explanation[[paste0("plots$", id)]] <- explanation

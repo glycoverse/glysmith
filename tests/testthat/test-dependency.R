@@ -10,7 +10,9 @@ test_that("check_glysmith_deps errors with action = 'error' when packages missin
 
   # Mock a fake package that doesn't exist
   local_mocked_bindings(
-    get_suggests_packages = function() c("this_package_definitely_does_not_exist_12345"),
+    get_suggests_packages = function() {
+      c("this_package_definitely_does_not_exist_12345")
+    },
     .package = "glysmith"
   )
 

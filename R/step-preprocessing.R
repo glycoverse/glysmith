@@ -63,7 +63,8 @@ step_plot_qc <- function(
   }
 
   # Generate label based on when parameter
-  label <- switch(when,
+  label <- switch(
+    when,
     "pre" = "QC (pre-preprocessing)",
     "post" = "QC (post-preprocessing)",
     "generic" = "QC"
@@ -75,7 +76,15 @@ step_plot_qc <- function(
     repeatable = TRUE,
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      ctx <- .run_qc_plots(ctx, exp, when, batch_col, rep_col, plot_width, plot_height)
+      ctx <- .run_qc_plots(
+        ctx,
+        exp,
+        when,
+        batch_col,
+        rep_col,
+        plot_width,
+        plot_height
+      )
       ctx
     },
     require = "exp",
@@ -95,7 +104,15 @@ step_plot_qc <- function(
 #'
 #' @returns Updated context with plots added.
 #' @noRd
-.run_qc_plots <- function(ctx, exp, when, batch_col, rep_col, plot_width, plot_height) {
+.run_qc_plots <- function(
+  ctx,
+  exp,
+  when,
+  batch_col,
+  rep_col,
+  plot_width,
+  plot_height
+) {
   # Define plots that only run in pre stage
   pre_only_plots <- list(
     list(
@@ -146,20 +163,26 @@ step_plot_qc <- function(
 
   # Add batch PCA plot if batch_col is available
   if (!is.null(batch_col) && batch_col %in% colnames(exp$sample_info)) {
-    common_plots <- c(common_plots, list(list(
-      id = "qc_batch_pca",
-      fun = function() glyclean::plot_batch_pca(exp, batch_col = batch_col),
-      desc = "PCA score plot colored by batch."
-    )))
+    common_plots <- c(
+      common_plots,
+      list(list(
+        id = "qc_batch_pca",
+        fun = function() glyclean::plot_batch_pca(exp, batch_col = batch_col),
+        desc = "PCA score plot colored by batch."
+      ))
+    )
   }
 
   # Add replicate scatter plot if rep_col is available
   if (!is.null(rep_col) && rep_col %in% colnames(exp$sample_info)) {
-    common_plots <- c(common_plots, list(list(
-      id = "qc_rep_scatter",
-      fun = function() glyclean::plot_rep_scatter(exp, rep_col = rep_col),
-      desc = "Replicate scatter plots."
-    )))
+    common_plots <- c(
+      common_plots,
+      list(list(
+        id = "qc_rep_scatter",
+        fun = function() glyclean::plot_rep_scatter(exp, rep_col = rep_col),
+        desc = "Replicate scatter plots."
+      ))
+    )
   }
 
   # Combine plots based on when parameter
@@ -180,17 +203,27 @@ step_plot_qc <- function(
   # Generate plots and add to context
   for (p in plots) {
     plot_id <- id_transform(p$id)
-    ctx <- tryCatch({
-      plot <- p$fun()
-      desc <- p$desc
-      if (identical(when, "pre")) {
-        desc <- paste0("Preprocess QC (pre): ", desc)
+    ctx <- tryCatch(
+      {
+        plot <- p$fun()
+        desc <- p$desc
+        if (identical(when, "pre")) {
+          desc <- paste0("Preprocess QC (pre): ", desc)
+        }
+        ctx_add_plot(
+          ctx,
+          plot_id,
+          plot,
+          desc,
+          width = plot_width,
+          height = plot_height
+        )
+      },
+      error = function(e) {
+        cli::cli_warn("Failed to generate plot {plot_id}: {e$message}")
+        ctx
       }
-      ctx_add_plot(ctx, plot_id, plot, desc, width = plot_width, height = plot_height)
-    }, error = function(e) {
-      cli::cli_warn("Failed to generate plot {plot_id}: {e$message}")
-      ctx
-    })
+    )
   }
   ctx
 }
@@ -270,8 +303,8 @@ step_preprocess <- function(
         check_batch_confounding = check_batch_confounding,
         batch_confounding_threshold = batch_confounding_threshold
       )
-      ctx <- ctx_add_data(ctx, "exp", clean_exp)  # overwrite exp with preprocessed exp
-      ctx <- ctx_add_data(ctx, "raw_exp", exp)  # keep raw exp for reference
+      ctx <- ctx_add_data(ctx, "exp", clean_exp) # overwrite exp with preprocessed exp
+      ctx <- ctx_add_data(ctx, "raw_exp", exp) # keep raw exp for reference
       ctx
     },
     report = function(x) {
@@ -322,7 +355,12 @@ step_preprocess <- function(
 #' step_subset_groups(groups = c("H", "C"))
 #' @export
 step_subset_groups <- function(groups = NULL) {
-  checkmate::assert_character(groups, min.len = 1, unique = TRUE, null.ok = TRUE)
+  checkmate::assert_character(
+    groups,
+    min.len = 1,
+    unique = TRUE,
+    null.ok = TRUE
+  )
   signature <- rlang::expr_deparse(match.call())
 
   step(
@@ -369,11 +407,15 @@ step_subset_groups <- function(groups = NULL) {
     reader <- if (ext == "csv") readr::read_csv else readr::read_tsv
     tbl <- reader(path, show_col_types = FALSE)
     if (ncol(tbl) < 2) {
-      cli::cli_abort("Protein expression file must have at least two columns (protein + samples).")
+      cli::cli_abort(
+        "Protein expression file must have at least two columns (protein + samples)."
+      )
     }
     protein <- tbl[[1]]
     if (any(is.na(protein) | !nzchar(protein))) {
-      cli::cli_abort("Protein accessions in the first column must be non-empty.")
+      cli::cli_abort(
+        "Protein accessions in the first column must be non-empty."
+      )
     }
     if (anyDuplicated(protein) > 0) {
       cli::cli_abort("Protein accessions in the first column must be unique.")
@@ -387,15 +429,25 @@ step_subset_groups <- function(groups = NULL) {
   if (ext == "rds") {
     obj <- readRDS(path)
     if (is.data.frame(obj)) {
-      if (is.null(rownames(obj)) || any(is.na(rownames(obj)) | !nzchar(rownames(obj)))) {
-        cli::cli_abort("RDS data.frame must have non-empty row names (protein accessions).")
+      if (
+        is.null(rownames(obj)) ||
+          any(is.na(rownames(obj)) | !nzchar(rownames(obj)))
+      ) {
+        cli::cli_abort(
+          "RDS data.frame must have non-empty row names (protein accessions)."
+        )
       }
       obj <- as.matrix(obj)
     }
     if (!is.matrix(obj)) {
-      cli::cli_abort("RDS file must contain a matrix or data.frame with row names.")
+      cli::cli_abort(
+        "RDS file must contain a matrix or data.frame with row names."
+      )
     }
-    if (is.null(rownames(obj)) || any(is.na(rownames(obj)) | !nzchar(rownames(obj)))) {
+    if (
+      is.null(rownames(obj)) ||
+        any(is.na(rownames(obj)) | !nzchar(rownames(obj)))
+    ) {
       cli::cli_abort("Protein accessions in row names must be non-empty.")
     }
     if (anyDuplicated(rownames(obj)) > 0) {
@@ -404,7 +456,9 @@ step_subset_groups <- function(groups = NULL) {
     return(obj)
   }
 
-  cli::cli_abort("Unsupported protein expression file extension: {.val {ext}}. Use .csv, .tsv, or .rds.")
+  cli::cli_abort(
+    "Unsupported protein expression file extension: {.val {ext}}. Use .csv, .tsv, or .rds."
+  )
 }
 
 #' Step: Adjust Protein Abundance
@@ -455,7 +509,11 @@ step_subset_groups <- function(groups = NULL) {
 #' @export
 step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
   if (!is.null(pro_expr_path)) {
-    checkmate::assert_file_exists(pro_expr_path, access = "r", extension = c("csv", "tsv", "rds"))
+    checkmate::assert_file_exists(
+      pro_expr_path,
+      access = "r",
+      extension = c("csv", "tsv", "rds")
+    )
   }
   checkmate::assert_choice(method, c("ratio", "reg"))
   signature <- rlang::expr_deparse(match.call())
@@ -465,10 +523,16 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
     label = "Protein adjustment",
     condition = function(ctx) {
       if (is.null(pro_expr_path)) {
-        return(list(check = FALSE, reason = "protein expression path is not provided"))
+        return(list(
+          check = FALSE,
+          reason = "protein expression path is not provided"
+        ))
       }
       if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
-        return(list(check = FALSE, reason = "input is not a glycoproteomics experiment"))
+        return(list(
+          check = FALSE,
+          reason = "input is not a glycoproteomics experiment"
+        ))
       }
       list(check = TRUE, reason = NULL)
     },
@@ -487,7 +551,9 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
         msg_lines <- logs$output %||% character(0)
       }
       base <- "Protein-adjusted glycoform quantification was performed."
-      if (length(msg_lines) == 0) return(base)
+      if (length(msg_lines) == 0) {
+        return(base)
+      }
       paste(c(base, msg_lines), collapse = "\n")
     },
     require = "exp",
@@ -530,15 +596,35 @@ step_ident_overview <- function(count_struct = NULL) {
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       tbl <- glyexp::summarize_experiment(exp, count_struct = count_struct)
-      ctx_add_table(ctx, "summary", tbl, "Identification overview of the experiment.")
+      ctx_add_table(
+        ctx,
+        "summary",
+        tbl,
+        "Identification overview of the experiment."
+      )
     },
     report = function(x) {
       tbl <- x$tables[["summary"]]
       total_tbl <- dplyr::filter(tbl, stringr::str_starts(.data$item, "total_"))
-      total_parts <- paste0(total_tbl$n, " ", stringr::str_remove(total_tbl$item, "total_"), "s")
-      sample_tbl <- dplyr::filter(tbl, stringr::str_ends(.data$item, "_per_sample"))
-      sample_parts <- paste0(sample_tbl$n, " ", stringr::str_remove(sample_tbl$item, "_per_sample"), "s")
-      glue::glue("In total, there are {paste(total_parts, collapse = ', ')}. On average, there are {paste(sample_parts, collapse = ', ')} per sample.")
+      total_parts <- paste0(
+        total_tbl$n,
+        " ",
+        stringr::str_remove(total_tbl$item, "total_"),
+        "s"
+      )
+      sample_tbl <- dplyr::filter(
+        tbl,
+        stringr::str_ends(.data$item, "_per_sample")
+      )
+      sample_parts <- paste0(
+        sample_tbl$n,
+        " ",
+        stringr::str_remove(sample_tbl$item, "_per_sample"),
+        "s"
+      )
+      glue::glue(
+        "In total, there are {paste(total_parts, collapse = ', ')}. On average, there are {paste(sample_parts, collapse = ', ')} per sample."
+      )
     },
     require = "exp",
     signature = signature

@@ -31,7 +31,8 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
   suggests_pkgs <- get_suggests_packages()
   missing <- suggests_pkgs[!purrr::map_lgl(suggests_pkgs, rlang::is_installed)]
 
-  switch(action,
+  switch(
+    action,
     ask = {
       if (length(missing) > 0) {
         rlang::check_installed(suggests_pkgs)
@@ -52,7 +53,9 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
     note = {
       if (length(missing) > 0) {
         cli::cli_alert_warning("Missing Suggests packages: {.pkg {missing}}")
-        cli::cli_inform("Install with: {.code pak::pkg_install(c({paste0('\"', missing, '\"', collapse = ', ')}))}")
+        cli::cli_inform(
+          "Install with: {.code pak::pkg_install(c({paste0('\"', missing, '\"', collapse = ', ')}))}"
+        )
         invisible(FALSE)
       } else {
         cli::cli_alert_success("All Suggests packages are installed.")
@@ -70,7 +73,10 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
 #' @return Character vector of package names
 #' @keywords internal
 get_suggests_packages <- function() {
-  pkgs <- desc::desc_get_field("Suggests", file = system.file("DESCRIPTION", package = "glysmith")) |>
+  pkgs <- desc::desc_get_field(
+    "Suggests",
+    file = system.file("DESCRIPTION", package = "glysmith")
+  ) |>
     strsplit(",") |>
     unlist() |>
     trimws() |>

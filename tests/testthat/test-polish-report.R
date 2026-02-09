@@ -12,17 +12,17 @@ test_that("polish_report works with AI polish", {
   skip_on_cran()
   local_mocked_bindings(
     .ask_ai = function(system_prompt, user_prompt, ...) {
-    if (grepl("report section organizer", system_prompt, fixed = TRUE)) {
-      return(paste(
-        "## Preprocessing",
-        "items: step:preprocess",
-        "## DEA analysis",
-        "items: step:dea_limma; plot:volcano; plot:heatmap",
-        sep = "\n"
-      ))
-    }
-    "AI response"
-  },
+      if (grepl("report section organizer", system_prompt, fixed = TRUE)) {
+        return(paste(
+          "## Preprocessing",
+          "items: step:preprocess",
+          "## DEA analysis",
+          "items: step:dea_limma; plot:volcano; plot:heatmap",
+          sep = "\n"
+        ))
+      }
+      "AI response"
+    },
     .ask_ai_multimodal = function(...) "AI plot description"
   )
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_api_key"))
@@ -73,7 +73,12 @@ test_that("polish_report works with AI polish", {
   )
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
-  suppressMessages(polish_report(result, output_file, open = FALSE, use_ai = TRUE))
+  suppressMessages(polish_report(
+    result,
+    output_file,
+    open = FALSE,
+    use_ai = TRUE
+  ))
   expect_true(fs::file_exists(output_file))
   output_lines <- readLines(output_file)
   expect_true(any(grepl("Preprocessing", output_lines, fixed = TRUE)))
@@ -93,7 +98,12 @@ test_that("polish_report raises an error when API key is not set", {
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
   expect_error(
-    suppressMessages(polish_report(result, output_file, open = FALSE, use_ai = TRUE))
+    suppressMessages(polish_report(
+      result,
+      output_file,
+      open = FALSE,
+      use_ai = TRUE
+    ))
   )
 })
 
@@ -160,10 +170,18 @@ test_that("polish_report omits empty step placeholders and humanizes plot titles
   output_file <- fs::path(tmp_dir, "polish_report.html")
   suppressMessages(polish_report(result, output_file, open = FALSE))
   output_lines <- readLines(output_file)
-  expect_false(any(grepl("No report content for this step.", output_lines, fixed = TRUE)))
+  expect_false(any(grepl(
+    "No report content for this step.",
+    output_lines,
+    fixed = TRUE
+  )))
   expect_true(any(grepl("Volcano plot: H vs M", output_lines, fixed = TRUE)))
   expect_true(any(grepl("comparison of H vs M", output_lines, fixed = TRUE)))
-  expect_true(any(grepl("Heatmap of significant variables", output_lines, fixed = TRUE)))
+  expect_true(any(grepl(
+    "Heatmap of significant variables",
+    output_lines,
+    fixed = TRUE
+  )))
 })
 
 test_that("parse_section_plan handles code fences and items", {
@@ -262,7 +280,11 @@ test_that("assemble_report_sections assigns additional results", {
     )
   )
 
-  sections <- glysmith:::.assemble_report_sections(step_reports, plot_entries, plan)
+  sections <- glysmith:::.assemble_report_sections(
+    step_reports,
+    plot_entries,
+    plan
+  )
   expect_equal(
     purrr::map_chr(sections, "title"),
     c("Preprocessing", "Analysis", "Additional results")
@@ -304,7 +326,11 @@ test_that("build_step_reports handles missing steps and report errors", {
   reports <- glysmith:::.build_step_reports(x, use_ai = FALSE)
   expect_length(reports, 3)
   expect_false(grepl("remove", reports[[1]]$content, fixed = TRUE))
-  expect_true(grepl("Report generation failed", reports[[2]]$content, fixed = TRUE))
+  expect_true(grepl(
+    "Report generation failed",
+    reports[[2]]$content,
+    fixed = TRUE
+  ))
   expect_true(grepl("boom", reports[[2]]$content, fixed = TRUE))
   expect_null(reports[[3]]$content)
   expect_equal(reports[[3]]$label, "missing")
@@ -354,7 +380,9 @@ test_that("build_plot_entries uses AI descriptions", {
       data = list(),
       plots = list(volcano_A_vs_B = plot),
       tables = list(),
-      meta = list(explanation = c("plots$volcano_A_vs_B" = "Volcano plot A_vs_B")),
+      meta = list(
+        explanation = c("plots$volcano_A_vs_B" = "Volcano plot A_vs_B")
+      ),
       blueprint = structure(list(), class = "glysmith_blueprint")
     ),
     class = "glysmith_result"
@@ -362,7 +390,15 @@ test_that("build_plot_entries uses AI descriptions", {
 
   captured <- list()
   local_mocked_bindings(
-    .describe_plot_ai = function(plot, label, description, api_key, width = NULL, height = NULL, model = "deepseek-chat") {
+    .describe_plot_ai = function(
+      plot,
+      label,
+      description,
+      api_key,
+      width = NULL,
+      height = NULL,
+      model = "deepseek-chat"
+    ) {
       captured$label <<- label
       captured$description <<- description
       captured$api_key <<- api_key
@@ -399,7 +435,10 @@ test_that("polish_report aborts when overwrite declined", {
   output_file <- fs::path(out_dir, "report.html")
   writeLines("existing", output_file)
 
-  local_mocked_bindings(.ask_overwrite_file = function() "n", .package = "glysmith")
+  local_mocked_bindings(
+    .ask_overwrite_file = function() "n",
+    .package = "glysmith"
+  )
   expect_error(
     suppressMessages(polish_report(x, output_file, open = FALSE)),
     "Operation cancelled"
@@ -423,7 +462,10 @@ test_that("polish_report overwrites output when confirmed", {
   output_file <- fs::path(out_dir, "report.html")
   writeLines("existing", output_file)
 
-  local_mocked_bindings(.ask_overwrite_file = function() "y", .package = "glysmith")
+  local_mocked_bindings(
+    .ask_overwrite_file = function() "y",
+    .package = "glysmith"
+  )
   local_mocked_bindings(
     render = function(input, output_file, output_dir, params, envir, quiet) {
       path <- fs::path(output_dir, output_file)
@@ -453,7 +495,10 @@ test_that("polish_report rejects invalid overwrite input", {
   output_file <- fs::path(out_dir, "report.html")
   writeLines("existing", output_file)
 
-  local_mocked_bindings(.ask_overwrite_file = function() "maybe", .package = "glysmith")
+  local_mocked_bindings(
+    .ask_overwrite_file = function() "maybe",
+    .package = "glysmith"
+  )
   expect_error(
     suppressMessages(polish_report(x, output_file, open = FALSE)),
     "Invalid input"
@@ -496,11 +541,20 @@ test_that(".polish_text returns original text on AI error", {
 
 # Tests for .humanize_on_label
 test_that(".humanize_on_label maps experiment types correctly", {
-  expect_equal(glysmith:::.humanize_on_label("sig_exp"), "significant variables")
+  expect_equal(
+    glysmith:::.humanize_on_label("sig_exp"),
+    "significant variables"
+  )
   expect_equal(glysmith:::.humanize_on_label("trait_exp"), "traits")
-  expect_equal(glysmith:::.humanize_on_label("sig_trait_exp"), "significant traits")
+  expect_equal(
+    glysmith:::.humanize_on_label("sig_trait_exp"),
+    "significant traits"
+  )
   expect_equal(glysmith:::.humanize_on_label("motif_exp"), "motifs")
-  expect_equal(glysmith:::.humanize_on_label("sig_motif_exp"), "significant motifs")
+  expect_equal(
+    glysmith:::.humanize_on_label("sig_motif_exp"),
+    "significant motifs"
+  )
   expect_equal(glysmith:::.humanize_on_label("exp"), "variables")
 })
 
@@ -537,12 +591,15 @@ test_that(".extract_on_suffix extracts suffix and rest correctly", {
 test_that(".fix_plot_abbrev fixes common abbreviations", {
   expect_equal(glysmith:::.fix_plot_abbrev("Pca Plot"), "PCA Plot")
   expect_equal(glysmith:::.fix_plot_abbrev("Umap Analysis"), "UMAP Analysis")
-  expect_equal(glysmith:::.fix_plot_abbrev("Tsne Visualization"), "t-SNE Visualization")
+  expect_equal(
+    glysmith:::.fix_plot_abbrev("Tsne Visualization"),
+    "t-SNE Visualization"
+  )
   expect_equal(glysmith:::.fix_plot_abbrev("Dea Results"), "DEA Results")
   expect_equal(glysmith:::.fix_plot_abbrev("Go Enrichment"), "GO Enrichment")
   expect_equal(glysmith:::.fix_plot_abbrev("Kegg Pathway"), "KEGG Pathway")
   expect_equal(glysmith:::.fix_plot_abbrev("Sig Genes"), "Significant Genes")
-  expect_equal(glysmith:::.fix_plot_abbrev("A vs B"), "A vs B")  # Vs already replaced
+  expect_equal(glysmith:::.fix_plot_abbrev("A vs B"), "A vs B") # Vs already replaced
 })
 
 # Tests for .parse_section_items edge cases
@@ -604,11 +661,13 @@ test_that("organize_report_sections returns NULL on AI error", {
     .package = "glysmith"
   )
 
-  expect_warning(result <- glysmith:::.organize_report_sections(
-    list(list(id = "step1", label = "Step 1")),
-    list(),
-    "key"
-  ))
+  expect_warning(
+    result <- glysmith:::.organize_report_sections(
+      list(list(id = "step1", label = "Step 1")),
+      list(),
+      "key"
+    )
+  )
   expect_null(result)
 })
 
@@ -618,7 +677,12 @@ test_that("default_report_sections groups plots separately", {
     list(id = "step1", label = "Step 1", content = "content")
   )
   plot_entries <- list(
-    list(id = "plot1", label = "Plot 1", description = "desc", plot = ggplot2::ggplot())
+    list(
+      id = "plot1",
+      label = "Plot 1",
+      description = "desc",
+      plot = ggplot2::ggplot()
+    )
   )
 
   sections <- glysmith:::.default_report_sections(step_reports, plot_entries)
@@ -629,12 +693,12 @@ test_that("default_report_sections groups plots separately", {
 
 test_that("default_report_sections skips empty steps", {
   step_reports <- list(
-    list(id = "step1", label = "Step 1", content = "")  # Empty content
+    list(id = "step1", label = "Step 1", content = "") # Empty content
   )
   plot_entries <- list()
 
   sections <- glysmith:::.default_report_sections(step_reports, plot_entries)
-  expect_length(sections, 0)  # No sections because step has no content
+  expect_length(sections, 0) # No sections because step has no content
 })
 
 test_that("default_report_sections handles empty inputs", {
@@ -659,7 +723,12 @@ test_that(".step_entry handles missing content", {
 })
 
 test_that(".plot_entry creates correct structure", {
-  plot_obj <- list(id = "plot1", label = "Plot 1", description = "desc", plot = ggplot2::ggplot())
+  plot_obj <- list(
+    id = "plot1",
+    label = "Plot 1",
+    description = "desc",
+    plot = ggplot2::ggplot()
+  )
   entry <- glysmith:::.plot_entry(plot_obj)
   expect_equal(entry$type, "plot")
   expect_equal(entry$id, "plot1")
@@ -672,7 +741,7 @@ test_that(".has_report_content correctly identifies content", {
   expect_false(glysmith:::.has_report_content(""))
   expect_false(glysmith:::.has_report_content(NULL))
   expect_false(glysmith:::.has_report_content(character(0)))
-  expect_false(glysmith:::.has_report_content(c("a", "b")))  # Multiple elements
+  expect_false(glysmith:::.has_report_content(c("a", "b"))) # Multiple elements
 })
 
 # Tests for .section_titles
@@ -680,7 +749,7 @@ test_that(".section_titles extracts unique titles", {
   plan <- list(
     list(title = "Section 1"),
     list(title = "Section 2"),
-    list(title = "Section 1")  # Duplicate
+    list(title = "Section 1") # Duplicate
   )
   titles <- glysmith:::.section_titles(plan)
   expect_equal(titles, c("Section 1", "Section 2"))
@@ -697,7 +766,10 @@ test_that(".plan_step_sections maps steps to sections", {
       )
     )
   )
-  step_sections <- glysmith:::.plan_step_sections(plan, c("step1", "step2", "step3"))
+  step_sections <- glysmith:::.plan_step_sections(
+    plan,
+    c("step1", "step2", "step3")
+  )
   expect_equal(step_sections[["step1"]], "Analysis")
   expect_equal(step_sections[["step2"]], "Analysis")
   # step3 is not in the plan, so it should not be in step_sections
@@ -731,6 +803,13 @@ test_that(".describe_plot_ai handles AI error gracefully", {
     .package = "glysmith"
   )
 
-  expect_warning(result <- glysmith:::.describe_plot_ai(ggplot2::ggplot(), "label", "existing desc", "key"))
+  expect_warning(
+    result <- glysmith:::.describe_plot_ai(
+      ggplot2::ggplot(),
+      "label",
+      "existing desc",
+      "key"
+    )
+  )
   expect_equal(result, "existing desc")
 })

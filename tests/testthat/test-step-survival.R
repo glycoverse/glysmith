@@ -31,9 +31,12 @@ test_that("step_cox condition passes when time_col exists", {
   exp$sample_info$time <- runif(nrow(exp$sample_info), 1, 100)
   exp$sample_info$event <- sample(0:1, nrow(exp$sample_info), replace = TRUE)
 
-  mock_ctx <- structure(list(
-    data = list(exp = exp)
-  ), class = "glysmith_context")
+  mock_ctx <- structure(
+    list(
+      data = list(exp = exp)
+    ),
+    class = "glysmith_context"
+  )
 
   step_obj <- step_cox()
   condition_result <- step_obj$condition(mock_ctx)
@@ -47,9 +50,12 @@ test_that("step_cox condition fails when time_col missing", {
   # Add event but not time
   exp$sample_info$event <- sample(0:1, nrow(exp$sample_info), replace = TRUE)
 
-  mock_ctx <- structure(list(
-    data = list(exp = exp)
-  ), class = "glysmith_context")
+  mock_ctx <- structure(
+    list(
+      data = list(exp = exp)
+    ),
+    class = "glysmith_context"
+  )
 
   step_obj <- step_cox(time_col = "missing_time")
   condition_result <- step_obj$condition(mock_ctx)
@@ -63,9 +69,12 @@ test_that("step_cox condition fails when event_col missing", {
   # Add time but not event
   exp$sample_info$time <- runif(nrow(exp$sample_info), 1, 100)
 
-  mock_ctx <- structure(list(
-    data = list(exp = exp)
-  ), class = "glysmith_context")
+  mock_ctx <- structure(
+    list(
+      data = list(exp = exp)
+    ),
+    class = "glysmith_context"
+  )
 
   step_obj <- step_cox(event_col = "missing_event")
   condition_result <- step_obj$condition(mock_ctx)
@@ -75,9 +84,12 @@ test_that("step_cox condition fails when event_col missing", {
 })
 
 test_that("step_cox condition fails when experiment missing", {
-  mock_ctx <- structure(list(
-    data = list()
-  ), class = "glysmith_context")
+  mock_ctx <- structure(
+    list(
+      data = list()
+    ),
+    class = "glysmith_context"
+  )
 
   step_obj <- step_cox()
   condition_result <- step_obj$condition(mock_ctx)
@@ -97,7 +109,7 @@ test_that("step_cox report function works with results", {
   exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
 
   suppressMessages(
-  exp <- exp |>
+    exp <- exp |>
       glyexp::slice_head_var(10) |>
       glyclean::auto_clean()
   )
@@ -118,15 +130,17 @@ test_that("step_cox report handles empty results", {
   bp <- blueprint(step_cox())
   res <- structure(
     list(
-      tables = list(cox = data.frame(
-        variable = character(),
-        coefficient = numeric(),
-        std.error = numeric(),
-        statistic = numeric(),
-        p_val = numeric(),
-        hr = numeric(),
-        p_adj = numeric()
-      )),
+      tables = list(
+        cox = data.frame(
+          variable = character(),
+          coefficient = numeric(),
+          std.error = numeric(),
+          statistic = numeric(),
+          p_val = numeric(),
+          hr = numeric(),
+          p_adj = numeric()
+        )
+      ),
       blueprint = bp
     ),
     class = "glysmith_result"

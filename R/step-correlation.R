@@ -124,10 +124,26 @@ step_correlation <- function(
       col2 <- if ("variable2" %in% colnames(cor_tbl)) "variable2" else "sample2"
 
       lines <- c(
-        paste0("Correlation analysis was performed on ", on, " (", on_cor, "s) using the ", method, " method."),
+        paste0(
+          "Correlation analysis was performed on ",
+          on,
+          " (",
+          on_cor,
+          "s) using the ",
+          method,
+          " method."
+        ),
         paste0("Number of pairs analyzed: ", nrow(cor_tbl), "."),
         paste0("Median correlation coefficient: ", round(median_cor, 3), "."),
-        paste0("Highest correlation: ", round(highest_cor, 3), " between ", top_row[[col1]], " and ", top_row[[col2]], ".")
+        paste0(
+          "Highest correlation: ",
+          round(highest_cor, 3),
+          " between ",
+          top_row[[col1]],
+          " and ",
+          top_row[[col2]],
+          "."
+        )
       )
       paste(lines, collapse = "\n")
     }

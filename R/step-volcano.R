@@ -28,7 +28,14 @@
 #' step_volcano(log2fc_cutoff = 2)
 #' @seealso [glyvis::plot_volcano()]
 #' @export
-step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", plot_width = 5, plot_height = 6, ...) {
+step_volcano <- function(
+  log2fc_cutoff = 1,
+  p_cutoff = 0.05,
+  p_col = "p_adj",
+  plot_width = 5,
+  plot_height = 6,
+  ...
+) {
   signature <- rlang::expr_deparse(match.call())
   step(
     id = "volcano",
@@ -43,9 +50,25 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", pl
     run = function(ctx) {
       dea_res <- ctx_get_data(ctx, "dea_res")
       if (inherits(dea_res, "glystats_limma_res")) {
-        .run_step_volcano_limma(ctx, log2fc_cutoff, p_cutoff, p_col, plot_width, plot_height, ...)
+        .run_step_volcano_limma(
+          ctx,
+          log2fc_cutoff,
+          p_cutoff,
+          p_col,
+          plot_width,
+          plot_height,
+          ...
+        )
       } else {
-        .run_step_volcano_ttest_wilcox(ctx, log2fc_cutoff, p_cutoff, p_col, plot_width, plot_height, ...)
+        .run_step_volcano_ttest_wilcox(
+          ctx,
+          log2fc_cutoff,
+          p_cutoff,
+          p_col,
+          plot_width,
+          plot_height,
+          ...
+        )
       }
     },
     require = "dea_res",
@@ -53,7 +76,15 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", pl
   )
 }
 
-.run_step_volcano_limma <- function(ctx, log2fc_cutoff, p_cutoff, p_col, plot_width, plot_height, ...) {
+.run_step_volcano_limma <- function(
+  ctx,
+  log2fc_cutoff,
+  p_cutoff,
+  p_col,
+  plot_width,
+  plot_height,
+  ...
+) {
   dea_res <- ctx_get_data(ctx, "dea_res")
   contrasts <- .get_unique_contrasts(dea_res)
   for (cont in contrasts) {
@@ -66,12 +97,27 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", pl
       contrast = cont,
       ...
     )
-    ctx <- ctx_add_plot(ctx, plot_name, p, paste0("Volcano plot for the comparison of ", cont, "."), width = plot_width, height = plot_height)
+    ctx <- ctx_add_plot(
+      ctx,
+      plot_name,
+      p,
+      paste0("Volcano plot for the comparison of ", cont, "."),
+      width = plot_width,
+      height = plot_height
+    )
   }
   ctx
 }
 
-.run_step_volcano_ttest_wilcox <- function(ctx, log2fc_cutoff, p_cutoff, p_col, plot_width, plot_height, ...) {
+.run_step_volcano_ttest_wilcox <- function(
+  ctx,
+  log2fc_cutoff,
+  p_cutoff,
+  p_col,
+  plot_width,
+  plot_height,
+  ...
+) {
   dea_res <- ctx_get_data(ctx, "dea_res")
   p <- glyvis::plot_volcano(
     dea_res,
@@ -80,7 +126,14 @@ step_volcano <- function(log2fc_cutoff = 1, p_cutoff = 0.05, p_col = "p_adj", pl
     p_col = p_col,
     ...
   )
-  ctx_add_plot(ctx, "volcano", p, "Volcano plot", width = plot_width, height = plot_height)
+  ctx_add_plot(
+    ctx,
+    "volcano",
+    p,
+    "Volcano plot",
+    width = plot_width,
+    height = plot_height
+  )
 }
 
 #' Get unique contrasts from DEA results

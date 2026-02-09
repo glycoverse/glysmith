@@ -104,7 +104,10 @@ br <- function(name, ...) {
   if (length(required) > 0) {
     missing <- setdiff(required, names(temp_ctx$data))
     if (length(missing) > 0) {
-      reason <- paste0("missing required data: ", paste(missing, collapse = ", "))
+      reason <- paste0(
+        "missing required data: ",
+        paste(missing, collapse = ", ")
+      )
       return(list(check = FALSE, reason = reason))
     }
   }
@@ -126,9 +129,24 @@ br <- function(name, ...) {
   post_tables <- post_ctx$tables %||% list()
   post_expl <- post_ctx$meta$explanation %||% list()
 
-  ctx$data <- .branch_update_list(ctx$data %||% list(), pre_data, post_data, prefix)
-  ctx$plots <- .branch_update_list(ctx$plots %||% list(), pre_plots, post_plots, prefix)
-  ctx$tables <- .branch_update_list(ctx$tables %||% list(), pre_tables, post_tables, prefix)
+  ctx$data <- .branch_update_list(
+    ctx$data %||% list(),
+    pre_data,
+    post_data,
+    prefix
+  )
+  ctx$plots <- .branch_update_list(
+    ctx$plots %||% list(),
+    pre_plots,
+    post_plots,
+    prefix
+  )
+  ctx$tables <- .branch_update_list(
+    ctx$tables %||% list(),
+    pre_tables,
+    post_tables,
+    prefix
+  )
 
   ctx$meta <- ctx$meta %||% list()
   ctx$meta$explanation <- .branch_update_explanations(
@@ -246,7 +264,9 @@ br <- function(name, ...) {
   added <- setdiff(after_names, before_names)
   removed <- setdiff(before_names, after_names)
   common <- intersect(before_names, after_names)
-  changed <- common[!vapply(common, function(k) identical(before[[k]], after[[k]]), logical(1))]
+  changed <- common[
+    !vapply(common, function(k) identical(before[[k]], after[[k]]), logical(1))
+  ]
 
   list(changed = unique(c(added, changed)), removed = removed)
 }
