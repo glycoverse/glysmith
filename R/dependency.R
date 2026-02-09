@@ -32,7 +32,12 @@ check_glysmith_deps <- function(action = c("ask", "error", "note")) {
 
   switch(action,
     ask = {
-      rlang::check_installed(suggests_pkgs)
+      missing <- suggests_pkgs[!rlang::is_installed(suggests_pkgs)]
+      if (length(missing) > 0) {
+        rlang::check_installed(suggests_pkgs)
+      } else {
+        cli::cli_alert_success("All Suggests packages are installed.")
+      }
       invisible(TRUE)
     },
     error = {
