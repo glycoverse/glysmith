@@ -20,9 +20,10 @@ Description: glysmith provides high-level, end-to-end workflows for glycomics
     novice and advanced users to obtain standardized and structure-aware results 
     with minimal code while retaining full flexibility for customization.
 License: MIT + file LICENSE
-Suggests: 
+Suggests:
     knitr,
     withr,
+    desc,
     pROC,
     Rtsne,
     uwot,
