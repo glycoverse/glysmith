@@ -13,6 +13,8 @@
   [`cast_table()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   [`cast_data()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   : Get Data from GlySmith Result
+- [`check_glysmith_deps()`](https://glycoverse.github.io/glysmith/reference/check_glysmith_deps.md)
+  : Check glysmith Suggests dependencies
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md)
   : Perform the Whole Analysis Pipeline
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)

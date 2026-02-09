@@ -54,7 +54,7 @@ A `glysmith_result` object, with the following components:
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [905ms]
+#> ✔ Identification overview [822ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -116,10 +116,10 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.6s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [128ms]
+#> ✔ QC (post-preprocessing) [92ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [451ms]
+#> ✔ Principal component analysis [411ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -128,10 +128,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [101ms]
+#> ✔ Differential expression analysis (limma) [72ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [520ms]
+#> ✔ Volcano plot [499ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [42ms]
@@ -140,7 +140,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.8s]
+#> ✔ Derived trait calculation [1.7s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -149,10 +149,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [84ms]
+#> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [39ms]
 #> 
 print(result)
 #> 
