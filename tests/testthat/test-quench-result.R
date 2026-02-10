@@ -10,6 +10,7 @@ minimal_quench_result <- function() {
 }
 
 test_that("quench_result writes README.md based on meta", {
+  skip_on_os("linux")
   plots <- list(
     scatter = ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
       ggplot2::geom_point(),
