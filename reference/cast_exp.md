@@ -48,7 +48,7 @@ result <- forge_analysis(exp)
 #> 
 #> 
 #> ℹ Identification overview
-#> ✔ Identification overview [81ms]
+#> ✔ Identification overview [71ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -107,17 +107,17 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.6s]
+#> ✔ Preprocessing [6.1s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [125ms]
+#> ✔ QC (post-preprocessing) [124ms]
 #> 
 #> ℹ Principal component analysis
 #> Registered S3 methods overwritten by 'car':
 #>   method       from
 #>   hist.boot    FSA 
 #>   confint.boot FSA 
-#> ✔ Principal component analysis [304ms]
+#> ✔ Principal component analysis [295ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,19 +126,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [84ms]
+#> ✔ Differential expression analysis (limma) [83ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [541ms]
+#> ✔ Volcano plot [526ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [85ms]
+#> ✔ Heatmap of significant variables [87ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [10.7s]
+#> ✔ Derived trait calculation [9.7s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -147,10 +147,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [53ms]
+#> ✔ Differential trait analysis (limma) [51ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [38ms]
+#> ✔ Heatmap of significant traits [37ms]
 #> 
 cast_exp(result)
 #> 
