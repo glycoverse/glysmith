@@ -1,11 +1,13 @@
 test_that("check_glysmith_deps returns TRUE when all packages are installed", {
-  skip_on_ci()
-  skip_on_cran()
+  skip_if_not_installed("desc")
+
   # All suggests packages should be installed in test environment
   expect_true(check_glysmith_deps(action = "note"))
 })
 
 test_that("check_glysmith_deps errors with action = 'error' when packages missing", {
+  skip_if_not_installed("desc")
+
   # Mock a fake package that doesn't exist
   local_mocked_bindings(
     get_suggests_packages = function() {
