@@ -1,4 +1,8 @@
-# glysmith (development version)
+# glysmith 0.9.1
+
+## Minor improvements and bug fixes
+
+* Update dependency strategy to use the r-universe repo.
 
 # glysmith 0.9.0
 
