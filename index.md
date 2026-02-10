@@ -18,24 +18,34 @@ function call.
 ## Installation
 
 You can install the latest release of glysmith from
-[r-universe](https://glycoverse.r-universe.dev/glysmith):
+[r-universe](https://glycoverse.r-universe.dev/glysmith)
+(**recommended**):
 
 ``` r
-install.packages('glysmith', repos = c('https://glycoverse.r-universe.dev', 'https://cloud.r-project.org'))
+# install.packages("pak")
+pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
+pak::pkg_install("glysmith")
 ```
 
 Or from [GitHub](https://github.com/glycoverse/glysmith):
 
 ``` r
-# install.packages("pak")
-pak::pak("glycoverse/glysmith@*release")
+pak::pkg_install("glycoverse/glysmith@*release")
+```
+
+Or install the development version (NOT recommended):
+
+``` r
+pak::pkg_install("glycoverse/glysmith")
 ```
 
 `glysmith` is a high-level package, depending on quite a lot mature
 packages. After installing `glysmith`, you also need to install
-additional dependencies to use this package. Run
-[`glysmith::check_glysmith_deps()`](https://glycoverse.github.io/glysmith/reference/check_glysmith_deps.md)
-and follow the instructions.
+additional dependencies to use this package:
+
+``` r
+glysmith::check_glysmith_deps()
+```
 
 ## Example
 
