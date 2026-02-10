@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/glycoverse/glysmith/graph/badge.svg)](https://app.codecov.io/gh/glycoverse/glysmith)
 <!-- badges: end -->
 
-> **One Ring to rule them all.** 
+> **One Ring to rule them all.**
 > — *The Lord of the Rings*
 
 ![](man/figures/ring.png){width=25%}
@@ -39,22 +39,32 @@ https://github.com/user-attachments/assets/d1eede5f-f919-428b-a5e8-574a8ab6f863
 
 ## Installation
 
-You can install the latest release of glysmith from [r-universe](https://glycoverse.r-universe.dev/glysmith):
+You can install the latest release of glysmith from [r-universe](https://glycoverse.r-universe.dev/glysmith) (**recommended**):
 
 ```r
-install.packages('glysmith', repos = c('https://glycoverse.r-universe.dev', 'https://cloud.r-project.org'))
+# install.packages("pak")
+pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
+pak::pkg_install("glysmith")
 ```
 
 Or from [GitHub](https://github.com/glycoverse/glysmith):
 
-``` r
-# install.packages("pak")
-pak::pak("glycoverse/glysmith@*release")
+```r
+pak::pkg_install("glycoverse/glysmith@*release")
+```
+
+Or install the development version (NOT recommended):
+
+```r
+pak::pkg_install("glycoverse/glysmith")
 ```
 
 `glysmith` is a high-level package, depending on quite a lot mature packages.
-After installing `glysmith`, you also need to install additional dependencies to use this package.
-Run `glysmith::check_glysmith_deps()` and follow the instructions.
+After installing `glysmith`, you also need to install additional dependencies to use this package:
+
+```r
+glysmith::check_glysmith_deps()
+```
 
 ## Example
 
