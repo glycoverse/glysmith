@@ -33,6 +33,10 @@ function call.
 
 ## Installation
 
+The glysmith package is not a core glycoverse package. You need to
+install it individually even if you have installed the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse).
+
 You can install the latest release of glysmith from
 [r-universe](https://glycoverse.r-universe.dev/glysmith)
 (**recommended**):
@@ -62,6 +66,11 @@ additional dependencies to use this package:
 ``` r
 glysmith::check_glysmith_deps()
 ```
+
+**Note:** Tips and troubleshooting for the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse) are also
+applicable here: [Installation of
+glycoverse](https://github.com/glycoverse/glycoverse#installation).
 
 ## Example
 
