@@ -598,6 +598,21 @@ test_that(".extract_on_suffix extracts suffix and rest correctly", {
   result <- glysmith:::.extract_on_suffix(character(0))
   expect_null(result$suffix)
   expect_equal(result$rest, character(0))
+
+  # Test 3-part suffixes (sig_dynamic_motif, sig_branch_motif)
+  # When processing "pca_sig_dynamic_motif_exp", parts[-1] = c("sig", "dynamic", "motif", "exp")
+  result <- glysmith:::.extract_on_suffix(c("sig", "dynamic", "motif", "exp"))
+  expect_equal(result$suffix, "sig_dynamic_motif")
+  expect_equal(result$rest, "exp")
+
+  result <- glysmith:::.extract_on_suffix(c("sig", "branch", "motif", "exp"))
+  expect_equal(result$suffix, "sig_branch_motif")
+  expect_equal(result$rest, "exp")
+
+  # Test 3-part suffix without trailing exp
+  result <- glysmith:::.extract_on_suffix(c("sig", "dynamic", "motif"))
+  expect_equal(result$suffix, "sig_dynamic_motif")
+  expect_equal(result$rest, character(0))
 })
 
 # Tests for .fix_plot_abbrev

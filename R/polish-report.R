@@ -492,6 +492,15 @@ polish_report <- function(
 
   labels <- .on_suffix_labels()
 
+  # Check for 3-part candidates first (e.g., "sig_dynamic_motif", "sig_branch_motif")
+  if (length(parts) >= 3) {
+    candidate <- paste(parts[1:3], collapse = "_")
+    if (candidate %in% names(labels)) {
+      return(list(suffix = candidate, rest = parts[-c(1, 2, 3)]))
+    }
+  }
+
+  # Check for 2-part candidates (e.g., "dynamic_motif", "branch_motif", "sig_trait")
   if (length(parts) >= 2) {
     candidate <- paste(parts[1:2], collapse = "_")
     if (candidate %in% names(labels)) {
@@ -499,6 +508,7 @@ polish_report <- function(
     }
   }
 
+  # Check for 1-part candidates (e.g., "exp", "trait")
   if (parts[1] %in% names(labels)) {
     return(list(suffix = parts[1], rest = parts[-1]))
   }
