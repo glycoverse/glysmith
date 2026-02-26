@@ -4,8 +4,10 @@
     "sig_exp",
     "trait_exp",
     "sig_trait_exp",
-    "motif_exp",
-    "sig_motif_exp"
+    "dynamic_motif_exp",
+    "sig_dynamic_motif_exp",
+    "branch_motif_exp",
+    "sig_branch_motif_exp"
   )
 }
 
@@ -27,8 +29,10 @@
       sig_exp = "_sig",
       trait_exp = "_trait",
       sig_trait_exp = "_sig_trait",
-      motif_exp = "_motif",
-      sig_motif_exp = "_sig_motif"
+      dynamic_motif_exp = "_dynamic_motif",
+      sig_dynamic_motif_exp = "_sig_dynamic_motif",
+      branch_motif_exp = "_branch_motif",
+      sig_branch_motif_exp = "_sig_branch_motif"
     ),
     label_suffix = switch(
       on,
@@ -36,8 +40,10 @@
       sig_exp = " of significant variables",
       trait_exp = " of traits",
       sig_trait_exp = " of significant traits",
-      motif_exp = " of motifs",
-      sig_motif_exp = " of significant motifs"
+      dynamic_motif_exp = " of dynamic motifs",
+      sig_dynamic_motif_exp = " of significant dynamic motifs",
+      branch_motif_exp = " of branch motifs",
+      sig_branch_motif_exp = " of significant branch motifs"
     )
   )
 }
