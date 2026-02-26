@@ -1,5 +1,14 @@
 # glysmith (development version)
 
+## Breaking Changes
+
+* Split `step_quantify_motifs()` into two separate functions:
+  - `step_quantify_dynamic_motifs()`: For quantifying all possible motifs using `glymotif::dynamic_motifs()`. Works with any glycan type.
+  - `step_quantify_branch_motifs()`: For quantifying N-glycan branch motifs using `glymotif::branch_motifs()`. Only works with N-glycans.
+* Removed `step_quantify_motifs()` function entirely.
+* Updated all downstream steps to accept the new data types (`dynamic_motif_exp`, `sig_dynamic_motif_exp`, `branch_motif_exp`, `sig_branch_motif_exp`) instead of the old `motif_exp`/`sig_motif_exp`.
+* Differentiated DEA results: `dynamic_motif_exp` now generates `dynamic_dma_res` and `branch_motif_exp` generates `branch_dma_res`.
+
 # glysmith 0.9.1
 
 ## Minor improvements and bug fixes
