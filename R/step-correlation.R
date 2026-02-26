@@ -9,7 +9,8 @@
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to run correlation analysis on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run correlation analysis on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run correlation analysis on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run correlation analysis on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run correlation analysis on
 #'
 #' Tables generated (with suffixes):
 #' - `correlation`: A table containing pairwise correlation results with columns:
@@ -29,7 +30,8 @@
 #'   Before using this step for large data, ask the user if they want to proceed.
 #'
 #' @param on Name of the experiment to run correlation analysis on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 #' @param on_cor A character string specifying what to correlate.
 #'   Either "variable" (default) to correlate variables/features, or "sample" to correlate samples.
 #' @param method A character string indicating which correlation coefficient is to be computed.

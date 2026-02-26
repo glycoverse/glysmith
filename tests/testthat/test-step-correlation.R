@@ -115,19 +115,18 @@ test_that("step_correlation on trait_exp works", {
   expect_true("correlation_trait" %in% names(res$tables))
 })
 
-test_that("step_correlation on motif_exp works", {
+test_that("step_correlation on dynamic_motif_exp works", {
   suppressMessages(
     exp <- glyexp::real_experiment |>
       glyexp::slice_head_var(10) |>
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_quantify_motifs(),
-    step_correlation(on = "motif_exp")
+    step_quantify_dynamic_motifs(),
+    step_correlation(on = "dynamic_motif_exp")
   )
   suppressMessages(res <- forge_analysis(exp, bp))
-
-  expect_true("correlation_motif" %in% names(res$tables))
+  expect_true("correlation_dynamic_motif" %in% names(res$tables))
 })
 
 test_that("step_correlation on sample runs and generates results", {
