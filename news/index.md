@@ -2,6 +2,25 @@
 
 ## glysmith (development version)
 
+### Breaking Changes
+
+- Split `step_quantify_motifs()` into two separate functions:
+  - [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md):
+    For quantifying all possible motifs using
+    [`glymotif::dynamic_motifs()`](https://glycoverse.github.io/glymotif/reference/dynamic_motifs.html).
+    Works with any glycan type.
+  - [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md):
+    For quantifying N-glycan branch motifs using
+    [`glymotif::branch_motifs()`](https://glycoverse.github.io/glymotif/reference/branch_motifs.html).
+    Only works with N-glycans.
+- Removed `step_quantify_motifs()` function entirely.
+- Updated all downstream steps to accept the new data types
+  (`dynamic_motif_exp`, `sig_dynamic_motif_exp`, `branch_motif_exp`,
+  `sig_branch_motif_exp`) instead of the old
+  `motif_exp`/`sig_motif_exp`.
+- Differentiated DEA results: `dynamic_motif_exp` now generates
+  `dynamic_dma_res` and `branch_motif_exp` generates `branch_dma_res`.
+
 ## glysmith 0.9.1
 
 ### Minor improvements and bug fixes
@@ -31,9 +50,8 @@
 
 ### Minor improvements and bug fixes
 
-- Fix a bug in
-  [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
-  that bisecting GlcNAc was regarded as a branching GlcNAc.
+- Fix a bug in `step_quantify_motifs()` that bisecting GlcNAc was
+  regarded as a branching GlcNAc.
 - Fix a failing test introduced be dplyr 1.2.0.
 
 ## glysmith 0.8.0
@@ -219,10 +237,9 @@
 
 ### New features
 
-- Added
-  [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
-  for quantifying glycan motifs. Updated relevant steps to support the
-  `on` parameter for `motif_exp` experiments.
+- Added `step_quantify_motifs()` for quantifying glycan motifs. Updated
+  relevant steps to support the `on` parameter for `motif_exp`
+  experiments.
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
   now prints an LLM-generated explanation to the console before
   returning the blueprint.

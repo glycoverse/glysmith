@@ -61,8 +61,10 @@
   : Step: Partial Least Squares Discriminant Analysis (PLS-DA)
 - [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
   : Step: Preprocessing
-- [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md)
-  : Step: Quantify Motifs
+- [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md)
+  : Step: Quantify Branch Motifs
+- [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md)
+  : Step: Quantify Dynamic Motifs
 - [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md)
   : Step: ROC Analysis
 - [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.md)

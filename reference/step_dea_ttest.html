@@ -73,7 +73,8 @@ Only use this method for experiments with 2 groups.</p>
 <dd><p>Name of the experiment data in <code>ctx$data</code> to run analysis on.
 Default is <code>"exp"</code> for differential expression analysis.
 Use <code>"trait_exp"</code> for differential trait analysis.
-Use <code>"motif_exp"</code> for differential motif analysis.</p></dd>
+Use <code>"dynamic_motif_exp"</code> for differential dynamic motif analysis.
+Use <code>"branch_motif_exp"</code> for differential branch motif analysis.</p></dd>
 
 
 <dt id="arg-p-adj-method">p_adj_method<a class="anchor" aria-label="anchor" href="#arg-p-adj-method"></a></dt>
@@ -112,13 +113,16 @@ If NULL (default), the first level of the group factor is used as the reference.
     <p>Data required:</p><ul><li><p>Depends on <code>on</code> parameter (default: <code>exp</code>)</p></li>
 </ul><p>Data generated:</p><ul><li><p><code>dea_res</code>: The DEA results (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>dta_res</code>: The DTA results (if <code>on = "trait_exp"</code>)</p></li>
-<li><p><code>dma_res</code>: The DMA results (if <code>on = "motif_exp"</code>)</p></li>
+<li><p><code>dynamic_dma_res</code>: The DMA results (if <code>on = "dynamic_motif_exp"</code>)</p></li>
+<li><p><code>branch_dma_res</code>: The DMA results (if <code>on = "branch_motif_exp"</code>)</p></li>
 <li><p><code>sig_exp</code>: The filtered experiment (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>sig_trait_exp</code>: The filtered trait experiment (if <code>on = "trait_exp"</code>)</p></li>
-<li><p><code>sig_motif_exp</code>: The filtered motif experiment (if <code>on = "motif_exp"</code>)</p></li>
+<li><p><code>sig_dynamic_motif_exp</code>: The filtered dynamic motif experiment (if <code>on = "dynamic_motif_exp"</code>)</p></li>
+<li><p><code>sig_branch_motif_exp</code>: The filtered branch motif experiment (if <code>on = "branch_motif_exp"</code>)</p></li>
 </ul><p>Tables generated:</p><ul><li><p><code>dea</code>: A table containing the DEA result (if <code>on = "exp"</code>, default)</p></li>
 <li><p><code>dta</code>: A table containing the DTA result (if <code>on = "trait_exp"</code>)</p></li>
-<li><p><code>dma</code>: A table containing the DMA result (if <code>on = "motif_exp"</code>)</p></li>
+<li><p><code>dynamic_dma</code>: A table containing the DMA result (if <code>on = "dynamic_motif_exp"</code>)</p></li>
+<li><p><code>branch_dma</code>: A table containing the DMA result (if <code>on = "branch_motif_exp"</code>)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="ai-prompt">AI Prompt<a class="anchor" aria-label="anchor" href="#ai-prompt"></a></h2>

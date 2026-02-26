@@ -26,7 +26,8 @@ step_plsda(
 - on:
 
   Name of the experiment to run PLS-DA on. Can be "exp", "sig_exp",
-  "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+  "trait_exp", "sig_trait_exp", "dynamic_motif_exp",
+  "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 
 - ncomp:
 
@@ -62,8 +63,11 @@ Data required:
 - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run
   PLS-DA on
 
-- `motif_exp` (if `on = "motif_exp"`): The motif experiment to run
-  PLS-DA on
+- `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif
+  experiment to run PLS-DA on
+
+- `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif
+  experiment to run PLS-DA on
 
 Tables generated (with suffixes):
 

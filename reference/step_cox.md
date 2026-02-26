@@ -23,7 +23,8 @@ step_cox(
 - on:
 
   Name of the experiment to run Cox regression on. Can be "exp",
-  "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+  "sig_exp", "trait_exp", "sig_trait_exp", "dynamic_motif_exp",
+  "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 
 - time_col:
 
@@ -58,8 +59,11 @@ Data required:
 - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run Cox
   regression on
 
-- `motif_exp` (if `on = "motif_exp"`): The motif experiment to run Cox
-  regression on
+- `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif
+  experiment to run Cox regression on
+
+- `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif
+  experiment to run Cox regression on
 
 The experiment must contain survival data with `time_col` and
 `event_col` columns in the sample information.

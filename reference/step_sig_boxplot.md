@@ -28,7 +28,8 @@ step_sig_boxplot(
 - on:
 
   Name of the experiment data in `ctx$data` to plot. One of "sig_exp",
-  "sig_trait_exp", "sig_motif_exp". Default is "sig_exp".
+  "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
+  Default is "sig_exp".
 
 - n_top:
 
@@ -88,7 +89,10 @@ Data required:
 
   - `sig_trait_exp`: Significant trait experiment from DTA
 
-  - `sig_motif_exp`: Significant motif experiment from DMA
+  - `sig_dynamic_motif_exp`: Significant dynamic motif experiment from
+    DMA
+
+  - `sig_branch_motif_exp`: Significant branch motif experiment from DMA
 
 Plots generated:
 
@@ -98,8 +102,11 @@ Plots generated:
 - `sig_trait_boxplot`: A boxplot of significant traits (if
   `on = "sig_trait_exp"`)
 
-- `sig_motif_boxplot`: A boxplot of significant motifs (if
-  `on = "sig_motif_exp"`)
+- `sig_dynamic_motif_boxplot`: A boxplot of significant dynamic motifs
+  (if `on = "sig_dynamic_motif_exp"`)
+
+- `sig_branch_motif_boxplot`: A boxplot of significant branch motifs (if
+  `on = "sig_branch_motif_exp"`)
 
 ## AI Prompt
 

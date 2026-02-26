@@ -76,7 +76,9 @@ to find the best one.</p>
 
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
 <dd><p>Name of the experiment to run UMAP on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".</p></dd>
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+"dynamic_motif_exp", "sig_dynamic_motif_exp",
+"branch_motif_exp", "sig_branch_motif_exp".</p></dd>
 
 
 <dt id="arg-n-neighbors">n_neighbors<a class="anchor" aria-label="anchor" href="#arg-n-neighbors"></a></dt>
@@ -107,7 +109,8 @@ Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_e
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Data required:</p><ul><li><p><code>exp</code> (if <code>on = "exp"</code>): The experiment to perform UMAP on</p></li>
 <li><p><code>trait_exp</code> (if <code>on = "trait_exp"</code>): The trait experiment to perform UMAP on</p></li>
-<li><p><code>motif_exp</code> (if <code>on = "motif_exp"</code>): The motif experiment to perform UMAP on</p></li>
+<li><p><code>dynamic_motif_exp</code> (if <code>on = "dynamic_motif_exp"</code>): The dynamic motif experiment to perform UMAP on</p></li>
+<li><p><code>branch_motif_exp</code> (if <code>on = "branch_motif_exp"</code>): The branch motif experiment to perform UMAP on</p></li>
 </ul><p>Data generated (with suffixes):</p><ul><li><p><code>umap</code>: The UMAP result</p></li>
 </ul><p>Plots generated (with suffixes):</p><ul><li><p><code>umap</code>: The UMAP plot</p></li>
 </ul></div>

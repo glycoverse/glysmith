@@ -15,7 +15,8 @@ step_heatmap(on = "exp", plot_width = 7, plot_height = 7, ...)
 - on:
 
   Name of the experiment data in `ctx$data` to plot. One of "exp",
-  "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+  "sig_exp", "trait_exp", "sig_trait_exp", "dynamic_motif_exp",
+  "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
   Default is "exp".
 
 - plot_width:
@@ -51,9 +52,16 @@ Plots generated:
 
 - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
 
-- `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
+- `dynamic_motif_heatmap`: A heatmap plot (if
+  `on = "dynamic_motif_exp"`)
 
-- `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
+- `sig_dynamic_motif_heatmap`: A heatmap plot (if
+  `on = "sig_dynamic_motif_exp"`)
+
+- `branch_motif_heatmap`: A heatmap plot (if `on = "branch_motif_exp"`)
+
+- `sig_branch_motif_heatmap`: A heatmap plot (if
+  `on = "sig_branch_motif_exp"`)
 
 ## AI Prompt
 

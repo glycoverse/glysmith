@@ -28,7 +28,8 @@ step_tsne(
 - on:
 
   Name of the experiment to run t-SNE on. Can be "exp", "sig_exp",
-  "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+  "trait_exp", "sig_trait_exp", "dynamic_motif_exp",
+  "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 
 - dims:
 
@@ -64,8 +65,11 @@ Data required:
 - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform
   t-SNE on
 
-- `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform
-  t-SNE on
+- `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif
+  experiment to perform t-SNE on
+
+- `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif
+  experiment to perform t-SNE on
 
 Data generated (with suffixes):
 

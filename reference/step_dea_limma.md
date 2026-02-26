@@ -33,8 +33,9 @@ step_dea_limma(
 
   Name of the experiment data in `ctx$data` to run analysis on. Default
   is `"exp"` for differential expression analysis. Use `"trait_exp"` for
-  differential trait analysis. Use `"motif_exp"` for differential motif
-  analysis.
+  differential trait analysis. Use `"dynamic_motif_exp"` for
+  differential dynamic motif analysis. Use `"branch_motif_exp"` for
+  differential branch motif analysis.
 
 - p_adj_method:
 
@@ -103,8 +104,11 @@ Data required:
 - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run DEA
   on
 
-- `motif_exp` (if `on = "motif_exp"`): The motif experiment to run DEA
-  on
+- `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif
+  experiment to run DEA on
+
+- `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif
+  experiment to run DEA on
 
 Data generated:
 
@@ -114,14 +118,19 @@ Data generated:
 - `dta_res`: The DTA (differential trait analysis) results (if
   `on = "trait_exp"`)
 
-- `dma_res`: The DMA (differential motif analysis) results (if
-  `on = "motif_exp"`)
+- `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+
+- `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 
 - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 
 - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 
-- `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+- `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if
+  `on = "dynamic_motif_exp"`)
+
+- `sig_branch_motif_exp`: The filtered branch motif experiment (if
+  `on = "branch_motif_exp"`)
 
 Tables generated:
 
@@ -131,8 +140,11 @@ Tables generated:
 - `dta`: A table containing the DTA (differential trait analysis) result
   (if `on = "trait_exp"`)
 
-- `dma`: A table containing the DMA (differential motif analysis) result
-  (if `on = "motif_exp"`)
+- `dynamic_dma`: A table containing the DMA result (if
+  `on = "dynamic_motif_exp"`)
+
+- `branch_dma`: A table containing the DMA result (if
+  `on = "branch_motif_exp"`)
 
 ## AI Prompt
 

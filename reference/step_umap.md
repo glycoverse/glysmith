@@ -28,7 +28,8 @@ step_umap(
 - on:
 
   Name of the experiment to run UMAP on. Can be "exp", "sig_exp",
-  "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+  "trait_exp", "sig_trait_exp", "dynamic_motif_exp",
+  "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 
 - n_neighbors:
 
@@ -64,8 +65,11 @@ Data required:
 - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform
   UMAP on
 
-- `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform
-  UMAP on
+- `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif
+  experiment to perform UMAP on
+
+- `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif
+  experiment to perform UMAP on
 
 Data generated (with suffixes):
 

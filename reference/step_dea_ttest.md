@@ -29,8 +29,9 @@ step_dea_ttest(
 
   Name of the experiment data in `ctx$data` to run analysis on. Default
   is `"exp"` for differential expression analysis. Use `"trait_exp"` for
-  differential trait analysis. Use `"motif_exp"` for differential motif
-  analysis.
+  differential trait analysis. Use `"dynamic_motif_exp"` for
+  differential dynamic motif analysis. Use `"branch_motif_exp"` for
+  differential branch motif analysis.
 
 - p_adj_method:
 
@@ -76,13 +77,19 @@ Data generated:
 
 - `dta_res`: The DTA results (if `on = "trait_exp"`)
 
-- `dma_res`: The DMA results (if `on = "motif_exp"`)
+- `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+
+- `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 
 - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 
 - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 
-- `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+- `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if
+  `on = "dynamic_motif_exp"`)
+
+- `sig_branch_motif_exp`: The filtered branch motif experiment (if
+  `on = "branch_motif_exp"`)
 
 Tables generated:
 
@@ -90,7 +97,11 @@ Tables generated:
 
 - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
 
-- `dma`: A table containing the DMA result (if `on = "motif_exp"`)
+- `dynamic_dma`: A table containing the DMA result (if
+  `on = "dynamic_motif_exp"`)
+
+- `branch_dma`: A table containing the DMA result (if
+  `on = "branch_motif_exp"`)
 
 ## AI Prompt
 

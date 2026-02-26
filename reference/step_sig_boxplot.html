@@ -70,7 +70,7 @@ values grouped by sample groups.</p>
 
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
 <dd><p>Name of the experiment data in <code>ctx$data</code> to plot.
-One of "sig_exp", "sig_trait_exp", "sig_motif_exp".
+One of "sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
 Default is "sig_exp".</p></dd>
 
 
@@ -120,11 +120,13 @@ The number of variables is limited to a maximum of 25, as enforced by
 <code><a href="https://glycoverse.github.io/glyvis/reference/plot_boxplot.html" class="external-link">glyvis::plot_boxplot()</a></code>.</p>
 <p>Data required:</p><ul><li><p>Depends on <code>on</code> parameter:</p><ul><li><p><code>sig_exp</code> (default): Significant experiment from DEA</p></li>
 <li><p><code>sig_trait_exp</code>: Significant trait experiment from DTA</p></li>
-<li><p><code>sig_motif_exp</code>: Significant motif experiment from DMA</p></li>
+<li><p><code>sig_dynamic_motif_exp</code>: Significant dynamic motif experiment from DMA</p></li>
+<li><p><code>sig_branch_motif_exp</code>: Significant branch motif experiment from DMA</p></li>
 </ul></li>
 </ul><p>Plots generated:</p><ul><li><p><code>sig_boxplot</code>: A boxplot of significant variables (if <code>on = "sig_exp"</code>)</p></li>
 <li><p><code>sig_trait_boxplot</code>: A boxplot of significant traits (if <code>on = "sig_trait_exp"</code>)</p></li>
-<li><p><code>sig_motif_boxplot</code>: A boxplot of significant motifs (if <code>on = "sig_motif_exp"</code>)</p></li>
+<li><p><code>sig_dynamic_motif_boxplot</code>: A boxplot of significant dynamic motifs (if <code>on = "sig_dynamic_motif_exp"</code>)</p></li>
+<li><p><code>sig_branch_motif_boxplot</code>: A boxplot of significant branch motifs (if <code>on = "sig_branch_motif_exp"</code>)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="ai-prompt">AI Prompt<a class="anchor" aria-label="anchor" href="#ai-prompt"></a></h2>

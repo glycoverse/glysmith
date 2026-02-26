@@ -221,8 +221,10 @@ Here is a list of all available steps:
   Functional enrichment analysis for significant items.
 - [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md):
   Calculate glycan derived traits.
-- [`step_quantify_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_motifs.md):
-  Quantify glycan motifs (substructures).
+- [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md):
+  Quantify all possible glycan motifs (substructures).
+- [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md):
+  Quantify N-glycan branch motifs.
 
 Before you start building your own blueprints, here are a few rules to
 keep in mind:

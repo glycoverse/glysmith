@@ -66,7 +66,9 @@ Ignore the resulting plot if it is not informative.</p>
 
 <dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
 <dd><p>Name of the experiment to run PCA on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".</p></dd>
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+"dynamic_motif_exp", "sig_dynamic_motif_exp",
+"branch_motif_exp", "sig_branch_motif_exp".</p></dd>
 
 
 <dt id="arg-center">center<a class="anchor" aria-label="anchor" href="#arg-center"></a></dt>
@@ -107,7 +109,8 @@ Default is <code>TRUE</code>.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Data required:</p><ul><li><p><code>exp</code> (if <code>on = "exp"</code>): The experiment to run PCA on</p></li>
 <li><p><code>trait_exp</code> (if <code>on = "trait_exp"</code>): The trait experiment to run PCA on</p></li>
-<li><p><code>motif_exp</code> (if <code>on = "motif_exp"</code>): The motif experiment to run PCA on</p></li>
+<li><p><code>dynamic_motif_exp</code> (if <code>on = "dynamic_motif_exp"</code>): The dynamic motif experiment to run PCA on</p></li>
+<li><p><code>branch_motif_exp</code> (if <code>on = "branch_motif_exp"</code>): The branch motif experiment to run PCA on</p></li>
 </ul><p>Tables generated (with suffixes):</p><ul><li><p><code>pca_samples</code>: A table containing the PCA scores for each sample</p></li>
 <li><p><code>pca_variables</code>: A table containing the PCA loadings for each variable</p></li>
 <li><p><code>pca_eigenvalues</code>: A table containing the PCA eigenvalues</p></li>
