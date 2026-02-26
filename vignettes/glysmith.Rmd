@@ -164,7 +164,8 @@ Here is a list of all available steps:
 - `step_roc()`: Perform Receiver Operating Characteristic (ROC) analysis.
 - `step_sig_enrich_go()`, `step_sig_enrich_kegg()`, `step_sig_enrich_reactome()`: Functional enrichment analysis for significant items.
 - `step_derive_traits()`: Calculate glycan derived traits.
-- `step_quantify_motifs()`: Quantify glycan motifs (substructures).
+- `step_quantify_dynamic_motifs()`: Quantify all possible glycan motifs (substructures).
+- `step_quantify_branch_motifs()`: Quantify N-glycan branch motifs.
 
 Before you start building your own blueprints, here are a few rules to keep in mind:
 
