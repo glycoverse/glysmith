@@ -12,8 +12,10 @@
 #' - `sig_heatmap`: A heatmap plot (if `on = "sig_exp"`)
 #' - `trait_heatmap`: A heatmap plot (if `on = "trait_exp"`)
 #' - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
-#' - `motif_heatmap`: A heatmap plot (if `on = "motif_exp"`)
-#' - `sig_motif_heatmap`: A heatmap plot (if `on = "sig_motif_exp"`)
+#' - `dynamic_motif_heatmap`: A heatmap plot (if `on = "dynamic_motif_exp"`)
+#' - `sig_dynamic_motif_heatmap`: A heatmap plot (if `on = "sig_dynamic_motif_exp"`)
+#' - `branch_motif_heatmap`: A heatmap plot (if `on = "branch_motif_exp"`)
+#' - `sig_branch_motif_heatmap`: A heatmap plot (if `on = "sig_branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -22,7 +24,8 @@
 #' - It is recommended to use this step on significant results (e.g. `on = "sig_exp"`) if available.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
-#'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 #'   Default is "exp".
 #' @param plot_width Width of the plot in inches. Default is 7.
 #' @param plot_height Height of the plot in inches. Default is 7.
@@ -158,12 +161,14 @@ step_logo <- function(
 #' - Depends on `on` parameter:
 #'   - `sig_exp` (default): Significant experiment from DEA
 #'   - `sig_trait_exp`: Significant trait experiment from DTA
-#'   - `sig_motif_exp`: Significant motif experiment from DMA
+#'   - `sig_dynamic_motif_exp`: Significant dynamic motif experiment from DMA
+#'   - `sig_branch_motif_exp`: Significant branch motif experiment from DMA
 #'
 #' Plots generated:
 #' - `sig_boxplot`: A boxplot of significant variables (if `on = "sig_exp"`)
 #' - `sig_trait_boxplot`: A boxplot of significant traits (if `on = "sig_trait_exp"`)
-#' - `sig_motif_boxplot`: A boxplot of significant motifs (if `on = "sig_motif_exp"`)
+#' - `sig_dynamic_motif_boxplot`: A boxplot of significant dynamic motifs (if `on = "sig_dynamic_motif_exp"`)
+#' - `sig_branch_motif_boxplot`: A boxplot of significant branch motifs (if `on = "sig_branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -173,7 +178,7 @@ step_logo <- function(
 #'   of the most differentially expressed features across groups.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
-#'   One of "sig_exp", "sig_trait_exp", "sig_motif_exp".
+#'   One of "sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
 #'   Default is "sig_exp".
 #' @param n_top Number of top significant variables to plot.
 #'   Must be between 1 and 25 (inclusive).
@@ -204,7 +209,15 @@ step_sig_boxplot <- function(
   max_height = 12,
   ...
 ) {
-  checkmate::assert_choice(on, c("sig_exp", "sig_trait_exp", "sig_motif_exp"))
+  checkmate::assert_choice(
+    on,
+    c(
+      "sig_exp",
+      "sig_trait_exp",
+      "sig_dynamic_motif_exp",
+      "sig_branch_motif_exp"
+    )
+  )
   checkmate::assert_int(n_top, lower = 1L, upper = 25L)
   checkmate::assert_number(panel_width, lower = 0.5)
   checkmate::assert_number(panel_height, lower = 0.5)
@@ -233,7 +246,8 @@ step_sig_boxplot <- function(
           on,
           sig_exp = "dea_res",
           sig_trait_exp = "dta_res",
-          sig_motif_exp = "dma_res"
+          sig_dynamic_motif_exp = "dynamic_dma_res",
+          sig_branch_motif_exp = "branch_dma_res"
         )
         dea_res <- ctx_get_data(ctx, dea_key)
         tidy_res <- glystats::get_tidy_result(dea_res)

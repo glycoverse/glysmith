@@ -235,10 +235,10 @@ test_that("humanize helpers format plot labels and descriptions", {
     "UMAP (traits)"
   )
 
-  desc <- "Comparison of sig_exp_vs_trait_exp and motif_exp"
+  desc <- "Comparison of sig_exp_vs_trait_exp and dynamic_motif_exp"
   expect_equal(
     glysmith:::.humanize_plot_description(desc),
-    "Comparison of significant variables vs traits and motifs"
+    "Comparison of significant variables vs traits and dynamic motifs"
   )
 })
 
@@ -550,10 +550,21 @@ test_that(".humanize_on_label maps experiment types correctly", {
     glysmith:::.humanize_on_label("sig_trait_exp"),
     "significant traits"
   )
-  expect_equal(glysmith:::.humanize_on_label("motif_exp"), "motifs")
   expect_equal(
-    glysmith:::.humanize_on_label("sig_motif_exp"),
-    "significant motifs"
+    glysmith:::.humanize_on_label("dynamic_motif_exp"),
+    "dynamic motifs"
+  )
+  expect_equal(
+    glysmith:::.humanize_on_label("sig_dynamic_motif_exp"),
+    "significant dynamic motifs"
+  )
+  expect_equal(
+    glysmith:::.humanize_on_label("branch_motif_exp"),
+    "branch motifs"
+  )
+  expect_equal(
+    glysmith:::.humanize_on_label("sig_branch_motif_exp"),
+    "significant branch motifs"
   )
   expect_equal(glysmith:::.humanize_on_label("exp"), "variables")
 })
@@ -564,8 +575,10 @@ test_that(".on_suffix_labels returns expected labels", {
   expect_equal(labels[["sig"]], "significant variables")
   expect_equal(labels[["trait"]], "traits")
   expect_equal(labels[["sig_trait"]], "significant traits")
-  expect_equal(labels[["motif"]], "motifs")
-  expect_equal(labels[["sig_motif"]], "significant motifs")
+  expect_equal(labels[["dynamic_motif"]], "dynamic motifs")
+  expect_equal(labels[["sig_dynamic_motif"]], "significant dynamic motifs")
+  expect_equal(labels[["branch_motif"]], "branch motifs")
+  expect_equal(labels[["sig_branch_motif"]], "significant branch motifs")
 })
 
 # Tests for .extract_on_suffix
@@ -584,6 +597,21 @@ test_that(".extract_on_suffix extracts suffix and rest correctly", {
 
   result <- glysmith:::.extract_on_suffix(character(0))
   expect_null(result$suffix)
+  expect_equal(result$rest, character(0))
+
+  # Test 3-part suffixes (sig_dynamic_motif, sig_branch_motif)
+  # When processing "pca_sig_dynamic_motif_exp", parts[-1] = c("sig", "dynamic", "motif", "exp")
+  result <- glysmith:::.extract_on_suffix(c("sig", "dynamic", "motif", "exp"))
+  expect_equal(result$suffix, "sig_dynamic_motif")
+  expect_equal(result$rest, "exp")
+
+  result <- glysmith:::.extract_on_suffix(c("sig", "branch", "motif", "exp"))
+  expect_equal(result$suffix, "sig_branch_motif")
+  expect_equal(result$rest, "exp")
+
+  # Test 3-part suffix without trailing exp
+  result <- glysmith:::.extract_on_suffix(c("sig", "dynamic", "motif"))
+  expect_equal(result$suffix, "sig_dynamic_motif")
   expect_equal(result$rest, character(0))
 })
 

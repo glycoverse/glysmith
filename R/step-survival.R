@@ -8,7 +8,8 @@
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to run Cox regression on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run Cox regression on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run Cox regression on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run Cox regression on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run Cox regression on
 #'
 #' The experiment must contain survival data with `time_col` and `event_col` columns
 #' in the sample information.
@@ -31,7 +32,8 @@
 #' - Always ask for the column names for survival data, unless explicitly provided.
 #'
 #' @param on Name of the experiment to run Cox regression on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 #' @param time_col Column name in sample information containing survival time.
 #'   Default is "time".
 #' @param event_col Column name in sample information containing event indicator

@@ -89,44 +89,42 @@ step_derive_traits <- function(
   )
 }
 
-#' Step: Quantify Motifs
+#' Step: Quantify Dynamic Motifs
 #'
-#' Quantify glycan motifs using `glydet::quantify_motifs()`.
-#' The motifs are extracted using `glymotif::branch_motifs()` for N-glycans
-#' and `glymotif::dynamic_motifs()` for others.
-#' Advanced glycan motif analysis that quantify glycan motifs (substructures) of a glycome or each glycosite.
-#' Need glycan structure information.
+#' Quantify glycan motifs using `glydet::quantify_motifs()` with `glymotif::dynamic_motifs()`.
+#' This extracts all possible motifs from glycan structures.
+#' Works with any glycan type.
 #'
 #' @details
 #' Data required:
 #' - `exp`: The experiment to quantify motifs for
 #'
 #' Data generated:
-#' - `motif_exp`: The experiment with quantified motifs
+#' - `dynamic_motif_exp`: The experiment with quantified motifs
 #'
 #' Tables generated:
-#' - `quantified_motifs`: A table containing the quantified motifs.
+#' - `dynamic_motifs`: A table containing the quantified motifs.
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
 #'
-#' - Include this step if needed.
-#' - This step should be followed by the DEA step and visualization steps.
+#' - Include this step if motif analysis is needed for non-N-glycans or when comprehensive motif extraction is desired.
+#' - This step should be followed by DEA and visualization steps.
 #'
-#' @param max_size Maximum size of motifs to extract.
-#' @param method Method for motif quantification ("relative" or "absolute").
+#' @param max_size Maximum size of motifs to extract. Default is 3.
+#' @param method Method for motif quantification ("relative" or "absolute"). Default is "relative".
 #'
 #' @return A `glysmith_step` object.
 #' @examples
-#' step_quantify_motifs()
-#' @seealso [glydet::quantify_motifs()], [glymotif::dynamic_motifs()], [glymotif::branch_motifs()]
+#' step_quantify_dynamic_motifs()
+#' @seealso [glydet::quantify_motifs()], [glymotif::dynamic_motifs()]
 #' @export
-step_quantify_motifs <- function(max_size = 3, method = "relative") {
+step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
   signature <- rlang::expr_deparse(match.call())
 
   step(
-    id = "quantify_motifs",
-    label = "Motif quantification",
+    id = "quantify_dynamic_motifs",
+    label = "Dynamic motif quantification",
     condition = function(ctx) {
       check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
       reason <- "glycan structures are not available in the experiment"
@@ -134,48 +132,125 @@ step_quantify_motifs <- function(max_size = 3, method = "relative") {
     },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      type <- glyexp::get_glycan_type(exp)
+      motifs <- glymotif::dynamic_motifs(max_size = max_size)
 
-      if (type == "N") {
-        motifs <- glymotif::branch_motifs()
-      } else {
-        motifs <- glymotif::dynamic_motifs()
-      }
-
-      motif_exp <- glydet::quantify_motifs(
+      dynamic_motif_exp <- glydet::quantify_motifs(
         exp,
         motifs = motifs,
         method = method,
         ignore_linkages = FALSE
       )
 
-      ctx <- ctx_add_data(ctx, "motif_exp", motif_exp)
+      ctx <- ctx_add_data(ctx, "dynamic_motif_exp", dynamic_motif_exp)
       ctx <- ctx_add_table(
         ctx,
-        "quantified_motifs",
-        tibble::as_tibble(motif_exp),
-        "Motif quantification results."
+        "dynamic_motifs",
+        tibble::as_tibble(dynamic_motif_exp),
+        "Dynamic motif quantification results."
       )
       ctx
     },
     report = function(x) {
-      tbl <- x$tables[["quantified_motifs"]]
+      tbl <- x$tables[["dynamic_motifs"]]
       n_motifs <- length(unique(tbl$motif))
-      motif_type_msg <- if (glyexp::get_glycan_type(x$exp) == "N") {
-        "Branching motifs for N-glycans were extracted. "
-      } else {
-        "All motifs were extracted. "
-      }
-      msg <- paste0(
-        "Motif quantification was performed. ",
-        motif_type_msg,
+      paste0(
+        "Dynamic motif quantification was performed. ",
+        "All motifs were extracted. ",
         "Number of quantified motifs: ",
         n_motifs,
         "."
       )
-      msg
     },
-    generate = "motif_exp",
+    generate = "dynamic_motif_exp",
+    require = "exp",
+    signature = signature
+  )
+}
+
+#' Step: Quantify Branch Motifs
+#'
+#' Quantify N-glycan branch motifs using `glydet::quantify_motifs()` with `glymotif::branch_motifs()`.
+#' This extracts specific N-glycan branching patterns (bi-antennary, tri-antennary, etc.).
+#' Only works with N-glycans.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to quantify motifs for (must be N-glycans)
+#'
+#' Data generated:
+#' - `branch_motif_exp`: The experiment with quantified branch motifs
+#'
+#' Tables generated:
+#' - `branch_motifs`: A table containing the quantified branch motifs.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if motif analysis is needed specifically for N-glycans.
+#' - This step should be followed by DEA and visualization steps.
+#'
+#' @param method Method for motif quantification ("relative" or "absolute"). Default is "relative".
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_quantify_branch_motifs()
+#' @seealso [glydet::quantify_motifs()], [glymotif::branch_motifs()]
+#' @export
+step_quantify_branch_motifs <- function(method = "relative") {
+  signature <- rlang::expr_deparse(match.call())
+
+  step(
+    id = "quantify_branch_motifs",
+    label = "Branch motif quantification",
+    condition = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      if (!.has_glycan_structure(exp)) {
+        return(list(
+          check = FALSE,
+          reason = "glycan structures are not available in the experiment"
+        ))
+      }
+      type <- glyexp::get_glycan_type(exp)
+      if (type != "N") {
+        return(list(
+          check = FALSE,
+          reason = "branch motif quantification only works with N-glycans"
+        ))
+      }
+      list(check = TRUE, reason = NULL)
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      motifs <- glymotif::branch_motifs()
+
+      branch_motif_exp <- glydet::quantify_motifs(
+        exp,
+        motifs = motifs,
+        method = method,
+        ignore_linkages = FALSE
+      )
+
+      ctx <- ctx_add_data(ctx, "branch_motif_exp", branch_motif_exp)
+      ctx <- ctx_add_table(
+        ctx,
+        "branch_motifs",
+        tibble::as_tibble(branch_motif_exp),
+        "Branch motif quantification results."
+      )
+      ctx
+    },
+    report = function(x) {
+      tbl <- x$tables[["branch_motifs"]]
+      n_motifs <- length(unique(tbl$motif))
+      paste0(
+        "Branch motif quantification was performed. ",
+        "Branching motifs for N-glycans were extracted. ",
+        "Number of quantified motifs: ",
+        n_motifs,
+        "."
+      )
+    },
+    generate = "branch_motif_exp",
     require = "exp",
     signature = signature
   )

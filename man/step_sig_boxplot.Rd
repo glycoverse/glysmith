@@ -18,7 +18,7 @@ step_sig_boxplot(
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of "sig_exp", "sig_trait_exp", "sig_motif_exp".
+One of "sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
 Default is "sig_exp".}
 
 \item{n_top}{Number of top significant variables to plot.
@@ -60,7 +60,8 @@ Data required:
 \itemize{
 \item \code{sig_exp} (default): Significant experiment from DEA
 \item \code{sig_trait_exp}: Significant trait experiment from DTA
-\item \code{sig_motif_exp}: Significant motif experiment from DMA
+\item \code{sig_dynamic_motif_exp}: Significant dynamic motif experiment from DMA
+\item \code{sig_branch_motif_exp}: Significant branch motif experiment from DMA
 }
 }
 
@@ -68,7 +69,8 @@ Plots generated:
 \itemize{
 \item \code{sig_boxplot}: A boxplot of significant variables (if \code{on = "sig_exp"})
 \item \code{sig_trait_boxplot}: A boxplot of significant traits (if \code{on = "sig_trait_exp"})
-\item \code{sig_motif_boxplot}: A boxplot of significant motifs (if \code{on = "sig_motif_exp"})
+\item \code{sig_dynamic_motif_boxplot}: A boxplot of significant dynamic motifs (if \code{on = "sig_dynamic_motif_exp"})
+\item \code{sig_branch_motif_boxplot}: A boxplot of significant branch motifs (if \code{on = "sig_branch_motif_exp"})
 }
 }
 \section{AI Prompt}{

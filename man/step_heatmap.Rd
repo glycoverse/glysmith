@@ -8,7 +8,8 @@ step_heatmap(on = "exp", plot_width = 7, plot_height = 7, ...)
 }
 \arguments{
 \item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+One of "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+"dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 Default is "exp".}
 
 \item{plot_width}{Width of the plot in inches. Default is 7.}
@@ -36,8 +37,10 @@ Plots generated:
 \item \code{sig_heatmap}: A heatmap plot (if \code{on = "sig_exp"})
 \item \code{trait_heatmap}: A heatmap plot (if \code{on = "trait_exp"})
 \item \code{sig_trait_heatmap}: A heatmap plot (if \code{on = "sig_trait_exp"})
-\item \code{motif_heatmap}: A heatmap plot (if \code{on = "motif_exp"})
-\item \code{sig_motif_heatmap}: A heatmap plot (if \code{on = "sig_motif_exp"})
+\item \code{dynamic_motif_heatmap}: A heatmap plot (if \code{on = "dynamic_motif_exp"})
+\item \code{sig_dynamic_motif_heatmap}: A heatmap plot (if \code{on = "sig_dynamic_motif_exp"})
+\item \code{branch_motif_heatmap}: A heatmap plot (if \code{on = "branch_motif_exp"})
+\item \code{sig_branch_motif_heatmap}: A heatmap plot (if \code{on = "sig_branch_motif_exp"})
 }
 }
 \section{AI Prompt}{

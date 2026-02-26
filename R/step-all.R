@@ -29,7 +29,8 @@ all_steps <- function() {
     step_sig_enrich_kegg(),
     step_sig_enrich_reactome(),
     step_derive_traits(),
-    step_quantify_motifs(),
+    step_quantify_dynamic_motifs(),
+    step_quantify_branch_motifs(),
     step_roc()
   )
   names(steps) <- purrr::map_chr(steps, "id")

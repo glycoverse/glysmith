@@ -11,20 +11,24 @@
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to run DEA on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run DEA on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run DEA on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run DEA on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run DEA on
 #'
 #' Data generated:
 #' - `dea_res`: The DEA (differential expression analysis) results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA (differential trait analysis) results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA (differential motif analysis) results (if `on = "motif_exp"`)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
+#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA (differential expression analysis) result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA (differential trait analysis) result (if `on = "trait_exp"`)
-#' - `dma`: A table containing the DMA (differential motif analysis) result (if `on = "motif_exp"`)
+#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -34,7 +38,8 @@
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"motif_exp"` for differential motif analysis.
+#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
+#'   Use `"branch_motif_exp"` for differential branch motif analysis.
 #' @inheritParams glystats::gly_limma
 #' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
 #' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
@@ -98,15 +103,18 @@ step_dea_limma <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
+#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-#' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
+#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -119,7 +127,8 @@ step_dea_limma <- function(
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"motif_exp"` for differential motif analysis.
+#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
+#'   Use `"branch_motif_exp"` for differential branch motif analysis.
 #' @inheritParams glystats::gly_ttest
 #' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
 #' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
@@ -175,15 +184,18 @@ step_dea_ttest <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
+#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
-#' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
+#' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -193,7 +205,8 @@ step_dea_ttest <- function(
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"motif_exp"` for differential motif analysis.
+#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
+#'   Use `"branch_motif_exp"` for differential branch motif analysis.
 #' @inheritParams glystats::gly_anova
 #' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
 #' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
@@ -251,15 +264,18 @@ step_dea_anova <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
+#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-#' - `dma`: A table containing the DMA result (if `on = "motif_exp"`)
+#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -272,7 +288,8 @@ step_dea_anova <- function(
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"motif_exp"` for differential motif analysis.
+#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
+#'   Use `"branch_motif_exp"` for differential branch motif analysis.
 #' @inheritParams glystats::gly_wilcox
 #' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
 #' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
@@ -329,15 +346,18 @@ step_dea_wilcox <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on = "motif_exp"`)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_motif_exp`: The filtered motif experiment (if `on = "motif_exp"`)
+#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
+#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
 #'
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
-#' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on = "motif_exp"`)
+#' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -347,7 +367,8 @@ step_dea_wilcox <- function(
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"motif_exp"` for differential motif analysis.
+#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
+#'   Use `"branch_motif_exp"` for differential branch motif analysis.
 #' @inheritParams glystats::gly_kruskal
 #' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
 #' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
@@ -404,16 +425,46 @@ step_dea_kruskal <- function(
       require = "exp",
       name = "variable"
     ),
+    sig_exp = list(
+      prefix = "dea",
+      label = "Differential expression",
+      require = "sig_exp",
+      name = "variable"
+    ),
     trait_exp = list(
       prefix = "dta",
       label = "Differential trait",
       require = "trait_exp",
       name = "trait"
     ),
-    motif_exp = list(
-      prefix = "dma",
-      label = "Differential motif",
-      require = "motif_exp",
+    sig_trait_exp = list(
+      prefix = "dta",
+      label = "Differential trait",
+      require = "sig_trait_exp",
+      name = "trait"
+    ),
+    dynamic_motif_exp = list(
+      prefix = "dynamic_dma",
+      label = "Differential dynamic motif",
+      require = "dynamic_motif_exp",
+      name = "motif"
+    ),
+    sig_dynamic_motif_exp = list(
+      prefix = "dynamic_dma",
+      label = "Differential dynamic motif",
+      require = "sig_dynamic_motif_exp",
+      name = "motif"
+    ),
+    branch_motif_exp = list(
+      prefix = "branch_dma",
+      label = "Differential branch motif",
+      require = "branch_motif_exp",
+      name = "motif"
+    ),
+    sig_branch_motif_exp = list(
+      prefix = "branch_dma",
+      label = "Differential branch motif",
+      require = "sig_branch_motif_exp",
       name = "motif"
     )
   )
