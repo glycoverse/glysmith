@@ -209,7 +209,15 @@ step_sig_boxplot <- function(
   max_height = 12,
   ...
 ) {
-  checkmate::assert_choice(on, c("sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp"))
+  checkmate::assert_choice(
+    on,
+    c(
+      "sig_exp",
+      "sig_trait_exp",
+      "sig_dynamic_motif_exp",
+      "sig_branch_motif_exp"
+    )
+  )
   checkmate::assert_int(n_top, lower = 1L, upper = 25L)
   checkmate::assert_number(panel_width, lower = 0.5)
   checkmate::assert_number(panel_height, lower = 0.5)
@@ -238,8 +246,8 @@ step_sig_boxplot <- function(
           on,
           sig_exp = "dea_res",
           sig_trait_exp = "dta_res",
-          sig_dynamic_motif_exp = "dma_res",
-          sig_branch_motif_exp = "dma_res"
+          sig_dynamic_motif_exp = "dynamic_dma_res",
+          sig_branch_motif_exp = "branch_dma_res"
         )
         dea_res <- ctx_get_data(ctx, dea_key)
         tidy_res <- glystats::get_tidy_result(dea_res)

@@ -17,7 +17,8 @@
 #' Data generated:
 #' - `dea_res`: The DEA (differential expression analysis) results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA (differential trait analysis) results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA (differential motif analysis) results (if `on` is a motif experiment)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
@@ -26,7 +27,8 @@
 #' Tables generated:
 #' - `dea`: A table containing the DEA (differential expression analysis) result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA (differential trait analysis) result (if `on = "trait_exp"`)
-#' - `dma`: A table containing the DMA (differential motif analysis) result (if `on` is a motif experiment)
+#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -101,7 +103,8 @@ step_dea_limma <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on` is a motif experiment)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
@@ -110,7 +113,8 @@ step_dea_limma <- function(
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-#' - `dma`: A table containing the DMA result (if `on` is a motif experiment)
+#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -180,7 +184,8 @@ step_dea_ttest <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on` is a motif experiment)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
@@ -189,7 +194,8 @@ step_dea_ttest <- function(
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
-#' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on` is a motif experiment)
+#' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -258,7 +264,8 @@ step_dea_anova <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on` is a motif experiment)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
@@ -267,7 +274,8 @@ step_dea_anova <- function(
 #' Tables generated:
 #' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
 #' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-#' - `dma`: A table containing the DMA result (if `on` is a motif experiment)
+#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -338,7 +346,8 @@ step_dea_wilcox <- function(
 #' Data generated:
 #' - `dea_res`: The DEA results (if `on = "exp"`, default)
 #' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dma_res`: The DMA results (if `on` is a motif experiment)
+#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
 #' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
 #' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
 #' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
@@ -347,7 +356,8 @@ step_dea_wilcox <- function(
 #' Tables generated:
 #' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
-#' - `dma_main_test`, `dma_post_hoc_test`: Tables containing the results (if `on` is a motif experiment)
+#' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
+#' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
 #'
 #' @section AI Prompt:
 #' *This section is for AI in [inquire_blueprint()] only.*
@@ -434,26 +444,26 @@ step_dea_kruskal <- function(
       name = "trait"
     ),
     dynamic_motif_exp = list(
-      prefix = "dma",
-      label = "Differential motif",
+      prefix = "dynamic_dma",
+      label = "Differential dynamic motif",
       require = "dynamic_motif_exp",
       name = "motif"
     ),
     sig_dynamic_motif_exp = list(
-      prefix = "dma",
-      label = "Differential motif",
+      prefix = "dynamic_dma",
+      label = "Differential dynamic motif",
       require = "sig_dynamic_motif_exp",
       name = "motif"
     ),
     branch_motif_exp = list(
-      prefix = "dma",
-      label = "Differential motif",
+      prefix = "branch_dma",
+      label = "Differential branch motif",
       require = "branch_motif_exp",
       name = "motif"
     ),
     sig_branch_motif_exp = list(
-      prefix = "dma",
-      label = "Differential motif",
+      prefix = "branch_dma",
+      label = "Differential branch motif",
       require = "sig_branch_motif_exp",
       name = "motif"
     )

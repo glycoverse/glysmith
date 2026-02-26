@@ -57,7 +57,8 @@ Data generated:
 \itemize{
 \item \code{dea_res}: The DEA results (if \code{on = "exp"}, default)
 \item \code{dta_res}: The DTA results (if \code{on = "trait_exp"})
-\item \code{dma_res}: The DMA results (if \code{on} is a motif experiment)
+\item \code{dynamic_dma_res}: The DMA results (if \code{on = "dynamic_motif_exp"})
+\item \code{branch_dma_res}: The DMA results (if \code{on = "branch_motif_exp"})
 \item \code{sig_exp}: The filtered experiment (if \code{on = "exp"}, default)
 \item \code{sig_trait_exp}: The filtered trait experiment (if \code{on = "trait_exp"})
 \item \code{sig_dynamic_motif_exp}: The filtered dynamic motif experiment (if \code{on = "dynamic_motif_exp"})
@@ -68,7 +69,8 @@ Tables generated:
 \itemize{
 \item \code{dea_main_test}, \code{dea_post_hoc_test}: Tables containing the results (if \code{on = "exp"}, default)
 \item \code{dta_main_test}, \code{dta_post_hoc_test}: Tables containing the results (if \code{on = "trait_exp"})
-\item \code{dma_main_test}, \code{dma_post_hoc_test}: Tables containing the results (if \code{on} is a motif experiment)
+\item \code{dynamic_dma_main_test}, \code{dynamic_dma_post_hoc_test}: Tables containing the results (if \code{on = "dynamic_motif_exp"})
+\item \code{branch_dma_main_test}, \code{branch_dma_post_hoc_test}: Tables containing the results (if \code{on = "branch_motif_exp"})
 }
 }
 \section{AI Prompt}{
