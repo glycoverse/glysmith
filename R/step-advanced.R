@@ -205,11 +205,17 @@ step_quantify_branch_motifs <- function(method = "relative") {
     condition = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
       if (!.has_glycan_structure(exp)) {
-        return(list(check = FALSE, reason = "glycan structures are not available in the experiment"))
+        return(list(
+          check = FALSE,
+          reason = "glycan structures are not available in the experiment"
+        ))
       }
       type <- glyexp::get_glycan_type(exp)
       if (type != "N") {
-        return(list(check = FALSE, reason = "branch motif quantification only works with N-glycans"))
+        return(list(
+          check = FALSE,
+          reason = "branch motif quantification only works with N-glycans"
+        ))
       }
       list(check = TRUE, reason = NULL)
     },
