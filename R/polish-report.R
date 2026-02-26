@@ -352,7 +352,7 @@ polish_report <- function(
   desc <- stringr::str_replace_all(desc, "_vs_", " vs ")
   desc <- stringr::str_replace_all(
     desc,
-    "\\b(sig_trait_exp|sig_motif_exp|sig_exp|trait_exp|motif_exp|exp)\\b",
+    "\\b(sig_trait_exp|sig_dynamic_motif_exp|sig_branch_motif_exp|sig_exp|trait_exp|dynamic_motif_exp|branch_motif_exp|exp)\\b",
     function(x) .humanize_on_label(x)
   )
   desc <- stringr::str_replace_all(desc, "_", " ")
@@ -463,8 +463,10 @@ polish_report <- function(
       sig_exp = "significant variables",
       trait_exp = "traits",
       sig_trait_exp = "significant traits",
-      motif_exp = "motifs",
-      sig_motif_exp = "significant motifs",
+      dynamic_motif_exp = "dynamic motifs",
+      sig_dynamic_motif_exp = "significant dynamic motifs",
+      branch_motif_exp = "branch motifs",
+      sig_branch_motif_exp = "significant branch motifs",
       exp = "variables",
       x
     )
@@ -476,8 +478,10 @@ polish_report <- function(
     sig = "significant variables",
     trait = "traits",
     sig_trait = "significant traits",
-    motif = "motifs",
-    sig_motif = "significant motifs"
+    dynamic_motif = "dynamic motifs",
+    sig_dynamic_motif = "significant dynamic motifs",
+    branch_motif = "branch motifs",
+    sig_branch_motif = "significant branch motifs"
   )
 }
 
