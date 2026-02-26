@@ -15,7 +15,9 @@ step_umap(
 }
 \arguments{
 \item{on}{Name of the experiment to run UMAP on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+"dynamic_motif_exp", "sig_dynamic_motif_exp",
+"branch_motif_exp", "sig_branch_motif_exp".}
 
 \item{n_neighbors}{Number of neighbors to consider for each point. Default is 15.}
 
@@ -44,7 +46,8 @@ Data required:
 \itemize{
 \item \code{exp} (if \code{on = "exp"}): The experiment to perform UMAP on
 \item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to perform UMAP on
-\item \code{motif_exp} (if \code{on = "motif_exp"}): The motif experiment to perform UMAP on
+\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to perform UMAP on
+\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to perform UMAP on
 }
 
 Data generated (with suffixes):

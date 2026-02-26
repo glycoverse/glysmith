@@ -8,7 +8,8 @@
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to run PCA on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PCA on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run PCA on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run PCA on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run PCA on
 #'
 #' Tables generated (with suffixes):
 #' - `pca_samples`: A table containing the PCA scores for each sample
@@ -26,7 +27,9 @@
 #' - Include this step if needed.
 #'
 #' @param on Name of the experiment to run PCA on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
+#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param plot_width Width of plots in inches. Default is 5.
 #' @param plot_height Height of plots in inches. Default is 5.
 #' @param loadings Logical indicating whether to generate the loading plot.
@@ -136,7 +139,8 @@ step_pca <- function(
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to perform t-SNE on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform t-SNE on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform t-SNE on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to perform t-SNE on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to perform t-SNE on
 #'
 #' Data generated (with suffixes):
 #' - `tsne`: The t-SNE result
@@ -150,7 +154,9 @@ step_pca <- function(
 #' - Include this step only when the user explicitly asks for t-SNE.
 #'
 #' @param on Name of the experiment to run t-SNE on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
+#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_tsne
@@ -222,7 +228,8 @@ step_tsne <- function(
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to perform UMAP on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform UMAP on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to perform UMAP on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to perform UMAP on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to perform UMAP on
 #'
 #' Data generated (with suffixes):
 #' - `umap`: The UMAP result
@@ -236,7 +243,9 @@ step_tsne <- function(
 #' - Include this step only when the user explicitly asks for UMAP.
 #'
 #' @param on Name of the experiment to run UMAP on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
+#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_umap
@@ -304,7 +313,8 @@ step_umap <- function(
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to run PLS-DA on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PLS-DA on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run PLS-DA on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run PLS-DA on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run PLS-DA on
 #'
 #' Tables generated (with suffixes):
 #' - `plsda_samples`: A table containing the PLS-DA scores for each sample
@@ -325,7 +335,9 @@ step_umap <- function(
 #' - Include this step when users explicitly asks for PLS-DA.
 #'
 #' @param on Name of the experiment to run PLS-DA on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
+#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param ncomp Number of components to include. Default is 2.
 #' @param scale Logical indicating whether to scale the data. Default is TRUE.
 #' @param plot_width Width of plots in inches. Default is 5.
@@ -494,7 +506,8 @@ step_plsda <- function(
 #' Data required:
 #' - `exp` (if `on = "exp"`): The experiment to run OPLS-DA on
 #' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run OPLS-DA on
-#' - `motif_exp` (if `on = "motif_exp"`): The motif experiment to run OPLS-DA on
+#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run OPLS-DA on
+#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run OPLS-DA on
 #'
 #' Tables generated (with suffixes):
 #' - `oplsda_samples`: A table containing the OPLS-DA scores for each sample
@@ -517,7 +530,9 @@ step_plsda <- function(
 #'   If multiple groups are found, ask if `step_subset_groups()` should be run first.
 #'
 #' @param on Name of the experiment to run OPLS-DA on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".
+#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
+#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param pred_i Number of predictive components to include. Default is 1.
 #' @param ortho_i Number of orthogonal components to include. Default is NA (automatic).
 #' @param scale Logical indicating whether to scale the data. Default is TRUE.

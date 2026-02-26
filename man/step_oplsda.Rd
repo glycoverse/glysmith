@@ -16,7 +16,9 @@ step_oplsda(
 }
 \arguments{
 \item{on}{Name of the experiment to run OPLS-DA on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp", "motif_exp", "sig_motif_exp".}
+Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
+"dynamic_motif_exp", "sig_dynamic_motif_exp",
+"branch_motif_exp", "sig_branch_motif_exp".}
 
 \item{pred_i}{Number of predictive components to include. Default is 1.}
 
@@ -43,7 +45,8 @@ Data required:
 \itemize{
 \item \code{exp} (if \code{on = "exp"}): The experiment to run OPLS-DA on
 \item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run OPLS-DA on
-\item \code{motif_exp} (if \code{on = "motif_exp"}): The motif experiment to run OPLS-DA on
+\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to run OPLS-DA on
+\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to run OPLS-DA on
 }
 
 Tables generated (with suffixes):
