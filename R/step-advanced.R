@@ -89,6 +89,84 @@ step_derive_traits <- function(
   )
 }
 
+#' Step: Quantify Dynamic Motifs
+#'
+#' Quantify glycan motifs using `glydet::quantify_motifs()` with `glymotif::dynamic_motifs()`.
+#' This extracts all possible motifs from glycan structures.
+#' Works with any glycan type.
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to quantify motifs for
+#'
+#' Data generated:
+#' - `dynamic_motif_exp`: The experiment with quantified motifs
+#'
+#' Tables generated:
+#' - `dynamic_motifs`: A table containing the quantified motifs.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step if motif analysis is needed for non-N-glycans or when comprehensive motif extraction is desired.
+#' - This step should be followed by DEA and visualization steps.
+#'
+#' @param max_size Maximum size of motifs to extract. Default is 3.
+#' @param method Method for motif quantification ("relative" or "absolute"). Default is "relative".
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_quantify_dynamic_motifs()
+#' @seealso [glydet::quantify_motifs()], [glymotif::dynamic_motifs()]
+#' @export
+step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
+  signature <- rlang::expr_deparse(match.call())
+
+  step(
+    id = "quantify_dynamic_motifs",
+    label = "Dynamic motif quantification",
+    condition = function(ctx) {
+      check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
+      reason <- "glycan structures are not available in the experiment"
+      list(check = check, reason = reason)
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      motifs <- glymotif::dynamic_motifs(max_size = max_size)
+
+      dynamic_motif_exp <- glydet::quantify_motifs(
+        exp,
+        motifs = motifs,
+        method = method,
+        ignore_linkages = FALSE
+      )
+
+      ctx <- ctx_add_data(ctx, "dynamic_motif_exp", dynamic_motif_exp)
+      ctx <- ctx_add_table(
+        ctx,
+        "dynamic_motifs",
+        tibble::as_tibble(dynamic_motif_exp),
+        "Dynamic motif quantification results."
+      )
+      ctx
+    },
+    report = function(x) {
+      tbl <- x$tables[["dynamic_motifs"]]
+      n_motifs <- length(unique(tbl$motif))
+      paste0(
+        "Dynamic motif quantification was performed. ",
+        "All motifs were extracted. ",
+        "Number of quantified motifs: ",
+        n_motifs,
+        "."
+      )
+    },
+    generate = "dynamic_motif_exp",
+    require = "exp",
+    signature = signature
+  )
+}
+
 #' Step: Quantify Motifs
 #'
 #' Quantify glycan motifs using `glydet::quantify_motifs()`.
