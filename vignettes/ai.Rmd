@@ -57,6 +57,13 @@ By providing the experiment object (`exp`), the LLM can understand your data str
 ensuring the generated blueprint is tailored to your specific dataset.
 The function also prints a brief rationale for the chosen steps to the console.
 
+After you answering all the questions, a blueprint is returned as `bp`.
+You can then pass it to `forge_analysis()`:
+
+```r
+res <- forge_analysis(exp, blueprint = bp)
+```
+
 ## Refining Your Analysis
 
 If the initial blueprint needs adjustment,
