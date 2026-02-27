@@ -1,7 +1,10 @@
 #' Step: Plot QC
 #'
+#' @description
 #' Generate quality control plots for the experiment using `glyclean` plotting functions.
 #' This step can be used before AND after `step_preprocess()` to generate QC plots at different stages.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -230,8 +233,11 @@ step_plot_qc <- function(
 
 #' Step: Preprocessing
 #'
+#' @description
 #' Preprocess the experiment using `glyclean::auto_clean()`.
 #' This step can be omitted if the experiment is already preprocessed.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -328,9 +334,12 @@ step_preprocess <- function(
 
 #' Step: Subset Groups
 #'
+#' @description
 #' Subset the experiment to specific groups using the `group` column in sample information.
 #' This is useful when downstream steps require exactly two groups for comparison.
 #' Usually run after `step_preprocess()` and before DEA or enrichment steps.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -463,9 +472,12 @@ step_subset_groups <- function(groups = NULL) {
 
 #' Step: Adjust Protein Abundance
 #'
+#' @description
 #' Adjust glycoform quantification values by correcting for protein abundance
 #' utilizing `glyclean::adjust_protein()`.
 #' Usually this step should be run after `step_preprocess()`.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -564,9 +576,12 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
 
 #' Step: Identification Overview
 #'
+#' @description
 #' Summarize the experiment using `glyexp::summarize_experiment()`.
 #' This is usually the first step, BEFORE `step_preprocess()`.
 #' Very light-weight to run, so always include it.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:

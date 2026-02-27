@@ -1,11 +1,18 @@
 #' Step: Differential Expression Analysis (DEA) using Limma
 #'
+#' @description
 #' Run differential analysis using linear model-based analysis via `glystats::gly_limma()`,
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #' This step is the recommended DEA method for all experiments,
 #' for both two-group and multi-group experiments.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
 #'
 #' @details
 #' Data required:
@@ -90,11 +97,18 @@ step_dea_limma <- function(
 
 #' Step: Differential Expression Analysis (DEA) using t-test
 #'
+#' @description
 #' Run differential analysis using t-test via `glystats::gly_ttest()`,
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #' Only use this method for experiments with 2 groups.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
 #'
 #' @details
 #' Data required:
@@ -172,10 +186,17 @@ step_dea_ttest <- function(
 
 #' Step: Differential Expression Analysis (DEA) using ANOVA
 #'
+#' @description
 #' Run differential analysis using ANOVA via `glystats::gly_anova()`,
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
 #'
 #' @details
 #' Data required:
@@ -251,11 +272,18 @@ step_dea_anova <- function(
 
 #' Step: Differential Expression Analysis (DEA) using Wilcoxon test
 #'
+#' @description
 #' Run differential analysis using Wilcoxon analysis via `glystats::gly_wilcox()`,
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
 #' Only use this method for experiments with 2 groups.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
 #'
 #' @details
 #' Data required:
@@ -334,10 +362,17 @@ step_dea_wilcox <- function(
 
 #' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
 #'
+#' @description
 #' Run differential analysis using Kruskal-Wallis analysis via `glystats::gly_kruskal()`,
 #' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
 #' By default, this runs DEA on the main experiment (`exp`), but can be configured
 #' to run on derived traits (`trait_exp`) or other experiment objects.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
 #'
 #' @details
 #' Data required:

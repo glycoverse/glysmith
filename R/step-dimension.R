@@ -1,8 +1,20 @@
 #' Step: Principal Component Analysis (PCA)
 #'
+#' @description
 #' Run PCA using `glystats::gly_pca()` and plot it with `glyvis::plot_pca()`.
 #' Loading plot for glycoproteomics data can be crowded with too many variables.
 #' Ignore the resulting plot if it is not informative.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
+#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
+#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
 #'
 #' @details
 #' Data required:
@@ -127,6 +139,7 @@ step_pca <- function(
 
 #' Step: t-SNE
 #'
+#' @description
 #' Perform t-SNE analysis using `glystats::gly_tsne()` and
 #' plot a t-SNE plot using `glyvis::plot_tsne()`.
 #' Note that the result of t-SNE largely depends on the `perplexity` parameter.
@@ -134,6 +147,17 @@ step_pca <- function(
 #' If you are not satisfied with the result,
 #' manually call `glyvis::plot_tsne()` with different `perplexity` values
 #' to find the best one.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
+#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
+#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
 #'
 #' @details
 #' Data required:
@@ -216,6 +240,7 @@ step_tsne <- function(
 
 #' Step: UMAP
 #'
+#' @description
 #' Perform UMAP analysis using `glystats::gly_umap()` and
 #' plot a UMAP plot using `glyvis::plot_umap()`.
 #' Note that the result of UMAP largely depends on the `n_neighbors` parameter.
@@ -223,6 +248,17 @@ step_tsne <- function(
 #' If you are not satisfied with the result,
 #' manually call `glyvis::plot_umap()` with different `n_neighbors` values
 #' to find the best one.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
+#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
+#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
 #'
 #' @details
 #' Data required:
@@ -305,9 +341,21 @@ step_umap <- function(
 
 #' Step: Partial Least Squares Discriminant Analysis (PLS-DA)
 #'
+#' @description
 #' Perform PLS-DA using `glystats::gly_plsda()` and plot it with `glyvis::plot_plsda()`.
 #' PLS-DA is a supervised method that finds components maximizing covariance between
 #' predictors and the response variable (group membership).
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
+#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
+#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
 #'
 #' @details
 #' Data required:
@@ -498,9 +546,21 @@ step_plsda <- function(
 
 #' Step: Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA)
 #'
+#' @description
 #' Perform OPLS-DA using `glystats::gly_oplsda()` and plot it with `glyvis::plot_oplsda()`.
 #' OPLS-DA separates variation into predictive (related to group) and orthogonal (unrelated) components.
 #' This step only works with binary classification (exactly 2 groups).
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
+#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
+#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
 #'
 #' @details
 #' Data required:

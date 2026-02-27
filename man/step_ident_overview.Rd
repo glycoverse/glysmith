@@ -21,6 +21,8 @@ A \code{glysmith_step} object.
 Summarize the experiment using \code{glyexp::summarize_experiment()}.
 This is usually the first step, BEFORE \code{step_preprocess()}.
 Very light-weight to run, so always include it.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

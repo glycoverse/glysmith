@@ -16,6 +16,8 @@ A \code{glysmith_step} object.
 Quantify N-glycan branch motifs using \code{glydet::quantify_motifs()} with \code{glymotif::branch_motifs()}.
 This extracts specific N-glycan branching patterns (bi-antennary, tri-antennary, etc.).
 Only works with N-glycans.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

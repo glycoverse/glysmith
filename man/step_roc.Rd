@@ -22,6 +22,8 @@ A \code{glysmith_step} object.
 Perform ROC analysis using \code{glystats::gly_roc()},
 extract top 10 variables with highest AUC,
 and plot ROC curves for these variables using \code{glyvis::plot_roc()}.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

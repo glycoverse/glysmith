@@ -18,6 +18,8 @@ A \code{glysmith_step} object.
 Quantify glycan motifs using \code{glydet::quantify_motifs()} with \code{glymotif::dynamic_motifs()}.
 This extracts all possible motifs from glycan structures.
 Works with any glycan type.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

@@ -1,8 +1,11 @@
 #' Step: Derived Trait Calculation
 #'
+#' @description
 #' Calculate glycan derived traits using `glydet::derive_traits()`.
 #' Advanced glycan structure analysis that summarizes structural properties of a glycome or each glycosite.
 #' Need glycan structure information.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -91,9 +94,12 @@ step_derive_traits <- function(
 
 #' Step: Quantify Dynamic Motifs
 #'
+#' @description
 #' Quantify glycan motifs using `glydet::quantify_motifs()` with `glymotif::dynamic_motifs()`.
 #' This extracts all possible motifs from glycan structures.
 #' Works with any glycan type.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -169,9 +175,12 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
 
 #' Step: Quantify Branch Motifs
 #'
+#' @description
 #' Quantify N-glycan branch motifs using `glydet::quantify_motifs()` with `glymotif::branch_motifs()`.
 #' This extracts specific N-glycan branching patterns (bi-antennary, tri-antennary, etc.).
 #' Only works with N-glycans.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:
@@ -258,9 +267,12 @@ step_quantify_branch_motifs <- function(method = "relative") {
 
 #' Step: ROC Analysis
 #'
+#' @description
 #' Perform ROC analysis using `glystats::gly_roc()`,
 #' extract top 10 variables with highest AUC,
 #' and plot ROC curves for these variables using `glyvis::plot_roc()`.
+#'
+#' This step requires `exp` (experiment data).
 #'
 #' @details
 #' Data required:

@@ -16,6 +16,8 @@ A \code{glysmith_step} object.
 Subset the experiment to specific groups using the \code{group} column in sample information.
 This is useful when downstream steps require exactly two groups for comparison.
 Usually run after \code{step_preprocess()} and before DEA or enrichment steps.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

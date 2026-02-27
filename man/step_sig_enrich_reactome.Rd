@@ -29,7 +29,9 @@ A \code{glysmith_step} object.
 }
 \description{
 Perform Reactome enrichment analysis on differentially expressed variables using \code{glystats::gly_enrich_reactome()}.
-This step requires one of the DEA steps to be run.
+
+This step requires \code{sig_exp} (filtered experiment from DEA).
+Run one of \code{\link[=step_dea_limma]{step_dea_limma()}}, \code{\link[=step_dea_ttest]{step_dea_ttest()}}, or \code{\link[=step_dea_wilcox]{step_dea_wilcox()}} before this step.
 Only execute for glycoproteomics experiments with exactly 2 groups.
 If used for glycomics experiments, the step will be skipped.
 Use all genes in OrgDb as the background.

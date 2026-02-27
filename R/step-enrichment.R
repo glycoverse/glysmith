@@ -1,7 +1,10 @@
 #' Step: GO Enrichment Analysis on Differentially Expressed Variables
 #'
+#' @description
 #' Perform GO enrichment analysis on differentially expressed variables using `glystats::gly_enrich_go()`.
-#' This step requires one of the DEA steps to be run.
+#'
+#' This step requires `sig_exp` (filtered experiment from DEA).
+#' Run one of [step_dea_limma()], [step_dea_ttest()], or [step_dea_wilcox()] before this step.
 #' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' If used for glycomics experiments, the step will be skipped.
 #' Use all genes in OrgDb as the background.
@@ -58,8 +61,11 @@ step_sig_enrich_go <- function(
 
 #' Step: KEGG Enrichment Analysis on Differentially Expressed Variables
 #'
+#' @description
 #' Perform KEGG enrichment analysis on differentially expressed variables using `glystats::gly_enrich_kegg()`.
-#' This step requires one of the DEA steps to be run.
+#'
+#' This step requires `sig_exp` (filtered experiment from DEA).
+#' Run one of [step_dea_limma()], [step_dea_ttest()], or [step_dea_wilcox()] before this step.
 #' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' If used for glycomics experiments, the step will be skipped.
 #' Use all genes in OrgDb as the background.
@@ -117,8 +123,11 @@ step_sig_enrich_kegg <- function(
 
 #' Step: Reactome Enrichment Analysis on Differentially Expressed Variables
 #'
+#' @description
 #' Perform Reactome enrichment analysis on differentially expressed variables using `glystats::gly_enrich_reactome()`.
-#' This step requires one of the DEA steps to be run.
+#'
+#' This step requires `sig_exp` (filtered experiment from DEA).
+#' Run one of [step_dea_limma()], [step_dea_ttest()], or [step_dea_wilcox()] before this step.
 #' Only execute for glycoproteomics experiments with exactly 2 groups.
 #' If used for glycomics experiments, the step will be skipped.
 #' Use all genes in OrgDb as the background.

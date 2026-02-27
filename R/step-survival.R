@@ -1,8 +1,20 @@
 #' Step: Cox Proportional Hazards Model
 #'
+#' @description
 #' Perform survival analysis by fitting a Cox proportional hazards model
 #' using `glystats::gly_cox()` for each variable.
 #' This step identifies variables associated with survival outcomes.
+#'
+#' This step depends on the `on` parameter (default: `exp`).
+#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
+#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
+#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
+#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
+#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
+#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
+#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
+#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
+#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
 #'
 #' @details
 #' Data required:

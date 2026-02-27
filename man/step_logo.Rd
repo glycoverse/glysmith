@@ -38,6 +38,13 @@ A \code{glysmith_step} object.
 Create a logo plot for glycosylation sites using \code{glyvis::plot_logo()}.
 The logo plot visualizes the amino acid sequence patterns around glycosylation sites.
 This step is only applicable for glycoproteomics experiments.
+
+This step depends on the \code{on} parameter (default: \code{exp}).
+\itemize{
+\item When \code{on = "exp"}, requires \code{exp} (experiment data).
+\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
+\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
+}
 }
 \details{
 Data required:

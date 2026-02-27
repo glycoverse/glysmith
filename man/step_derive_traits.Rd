@@ -30,6 +30,8 @@ A \code{glysmith_step} object.
 Calculate glycan derived traits using \code{glydet::derive_traits()}.
 Advanced glycan structure analysis that summarizes structural properties of a glycome or each glycosite.
 Need glycan structure information.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

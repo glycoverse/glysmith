@@ -32,6 +32,8 @@ A \code{glysmith_step} object.
 \description{
 Generate quality control plots for the experiment using \code{glyclean} plotting functions.
 This step can be used before AND after \code{step_preprocess()} to generate QC plots at different stages.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

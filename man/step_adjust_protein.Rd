@@ -25,6 +25,8 @@ A \code{glysmith_step} object.
 Adjust glycoform quantification values by correcting for protein abundance
 utilizing \code{glyclean::adjust_protein()}.
 Usually this step should be run after \code{step_preprocess()}.
+
+This step requires \code{exp} (experiment data).
 }
 \details{
 Data required:

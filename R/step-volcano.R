@@ -1,6 +1,8 @@
 #' Step: Volcano Plot
 #'
+#' @description
 #' Create a volcano plot from DEA results using `glyvis::plot_volcano()`.
+#'
 #' This step requires one of the DEA steps to be run:
 #' - [step_dea_limma()] (multi-group comparison is also supported)
 #' - [step_dea_ttest()]

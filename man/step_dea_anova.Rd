@@ -46,6 +46,14 @@ Run differential analysis using ANOVA via \code{glystats::gly_anova()},
 then filter the experiment to keep only the differentially expressed variables using \code{glystats::filter_sig_vars()}.
 By default, this runs DEA on the main experiment (\code{exp}), but can be configured
 to run on derived traits (\code{trait_exp}) or other experiment objects.
+
+This step depends on the \code{on} parameter (default: \code{exp}).
+\itemize{
+\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
+\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
+\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
+\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
+}
 }
 \details{
 Data required:

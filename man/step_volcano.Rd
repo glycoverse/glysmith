@@ -32,6 +32,7 @@ A \code{glysmith_step} object.
 }
 \description{
 Create a volcano plot from DEA results using \code{glyvis::plot_volcano()}.
+
 This step requires one of the DEA steps to be run:
 \itemize{
 \item \code{\link[=step_dea_limma]{step_dea_limma()}} (multi-group comparison is also supported)

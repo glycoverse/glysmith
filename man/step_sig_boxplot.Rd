@@ -47,13 +47,20 @@ Create boxplots for the most significant variables from DEA analysis using
 \code{glyvis::plot_boxplot()}. The function selects the top \code{n_top} variables with
 the lowest adjusted p-values from the DEA results and plots their expression
 values grouped by sample groups.
+
+This step depends on the \code{on} parameter (default: \code{sig_exp}).
+\itemize{
+\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
+\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
+\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
+\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
+\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
 }
-\details{
-This step requires a DEA step to be run first (e.g., \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}).
+
 The number of variables is limited to a maximum of 25, as enforced by
 \code{glyvis::plot_boxplot()}.
-
+}
+\details{
 Data required:
 \itemize{
 \item Depends on \code{on} parameter:
