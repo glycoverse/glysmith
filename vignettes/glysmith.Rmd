@@ -153,30 +153,7 @@ write_blueprint(bp, "path/to/save/bp.rds")
 bp <- read_blueprint("path/to/save/bp.rds")
 ```
 
-Here is a list of all available steps:
-
-- `step_ident_overview()`: Summarize the experiment identification.
-- `step_preprocess()`: Preprocess the experiment data and generate QC plots.
-- `step_pca()`, `step_tsne()`, `step_umap()`: Dimension reduction for data exploration.
-- `step_dea_limma()`, `step_dea_ttest()`, `step_dea_anova()`, `step_dea_wilcox()`, `step_dea_kruskal()`: Differential expression analysis with various methods.
-- `step_volcano()`: Create volcano plots for DEA results.
-- `step_heatmap()`: Generate heatmaps for expression data.
-- `step_roc()`: Perform Receiver Operating Characteristic (ROC) analysis.
-- `step_sig_enrich_go()`, `step_sig_enrich_kegg()`, `step_sig_enrich_reactome()`: Functional enrichment analysis for significant items.
-- `step_derive_traits()`: Calculate glycan derived traits.
-- `step_quantify_dynamic_motifs()`: Quantify all possible glycan motifs (substructures).
-- `step_quantify_branch_motifs()`: Quantify N-glycan branch motifs.
-
-Before you start building your own blueprints, here are a few rules to keep in mind:
-
-- `step_preprocess()` is generally the first step,
-  but it's optional if you perform preprocessing manually with `glyclean`.
-- Some steps require others to be executed first.
-  For example, `step_volcano()` requires at least one of `step_dea_limma()`, `step_dea_ttest()`, or `step_dea_wilcox()` to be run beforehand. Consult the documentation for each step to check dependencies.
-- You cannot include duplicate steps within a blueprint.
-  For instance, you can't add `step_dea_limma()` twice in the same blueprint.
-- If a step overwrites data produced by an earlier step, a warning will be issued.
-  For example, including both `step_dea_limma()` and then `step_dea_ttest()` will overwrite the `dea_res` data from the former with that from the latter step. Ignore the warning if that's what you intend.
-- You can create branches in a blueprint by using `br()`. Check out its document for examples.
+To find out more about creating blueprints, check out [this vignette](https://glycoverse.github.io/glysmith/articles/blueprint.html).
+You can also have AI to create a blueprint for you. Check out [this vignette](https://glycoverse.github.io/glysmith/articles/ai.html).
 
 **Happy forging!**
