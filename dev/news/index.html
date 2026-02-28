@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.9.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.10.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,8 +38,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glysmith-development-version">glysmith (development version)<a class="anchor" aria-label="anchor" href="#glysmith-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.10.0" id="glysmith-0100">glysmith 0.10.0<a class="anchor" aria-label="anchor" href="#glysmith-0100"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<h3 id="breaking-changes-0-10-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-10-0"></a></h3>
 <ul><li>Split <code>step_quantify_motifs()</code> into two separate functions:
 <ul><li>
 <code><a href="../reference/step_quantify_dynamic_motifs.html">step_quantify_dynamic_motifs()</a></code>: For quantifying all possible motifs using <code><a href="https://glycoverse.github.io/glymotif/reference/dynamic_motifs.html" class="external-link">glymotif::dynamic_motifs()</a></code>. Works with any glycan type.</li>
@@ -49,6 +52,10 @@
 <li>Removed <code>step_quantify_motifs()</code> function entirely.</li>
 <li>Updated all downstream steps to accept the new data types (<code>dynamic_motif_exp</code>, <code>sig_dynamic_motif_exp</code>, <code>branch_motif_exp</code>, <code>sig_branch_motif_exp</code>) instead of the old <code>motif_exp</code>/<code>sig_motif_exp</code>.</li>
 <li>Differentiated DEA results: <code>dynamic_motif_exp</code> now generates <code>dynamic_dma_res</code> and <code>branch_motif_exp</code> generates <code>branch_dma_res</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-10-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-10-0"></a></h3>
+<ul><li>Add a vignette about creating a blueprint manually.</li>
 </ul></div>
 </div>
     <div class="section level2">

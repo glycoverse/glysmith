@@ -2,6 +2,8 @@
 
 ## glysmith (development version)
 
+## glysmith 0.10.0
+
 ### Breaking Changes
 
 - Split `step_quantify_motifs()` into two separate functions:
@@ -20,6 +22,10 @@
   `motif_exp`/`sig_motif_exp`.
 - Differentiated DEA results: `dynamic_motif_exp` now generates
   `dynamic_dma_res` and `branch_motif_exp` generates `branch_dma_res`.
+
+### Minor improvements and bug fixes
+
+- Add a vignette about creating a blueprint manually.
 
 ## glysmith 0.9.1
 
