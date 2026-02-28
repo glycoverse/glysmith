@@ -9,6 +9,10 @@
 * Updated all downstream steps to accept the new data types (`dynamic_motif_exp`, `sig_dynamic_motif_exp`, `branch_motif_exp`, `sig_branch_motif_exp`) instead of the old `motif_exp`/`sig_motif_exp`.
 * Differentiated DEA results: `dynamic_motif_exp` now generates `dynamic_dma_res` and `branch_motif_exp` generates `branch_dma_res`.
 
+## Minor improvements and bug fixes
+
+* Add a vignette about creating a blueprint manually.
+
 # glysmith 0.9.1
 
 ## Minor improvements and bug fixes
