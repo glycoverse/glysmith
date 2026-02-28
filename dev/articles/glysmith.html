@@ -229,69 +229,10 @@ do:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/write_blueprint.html">write_blueprint</a></span><span class="op">(</span><span class="va">bp</span>, <span class="st">"path/to/save/bp.rds"</span><span class="op">)</span></span>
 <span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/write_blueprint.html">read_blueprint</a></span><span class="op">(</span><span class="st">"path/to/save/bp.rds"</span><span class="op">)</span></span></code></pre></div>
-<p>Here is a list of all available steps:</p>
-<ul>
-<li>
-<code><a href="../reference/step_ident_overview.html">step_ident_overview()</a></code>: Summarize the experiment
-identification.</li>
-<li>
-<code><a href="../reference/step_preprocess.html">step_preprocess()</a></code>: Preprocess the experiment data and
-generate QC plots.</li>
-<li>
-<code><a href="../reference/step_pca.html">step_pca()</a></code>, <code><a href="../reference/step_tsne.html">step_tsne()</a></code>,
-<code><a href="../reference/step_umap.html">step_umap()</a></code>: Dimension reduction for data exploration.</li>
-<li>
-<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>, <code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code>,
-<code><a href="../reference/step_dea_anova.html">step_dea_anova()</a></code>, <code><a href="../reference/step_dea_wilcox.html">step_dea_wilcox()</a></code>,
-<code><a href="../reference/step_dea_kruskal.html">step_dea_kruskal()</a></code>: Differential expression analysis with
-various methods.</li>
-<li>
-<code><a href="../reference/step_volcano.html">step_volcano()</a></code>: Create volcano plots for DEA
-results.</li>
-<li>
-<code><a href="../reference/step_heatmap.html">step_heatmap()</a></code>: Generate heatmaps for expression
-data.</li>
-<li>
-<code><a href="../reference/step_roc.html">step_roc()</a></code>: Perform Receiver Operating Characteristic
-(ROC) analysis.</li>
-<li>
-<code><a href="../reference/step_sig_enrich_go.html">step_sig_enrich_go()</a></code>,
-<code><a href="../reference/step_sig_enrich_kegg.html">step_sig_enrich_kegg()</a></code>,
-<code><a href="../reference/step_sig_enrich_reactome.html">step_sig_enrich_reactome()</a></code>: Functional enrichment analysis
-for significant items.</li>
-<li>
-<code><a href="../reference/step_derive_traits.html">step_derive_traits()</a></code>: Calculate glycan derived
-traits.</li>
-<li>
-<code><a href="../reference/step_quantify_dynamic_motifs.html">step_quantify_dynamic_motifs()</a></code>: Quantify all possible
-glycan motifs (substructures).</li>
-<li>
-<code><a href="../reference/step_quantify_branch_motifs.html">step_quantify_branch_motifs()</a></code>: Quantify N-glycan branch
-motifs.</li>
-</ul>
-<p>Before you start building your own blueprints, here are a few rules
-to keep in mind:</p>
-<ul>
-<li>
-<code><a href="../reference/step_preprocess.html">step_preprocess()</a></code> is generally the first step, but it’s
-optional if you perform preprocessing manually with
-<code>glyclean</code>.</li>
-<li>Some steps require others to be executed first. For example,
-<code><a href="../reference/step_volcano.html">step_volcano()</a></code> requires at least one of
-<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>, <code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code>, or
-<code><a href="../reference/step_dea_wilcox.html">step_dea_wilcox()</a></code> to be run beforehand. Consult the
-documentation for each step to check dependencies.</li>
-<li>You cannot include duplicate steps within a blueprint. For instance,
-you can’t add <code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code> twice in the same
-blueprint.</li>
-<li>If a step overwrites data produced by an earlier step, a warning
-will be issued. For example, including both
-<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code> and then <code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code>
-will overwrite the <code>dea_res</code> data from the former with that
-from the latter step. Ignore the warning if that’s what you intend.</li>
-<li>You can create branches in a blueprint by using <code><a href="../reference/br.html">br()</a></code>.
-Check out its document for examples.</li>
-</ul>
+<p>To find out more about creating blueprints, check out <a href="https://glycoverse.github.io/glysmith/articles/blueprint.html">this
+vignette</a>. You can also have AI to create a blueprint for you. Check
+out <a href="https://glycoverse.github.io/glysmith/articles/ai.html">this
+vignette</a>.</p>
 <p><strong>Happy forging!</strong></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
