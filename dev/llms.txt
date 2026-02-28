@@ -1,0 +1,189 @@
+# glysmith
+
+> **One Ring to rule them all.** — *The Lord of the Rings*
+
+![](reference/figures/ring.png)
+
+Be overwhelmed by the complexity of glycoverse?
+
+Imagine a package, performing all analysis you need, PCA, DEA,
+enrichment, or even advanced glycan derived trait analysis, in just one
+line of code.
+
+Try glysmith! Perform the comprehensive analysis pipeline with one
+function call.
+
+<https://github.com/user-attachments/assets/d1eede5f-f919-428b-a5e8-574a8ab6f863>
+
+## Installation
+
+The glysmith package is not a core glycoverse package. You need to
+install it individually even if you have installed the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse).
+
+You can install the latest release of glysmith from
+[r-universe](https://glycoverse.r-universe.dev/glysmith)
+(**recommended**):
+
+``` r
+# install.packages("pak")
+pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
+pak::pkg_install("glysmith")
+```
+
+Or from [GitHub](https://github.com/glycoverse/glysmith):
+
+``` r
+pak::pkg_install("glycoverse/glysmith@*release")
+```
+
+Or install the development version (NOT recommended):
+
+``` r
+pak::pkg_install("glycoverse/glysmith")
+```
+
+`glysmith` is a high-level package, depending on quite a lot mature
+packages. After installing `glysmith`, you also need to install
+additional dependencies to use this package:
+
+``` r
+glysmith::check_glysmith_deps()
+```
+
+**Note:** Tips and troubleshooting for the meta-package
+[glycoverse](https://github.com/glycoverse/glycoverse) are also
+applicable here: [Installation of
+glycoverse](https://github.com/glycoverse/glycoverse#installation).
+
+## Example
+
+``` r
+library(glyread)
+library(glysmith)
+
+exp <- read_pglyco3("pglyco3_result.txt", sample_info = "sample_info.csv")
+
+# One line of code for the comprehensive analysis pipeline
+result <- forge_analysis(exp)
+
+# One line of code to save the results
+quench_result(result, "path/to/save")
+
+# One line of code to generate a report
+polish_report(result, "report.html")
+```
+
+After running the above `quench_result` line, you will get an organized
+result folder:
+
+![](reference/figures/result-folder.png)
+
+And after running the above `polish_report` line, you will get a report
+in HTML format and automatically open it in your default browser:
+
+![](reference/figures/report.png)
+
+*Note: Here we set `use_ai` to `TRUE` to enable LLM-assisted report
+generation.*
+
+# Package index
+
+## All functions
+
+- [`blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md)
+  : Create a Blueprint
+- [`blueprint_default()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint_default.md)
+  : Default blueprint
+- [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md) :
+  Create a Branch in a Blueprint
+- [`cast_exp()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
+  [`cast_plot()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
+  [`cast_table()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
+  [`cast_data()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
+  : Get Data from GlySmith Result
+- [`check_glysmith_deps()`](https://glycoverse.github.io/glysmith/dev/reference/check_glysmith_deps.md)
+  : Check glysmith Suggests dependencies
+- [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md)
+  : Perform the Whole Analysis Pipeline
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  **\[experimental\]** : Create a Blueprint using Natural Language
+- [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md)
+  **\[experimental\]** : Modify a Blueprint using Natural Language
+- [`polish_report()`](https://glycoverse.github.io/glysmith/dev/reference/polish_report.md)
+  : Render a HTML Report for GlySmith Results
+- [`quench_result()`](https://glycoverse.github.io/glysmith/dev/reference/quench_result.md)
+  : Save GlySmith Result
+- [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md)
+  : Step: Adjust Protein Abundance
+- [`step_correlation()`](https://glycoverse.github.io/glysmith/dev/reference/step_correlation.md)
+  : Step: Correlation Analysis
+- [`step_cox()`](https://glycoverse.github.io/glysmith/dev/reference/step_cox.md)
+  : Step: Cox Proportional Hazards Model
+- [`step_dea_anova()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.md)
+  : Step: Differential Expression Analysis (DEA) using ANOVA
+- [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md)
+  : Step: Differential Expression Analysis (DEA) using Kruskal-Wallis
+  test
+- [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md)
+  : Step: Differential Expression Analysis (DEA) using Limma
+- [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_ttest.md)
+  : Step: Differential Expression Analysis (DEA) using t-test
+- [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.md)
+  : Step: Differential Expression Analysis (DEA) using Wilcoxon test
+- [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md)
+  : Step: Derived Trait Calculation
+- [`step_heatmap()`](https://glycoverse.github.io/glysmith/dev/reference/step_heatmap.md)
+  : Step: Heatmap
+- [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md)
+  : Step: Identification Overview
+- [`step_logo()`](https://glycoverse.github.io/glysmith/dev/reference/step_logo.md)
+  : Step: Logo Plot
+- [`step_oplsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.md)
+  : Step: Orthogonal Partial Least Squares Discriminant Analysis
+  (OPLS-DA)
+- [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md)
+  : Step: Principal Component Analysis (PCA)
+- [`step_plot_qc()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.md)
+  : Step: Plot QC
+- [`step_plsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_plsda.md)
+  : Step: Partial Least Squares Discriminant Analysis (PLS-DA)
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
+  : Step: Preprocessing
+- [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_branch_motifs.md)
+  : Step: Quantify Branch Motifs
+- [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.md)
+  : Step: Quantify Dynamic Motifs
+- [`step_roc()`](https://glycoverse.github.io/glysmith/dev/reference/step_roc.md)
+  : Step: ROC Analysis
+- [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
+  : Step: Significant Variables Boxplot
+- [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_go.md)
+  : Step: GO Enrichment Analysis on Differentially Expressed Variables
+- [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_kegg.md)
+  : Step: KEGG Enrichment Analysis on Differentially Expressed Variables
+- [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_reactome.md)
+  : Step: Reactome Enrichment Analysis on Differentially Expressed
+  Variables
+- [`step_subset_groups()`](https://glycoverse.github.io/glysmith/dev/reference/step_subset_groups.md)
+  : Step: Subset Groups
+- [`step_tsne()`](https://glycoverse.github.io/glysmith/dev/reference/step_tsne.md)
+  : Step: t-SNE
+- [`step_umap()`](https://glycoverse.github.io/glysmith/dev/reference/step_umap.md)
+  : Step: UMAP
+- [`step_volcano()`](https://glycoverse.github.io/glysmith/dev/reference/step_volcano.md)
+  : Step: Volcano Plot
+- [`write_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/write_blueprint.md)
+  [`read_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/write_blueprint.md)
+  : Save or Load a Blueprint
+
+# Articles
+
+### All vignettes
+
+- [AI-Powered Workflow in
+  Glysmith](https://glycoverse.github.io/glysmith/dev/articles/ai.md):
+- [Custom
+  Blueprint](https://glycoverse.github.io/glysmith/dev/articles/blueprint.md):
+- [Get Started with
+  glysmith](https://glycoverse.github.io/glysmith/dev/articles/glysmith.md):

@@ -1,0 +1,322 @@
+# Changelog
+
+## glysmith (development version)
+
+### Breaking Changes
+
+- Split `step_quantify_motifs()` into two separate functions:
+  - [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.md):
+    For quantifying all possible motifs using
+    [`glymotif::dynamic_motifs()`](https://glycoverse.github.io/glymotif/reference/dynamic_motifs.html).
+    Works with any glycan type.
+  - [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_branch_motifs.md):
+    For quantifying N-glycan branch motifs using
+    [`glymotif::branch_motifs()`](https://glycoverse.github.io/glymotif/reference/branch_motifs.html).
+    Only works with N-glycans.
+- Removed `step_quantify_motifs()` function entirely.
+- Updated all downstream steps to accept the new data types
+  (`dynamic_motif_exp`, `sig_dynamic_motif_exp`, `branch_motif_exp`,
+  `sig_branch_motif_exp`) instead of the old
+  `motif_exp`/`sig_motif_exp`.
+- Differentiated DEA results: `dynamic_motif_exp` now generates
+  `dynamic_dma_res` and `branch_motif_exp` generates `branch_dma_res`.
+
+## glysmith 0.9.1
+
+### Minor improvements and bug fixes
+
+- Update dependency strategy to use the r-universe repo.
+
+## glysmith 0.9.0
+
+### New features
+
+- Add `loadings` and `screeplot` parameters to
+  [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md)
+  for optional generation of loading plots and scree plots.
+- Add
+  [`check_glysmith_deps()`](https://glycoverse.github.io/glysmith/dev/reference/check_glysmith_deps.md)
+  for checking and installing optional dependencies required by
+  blueprint steps.
+- [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md)
+  now checks if all dependencies are installed before the actual
+  analysis.
+
+### Minor improvements and bug fixes
+
+- Add `ReactomePA` to Suggests for pathway enrichment analysis.
+
+## glysmith 0.8.1
+
+### Minor improvements and bug fixes
+
+- Fix a bug in `step_quantify_motifs()` that bisecting GlcNAc was
+  regarded as a branching GlcNAc.
+- Fix a failing test introduced be dplyr 1.2.0.
+
+## glysmith 0.8.0
+
+### Minor improvements and bug fixes
+
+- Implemented single-question flow in
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  and
+  [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md)
+  for a more streamlined user experience.
+- Q&A context is now preserved when modifying blueprints with
+  [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md).
+- Improved error messages for steps in branches with missing
+  dependencies.
+- Fun fact now displays only once at the start of AI interactions.
+- Enhanced LLM prompting with atomic question guidance for better
+  clarification questions.
+- Changed default model from deepseek-reasoner to deepseek-chat.
+
+## glysmith 0.7.0
+
+### Breaking changes
+
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
+  now does not generate QC plots anymore. The QC plots are now generated
+  by
+  [`step_plot_qc()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.md).
+
+### New features
+
+- Add
+  [`step_plot_qc()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.md)
+  for generating Quality Control plots.
+- Add
+  [`step_cox()`](https://glycoverse.github.io/glysmith/dev/reference/step_cox.md)
+  for Cox proportional hazards survival analysis.
+- Add
+  [`step_correlation()`](https://glycoverse.github.io/glysmith/dev/reference/step_correlation.md)
+  for correlation analysis.
+- Add
+  [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
+  for generating boxplots of significant variables.
+- Add
+  [`step_plsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_plsda.md)
+  and
+  [`step_oplsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.md)
+  for supervised dimensionality reduction.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now includes sample_info and var_info summaries in LLM context for
+  better suggestions.
+- [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md)
+  now has clarification question capability.
+
+### Minor improvements and bug fixes
+
+- Improved LLM prompt for vague inputs and minimal blueprints in
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md).
+- Added Hmisc to Suggests for
+  [`step_correlation()`](https://glycoverse.github.io/glysmith/dev/reference/step_correlation.md)
+  dependency.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  UI has been optimized.
+- Optimize the speed of
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  and
+  [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md).
+- AI prompts of some steps have been updated.
+- Per-plot width and height are now customizable in step functions.
+
+## glysmith 0.6.0
+
+### New features
+
+- Add
+  [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md)
+  for adjusting glycoform quantification by protein expression.
+- Add
+  [`step_logo()`](https://glycoverse.github.io/glysmith/dev/reference/step_logo.md)
+  for generating logo plots.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now asks clarifying questions to better understand user requirements.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now asks the user to confirm the blueprint before returning it.
+
+### Minor improvements and bug fixes
+
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  has a better UI/UX.
+- Updated the system prompt of
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  to improve its understanding of step usage.
+- Fixed a bug where
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  could not access step parameters.
+- Fixed a bug on Windows where file paths generated by the LLM could not
+  be parsed.
+
+## glysmith 0.5.1
+
+### Minor improvements and bug fixes
+
+- Depends on `glyclean` 0.10.0.
+
+## glysmith 0.5.0
+
+### New features
+
+- LLM-powered report generation is updated largely.
+  - The report structure (sections to include, orders of figures and
+    text chunks, etc.) is now determined by the LLM.
+  - Titles, subtitles, figure titles are now polished by the LLM.
+  - A text description of each figure is now generated by the LLM using
+    multimodal reasoning.
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
+  now also generates Quality Control (QC) plots.
+- Add
+  [`cast_data()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
+  to fetch data from `glysmith_result` object.
+- When the `name` parameter is not specified in
+  [`cast_plot()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md),
+  [`cast_table()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md),
+  or
+  [`cast_data()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md),
+  the functions return the names of all available objects. This makes it
+  easier to know what objects are available.
+- Add
+  [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md)
+  to modify a blueprint using natural language.
+
+### Minor improvements and bug fixes
+
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now prints a brief description of the blueprint to console, instead of
+  an explanation of why the steps are chosen. There is a slight
+  difference in the wording.
+- Optimize the prompt of
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  to let it group steps using
+  [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md).
+  Also, it now understands all step arguments and can use them if
+  needed.
+- “Tables” section is removed from the report. It is duplicated with the
+  README.md file generated by
+  [`quench_result()`](https://glycoverse.github.io/glysmith/dev/reference/quench_result.md).
+- Add a new vignette about AI features.
+
+## glysmith 0.4.0
+
+### Breaking changes
+
+- The dynamic argument mechanism was removed. Now you can directly pass
+  arguments to the step functions.
+
+### New features
+
+- Added
+  [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md)
+  for creating branches in a blueprint.
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  also supports blueprints with branches now.
+- [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md)
+  now support covariates and paired comparison, via the `covariate_cols`
+  and `subject_col` arguments.
+
+### Minor improvements and bug fixes
+
+- Fix the issue that blank lines were printed to console when the
+  package is first loaded in one session.
+- Update system prompt and the reflection strategy in
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  to make the LLM work better.
+- Fix a dependency issue of
+  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md).
+- Update the Get Started vignette to introduce
+  [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md).
+
+## glysmith 0.3.1
+
+### Minor improvements and bug fixes
+
+- Fix deployment issue on r-universe.
+
+## glysmith 0.3.0
+
+### New features
+
+- Added `step_quantify_motifs()` for quantifying glycan motifs. Updated
+  relevant steps to support the `on` parameter for `motif_exp`
+  experiments.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now prints an LLM-generated explanation to the console before
+  returning the blueprint.
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now supports an `exp` argument, accepting a
+  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  object, to provide more accurate, context-aware suggestions.
+
+### Minor improvements and bug fixes
+
+- Refined step documentation to improve clarity and optimize
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  performance.
+- Enhanced error messages for failed steps.
+- Suppressed a harmless warning in
+  [`quench_result()`](https://glycoverse.github.io/glysmith/dev/reference/quench_result.md)
+  when used with
+  [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md).
+- Console messages from
+  [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md)
+  now include the experiment name during
+  [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md).
+- Moved several dependencies (`pROC`, `Rtsne`, `uwot`,
+  `EnhancedVolcano`, `org.Hs.eg.db`, `clusterProfiler`, `ggplotify`,
+  `pheatmap`, and `factoextra`) to “Suggests”. These are now
+  automatically checked and installed when required by blueprint steps.
+
+## glysmith 0.2.0
+
+### New features
+
+- Add
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  use a Large Language Model to generate a blueprint from user prompt.
+- Add
+  [`step_tsne()`](https://glycoverse.github.io/glysmith/dev/reference/step_tsne.md)
+  for t-distributed Stochastic Neighbor Embedding.
+- Add
+  [`step_umap()`](https://glycoverse.github.io/glysmith/dev/reference/step_umap.md)
+  for Uniform Manifold Approximation and Projection.
+- Add
+  [`step_roc()`](https://glycoverse.github.io/glysmith/dev/reference/step_roc.md)
+  for Receiver Operating Characteristic analysis.
+- [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md)
+  now also generates loading plot and screeplot, besides the individual
+  plot.
+- [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md)
+  (along with the newly added
+  [`step_tsne()`](https://glycoverse.github.io/glysmith/dev/reference/step_tsne.md)
+  and
+  [`step_umap()`](https://glycoverse.github.io/glysmith/dev/reference/step_umap.md))
+  now has an `on` parameter to control which experiment to perform the
+  analysis on.
+
+### Minor improvements and bug fixes
+
+- Update report content of
+  [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md).
+  This is to adapt to the new
+  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html)
+  function introduced in `glyexp` 0.11.0.
+- Update
+  [`blueprint_default()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint_default.md):
+  [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md)
+  is now the first step, before
+  [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md).
+- Fix the bug that report content of DEA step for derived traits has “NA
+  vs NA” contrast.
+- Some plot names, table names, or step IDs have been changed to be more
+  consistent.
+- Update documentations of some step functions to better reflect their
+  usage.
+- `glysmith_result` now has a `data` field to store the data generated
+  by the blueprint.
+
+## glysmith 0.1.0
+
+- First GitHub release.
