@@ -1,8 +1,9 @@
 # Step: Preprocessing
 
 Preprocess the experiment using
-[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
-This step can be omitted if the experiment is already preprocessed.
+[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html),
+and remove quality control (QC) samples if exist. This step can be
+omitted if the experiment is already preprocessed.
 
 This step requires `exp` (experiment data).
 

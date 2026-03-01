@@ -1,5 +1,12 @@
 # Changelog
 
+## glysmith 0.10.1
+
+### Minor improvements and bug fixes
+
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
+  removes QC samples after preprocessing as documented.
+
 ## glysmith 0.10.0
 
 ### Breaking Changes

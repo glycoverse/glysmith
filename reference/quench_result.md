@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [842ms]
+#> ✔ Identification overview [843ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -114,10 +114,10 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.6s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [94ms]
+#> ✔ QC (post-preprocessing) [91ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [353ms]
+#> ✔ Principal component analysis [352ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,13 +126,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [75ms]
+#> ✔ Differential expression analysis (limma) [70ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [516ms]
+#> ✔ Volcano plot [492ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
+#> ✔ Heatmap of significant variables [41ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
@@ -147,13 +147,13 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [59ms]
+#> ✔ Differential trait analysis (limma) [54ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [42ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
 #> Warning: Ignoring empty aesthetic: `width`.
-#> ✔ Result saved to /tmp/Rtmpwr35mD
+#> ✔ Result saved to /tmp/RtmpJ7SsmF
 ```
