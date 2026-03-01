@@ -10,6 +10,37 @@ iteratively. If you are not satisfied with the result, manually call
 [`glyvis::plot_umap()`](https://glycoverse.github.io/glyvis/reference/plot_umap.html)
 with different `n_neighbors` values to find the best one.
 
+This step depends on the `on` parameter (default: `exp`).
+
+- When `on = "exp"`, requires `exp` (usually after
+  [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)).
+
+- When `on = "sig_exp"`, requires `sig_exp` from one of
+  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
+  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
+  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md),
+  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md),
+  or
+  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md).
+
+- When `on = "trait_exp"`, requires `trait_exp` from
+  [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md).
+
+- When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on
+  traits.
+
+- When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from
+  [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md).
+
+- When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp`
+  from DEA on motifs.
+
+- When `on = "branch_motif_exp"`, requires `branch_motif_exp` from
+  [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md).
+
+- When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp`
+  from DEA on motifs.
+
 ## Usage
 
 ``` r

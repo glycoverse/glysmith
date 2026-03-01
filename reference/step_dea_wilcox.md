@@ -9,6 +9,20 @@ By default, this runs DEA on the main experiment (`exp`), but can be
 configured to run on derived traits (`trait_exp`) or other experiment
 objects. Only use this method for experiments with 2 groups.
 
+This step depends on the `on` parameter (default: `exp`).
+
+- When `on = "exp"`, requires `exp` (usually after
+  [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)).
+
+- When `on = "trait_exp"`, requires `trait_exp` from
+  [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md).
+
+- When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from
+  [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md).
+
+- When `on = "branch_motif_exp"`, requires `branch_motif_exp` from
+  [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md).
+
 ## Usage
 
 ``` r

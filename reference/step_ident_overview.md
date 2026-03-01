@@ -6,6 +6,8 @@ This is usually the first step, BEFORE
 [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md).
 Very light-weight to run, so always include it.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

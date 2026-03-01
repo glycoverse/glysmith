@@ -7,6 +7,8 @@ with
 This extracts all possible motifs from glycan structures. Works with any
 glycan type.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

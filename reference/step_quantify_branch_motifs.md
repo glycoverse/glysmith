@@ -7,6 +7,8 @@ with
 This extracts specific N-glycan branching patterns (bi-antennary,
 tri-antennary, etc.). Only works with N-glycans.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

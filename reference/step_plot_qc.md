@@ -5,6 +5,8 @@ plotting functions. This step can be used before AND after
 [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
 to generate QC plots at different stages.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

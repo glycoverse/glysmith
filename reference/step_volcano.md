@@ -2,6 +2,7 @@
 
 Create a volcano plot from DEA results using
 [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html).
+
 This step requires one of the DEA steps to be run:
 
 - [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md)

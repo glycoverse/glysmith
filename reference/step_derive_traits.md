@@ -5,6 +5,8 @@ Calculate glycan derived traits using
 Advanced glycan structure analysis that summarizes structural properties
 of a glycome or each glycosite. Need glycan structure information.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

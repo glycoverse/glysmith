@@ -7,6 +7,28 @@ The function selects the top `n_top` variables with the lowest adjusted
 p-values from the DEA results and plots their expression values grouped
 by sample groups.
 
+This step depends on the `on` parameter (default: `sig_exp`).
+
+- When `on = "sig_exp"`, requires `sig_exp` from one of
+  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
+  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
+  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md),
+  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md),
+  or
+  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md).
+
+- When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on
+  traits.
+
+- When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp`
+  from DEA on motifs.
+
+- When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp`
+  from DEA on motifs.
+
+The number of variables is limited to a maximum of 25, as enforced by
+[`glyvis::plot_boxplot()`](https://glycoverse.github.io/glyvis/reference/plot_boxplot.html).
+
 ## Usage
 
 ``` r
@@ -70,16 +92,6 @@ step_sig_boxplot(
 A `glysmith_step` object.
 
 ## Details
-
-This step requires a DEA step to be run first (e.g.,
-[`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
-[`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
-[`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md),
-[`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md),
-or
-[`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md)).
-The number of variables is limited to a maximum of 25, as enforced by
-[`glyvis::plot_boxplot()`](https://glycoverse.github.io/glyvis/reference/plot_boxplot.html).
 
 Data required:
 

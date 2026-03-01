@@ -4,6 +4,8 @@ Preprocess the experiment using
 [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
 This step can be omitted if the experiment is already preprocessed.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

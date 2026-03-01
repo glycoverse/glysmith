@@ -3,10 +3,15 @@
 Perform Reactome enrichment analysis on differentially expressed
 variables using
 [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
-This step requires one of the DEA steps to be run. Only execute for
-glycoproteomics experiments with exactly 2 groups. If used for glycomics
-experiments, the step will be skipped. Use all genes in OrgDb as the
-background.
+
+This step requires `sig_exp` (filtered experiment from DEA). Run one of
+[`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
+[`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
+or
+[`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md)
+before this step. Only execute for glycoproteomics experiments with
+exactly 2 groups. If used for glycomics experiments, the step will be
+skipped. Use all genes in OrgDb as the background.
 
 ## Usage
 

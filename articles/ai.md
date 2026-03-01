@@ -52,6 +52,14 @@ data structure and experimental design, ensuring the generated blueprint
 is tailored to your specific dataset. The function also prints a brief
 rationale for the chosen steps to the console.
 
+After you answering all the questions, a blueprint is returned as `bp`.
+You can then pass it to
+[`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md):
+
+``` r
+res <- forge_analysis(exp, blueprint = bp)
+```
+
 ## Refining Your Analysis
 
 If the initial blueprint needs adjustment, you can use

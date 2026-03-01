@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/ai.html">AI-Powered Workflow in Glysmith</a></li>
+    <li><a class="dropdown-item" href="../articles/blueprint.html">Custom Blueprint</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -109,6 +110,11 @@ structured analytical blueprint.</p>
 understand your data structure and experimental design, ensuring the
 generated blueprint is tailored to your specific dataset. The function
 also prints a brief rationale for the chosen steps to the console.</p>
+<p>After you answering all the questions, a blueprint is returned as
+<code>bp</code>. You can then pass it to
+<code><a href="../reference/forge_analysis.html">forge_analysis()</a></code>:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">exp</span>, blueprint <span class="op">=</span> <span class="va">bp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="refining-your-analysis">Refining Your Analysis<a class="anchor" aria-label="anchor" href="#refining-your-analysis"></a>
@@ -116,7 +122,7 @@ also prints a brief rationale for the chosen steps to the console.</p>
 <p>If the initial blueprint needs adjustment, you can use
 <code><a href="../reference/modify_blueprint.html">modify_blueprint()</a></code> to refine it iteratively without
 starting from scratch.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add or remove steps using natural language</span></span>
 <span><span class="va">new_bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/modify_blueprint.html">modify_blueprint</a></span><span class="op">(</span><span class="va">bp</span>, <span class="st">"Also include a PCA analysis."</span>, exp <span class="op">=</span> <span class="va">your_exp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">new_bp</span><span class="op">)</span></span></code></pre></div>
@@ -127,7 +133,7 @@ starting from scratch.</p>
 <p>While <code><a href="../reference/polish_report.html">polish_report()</a></code> uses robust default rules, setting
 <code>use_ai = TRUE</code> unlocks advanced AI capabilities for report
 generation:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"report.html"</span>, use_ai <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>In AI mode, the LLM performs several high-level tasks:</p>
 <ol style="list-style-type: decimal">
@@ -150,7 +156,7 @@ subtitles for a publication-ready look.</li>
 </h2>
 <p>The entire pipeline, from raw data to a finished report, can be
 simplified into a few intelligent steps:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Generate an analysis plan</span></span>
 <span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inquire_blueprint.html">inquire_blueprint</a></span><span class="op">(</span><span class="st">"Perform DEA and visualize key findings."</span>, exp <span class="op">=</span> <span class="va">your_exp</span><span class="op">)</span></span>
 <span></span>

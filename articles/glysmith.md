@@ -193,67 +193,9 @@ write_blueprint(bp, "path/to/save/bp.rds")
 bp <- read_blueprint("path/to/save/bp.rds")
 ```
 
-Here is a list of all available steps:
-
-- [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md):
-  Summarize the experiment identification.
-- [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md):
-  Preprocess the experiment data and generate QC plots.
-- [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md),
-  [`step_tsne()`](https://glycoverse.github.io/glysmith/reference/step_tsne.md),
-  [`step_umap()`](https://glycoverse.github.io/glysmith/reference/step_umap.md):
-  Dimension reduction for data exploration.
-- [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
-  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
-  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md),
-  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md),
-  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md):
-  Differential expression analysis with various methods.
-- [`step_volcano()`](https://glycoverse.github.io/glysmith/reference/step_volcano.md):
-  Create volcano plots for DEA results.
-- [`step_heatmap()`](https://glycoverse.github.io/glysmith/reference/step_heatmap.md):
-  Generate heatmaps for expression data.
-- [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md):
-  Perform Receiver Operating Characteristic (ROC) analysis.
-- [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md),
-  [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md),
-  [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md):
-  Functional enrichment analysis for significant items.
-- [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md):
-  Calculate glycan derived traits.
-- [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md):
-  Quantify all possible glycan motifs (substructures).
-- [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md):
-  Quantify N-glycan branch motifs.
-
-Before you start building your own blueprints, here are a few rules to
-keep in mind:
-
-- [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
-  is generally the first step, but it’s optional if you perform
-  preprocessing manually with `glyclean`.
-- Some steps require others to be executed first. For example,
-  [`step_volcano()`](https://glycoverse.github.io/glysmith/reference/step_volcano.md)
-  requires at least one of
-  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
-  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
-  or
-  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md)
-  to be run beforehand. Consult the documentation for each step to check
-  dependencies.
-- You cannot include duplicate steps within a blueprint. For instance,
-  you can’t add
-  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md)
-  twice in the same blueprint.
-- If a step overwrites data produced by an earlier step, a warning will
-  be issued. For example, including both
-  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md)
-  and then
-  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md)
-  will overwrite the `dea_res` data from the former with that from the
-  latter step. Ignore the warning if that’s what you intend.
-- You can create branches in a blueprint by using
-  [`br()`](https://glycoverse.github.io/glysmith/reference/br.md). Check
-  out its document for examples.
+To find out more about creating blueprints, check out [this
+vignette](https://glycoverse.github.io/glysmith/articles/blueprint.html).
+You can also have AI to create a blueprint for you. Check out [this
+vignette](https://glycoverse.github.io/glysmith/articles/ai.html).
 
 **Happy forging!**

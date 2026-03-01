@@ -6,6 +6,8 @@ two groups for comparison. Usually run after
 [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)
 and before DEA or enrichment steps.
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

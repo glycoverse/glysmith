@@ -6,6 +6,8 @@ extract top 10 variables with highest AUC, and plot ROC curves for these
 variables using
 [`glyvis::plot_roc()`](https://glycoverse.github.io/glyvis/reference/plot_roc.html).
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r

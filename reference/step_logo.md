@@ -6,6 +6,18 @@ The logo plot visualizes the amino acid sequence patterns around
 glycosylation sites. This step is only applicable for glycoproteomics
 experiments.
 
+This step depends on the `on` parameter (default: `exp`).
+
+- When `on = "exp"`, requires `exp` (experiment data).
+
+- When `on = "sig_exp"`, requires `sig_exp` from one of
+  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md),
+  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md),
+  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md),
+  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md),
+  or
+  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md).
+
 ## Usage
 
 ``` r

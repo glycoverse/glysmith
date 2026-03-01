@@ -6,6 +6,8 @@ abundance utilizing
 Usually this step should be run after
 [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md).
 
+This step requires `exp` (experiment data).
+
 ## Usage
 
 ``` r
