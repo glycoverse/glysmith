@@ -234,7 +234,8 @@ step_plot_qc <- function(
 #' Step: Preprocessing
 #'
 #' @description
-#' Preprocess the experiment using `glyclean::auto_clean()`.
+#' Preprocess the experiment using `glyclean::auto_clean()`,
+#' and remove quality control (QC) samples if exist.
 #' This step can be omitted if the experiment is already preprocessed.
 #'
 #' This step requires `exp` (experiment data).
@@ -309,6 +310,7 @@ step_preprocess <- function(
         check_batch_confounding = check_batch_confounding,
         batch_confounding_threshold = batch_confounding_threshold
       )
+      clean_exp <- glyexp::filter_obs(clean_exp, .data$group != .env$qc_name)
       ctx <- ctx_add_data(ctx, "exp", clean_exp) # overwrite exp with preprocessed exp
       ctx <- ctx_add_data(ctx, "raw_exp", exp) # keep raw exp for reference
       ctx

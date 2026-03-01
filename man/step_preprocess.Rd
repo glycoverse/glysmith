@@ -39,7 +39,8 @@ step_preprocess(
 A \code{glysmith_step} object.
 }
 \description{
-Preprocess the experiment using \code{glyclean::auto_clean()}.
+Preprocess the experiment using \code{glyclean::auto_clean()},
+and remove quality control (QC) samples if exist.
 This step can be omitted if the experiment is already preprocessed.
 
 This step requires \code{exp} (experiment data).

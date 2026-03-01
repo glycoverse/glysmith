@@ -12,6 +12,53 @@ test_that("step_preprocess overwrites exp and writes raw_exp", {
   expect_false(sum(new_exp$expr_mat, na.rm = TRUE) == old_sum)
 })
 
+test_that("step_preprocess removes QC samples if exist", {
+  # Create experiment with QC samples
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(10)
+  exp_data <- unclass(exp)
+
+  # Extend sample_info with QC samples
+  new_sample_info <- dplyr::bind_rows(
+    exp_data$sample_info,
+    tibble::tibble(
+      sample = c("QC1", "QC2"),
+      group = factor("QC", levels = c(levels(exp_data$sample_info$group), "QC"))
+    )
+  )
+
+  # Extend expr_mat with QC columns (duplicate existing samples as QC)
+  new_expr_mat <- cbind(
+    exp_data$expr_mat,
+    QC1 = exp_data$expr_mat[, "C1"],
+    QC2 = exp_data$expr_mat[, "C2"]
+  )
+
+  # Create new experiment with QC samples
+  exp_with_qc <- glyexp::experiment(
+    expr_mat = new_expr_mat,
+    sample_info = new_sample_info,
+    var_info = exp_data$var_info,
+    exp_type = "glycoproteomics",
+    glycan_type = "N"
+  )
+
+  # Verify QC samples exist before preprocessing
+  groups_before <- unique(as.character(exp_with_qc$sample_info$group))
+  expect_true("QC" %in% groups_before)
+  expect_equal(nrow(exp_with_qc$sample_info), 14) # 12 original + 2 QC
+
+  # Run preprocessing
+  bp <- blueprint(step_preprocess())
+  suppressMessages(res <- forge_analysis(exp_with_qc, bp))
+
+  # Verify QC samples are removed after preprocessing
+  groups_after <- unique(as.character(res$exp$sample_info$group))
+  expect_false("QC" %in% groups_after)
+  expect_equal(nrow(res$exp$sample_info), 12) # Only original samples remain
+  expect_false(any(grepl("^QC", res$exp$sample_info$sample)))
+})
+
 test_that("step_plot_qc generates plots with correct prefixes", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
