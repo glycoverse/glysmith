@@ -1,5 +1,9 @@
 # glysmith (development version)
 
+## Minor improvements and bug fixes
+
+* `step_preprocess()` removes QC samples after preprocessing as documented.
+
 # glysmith 0.10.0
 
 ## Breaking Changes
