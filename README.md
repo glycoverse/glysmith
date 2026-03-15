@@ -7,8 +7,6 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/glysmith)](https://CRAN.R-project.org/package=glysmith)
 [![R-universe
 version](https://glycoverse.r-universe.dev/glysmith/badges/version)](https://glycoverse.r-universe.dev/glysmith)
 [![R-CMD-check](https://github.com/glycoverse/glysmith/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/glycoverse/glysmith/actions/workflows/R-CMD-check.yaml)
