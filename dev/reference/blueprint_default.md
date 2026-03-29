@@ -29,10 +29,10 @@ This blueprint contains the following steps:
   [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 
 - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using
-  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html).
 
 - step_sig_enrich_reactome(): Perform Reactome enrichment analysis using
-  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_reactome.html).
 
 - step_derive_traits(): Derive traits using
   [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).

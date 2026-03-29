@@ -74,9 +74,9 @@ That’s it! You’ve completed the following steps in one go:
 - Conducted GO enrichment analysis using
   [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
 - Performed KEGG enrichment analysis using
-  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html).
 - Performed Reactome enrichment analysis using
-  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_reactome.html).
 - Derived site-specific traits using
   [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).
 - Conducted differential trait analysis with

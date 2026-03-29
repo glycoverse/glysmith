@@ -2,7 +2,7 @@
 
 Perform KEGG enrichment analysis on differentially expressed variables
 using
-[`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+[`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html).
 
 This step requires `sig_exp` (filtered experiment from DEA). Run one of
 [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md),
