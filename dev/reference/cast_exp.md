@@ -67,26 +67,6 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> 
 #> ℹ Preprocessing
-#> ── Normalizing data ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Preprocessing
-#> ℹ Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
-#> ℹ Preprocessing
-#> ✔ Normalization completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Normalizing data (Total Area) ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ✔ Total area normalization completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
 #> ── Imputing missing values ──
 #> ℹ Preprocessing
 #> 
@@ -99,6 +79,18 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> 
 #> ℹ Preprocessing
+#> ── Normalizing data ──
+#> ℹ Preprocessing
+#> 
+#> ℹ Preprocessing
+#> ℹ No QC samples found. Using default normalization method based on experiment type.
+#> ℹ Preprocessing
+#> ℹ Experiment type is "glycomics" with "nrow(exp)" glycans.
+#> ℹ Preprocessing
+#> ✔ Normalization completed.
+#> ℹ Preprocessing
+#> 
+#> ℹ Preprocessing
 #> ── Correcting batch effects ──
 #> ℹ Preprocessing
 #> 
@@ -107,17 +99,17 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.8s]
+#> ✔ Preprocessing [6.5s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [131ms]
+#> ✔ QC (post-preprocessing) [169ms]
 #> 
 #> ℹ Principal component analysis
 #> Registered S3 methods overwritten by 'car':
 #>   method       from
 #>   hist.boot    FSA 
 #>   confint.boot FSA 
-#> ✔ Principal component analysis [286ms]
+#> ✔ Principal component analysis [276ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -126,19 +118,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [83ms]
+#> ✔ Differential expression analysis (limma) [68ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [571ms]
+#> ✔ Volcano plot [612ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [93ms]
+#> ✔ Heatmap of significant variables [79ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [8.9s]
+#> ✔ Derived trait calculation [7.7s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -147,10 +139,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [60ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [43ms]
 #> 
 cast_exp(result)
 #> 

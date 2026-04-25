@@ -47,7 +47,7 @@ step_sig_enrich_kegg(
 - ...:
 
   Additional arguments passed to
-  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html).
 
 ## Value
 
@@ -85,7 +85,7 @@ only.*
 
 ## See also
 
-[`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html)
+[`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html)
 
 ## Examples
 

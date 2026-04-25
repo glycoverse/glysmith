@@ -47,7 +47,7 @@ step_sig_enrich_reactome(
 - ...:
 
   Additional arguments passed to
-  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_reactome.html).
 
 ## Value
 
@@ -85,7 +85,7 @@ only.*
 
 ## See also
 
-[`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html)
+[`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_reactome.html)
 
 ## Examples
 

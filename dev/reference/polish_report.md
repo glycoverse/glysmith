@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [808ms]
+#> ✔ Identification overview [1.7s]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -77,26 +77,6 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> 
 #> ℹ Preprocessing
-#> ── Normalizing data ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Preprocessing
-#> ℹ Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
-#> ℹ Preprocessing
-#> ✔ Normalization completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Normalizing data (Total Area) ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ✔ Total area normalization completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
 #> ── Imputing missing values ──
 #> ℹ Preprocessing
 #> 
@@ -109,6 +89,18 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> 
 #> ℹ Preprocessing
+#> ── Normalizing data ──
+#> ℹ Preprocessing
+#> 
+#> ℹ Preprocessing
+#> ℹ No QC samples found. Using default normalization method based on experiment type.
+#> ℹ Preprocessing
+#> ℹ Experiment type is "glycomics" with "nrow(exp)" glycans.
+#> ℹ Preprocessing
+#> ✔ Normalization completed.
+#> ℹ Preprocessing
+#> 
+#> ℹ Preprocessing
 #> ── Correcting batch effects ──
 #> ℹ Preprocessing
 #> 
@@ -117,13 +109,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.7s]
+#> ✔ Preprocessing [5.8s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [94ms]
+#> ✔ QC (post-preprocessing) [97ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [342ms]
+#> ✔ Principal component analysis [350ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -132,10 +124,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [73ms]
+#> ✔ Differential expression analysis (limma) [75ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [510ms]
+#> ✔ Volcano plot [512ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [42ms]
@@ -153,11 +145,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [90ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [40ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpkHpKIG/file2ed71986754b.html"
+#> [1] "/tmp/Rtmp8ClZUS/file2a3557f02a5f.html"
 ```
