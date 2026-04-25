@@ -22,7 +22,7 @@ One of "all" (all genes in OrgDb), "detected" (detected variables in \code{exp})
 
 \item{plot_height}{Height of the plot in inches. Default is 7.}
 
-\item{...}{Additional arguments passed to \code{\link[glystats:gly_enrich_go]{glystats::gly_enrich_reactome()}}.}
+\item{...}{Additional arguments passed to \code{\link[glystats:gly_enrich_reactome]{glystats::gly_enrich_reactome()}}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -66,5 +66,5 @@ step_sig_enrich_reactome()
 step_sig_enrich_reactome(plot_type = "barplot")
 }
 \seealso{
-\code{\link[glystats:gly_enrich_go]{glystats::gly_enrich_reactome()}}
+\code{\link[glystats:gly_enrich_reactome]{glystats::gly_enrich_reactome()}}
 }
