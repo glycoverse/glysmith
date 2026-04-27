@@ -58,7 +58,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [781ms]
+#> ✔ Identification overview [769ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -109,13 +109,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [6s]
+#> ✔ Preprocessing [6.4s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [93ms]
+#> ✔ QC (post-preprocessing) [99ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [372ms]
+#> ✔ Principal component analysis [347ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -127,7 +127,7 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [69ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [436ms]
+#> ✔ Volcano plot [460ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [39ms]
@@ -136,7 +136,7 @@ result <- forge_analysis(exp)
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.7s]
+#> ✔ Derived trait calculation [1.8s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -145,11 +145,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [59ms]
+#> ✔ Differential trait analysis (limma) [63ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [39ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmphtoA1R/file1bbda4751b9.html"
+#> [1] "/tmp/RtmpIG6MHk/file1aa146b39682.html"
 ```

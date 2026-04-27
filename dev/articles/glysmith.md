@@ -53,6 +53,8 @@ code.
 
 ``` r
 result <- forge_analysis(real_experiment)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 result
 ```
 
