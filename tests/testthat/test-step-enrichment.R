@@ -1,7 +1,7 @@
 # ----- step_sig_enrich -----
 run_sig_enrich_step <- function(step_fun, kind) {
-  skip_if_not_installed("clusterProfiler")
-  skip_if_not_installed("org.Hs.eg.db")
+  skip_if_not_installed("glyfun")
+  skip_if_not_installed("enrichplot")
 
   suppressMessages(
     exp <- glyexp::real_experiment |>
@@ -12,31 +12,41 @@ run_sig_enrich_step <- function(step_fun, kind) {
   )
 
   ctx <- new_ctx(exp, "group")
-  ctx <- ctx_add_data(ctx, "sig_exp", exp)
+  dea_res <- structure(
+    list(tidy_result = tibble::tibble(), meta_data = list()),
+    class = c("glystats_ttest_res", "glystats_res")
+  )
+  ctx <- ctx_add_data(ctx, "dea_res", dea_res)
 
   mock_tbl <- tibble::tibble(
     description = c("term_a", "term_b"),
     p_adj = c(0.01, 0.2)
   )
+  called <- new.env(parent = emptyenv())
+  mock_enrich <- function(dea_res, ...) {
+    called$dea_res <- dea_res
+    called$args <- list(...)
+    structure(mock_tbl, class = c("mock_enrich", class(mock_tbl)))
+  }
   local_mocked_bindings(
-    gly_enrich_go = function(...) structure(list(), class = "mock_enrich"),
-    gly_enrich_kegg = function(...) structure(list(), class = "mock_enrich"),
-    gly_enrich_reactome = function(...) {
-      structure(list(), class = "mock_enrich")
-    },
-    get_tidy_result = function(...) mock_tbl,
-    .package = "glystats"
+    enrich_ora_go = mock_enrich,
+    enrich_ora_kegg = mock_enrich,
+    enrich_ora_reactome = mock_enrich,
+    .package = "glyfun"
   )
   local_mocked_bindings(
-    plot_enrich = function(...) ggplot2::ggplot(),
-    .package = "glyvis"
+    dotplot = function(...) ggplot2::ggplot(),
+    .package = "enrichplot"
   )
 
   step_obj <- step_fun()
+  expect_equal(step_obj$require, c("exp", "dea_res"))
   expect_true(step_obj$condition(ctx)$check)
   ctx <- step_obj$run(ctx)
+  expect_identical(called$dea_res, dea_res)
   expect_true(kind %in% names(ctx$tables))
   expect_true(kind %in% names(ctx$plots))
+  invisible(called)
 }
 
 test_that("step_sig_enrich_go generates results", {
@@ -49,4 +59,14 @@ test_that("step_sig_enrich_kegg generates results", {
 
 test_that("step_sig_enrich_reactome generates results", {
   run_sig_enrich_step(step_sig_enrich_reactome, "reactome")
+})
+
+test_that("step_sig_enrich passes detected proteins as universe", {
+  called <- run_sig_enrich_step(
+    function() step_sig_enrich_go(universe = "detected"),
+    "go"
+  )
+
+  expect_type(called$args$universe, "character")
+  expect_false(inherits(called$args$universe, "glyexp_experiment"))
 })

@@ -604,9 +604,9 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 #' - step_dea_limma(): Differential analysis using `glystats::gly_limma()`.
 #' - step_volcano(): Plot a volcano plot using `glyvis::plot_volcano()`.
 #' - step_heatmap(on = "sig_exp"): Plot a heatmap using `glyvis::plot_heatmap()`.
-#' - step_sig_enrich_go(): Perform GO enrichment analysis using `glystats::gly_enrich_go()`.
-#' - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
-#' - step_sig_enrich_reactome(): Perform Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
+#' - step_sig_enrich_go(): Perform GO enrichment analysis using `glyfun::enrich_ora_go()`.
+#' - step_sig_enrich_kegg(): Perform KEGG enrichment analysis using `glyfun::enrich_ora_kegg()`.
+#' - step_sig_enrich_reactome(): Perform Reactome enrichment analysis using `glyfun::enrich_ora_reactome()`.
 #' - step_derive_traits(): Derive traits using `glydet::derive_traits()`.
 #' - step_dea_limma(on = "trait_exp"): Differential trait analysis using `glystats::gly_limma()`.
 #' - step_heatmap(on = "sig_trait_exp"): Plot a heatmap using `glyvis::plot_heatmap()`.
