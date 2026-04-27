@@ -1,5 +1,6 @@
 test_that("check_glysmith_deps returns TRUE when all packages are installed", {
   skip_if_not_installed("desc")
+  skip_if_glysmith_deps_not_installed()
 
   # All suggests packages should be installed in test environment
   expect_true(check_glysmith_deps(action = "note"))
