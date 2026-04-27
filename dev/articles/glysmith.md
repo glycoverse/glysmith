@@ -53,6 +53,8 @@ code.
 
 ``` r
 result <- forge_analysis(real_experiment)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 result
 ```
 
@@ -72,11 +74,11 @@ That’s it! You’ve completed the following steps in one go:
 - Generated a heatmap for significant glycoforms using
   [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
 - Conducted GO enrichment analysis using
-  [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glyfun::enrich_ora_go()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_go.html).
 - Performed KEGG enrichment analysis using
-  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html).
+  [`glyfun::enrich_ora_kegg()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_kegg.html).
 - Performed Reactome enrichment analysis using
-  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_reactome.html).
+  [`glyfun::enrich_ora_reactome()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_reactome.html).
 - Derived site-specific traits using
   [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).
 - Conducted differential trait analysis with

@@ -108,6 +108,8 @@ Experiments</a>.</p>
 of code.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">real_experiment</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by</span></span>
+<span><span class="co">#&gt; 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'</span></span>
 <span><span class="va">result</span></span></code></pre></div>
 <p>That’s it! You’ve completed the following steps in one go:</p>
 <ul>
@@ -123,11 +125,11 @@ generated QC plots.</li>
 <li>Generated a heatmap for significant glycoforms using
 <code><a href="https://glycoverse.github.io/glyvis/reference/plot_heatmap.html" class="external-link">glyvis::plot_heatmap()</a></code>.</li>
 <li>Conducted GO enrichment analysis using
-<code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_go.html" class="external-link">glystats::gly_enrich_go()</a></code>.</li>
+<code><a href="https://glycoverse.github.io/glyfun/reference/enrich_ora_go.html" class="external-link">glyfun::enrich_ora_go()</a></code>.</li>
 <li>Performed KEGG enrichment analysis using
-<code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_kegg.html" class="external-link">glystats::gly_enrich_kegg()</a></code>.</li>
+<code><a href="https://glycoverse.github.io/glyfun/reference/enrich_ora_kegg.html" class="external-link">glyfun::enrich_ora_kegg()</a></code>.</li>
 <li>Performed Reactome enrichment analysis using
-<code><a href="https://glycoverse.github.io/glystats/reference/gly_enrich_reactome.html" class="external-link">glystats::gly_enrich_reactome()</a></code>.</li>
+<code><a href="https://glycoverse.github.io/glyfun/reference/enrich_ora_reactome.html" class="external-link">glyfun::enrich_ora_reactome()</a></code>.</li>
 <li>Derived site-specific traits using
 <code><a href="https://glycoverse.github.io/glydet/reference/derive_traits.html" class="external-link">glydet::derive_traits()</a></code>.</li>
 <li>Conducted differential trait analysis with

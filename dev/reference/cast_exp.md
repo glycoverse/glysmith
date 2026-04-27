@@ -47,8 +47,9 @@ exp <- real_experiment2
 result <- forge_analysis(exp)
 #> 
 #> 
+#> Warning: replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’
 #> ℹ Identification overview
-#> ✔ Identification overview [85ms]
+#> ✔ Identification overview [83ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -99,7 +100,7 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [6.5s]
+#> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ QC (post-preprocessing)
 #> ✔ QC (post-preprocessing) [169ms]
@@ -109,7 +110,7 @@ result <- forge_analysis(exp)
 #>   method       from
 #>   hist.boot    FSA 
 #>   confint.boot FSA 
-#> ✔ Principal component analysis [276ms]
+#> ✔ Principal component analysis [279ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -118,19 +119,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [68ms]
+#> ✔ Differential expression analysis (limma) [74ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [612ms]
+#> ✔ Volcano plot [547ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [79ms]
+#> ✔ Heatmap of significant variables [1s]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [7.7s]
+#> ✔ Derived trait calculation [7.4s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -139,10 +140,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [60ms]
+#> ✔ Differential trait analysis (limma) [61ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [43ms]
+#> ✔ Heatmap of significant traits [40ms]
 #> 
 cast_exp(result)
 #> 
