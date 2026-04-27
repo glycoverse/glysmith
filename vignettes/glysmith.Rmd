@@ -31,6 +31,10 @@ library(glysmith)
 library(glyexp)
 ```
 
+```{r glysmith-deps, include = FALSE}
+has_glysmith_deps <- isTRUE(suppressMessages(check_glysmith_deps(action = "note")))
+```
+
 ## Analyze your data with a single line of code
 
 We will demonstrate using the built-in experiment object from `glyexp`.
@@ -51,6 +55,7 @@ real_experiment
 Now, let's run the default analysis pipeline with just a single line of code.
 
 ```{r}
+#| eval: has_glysmith_deps
 #| message: false
 result <- forge_analysis(real_experiment)
 result
@@ -135,6 +140,7 @@ You can use `blueprint()` with `step_` functions to create your own custom bluep
 For instance, if you'd just like to perform differential expression analysis and plot the volcano plot, you could do:
 
 ```{r}
+#| eval: has_glysmith_deps
 #| message: false
 
 bp <- blueprint(
