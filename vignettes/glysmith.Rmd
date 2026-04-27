@@ -65,9 +65,9 @@ You've completed the following steps in one go:
 - Conducted differential expression analysis using `glystats::gly_limma()`.
 - Plotted a volcano plot via `glyvis::plot_volcano()`.
 - Generated a heatmap for significant glycoforms using `glyvis::plot_heatmap()`.
-- Conducted GO enrichment analysis using `glystats::gly_enrich_go()`.
-- Performed KEGG enrichment analysis using `glystats::gly_enrich_kegg()`.
-- Performed Reactome enrichment analysis using `glystats::gly_enrich_reactome()`.
+- Conducted GO enrichment analysis using `glyfun::enrich_ora_go()`.
+- Performed KEGG enrichment analysis using `glyfun::enrich_ora_kegg()`.
+- Performed Reactome enrichment analysis using `glyfun::enrich_ora_reactome()`.
 - Derived site-specific traits using `glydet::derive_traits()`.
 - Conducted differential trait analysis with `glystats::gly_limma()`.
 - Generated a heatmap of significant site-specific derived traits via `glyvis::plot_heatmap()`.
