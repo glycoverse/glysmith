@@ -242,7 +242,10 @@ step_sig_enrich <- function(
       call_args <- enrich_args
       if (universe == "detected") {
         # Force universe to be the detected proteins, overriding any dots.
-        call_args$universe <- glyfun::detected_universe(ctx_get_data(ctx, "exp"))
+        call_args$universe <- glyfun::detected_universe(ctx_get_data(
+          ctx,
+          "exp"
+        ))
       }
       enrich_res <- switch(
         kind,
@@ -353,6 +356,9 @@ step_sig_enrich <- function(
     type,
     dotplot = enrichplot::dotplot(enrich_res, ...),
     barplot = barplot(enrich_res, ...),
-    network = enrichplot::emapplot(enrichplot::pairwise_termsim(enrich_res), ...)
+    network = enrichplot::emapplot(
+      enrichplot::pairwise_termsim(enrich_res),
+      ...
+    )
   )
 }
