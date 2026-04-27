@@ -110,7 +110,7 @@ result <- forge_analysis(exp)
 #>   method       from
 #>   hist.boot    FSA 
 #>   confint.boot FSA 
-#> ✔ Principal component analysis [257ms]
+#> ✔ Principal component analysis [261ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -119,10 +119,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [73ms]
+#> ✔ Differential expression analysis (limma) [76ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [523ms]
+#> ✔ Volcano plot [525ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [1.2s]
@@ -140,7 +140,7 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [60ms]
+#> ✔ Differential trait analysis (limma) [61ms]
 #> 
 #> ℹ Heatmap of significant traits
 #> ✔ Heatmap of significant traits [39ms]
