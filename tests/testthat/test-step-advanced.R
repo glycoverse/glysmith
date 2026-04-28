@@ -41,10 +41,15 @@ make_structure_inference_db <- function() {
 test_that("step_infer_structure adds structures and filters unmatched variables", {
   exp <- make_structure_inference_exp()
   db <- make_structure_inference_db()
-  bp <- blueprint(step_infer_structure(db = db))
+  testthat::local_mocked_bindings(
+    glydb_structures = function(structure_level, species, glycan_type) db,
+    .package = "glydb"
+  )
+  bp <- blueprint(step_infer_structure())
 
   suppressMessages(res <- forge_analysis(exp, bp))
 
+  expect_false("db" %in% names(formals(step_infer_structure)))
   expect_true("infer_structure" %in% names(glysmith:::all_steps()))
   expect_true("glycan_structure" %in% colnames(res$exp$var_info))
   expect_false(any(is.na(res$exp$var_info$glycan_structure)))
@@ -56,7 +61,11 @@ test_that("step_infer_structure adds structures and filters unmatched variables"
 test_that("step_infer_structure records inference results before filtering", {
   exp <- make_structure_inference_exp()
   db <- make_structure_inference_db()
-  bp <- blueprint(step_infer_structure(db = db))
+  testthat::local_mocked_bindings(
+    glydb_structures = function(structure_level, species, glycan_type) db,
+    .package = "glydb"
+  )
+  bp <- blueprint(step_infer_structure())
 
   suppressMessages(res <- forge_analysis(exp, bp))
 
@@ -99,8 +108,12 @@ test_that("step_infer_structure supports basic generic structure databases", {
     "HexNAc(??-?)Hex(??-?)Hex(??-?)HexNAc(??-?)HexNAc(??-"
   ))
   attr(db, "confidence") <- c(2, 1)
+  testthat::local_mocked_bindings(
+    glydb_structures = function(structure_level, species, glycan_type) db,
+    .package = "glydb"
+  )
 
-  bp <- blueprint(step_infer_structure(structure_level = "basic", db = db))
+  bp <- blueprint(step_infer_structure(structure_level = "basic"))
   suppressMessages(res <- forge_analysis(exp, bp))
 
   expect_equal(res$exp$var_info$variable, c("V1", "V2"))

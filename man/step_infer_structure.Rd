@@ -4,11 +4,7 @@
 \alias{step_infer_structure}
 \title{Step: Infer Glycan Structures}
 \usage{
-step_infer_structure(
-  species = NULL,
-  structure_level = "topological",
-  db = NULL
-)
+step_infer_structure(species = NULL, structure_level = "topological")
 }
 \arguments{
 \item{species}{Species name used to restrict the glycan structure database.
@@ -17,10 +13,6 @@ Default is \code{NULL}, which does not restrict by species.}
 \item{structure_level}{Structure level passed to \code{\link[glydb:glydb_structures]{glydb::glydb_structures()}}.
 One of \code{"intact"}, \code{"topological"}, or \code{"basic"}.
 Default is \code{"topological"}.}
-
-\item{db}{Optional glycan structure database. If \code{NULL}, the database is
-created with \code{\link[glydb:glydb_structures]{glydb::glydb_structures()}} using \code{species},
-\code{structure_level}, and the experiment's glycan type.}
 }
 \value{
 A \code{glysmith_step} object.

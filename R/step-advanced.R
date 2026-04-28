@@ -35,9 +35,6 @@
 #' @param structure_level Structure level passed to [glydb::glydb_structures()].
 #'   One of `"intact"`, `"topological"`, or `"basic"`.
 #'   Default is `"topological"`.
-#' @param db Optional glycan structure database. If `NULL`, the database is
-#'   created with [glydb::glydb_structures()] using `species`,
-#'   `structure_level`, and the experiment's glycan type.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
@@ -47,8 +44,7 @@
 #' @export
 step_infer_structure <- function(
   species = NULL,
-  structure_level = "topological",
-  db = NULL
+  structure_level = "topological"
 ) {
   checkmate::assert_string(species, null.ok = TRUE)
   checkmate::assert_choice(structure_level, c("intact", "topological", "basic"))
@@ -76,12 +72,11 @@ step_infer_structure <- function(
     },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      db_to_use <- db %||%
-        glydb::glydb_structures(
-          structure_level = structure_level,
-          species = species,
-          glycan_type = glyexp::get_glycan_type(exp)
-        )
+      db_to_use <- glydb::glydb_structures(
+        structure_level = structure_level,
+        species = species,
+        glycan_type = glyexp::get_glycan_type(exp)
+      )
 
       comps <- exp$var_info$glycan_composition
       if (glyrepr::get_mono_type(db_to_use) == "generic") {
