@@ -86,6 +86,7 @@ Here's the full lineup of available step functions:
 | `step_sig_enrich_kegg()` | KEGG enrichment analysis on DE variables | No | GP |
 | `step_sig_enrich_reactome()` | Reactome enrichment analysis on DE variables | No | GP |
 | **Advanced Analysis** | | | |
+| `step_infer_structure()` | Infer glycan structures from glycan compositions | No | GP/G |
 | `step_derive_traits()` | Calculate glycan derived traits | **Yes** | GP/G |
 | `step_quantify_dynamic_motifs()` | Quantify dynamic glycan motifs | **Yes** | GP/G |
 | `step_quantify_branch_motifs()` | Quantify N-glycan branch motifs | **Yes** | GP/G |

@@ -1,3 +1,137 @@
+#' Step: Infer Glycan Structures
+#'
+#' @description
+#' Infer glycan structures from the `glycan_composition` column in `var_info`.
+#' This step uses `glyanno::comp_to_struc()` with a structure database from
+#' `glydb::glydb_structures()` and keeps only variables with an inferred
+#' structure.
+#'
+#' This step requires `exp` (experiment data).
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment whose glycan structures should be inferred
+#'
+#' Data generated:
+#' - `uninferred_exp`: The original experiment before structure inference
+#'
+#' Tables generated:
+#' - `inferred_structures`: A table containing the inferred structure for each
+#'   original variable and whether inference succeeded.
+#'
+#' @section AI Prompt:
+#' *This section is for AI in [inquire_blueprint()] only.*
+#'
+#' - Include this step when the user requests structure-aware analysis but the
+#'   experiment has glycan compositions and no glycan structures.
+#' - This step should be placed before [step_derive_traits()],
+#'   [step_quantify_dynamic_motifs()], or [step_quantify_branch_motifs()].
+#' - Mention that variables without inferred structures are removed.
+#' - Always ask for species restriction to improve inference accuracy,
+#'   but allow users to skip it if they want.
+#'
+#' @param species Species name used to restrict the glycan structure database.
+#'   Default is `NULL`, which does not restrict by species.
+#' @param structure_level Structure level passed to [glydb::glydb_structures()].
+#'   One of `"intact"`, `"topological"`, or `"basic"`.
+#'   Default is `"topological"`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_infer_structure()
+#' step_infer_structure(species = "Homo sapiens")
+#' @seealso [glyanno::comp_to_struc()], [glydb::glydb_structures()]
+#' @export
+step_infer_structure <- function(
+  species = NULL,
+  structure_level = "topological"
+) {
+  checkmate::assert_string(species, null.ok = TRUE)
+  checkmate::assert_choice(structure_level, c("intact", "topological", "basic"))
+
+  signature <- rlang::expr_deparse(match.call())
+
+  step(
+    id = "infer_structure",
+    label = "Glycan structure inference",
+    condition = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      if (.has_glycan_structure(exp)) {
+        return(list(
+          check = FALSE,
+          reason = "glycan structures are already available in the experiment"
+        ))
+      }
+      if (!"glycan_composition" %in% colnames(exp$var_info)) {
+        return(list(
+          check = FALSE,
+          reason = "glycan compositions are not available in the experiment"
+        ))
+      }
+      list(check = TRUE, reason = NULL)
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      db_to_use <- glydb::glydb_structures(
+        structure_level = structure_level,
+        species = species,
+        glycan_type = glyexp::get_glycan_type(exp)
+      )
+
+      comps <- exp$var_info$glycan_composition
+      if (glyrepr::get_mono_type(db_to_use) == "generic") {
+        comps <- glyrepr::convert_to_generic(comps)
+      }
+
+      inferred_structures <- glyanno::comp_to_struc(
+        comps,
+        db = db_to_use,
+        return_best = TRUE
+      )
+      inference_tbl <- exp$var_info |>
+        dplyr::mutate(
+          glycan_structure = inferred_structures,
+          matched = !is.na(.data$glycan_structure)
+        )
+
+      inferred_exp <- exp
+      inferred_exp$var_info$glycan_structure <- inferred_structures
+      inferred_exp <- inferred_exp |>
+        glyexp::filter_var(!is.na(.data$glycan_structure))
+
+      ctx <- ctx_add_data(ctx, "exp", inferred_exp)
+      ctx <- ctx_add_data(ctx, "uninferred_exp", exp)
+      ctx <- ctx_add_table(
+        ctx,
+        "inferred_structures",
+        inference_tbl,
+        "Glycan structure inference results."
+      )
+      ctx
+    },
+    report = function(x) {
+      tbl <- x$tables[["inferred_structures"]]
+      n_total <- nrow(tbl)
+      n_matched <- sum(tbl$matched)
+      n_removed <- n_total - n_matched
+      paste0(
+        "Glycan structures were inferred from glycan compositions. ",
+        "Matched variables: ",
+        n_matched,
+        " of ",
+        n_total,
+        ". ",
+        "Variables without inferred structures removed: ",
+        n_removed,
+        "."
+      )
+    },
+    require = "exp",
+    generate = "uninferred_exp",
+    signature = signature
+  )
+}
+
 #' Step: Derived Trait Calculation
 #'
 #' @description

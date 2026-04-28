@@ -28,6 +28,7 @@ all_steps <- function() {
     step_sig_enrich_go(),
     step_sig_enrich_kegg(),
     step_sig_enrich_reactome(),
+    step_infer_structure(),
     step_derive_traits(),
     step_quantify_dynamic_motifs(),
     step_quantify_branch_motifs(),
