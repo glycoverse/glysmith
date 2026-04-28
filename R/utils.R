@@ -24,7 +24,19 @@
   readline(prompt = prompt)
 }
 
-.print_ai_thinking <- function(api_key) {
+#' Print an AI progress message and glycan fact
+#'
+#' @param api_key API key for the selected AI provider.
+#' @param provider AI provider name.
+#' @param model Optional model name.
+#' @param base_url Optional provider base URL.
+#' @noRd
+.print_ai_thinking <- function(
+  api_key,
+  provider = "deepseek",
+  model = NULL,
+  base_url = NULL
+) {
   messages <- c(
     "Forging the blueprint...",
     "Hammering out the details...",
@@ -39,14 +51,32 @@
   )
   cli::cli_text(cli::style_bold(cli::col_blue(sample(messages, 1))))
   fact <- tryCatch(
-    .generate_glycan_fact(api_key),
+    .generate_glycan_fact(
+      api_key,
+      provider = provider,
+      model = model,
+      base_url = base_url
+    ),
     error = function(e) .glycan_fun_fact()
   )
   styled_fact <- cli::style_italic(cli::col_silver(fact))
   cli::cli_text("{fact}", .envir = rlang::env(fact = styled_fact))
 }
 
-.generate_glycan_fact <- function(api_key, model = "deepseek-chat") {
+#' Generate a short glycan fact with the configured AI provider
+#'
+#' @param api_key API key for the selected AI provider.
+#' @param model Optional model name.
+#' @param provider AI provider name.
+#' @param base_url Optional provider base URL.
+#' @returns A normalized one-sentence glycan fact.
+#' @noRd
+.generate_glycan_fact <- function(
+  api_key,
+  model = NULL,
+  provider = "deepseek",
+  base_url = NULL
+) {
   focus <- sample(
     c(
       "structural diversity",
@@ -89,10 +119,22 @@
     "Random seed:",
     nonce
   )
-  fact <- .ask_ai(system_prompt, user_prompt, api_key, model = model)
+  fact <- .ask_ai(
+    system_prompt,
+    user_prompt,
+    api_key,
+    model = model,
+    provider = provider,
+    base_url = base_url
+  )
   .normalize_glycan_fact(fact)
 }
 
+#' Normalize AI-generated glycan fact text
+#'
+#' @param fact Raw fact text returned by the AI provider.
+#' @returns A single question beginning with "Do you know that".
+#' @noRd
 .normalize_glycan_fact <- function(fact) {
   fact <- stringr::str_squish(as.character(fact))
   fact <- stringr::str_remove(fact, "^[-*]\\s*")
@@ -111,6 +153,10 @@
   fact
 }
 
+#' Return a local fallback glycan fact
+#'
+#' @returns A one-sentence glycan fact.
+#' @noRd
 .glycan_fun_fact <- function() {
   facts <- c(
     "Do you know that glycans can be branched, creating huge diversity from a small set of monosaccharides?",
@@ -122,47 +168,218 @@
   sample(facts, 1)
 }
 
-.get_api_key <- function() {
-  api_key <- Sys.getenv("DEEPSEEK_API_KEY")
+#' Supported AI provider names
+#'
+#' @returns Character vector of provider choices accepted by glysmith.
+#' @noRd
+.ai_provider_choices <- function() {
+  c(
+    "deepseek",
+    "openai",
+    "anthropic",
+    "gemini",
+    "google_gemini",
+    "openrouter",
+    "openai_compatible"
+  )
+}
+
+#' Normalize AI provider aliases
+#'
+#' @param provider Provider name or supported alias.
+#' @returns Canonical provider name.
+#' @noRd
+.normalize_ai_provider <- function(provider = "deepseek") {
+  provider <- rlang::arg_match(provider, .ai_provider_choices())
+  if (identical(provider, "google_gemini")) {
+    return("gemini")
+  }
+  provider
+}
+
+#' Human-readable AI provider label
+#'
+#' @param provider Provider name.
+#' @returns Provider label for messages.
+#' @noRd
+.ai_provider_label <- function(provider) {
+  switch(
+    .normalize_ai_provider(provider),
+    deepseek = "DeepSeek",
+    openai = "OpenAI",
+    anthropic = "Anthropic",
+    gemini = "Google Gemini",
+    openrouter = "OpenRouter",
+    openai_compatible = "OpenAI-compatible"
+  )
+}
+
+#' Environment variable for an AI provider API key
+#'
+#' @param provider Provider name.
+#' @returns Environment variable name.
+#' @noRd
+.ai_provider_envvar <- function(provider) {
+  switch(
+    .normalize_ai_provider(provider),
+    deepseek = "DEEPSEEK_API_KEY",
+    openai = "OPENAI_API_KEY",
+    anthropic = "ANTHROPIC_API_KEY",
+    gemini = "GEMINI_API_KEY",
+    openrouter = "OPENROUTER_API_KEY",
+    openai_compatible = "OPENAI_API_KEY"
+  )
+}
+
+#' Resolve the default AI model for a provider
+#'
+#' @param provider Provider name.
+#' @param model Optional model name supplied by the caller.
+#' @returns Model name, or `NULL` to use the provider default.
+#' @noRd
+.resolve_ai_model <- function(provider = "deepseek", model = NULL) {
+  provider <- .normalize_ai_provider(provider)
+  if (!is.null(model)) {
+    return(model)
+  }
+  if (identical(provider, "deepseek")) {
+    return("deepseek-chat")
+  }
+  NULL
+}
+
+#' Resolve an AI API key
+#'
+#' @param provider Provider name.
+#' @param api_key Optional explicit API key.
+#' @returns API key string.
+#' @noRd
+.get_api_key <- function(provider = "deepseek", api_key = NULL) {
+  if (!is.null(api_key)) {
+    return(api_key)
+  }
+  provider <- .normalize_ai_provider(provider)
+  envvar <- .ai_provider_envvar(provider)
+  api_key <- Sys.getenv(envvar)
   if (api_key == "") {
+    label <- .ai_provider_label(provider)
     cli::cli_abort(c(
-      "API key for DeepSeek chat model is not set.",
-      "i" = "Please set the environment variable `DEEPSEEK_API_KEY` to your API key.",
-      "i" = "You can obtain an API key from https://platform.deepseek.com."
+      "API key for {label} chat model is not set.",
+      "i" = "Please set the environment variable `{envvar}` to your API key, or pass `api_key` directly.",
+      "i" = "For OpenAI-compatible endpoints, set `OPENAI_API_KEY` and pass `base_url`."
     ))
   }
   api_key
 }
 
-.ask_ai <- function(
+#' Create an ellmer chat object for a configured provider
+#'
+#' @param system_prompt System prompt for the chat object.
+#' @param api_key API key for the selected provider.
+#' @param provider Provider name.
+#' @param model Optional model name.
+#' @param base_url Optional provider base URL.
+#' @returns An `ellmer` chat object.
+#' @noRd
+.create_ai_chat <- function(
   system_prompt,
-  user_prompt,
   api_key,
-  model = "deepseek-chat"
+  provider = "deepseek",
+  model = NULL,
+  base_url = NULL
 ) {
   rlang::check_installed("ellmer")
-  chat <- ellmer::chat_deepseek(
+  provider <- .normalize_ai_provider(provider)
+  model <- .resolve_ai_model(provider, model)
+
+  args <- list(
     system_prompt = system_prompt,
     model = model,
     echo = "none",
     credentials = function() api_key
   )
+  if (is.null(model)) {
+    args$model <- NULL
+  }
+
+  chat_fun <- switch(
+    provider,
+    deepseek = ellmer::chat_deepseek,
+    openai = ellmer::chat_openai,
+    anthropic = ellmer::chat_anthropic,
+    gemini = ellmer::chat_google_gemini,
+    openrouter = ellmer::chat_openrouter,
+    openai_compatible = ellmer::chat_openai_compatible
+  )
+
+  if (identical(provider, "openai_compatible")) {
+    if (is.null(base_url)) {
+      cli::cli_abort(
+        "`base_url` is required when `provider = \"openai_compatible\"`."
+      )
+    }
+    args <- c(list(base_url = base_url, name = "OpenAI-compatible"), args)
+  } else if (!is.null(base_url)) {
+    args$base_url <- base_url
+  }
+
+  do.call(chat_fun, args)
+}
+
+#' Send a text-only AI request
+#'
+#' @param system_prompt System prompt for the AI request.
+#' @param user_prompt User prompt for the AI request.
+#' @param api_key API key for the selected provider.
+#' @param model Optional model name.
+#' @param provider Provider name.
+#' @param base_url Optional provider base URL.
+#' @returns Character AI response.
+#' @noRd
+.ask_ai <- function(
+  system_prompt,
+  user_prompt,
+  api_key,
+  model = NULL,
+  provider = "deepseek",
+  base_url = NULL
+) {
+  chat <- .create_ai_chat(
+    system_prompt = system_prompt,
+    api_key = api_key,
+    provider = provider,
+    model = model,
+    base_url = base_url
+  )
   as.character(chat$chat(user_prompt))
 }
 
+#' Send a multimodal AI request
+#'
+#' @param system_prompt System prompt for the AI request.
+#' @param user_prompt User prompt for the AI request.
+#' @param content Multimodal content passed to `ellmer`.
+#' @param api_key API key for the selected provider.
+#' @param model Optional model name.
+#' @param provider Provider name.
+#' @param base_url Optional provider base URL.
+#' @returns Character AI response.
+#' @noRd
 .ask_ai_multimodal <- function(
   system_prompt,
   user_prompt,
   content,
   api_key,
-  model = "deepseek-chat"
+  model = NULL,
+  provider = "deepseek",
+  base_url = NULL
 ) {
-  rlang::check_installed("ellmer")
-  chat <- ellmer::chat_deepseek(
+  chat <- .create_ai_chat(
     system_prompt = system_prompt,
+    api_key = api_key,
+    provider = provider,
     model = model,
-    echo = "none",
-    credentials = function() api_key
+    base_url = base_url
   )
   as.character(chat$chat(content, user_prompt))
 }

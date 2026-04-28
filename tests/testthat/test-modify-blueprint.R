@@ -28,6 +28,44 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   expect_length(bp_updated, 3)
 })
 
+test_that("modify_blueprint can use a non-DeepSeek provider", {
+  skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
+
+  bp <- blueprint(step_preprocess())
+
+  captured <- list()
+  mock_chat_fun <- function(prompt) {
+    captured$prompt <<- prompt
+    "{\"explanation\":\"Add PCA.\",\"steps\":[\"step_preprocess()\",\"step_pca()\"]}"
+  }
+
+  local_mocked_bindings(
+    chat_anthropic = function(system_prompt, model, echo, credentials) {
+      captured$model <<- model
+      captured$key <<- credentials()
+      list(chat = mock_chat_fun)
+    },
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(ANTHROPIC_API_KEY = "anthropic-key"))
+
+  suppressMessages(
+    bp_updated <- modify_blueprint(
+      bp,
+      "add pca",
+      provider = "anthropic",
+      model = "claude-test"
+    )
+  )
+
+  expect_s3_class(bp_updated, "glysmith_blueprint")
+  expect_equal(captured$model, "claude-test")
+  expect_equal(captured$key, "anthropic-key")
+  expect_true(grepl("step_preprocess\\(\\)", captured$prompt))
+})
+
 test_that("modify_blueprint retries on invalid output", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()

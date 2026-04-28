@@ -2,18 +2,24 @@
 #'
 #' Generate a self-contained HTML report for a `glysmith_result` object.
 #' The report is rendered via `rmarkdown::render()` using an internal R Markdown template.
-#' If `use_ai` is TRUE, the report text will be polished and organized into sections using LLM (deepseek-chat),
-#' and plots will be described with a multimodal model (deepseek-vl-chat).
-#' To use this feature, you have to provide an API key and set it in the environment variable `DEEPSEEK_API_KEY`
-#' by running `Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")`.
-#' You can apply the API key on https://platform.deepseek.com.
+#' If `use_ai` is TRUE, the report text will be polished, organized into
+#' sections, and paired with plot descriptions using the configured `ellmer`
+#' provider. DeepSeek is used by default for backward compatibility.
 #'
 #' @param x A `glysmith_result` object.
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
 #' @param use_ai Whether to polish the report text, organize sections, and generate plot descriptions using AI
-#'   (deepseek-chat and deepseek-vision). Default is FALSE.
+#'   with the configured `ellmer` provider. Default is FALSE.
+#' @param ai_provider AI provider passed to `ellmer` when `use_ai = TRUE`.
+#'   One of "deepseek", "openai", "anthropic", "gemini", "openrouter", or
+#'   "openai_compatible". Default to "deepseek".
+#' @param ai_model AI model to use when `use_ai = TRUE`. Defaults to
+#'   "deepseek-chat" for DeepSeek and the provider default for other providers.
+#' @param ai_api_key API key for the selected provider. If `NULL`, the provider
+#'   specific environment variable is used.
+#' @param ai_base_url Optional base URL for custom or OpenAI-compatible endpoints.
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples
@@ -28,13 +34,21 @@ polish_report <- function(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  use_ai = FALSE
+  use_ai = FALSE,
+  ai_provider = "deepseek",
+  ai_model = NULL,
+  ai_api_key = NULL,
+  ai_base_url = NULL
 ) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(output_file)
   checkmate::assert_string(title)
   checkmate::assert_flag(open)
   checkmate::assert_flag(use_ai)
+  ai_provider <- .normalize_ai_provider(ai_provider)
+  checkmate::assert_string(ai_model, null.ok = TRUE)
+  checkmate::assert_string(ai_api_key, null.ok = TRUE)
+  checkmate::assert_string(ai_base_url, null.ok = TRUE)
 
   template <- system.file(
     "templates",
@@ -64,7 +78,14 @@ polish_report <- function(
   tmp_rmd <- fs::path(tmp_dir, "polish_report.Rmd")
   fs::file_copy(template, tmp_rmd, overwrite = TRUE)
 
-  report_sections <- .build_report_sections(x, use_ai = use_ai)
+  report_sections <- .build_report_sections(
+    x,
+    use_ai = use_ai,
+    provider = ai_provider,
+    model = ai_model,
+    api_key = ai_api_key,
+    base_url = ai_base_url
+  )
 
   rendered <- rmarkdown::render(
     input = tmp_rmd,
@@ -93,7 +114,14 @@ polish_report <- function(
 #' @param x A glysmith_result object.
 #' @param use_ai Whether to polish content using AI.
 #' @noRd
-.build_step_reports <- function(x, use_ai = FALSE, api_key = NULL) {
+.build_step_reports <- function(
+  x,
+  use_ai = FALSE,
+  api_key = NULL,
+  provider = "deepseek",
+  model = NULL,
+  base_url = NULL
+) {
   steps_executed <- character(0)
   if (!is.null(x$meta) && is.list(x$meta) && !is.null(x$meta$steps)) {
     steps_executed <- x$meta$steps
@@ -104,9 +132,10 @@ polish_report <- function(
 
   if (isTRUE(use_ai)) {
     if (is.null(api_key)) {
-      api_key <- .get_api_key()
+      api_key <- .get_api_key(provider = provider)
     }
-    cli::cli_alert_info("Polishing report text with AI (deepseek-chat)...")
+    provider_label <- .ai_provider_label(provider)
+    cli::cli_alert_info("Polishing report text with AI ({provider_label})...")
   }
 
   purrr::map(ids, function(id) {
@@ -131,7 +160,13 @@ polish_report <- function(
 
     # Apply AI polishing if enabled and content is not empty
     if (isTRUE(use_ai)) {
-      content <- .polish_text(content, api_key)
+      content <- .polish_text(
+        content,
+        api_key,
+        model = model,
+        provider = provider,
+        base_url = base_url
+      )
     } else {
       content <- stringr::str_remove_all(content, "<AI>[\\s\\S]*?</AI>")
     }
@@ -147,21 +182,46 @@ polish_report <- function(
 #' @param x A glysmith_result object.
 #' @param use_ai Whether to organize sections with AI.
 #' @noRd
-.build_report_sections <- function(x, use_ai = FALSE) {
-  api_key <- NULL
-  if (isTRUE(use_ai)) {
-    api_key <- .get_api_key()
+.build_report_sections <- function(
+  x,
+  use_ai = FALSE,
+  provider = "deepseek",
+  model = NULL,
+  api_key = NULL,
+  base_url = NULL
+) {
+  provider <- .normalize_ai_provider(provider)
+  model <- .resolve_ai_model(provider, model)
+  if (isTRUE(use_ai) && is.null(api_key)) {
+    api_key <- .get_api_key(provider = provider)
   }
 
-  step_reports <- .build_step_reports(x, use_ai = use_ai, api_key = api_key)
-  plot_entries <- .build_plot_entries(x, use_ai = use_ai, api_key = api_key)
+  step_reports <- .build_step_reports(
+    x,
+    use_ai = use_ai,
+    api_key = api_key,
+    provider = provider,
+    model = model,
+    base_url = base_url
+  )
+  plot_entries <- .build_plot_entries(
+    x,
+    use_ai = use_ai,
+    api_key = api_key,
+    provider = provider,
+    model = model,
+    base_url = base_url
+  )
 
   section_plan <- NULL
   if (isTRUE(use_ai)) {
     section_plan <- .organize_report_sections(
       step_reports,
       plot_entries,
-      api_key
+      api_key,
+      provider = provider,
+      model = model,
+      base_url = base_url
     )
   }
 
@@ -176,7 +236,14 @@ polish_report <- function(
 #'
 #' @param x A glysmith_result object.
 #' @noRd
-.build_plot_entries <- function(x, use_ai = FALSE, api_key = NULL) {
+.build_plot_entries <- function(
+  x,
+  use_ai = FALSE,
+  api_key = NULL,
+  provider = "deepseek",
+  model = NULL,
+  base_url = NULL
+) {
   plots <- x$plots
   if (is.null(plots)) {
     return(list())
@@ -188,11 +255,12 @@ polish_report <- function(
   }
 
   if (isTRUE(use_ai) && is.null(api_key)) {
-    api_key <- .get_api_key()
+    api_key <- .get_api_key(provider = provider)
   }
 
   if (isTRUE(use_ai) && length(plots) > 0) {
-    cli::cli_alert_info("Generating AI plot descriptions (deepseek-vl-chat)...")
+    provider_label <- .ai_provider_label(provider)
+    cli::cli_alert_info("Generating AI plot descriptions ({provider_label})...")
   }
 
   purrr::imap(plots, function(p, id) {
@@ -236,7 +304,10 @@ polish_report <- function(
         desc,
         api_key,
         width = width,
-        height = height
+        height = height,
+        model = model,
+        provider = provider,
+        base_url = base_url
       )
     }
     desc <- .humanize_plot_description(desc)
@@ -368,7 +439,9 @@ polish_report <- function(
   api_key,
   width = NULL,
   height = NULL,
-  model = "deepseek-chat"
+  model = NULL,
+  provider = "deepseek",
+  base_url = NULL
 ) {
   if (is.null(plot)) {
     return(description)
@@ -404,7 +477,9 @@ polish_report <- function(
         user_prompt,
         content,
         api_key,
-        model
+        model,
+        provider = provider,
+        base_url = base_url
       )
       response <- stringr::str_squish(response)
       if (!nzchar(response)) {
@@ -527,7 +602,9 @@ polish_report <- function(
   step_reports,
   plot_entries,
   api_key,
-  model = "deepseek-chat"
+  provider = "deepseek",
+  model = NULL,
+  base_url = NULL
 ) {
   if (length(step_reports) == 0 && length(plot_entries) == 0) {
     return(NULL)
@@ -583,7 +660,14 @@ polish_report <- function(
   )
 
   output <- tryCatch(
-    .ask_ai(system_prompt, user_prompt, api_key, model),
+    .ask_ai(
+      system_prompt,
+      user_prompt,
+      api_key,
+      model = model,
+      provider = provider,
+      base_url = base_url
+    ),
     error = function(e) {
       cli::cli_warn(c(
         "AI section organization failed, using default order.",
@@ -1044,7 +1128,13 @@ polish_report <- function(
 #' @param model The AI model to use.
 #' @return The polished text, or original text if polishing fails.
 #' @noRd
-.polish_text <- function(text, api_key, model = "deepseek-chat") {
+.polish_text <- function(
+  text,
+  api_key,
+  model = NULL,
+  provider = "deepseek",
+  base_url = NULL
+) {
   if (is.null(text) || !nzchar(text)) {
     return(text)
   }
@@ -1063,7 +1153,14 @@ polish_report <- function(
   )
 
   tryCatch(
-    .ask_ai(system_prompt, text, api_key, model),
+    .ask_ai(
+      system_prompt,
+      text,
+      api_key,
+      model = model,
+      provider = provider,
+      base_url = base_url
+    ),
     error = function(e) {
       cli::cli_warn(c(
         "AI polishing failed, using original text.",

@@ -10,8 +10,11 @@ modify_blueprint(
   qa_history = NULL,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-chat",
-  max_retries = 3
+  model = NULL,
+  max_retries = 3,
+  provider = "deepseek",
+  api_key = NULL,
+  base_url = NULL
 )
 }
 \arguments{
@@ -25,17 +28,26 @@ modify_blueprint(
 
 \item{group_col}{The column name of the group variable in the experiment. Default to "group".}
 
-\item{model}{Model to use. Default to "deepseek-chat".}
+\item{model}{Model to use. Defaults to "deepseek-chat" for DeepSeek and
+the provider default for other providers.}
 
 \item{max_retries}{Maximum number of retries when the AI output is invalid. Default to 3.}
+
+\item{provider}{AI provider passed to \code{ellmer}. One of "deepseek",
+"openai", "anthropic", "gemini", "openrouter", or "openai_compatible".
+Default to "deepseek".}
+
+\item{api_key}{API key for the selected provider. If \code{NULL}, the provider
+specific environment variable is used.}
+
+\item{base_url}{Optional base URL for custom or OpenAI-compatible endpoints.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Ask a Large Language Model (LLM) to modify an existing blueprint for glycomics
-or glycoproteomics data analysis. To use this function, you need to have a
-DeepSeek API key. You can get a DeepSeek API key from https://platform.deepseek.com.
-Then set the environment variable \code{DEEPSEEK_API_KEY} to your API key with
-\code{Sys.setenv(DEEPSEEK_API_KEY = "your-api-key")}.
+or glycoproteomics data analysis. DeepSeek is used by default for backward
+compatibility. Other \code{ellmer} providers can be selected with \code{provider},
+\code{model}, and provider-specific API key configuration.
 }
 \details{
 LLMs can be unstable. If you get an error, try again with another description.

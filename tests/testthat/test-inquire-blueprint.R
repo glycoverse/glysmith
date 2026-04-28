@@ -187,6 +187,41 @@ test_that("inquire_blueprint handles valid output immediately (mocked)", {
   expect_equal(call_count, 1)
 })
 
+test_that("inquire_blueprint can use a non-DeepSeek provider", {
+  skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
+
+  captured <- list()
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+  }
+
+  local_mocked_bindings(
+    chat_openai = function(system_prompt, model, echo, credentials) {
+      captured$system_prompt <<- system_prompt
+      captured$model <<- model
+      captured$key <<- credentials()
+      list(chat = mock_chat_fun)
+    },
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(OPENAI_API_KEY = "openai-key"))
+
+  suppressMessages(
+    bp <- inquire_blueprint(
+      "test description",
+      provider = "openai",
+      model = "gpt-test"
+    )
+  )
+
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_named(bp, c("ident_overview", "pca"))
+  expect_equal(captured$model, "gpt-test")
+  expect_equal(captured$key, "openai-key")
+})
+
 test_that("inquire_blueprint retries on invalid output", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()
@@ -492,11 +527,18 @@ test_that("review_blueprint applies multiple refinements", {
       exp,
       group_col,
       model,
+      provider,
+      api_key,
+      base_url,
       max_retries
     ) {
       call_count <<- call_count + 1
       if (call_count == 1) {
         expect_equal(description, "add pca")
+        expect_equal(provider, "openai")
+        expect_equal(model, "gpt-test")
+        expect_equal(api_key, "key")
+        expect_null(base_url)
         return(bp_one)
       }
       expect_equal(description, "add heatmap")
@@ -512,7 +554,10 @@ test_that("review_blueprint applies multiple refinements", {
       qa_history = NULL,
       exp = NULL,
       group_col = "group",
-      model = "deepseek-reasoner",
+      model = "gpt-test",
+      provider = "openai",
+      api_key = "key",
+      base_url = NULL,
       max_retries = 1
     )
   )
