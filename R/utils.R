@@ -263,7 +263,7 @@
   provider = getOption("glysmith.ai_provider", "deepseek"),
   api_key = getOption("glysmith.ai_api_key", NULL)
 ) {
-  if (!is.null(api_key)) {
+  if (!is.null(api_key) && nzchar(api_key)) {
     return(api_key)
   }
   provider <- .normalize_ai_provider(provider)
