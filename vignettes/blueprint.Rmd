@@ -85,6 +85,9 @@ Here's the full lineup of available step functions:
 | `step_sig_enrich_go()` | GO enrichment analysis on DE variables | No | GP |
 | `step_sig_enrich_kegg()` | KEGG enrichment analysis on DE variables | No | GP |
 | `step_sig_enrich_reactome()` | Reactome enrichment analysis on DE variables | No | GP |
+| `step_sig_enrich_ncg()` | NCG enrichment analysis on DE variables | No | GP |
+| `step_sig_enrich_wp()` | WikiPathways enrichment analysis on DE variables | No | GP |
+| `step_sig_enrich_do()` | Disease Ontology enrichment analysis on DE variables | No | GP |
 | **Advanced Analysis** | | | |
 | `step_infer_structure()` | Infer glycan structures from glycan compositions | No | GP/G |
 | `step_derive_traits()` | Calculate glycan derived traits | **Yes** | GP/G |

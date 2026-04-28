@@ -3,6 +3,7 @@
 ## New features
 
 * Add `step_infer_structure()` for inferring glycan structures from composition using `glyanno` (#13).
+* Add `step_sig_enrich_ncg()`, `step_sig_enrich_wp()`, and `step_sig_enrich_do()` functions (#14).
 
 ## Minor improvements and bug fixes
 

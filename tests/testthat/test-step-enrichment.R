@@ -32,6 +32,9 @@ run_sig_enrich_step <- function(step_fun, kind) {
     enrich_ora_go = mock_enrich,
     enrich_ora_kegg = mock_enrich,
     enrich_ora_reactome = mock_enrich,
+    enrich_ora_ncg = mock_enrich,
+    enrich_ora_wp = mock_enrich,
+    enrich_ora_do = mock_enrich,
     .package = "glyfun"
   )
   local_mocked_bindings(
@@ -59,6 +62,18 @@ test_that("step_sig_enrich_kegg generates results", {
 
 test_that("step_sig_enrich_reactome generates results", {
   run_sig_enrich_step(step_sig_enrich_reactome, "reactome")
+})
+
+test_that("step_sig_enrich_ncg generates results", {
+  run_sig_enrich_step(step_sig_enrich_ncg, "ncg")
+})
+
+test_that("step_sig_enrich_wp generates results", {
+  run_sig_enrich_step(step_sig_enrich_wp, "wp")
+})
+
+test_that("step_sig_enrich_do generates results", {
+  run_sig_enrich_step(step_sig_enrich_do, "do")
 })
 
 test_that("step_sig_enrich passes detected proteins as universe", {
