@@ -54,7 +54,7 @@ A `glysmith_result` object, with the following components:
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [779ms]
+#> ✔ Identification overview [787ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -105,13 +105,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [6.3s]
+#> ✔ Preprocessing [6s]
 #> 
 #> ℹ QC (post-preprocessing)
 #> ✔ QC (post-preprocessing) [98ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [343ms]
+#> ✔ Principal component analysis [363ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -120,10 +120,10 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [70ms]
+#> ✔ Differential expression analysis (limma) [71ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [466ms]
+#> ✔ Volcano plot [476ms]
 #> 
 #> ℹ Heatmap of significant variables
 #> ✔ Heatmap of significant variables [40ms]
@@ -144,7 +144,7 @@ result <- forge_analysis(exp)
 #> ✔ Differential trait analysis (limma) [55ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [37ms]
+#> ✔ Heatmap of significant traits [38ms]
 #> 
 print(result)
 #> 

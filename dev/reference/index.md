@@ -48,6 +48,8 @@
   : Step: Heatmap
 - [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md)
   : Step: Identification Overview
+- [`step_infer_structure()`](https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.md)
+  : Step: Infer Glycan Structures
 - [`step_logo()`](https://glycoverse.github.io/glysmith/dev/reference/step_logo.md)
   : Step: Logo Plot
 - [`step_oplsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.md)
