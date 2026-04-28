@@ -2,6 +2,19 @@
 
 ## glysmith (development version)
 
+### New features
+
+- Add
+  [`step_infer_structure()`](https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.md)
+  for inferring glycan structures from composition using `glyanno`
+  (#13).
+
+### Minor improvements and bug fixes
+
+- Enrichment analysis now uses `glyfun` instead of `glystats`, as
+  enrichment analysis functions in `glystats` have been deprecated in
+  favor of `glyfun` (#10).
+
 ## glysmith 0.10.1
 
 ### Minor improvements and bug fixes
