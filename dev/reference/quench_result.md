@@ -52,7 +52,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [935ms]
+#> ✔ Identification overview [798ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -106,10 +106,10 @@ result <- forge_analysis(exp)
 #> ✔ Preprocessing [5.8s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [99ms]
+#> ✔ QC (post-preprocessing) [87ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [413ms]
+#> ✔ Principal component analysis [341ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -118,19 +118,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [77ms]
+#> ✔ Differential expression analysis (limma) [68ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [566ms]
+#> ✔ Volcano plot [495ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [44ms]
+#> ✔ Heatmap of significant variables [38ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2.2s]
+#> ✔ Derived trait calculation [1.9s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -139,12 +139,12 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [62ms]
+#> ✔ Differential trait analysis (limma) [53ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [45ms]
+#> ✔ Heatmap of significant traits [39ms]
 #> 
 quench_result(result, tempdir())
 #> ℹ Directory already exists. Overwrite? [y/N] 
-#> ✔ Result saved to /tmp/RtmpgASnNF
+#> ✔ Result saved to /tmp/RtmpopNzcl
 ```

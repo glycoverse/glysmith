@@ -71,12 +71,19 @@
   : Step: ROC Analysis
 - [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
   : Step: Significant Variables Boxplot
+- [`step_sig_enrich_do()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_do.md)
+  : Step: DO Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_go.md)
   : Step: GO Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_kegg.md)
   : Step: KEGG Enrichment Analysis on Differentially Expressed Variables
+- [`step_sig_enrich_ncg()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_ncg.md)
+  : Step: NCG Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_reactome.md)
   : Step: Reactome Enrichment Analysis on Differentially Expressed
+  Variables
+- [`step_sig_enrich_wp()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_wp.md)
+  : Step: WikiPathways Enrichment Analysis on Differentially Expressed
   Variables
 - [`step_subset_groups()`](https://glycoverse.github.io/glysmith/dev/reference/step_subset_groups.md)
   : Step: Subset Groups

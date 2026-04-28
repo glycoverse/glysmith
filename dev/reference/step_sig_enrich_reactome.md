@@ -72,7 +72,7 @@ Tables generated:
 [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
 only.*
 
-- Include this step if needed.
+- Include this step if user asks for it.
 
 - Leave `universe` to "all" (by default) unless the user explicitly
   mentions that the background should be the detected variables in

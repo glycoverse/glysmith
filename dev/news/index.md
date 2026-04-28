@@ -8,6 +8,12 @@
   [`step_infer_structure()`](https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.md)
   for inferring glycan structures from composition using `glyanno`
   (#13).
+- Add
+  [`step_sig_enrich_ncg()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_ncg.md),
+  [`step_sig_enrich_wp()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_wp.md),
+  and
+  [`step_sig_enrich_do()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_do.md)
+  functions (#14).
 
 ### Minor improvements and bug fixes
 
