@@ -189,7 +189,9 @@
 #' @param provider Provider name or supported alias.
 #' @returns Canonical provider name.
 #' @noRd
-.normalize_ai_provider <- function(provider = "deepseek") {
+.normalize_ai_provider <- function(
+  provider = getOption("glysmith.ai_provider", "deepseek")
+) {
   provider <- rlang::arg_match(provider, .ai_provider_choices())
   if (identical(provider, "google_gemini")) {
     return("gemini")
@@ -237,7 +239,10 @@
 #' @param model Optional model name supplied by the caller.
 #' @returns Model name, or `NULL` to use the provider default.
 #' @noRd
-.resolve_ai_model <- function(provider = "deepseek", model = NULL) {
+.resolve_ai_model <- function(
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL)
+) {
   provider <- .normalize_ai_provider(provider)
   if (!is.null(model)) {
     return(model)
@@ -254,7 +259,10 @@
 #' @param api_key Optional explicit API key.
 #' @returns API key string.
 #' @noRd
-.get_api_key <- function(provider = "deepseek", api_key = NULL) {
+.get_api_key <- function(
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  api_key = getOption("glysmith.ai_api_key", NULL)
+) {
   if (!is.null(api_key)) {
     return(api_key)
   }
@@ -284,9 +292,9 @@
 .create_ai_chat <- function(
   system_prompt,
   api_key,
-  provider = "deepseek",
-  model = NULL,
-  base_url = NULL
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   rlang::check_installed("ellmer")
   provider <- .normalize_ai_provider(provider)
@@ -340,9 +348,9 @@
   system_prompt,
   user_prompt,
   api_key,
-  model = NULL,
-  provider = "deepseek",
-  base_url = NULL
+  model = getOption("glysmith.ai_model", NULL),
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   chat <- .create_ai_chat(
     system_prompt = system_prompt,
@@ -370,9 +378,9 @@
   user_prompt,
   content,
   api_key,
-  model = NULL,
-  provider = "deepseek",
-  base_url = NULL
+  model = getOption("glysmith.ai_model", NULL),
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   chat <- .create_ai_chat(
     system_prompt = system_prompt,

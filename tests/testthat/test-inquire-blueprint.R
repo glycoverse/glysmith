@@ -222,6 +222,38 @@ test_that("inquire_blueprint can use a non-DeepSeek provider", {
   expect_equal(captured$key, "openai-key")
 })
 
+test_that("inquire_blueprint uses package-level AI options", {
+  skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
+
+  captured <- list()
+  mock_chat_fun <- function(...) {
+    '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+  }
+
+  local_mocked_bindings(
+    chat_openai = function(system_prompt, model, echo, credentials) {
+      captured$model <<- model
+      captured$key <<- credentials()
+      list(chat = mock_chat_fun)
+    },
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(OPENAI_API_KEY = "openai-key"))
+  withr::local_options(list(
+    glysmith.ai_provider = "openai",
+    glysmith.ai_model = "gpt-option"
+  ))
+
+  suppressMessages(bp <- inquire_blueprint("test description"))
+
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_named(bp, c("ident_overview", "pca"))
+  expect_equal(captured$model, "gpt-option")
+  expect_equal(captured$key, "openai-key")
+})
+
 test_that("inquire_blueprint retries on invalid output", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()

@@ -10,10 +10,10 @@ polish_report(
   title = "GlySmith report",
   open = interactive(),
   use_ai = FALSE,
-  ai_provider = "deepseek",
-  ai_model = NULL,
-  ai_api_key = NULL,
-  ai_base_url = NULL
+  ai_provider = getOption("glysmith.ai_provider", "deepseek"),
+  ai_model = getOption("glysmith.ai_model", NULL),
+  ai_api_key = getOption("glysmith.ai_api_key", NULL),
+  ai_base_url = getOption("glysmith.ai_base_url", NULL)
 )
 }
 \arguments{
@@ -30,15 +30,19 @@ with the configured \code{ellmer} provider. Default is FALSE.}
 
 \item{ai_provider}{AI provider passed to \code{ellmer} when \code{use_ai = TRUE}.
 One of "deepseek", "openai", "anthropic", "gemini", "openrouter", or
-"openai_compatible". Default to "deepseek".}
+"openai_compatible". Defaults to
+\code{getOption("glysmith.ai_provider", "deepseek")}.}
 
 \item{ai_model}{AI model to use when \code{use_ai = TRUE}. Defaults to
-"deepseek-chat" for DeepSeek and the provider default for other providers.}
+\code{getOption("glysmith.ai_model")}, or "deepseek-chat" for DeepSeek and
+the provider default for other providers.}
 
 \item{ai_api_key}{API key for the selected provider. If \code{NULL}, the provider
-specific environment variable is used.}
+specific environment variable is used. Defaults to
+\code{getOption("glysmith.ai_api_key")}.}
 
-\item{ai_base_url}{Optional base URL for custom or OpenAI-compatible endpoints.}
+\item{ai_base_url}{Optional base URL for custom or OpenAI-compatible endpoints.
+Defaults to \code{getOption("glysmith.ai_base_url")}.}
 }
 \value{
 The normalized path to the generated HTML file.

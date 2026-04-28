@@ -14,12 +14,16 @@
 #'   with the configured `ellmer` provider. Default is FALSE.
 #' @param ai_provider AI provider passed to `ellmer` when `use_ai = TRUE`.
 #'   One of "deepseek", "openai", "anthropic", "gemini", "openrouter", or
-#'   "openai_compatible". Default to "deepseek".
+#'   "openai_compatible". Defaults to
+#'   `getOption("glysmith.ai_provider", "deepseek")`.
 #' @param ai_model AI model to use when `use_ai = TRUE`. Defaults to
-#'   "deepseek-chat" for DeepSeek and the provider default for other providers.
+#'   `getOption("glysmith.ai_model")`, or "deepseek-chat" for DeepSeek and
+#'   the provider default for other providers.
 #' @param ai_api_key API key for the selected provider. If `NULL`, the provider
-#'   specific environment variable is used.
+#'   specific environment variable is used. Defaults to
+#'   `getOption("glysmith.ai_api_key")`.
 #' @param ai_base_url Optional base URL for custom or OpenAI-compatible endpoints.
+#'   Defaults to `getOption("glysmith.ai_base_url")`.
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples
@@ -35,10 +39,10 @@ polish_report <- function(
   title = "GlySmith report",
   open = interactive(),
   use_ai = FALSE,
-  ai_provider = "deepseek",
-  ai_model = NULL,
-  ai_api_key = NULL,
-  ai_base_url = NULL
+  ai_provider = getOption("glysmith.ai_provider", "deepseek"),
+  ai_model = getOption("glysmith.ai_model", NULL),
+  ai_api_key = getOption("glysmith.ai_api_key", NULL),
+  ai_base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   checkmate::assert_class(x, "glysmith_result")
   checkmate::assert_string(output_file)
@@ -118,9 +122,9 @@ polish_report <- function(
   x,
   use_ai = FALSE,
   api_key = NULL,
-  provider = "deepseek",
-  model = NULL,
-  base_url = NULL
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   steps_executed <- character(0)
   if (!is.null(x$meta) && is.list(x$meta) && !is.null(x$meta$steps)) {
@@ -185,10 +189,10 @@ polish_report <- function(
 .build_report_sections <- function(
   x,
   use_ai = FALSE,
-  provider = "deepseek",
-  model = NULL,
-  api_key = NULL,
-  base_url = NULL
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL),
+  api_key = getOption("glysmith.ai_api_key", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   provider <- .normalize_ai_provider(provider)
   model <- .resolve_ai_model(provider, model)
@@ -240,9 +244,9 @@ polish_report <- function(
   x,
   use_ai = FALSE,
   api_key = NULL,
-  provider = "deepseek",
-  model = NULL,
-  base_url = NULL
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   plots <- x$plots
   if (is.null(plots)) {
@@ -439,9 +443,9 @@ polish_report <- function(
   api_key,
   width = NULL,
   height = NULL,
-  model = NULL,
-  provider = "deepseek",
-  base_url = NULL
+  model = getOption("glysmith.ai_model", NULL),
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   if (is.null(plot)) {
     return(description)
@@ -602,9 +606,9 @@ polish_report <- function(
   step_reports,
   plot_entries,
   api_key,
-  provider = "deepseek",
-  model = NULL,
-  base_url = NULL
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   if (length(step_reports) == 0 && length(plot_entries) == 0) {
     return(NULL)
@@ -1131,9 +1135,9 @@ polish_report <- function(
 .polish_text <- function(
   text,
   api_key,
-  model = NULL,
-  provider = "deepseek",
-  base_url = NULL
+  model = getOption("glysmith.ai_model", NULL),
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   if (is.null(text) || !nzchar(text)) {
     return(text)

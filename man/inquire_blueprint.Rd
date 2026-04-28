@@ -8,11 +8,11 @@ inquire_blueprint(
   description,
   exp = NULL,
   group_col = "group",
-  model = NULL,
+  model = getOption("glysmith.ai_model", NULL),
   max_retries = 3,
-  provider = "deepseek",
-  api_key = NULL,
-  base_url = NULL
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  api_key = getOption("glysmith.ai_api_key", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 )
 }
 \arguments{
@@ -22,19 +22,21 @@ inquire_blueprint(
 
 \item{group_col}{The column name of the group variable in the experiment. Default to "group".}
 
-\item{model}{Model to use. Defaults to "deepseek-chat" for DeepSeek and
-the provider default for other providers.}
+\item{model}{Model to use. Defaults to \code{getOption("glysmith.ai_model")},
+or "deepseek-chat" for DeepSeek and the provider default for other providers.}
 
 \item{max_retries}{Maximum number of retries when the AI output is invalid. Default to 3.}
 
 \item{provider}{AI provider passed to \code{ellmer}. One of "deepseek",
 "openai", "anthropic", "gemini", "openrouter", or "openai_compatible".
-Default to "deepseek".}
+Defaults to \code{getOption("glysmith.ai_provider", "deepseek")}.}
 
 \item{api_key}{API key for the selected provider. If \code{NULL}, the provider
-specific environment variable is used.}
+specific environment variable is used. Defaults to
+\code{getOption("glysmith.ai_api_key")}.}
 
-\item{base_url}{Optional base URL for custom or OpenAI-compatible endpoints.}
+\item{base_url}{Optional base URL for custom or OpenAI-compatible endpoints.
+Defaults to \code{getOption("glysmith.ai_base_url")}.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}

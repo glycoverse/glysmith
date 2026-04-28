@@ -490,6 +490,68 @@ test_that("build_report_sections passes AI provider configuration downstream", {
   expect_equal(captured$step_base_url, "https://example.test/v1")
 })
 
+test_that("build_report_sections uses package-level AI options", {
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+
+  captured <- list()
+  local_mocked_bindings(
+    .get_api_key = function(provider) {
+      captured$key_provider <<- provider
+      "provider-key"
+    },
+    .build_step_reports = function(
+      x,
+      use_ai = FALSE,
+      api_key = NULL,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$step_provider <<- provider
+      captured$step_model <<- model
+      captured$step_base_url <<- base_url
+      list()
+    },
+    .build_plot_entries = function(
+      x,
+      use_ai = FALSE,
+      api_key = NULL,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$plot_provider <<- provider
+      list()
+    },
+    .organize_report_sections = function(...) NULL,
+    .package = "glysmith"
+  )
+
+  withr::local_options(list(
+    glysmith.ai_provider = "openai",
+    glysmith.ai_model = "gpt-option",
+    glysmith.ai_base_url = "https://example.test/v1"
+  ))
+
+  suppressMessages(glysmith:::.build_report_sections(x, use_ai = TRUE))
+
+  expect_equal(captured$key_provider, "openai")
+  expect_equal(captured$step_provider, "openai")
+  expect_equal(captured$plot_provider, "openai")
+  expect_equal(captured$step_model, "gpt-option")
+  expect_equal(captured$step_base_url, "https://example.test/v1")
+})
+
 test_that("organize_report_sections returns NULL for empty inputs", {
   expect_null(glysmith:::.organize_report_sections(list(), list(), "key"))
 })

@@ -42,7 +42,23 @@ bp <- inquire_blueprint(
 )
 ```
 
+If you prefer to configure the provider once per R session, use package-level options:
+
+```r
+options(
+  glysmith.ai_provider = "openai",
+  glysmith.ai_model = "gpt-4.1"
+)
+
+bp <- inquire_blueprint(
+  "I want to perform DEA and visualize the results.",
+  exp = your_exp
+)
+```
+
 For OpenAI-compatible endpoints, set `OPENAI_API_KEY` and pass both `provider = "openai_compatible"` and `base_url`.
+The corresponding options are `glysmith.ai_provider`, `glysmith.ai_model`,
+`glysmith.ai_api_key`, and `glysmith.ai_base_url`.
 
 *Note: This environment variable is session-specific. You will need to set it again in new R sessions, or add it to your `.Renviron` file for a permanent setup.*
 

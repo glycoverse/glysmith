@@ -107,6 +107,31 @@ test_that("ask_ai routes to configured ellmer provider", {
   expect_equal(captured$key, "key")
 })
 
+test_that("ask_ai uses package-level provider options", {
+  skip_if_not_installed("ellmer")
+
+  captured <- list()
+  local_mocked_bindings(
+    chat_openai = function(system_prompt, model, echo, credentials) {
+      captured$model <<- model
+      captured$key <<- credentials()
+      list(chat = function(prompt) "openai-response")
+    },
+    .package = "ellmer"
+  )
+
+  withr::local_options(list(
+    glysmith.ai_provider = "openai",
+    glysmith.ai_model = "gpt-option"
+  ))
+
+  response <- glysmith:::.ask_ai("sys", "user", "key")
+
+  expect_equal(response, "openai-response")
+  expect_equal(captured$model, "gpt-option")
+  expect_equal(captured$key, "key")
+})
+
 test_that("ask_ai supports OpenAI-compatible base URLs", {
   skip_if_not_installed("ellmer")
 
