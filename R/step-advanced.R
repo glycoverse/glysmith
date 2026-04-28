@@ -76,11 +76,12 @@ step_infer_structure <- function(
     },
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
-      db_to_use <- db %||% glydb::glydb_structures(
-        structure_level = structure_level,
-        species = species,
-        glycan_type = glyexp::get_glycan_type(exp)
-      )
+      db_to_use <- db %||%
+        glydb::glydb_structures(
+          structure_level = structure_level,
+          species = species,
+          glycan_type = glyexp::get_glycan_type(exp)
+        )
 
       comps <- exp$var_info$glycan_composition
       if (glyrepr::get_mono_type(db_to_use) == "generic") {
