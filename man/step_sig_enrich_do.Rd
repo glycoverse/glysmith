@@ -52,7 +52,7 @@ Tables generated:
 
 \emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
 \itemize{
-\item Include this step if needed.
+\item Include this step if user asks for it.
 \item Leave \code{universe} to "all" (by default) unless the user explicitly mentions that
 the background should be the detected variables in \code{exp}.
 \item If the experiment has more than 2 groups but the user wants enrichment for a
