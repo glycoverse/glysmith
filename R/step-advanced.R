@@ -27,6 +27,8 @@
 #' - This step should be placed before [step_derive_traits()],
 #'   [step_quantify_dynamic_motifs()], or [step_quantify_branch_motifs()].
 #' - Mention that variables without inferred structures are removed.
+#' - Always ask for species restriction to improve inference accuracy,
+#'   but allow users to skip it if they want.
 #'
 #' @param species Species name used to restrict the glycan structure database.
 #'   Default is `NULL`, which does not restrict by species.
