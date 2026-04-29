@@ -28,11 +28,24 @@ test_that("get_api_key reads from environment", {
   expect_equal(glysmith:::.get_api_key(), "test-key")
 })
 
+test_that("get_api_key reads provider-specific environment variables", {
+  withr::local_envvar(c(OPENAI_API_KEY = "openai-key"))
+  expect_equal(glysmith:::.get_api_key(provider = "openai"), "openai-key")
+})
+
 test_that("get_api_key errors when missing", {
   withr::local_envvar(c(DEEPSEEK_API_KEY = ""))
   expect_error(
     glysmith:::.get_api_key(),
     "API key for DeepSeek chat model is not set"
+  )
+})
+
+test_that("get_api_key errors with provider-specific guidance", {
+  withr::local_envvar(c(OPENAI_API_KEY = ""))
+  expect_error(
+    glysmith:::.get_api_key(provider = "openai"),
+    "OPENAI_API_KEY"
   )
 })
 
@@ -59,6 +72,105 @@ test_that("ask_ai uses ellmer chat", {
   expect_equal(captured$system_prompt, "sys")
   expect_equal(captured$user_prompt, "user")
   expect_equal(captured$key, "key")
+})
+
+test_that("ask_ai routes to configured ellmer provider", {
+  skip_if_not_installed("ellmer")
+
+  captured <- list()
+  local_mocked_bindings(
+    chat_openai = function(system_prompt, model, echo, credentials) {
+      captured$system_prompt <<- system_prompt
+      captured$model <<- model
+      captured$echo <<- echo
+      captured$key <<- credentials()
+      list(chat = function(prompt) {
+        captured$user_prompt <<- prompt
+        "openai-response"
+      })
+    },
+    .package = "ellmer"
+  )
+
+  response <- glysmith:::.ask_ai(
+    "sys",
+    "user",
+    "key",
+    provider = "openai",
+    model = "gpt-test"
+  )
+
+  expect_equal(response, "openai-response")
+  expect_equal(captured$system_prompt, "sys")
+  expect_equal(captured$user_prompt, "user")
+  expect_equal(captured$model, "gpt-test")
+  expect_equal(captured$key, "key")
+})
+
+test_that("ask_ai uses package-level provider options", {
+  skip_if_not_installed("ellmer")
+
+  captured <- list()
+  local_mocked_bindings(
+    chat_openai = function(system_prompt, model, echo, credentials) {
+      captured$model <<- model
+      captured$key <<- credentials()
+      list(chat = function(prompt) "openai-response")
+    },
+    .package = "ellmer"
+  )
+
+  withr::local_options(list(
+    glysmith.ai_provider = "openai",
+    glysmith.ai_model = "gpt-option"
+  ))
+
+  response <- glysmith:::.ask_ai("sys", "user", "key")
+
+  expect_equal(response, "openai-response")
+  expect_equal(captured$model, "gpt-option")
+  expect_equal(captured$key, "key")
+})
+
+test_that("ask_ai supports OpenAI-compatible base URLs", {
+  skip_if_not_installed("ellmer")
+
+  captured <- list()
+  local_mocked_bindings(
+    chat_openai_compatible = function(
+      base_url,
+      name,
+      system_prompt,
+      model,
+      echo,
+      credentials
+    ) {
+      captured$base_url <<- base_url
+      captured$name <<- name
+      captured$system_prompt <<- system_prompt
+      captured$model <<- model
+      captured$key <<- credentials()
+      list(chat = function(prompt) {
+        captured$user_prompt <<- prompt
+        "compatible-response"
+      })
+    },
+    .package = "ellmer"
+  )
+
+  response <- glysmith:::.ask_ai(
+    "sys",
+    "user",
+    "key",
+    provider = "openai_compatible",
+    model = "custom-model",
+    base_url = "https://example.test/v1"
+  )
+
+  expect_equal(response, "compatible-response")
+  expect_equal(captured$base_url, "https://example.test/v1")
+  expect_equal(captured$name, "OpenAI-compatible")
+  expect_equal(captured$model, "custom-model")
 })
 
 test_that("ask_ai_multimodal passes content to chat", {

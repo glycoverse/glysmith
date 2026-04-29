@@ -2,10 +2,9 @@
 #'
 #' `r lifecycle::badge("experimental")`
 #' Ask a Large Language Model (LLM) to create a blueprint for glycomics or glycoproteomics data analysis.
-#' To use this function, you need to have a DeepSeek API key.
-#' You can get a DeepSeek API key from https://platform.deepseek.com.
-#' Then set the environment variable `DEEPSEEK_API_KEY` to your API key with
-#' `Sys.setenv(DEEPSEEK_API_KEY = "your-api-key")`.
+#' DeepSeek is used by default for backward compatibility. Other `ellmer`
+#' providers can be selected with `provider`, `model`, and provider-specific
+#' API key configuration.
 #'
 #' @details
 #' LLMs can be unstable. If you get an error, try again with another description.
@@ -27,32 +26,49 @@
 #' @param description A description of what you want to analysis.
 #' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
 #' @param group_col The column name of the group variable in the experiment. Default to "group".
-#' @param model Model to use. Default to "deepseek-chat".
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
+#' @param model Model to use. Defaults to `getOption("glysmith.ai_model")`,
+#'   or "deepseek-chat" for DeepSeek and the provider default for other providers.
+#' @param provider AI provider passed to `ellmer`. One of "deepseek",
+#'   "openai", "anthropic", "gemini", "openrouter", or "openai_compatible".
+#'   Defaults to `getOption("glysmith.ai_provider", "deepseek")`.
+#' @param api_key API key for the selected provider. If `NULL`, the provider
+#'   specific environment variable is used. Defaults to
+#'   `getOption("glysmith.ai_api_key")`.
+#' @param base_url Optional base URL for custom or OpenAI-compatible endpoints.
+#'   Defaults to `getOption("glysmith.ai_base_url")`.
 #'
 #' @export
 inquire_blueprint <- function(
   description,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-chat",
-  max_retries = 3
+  model = getOption("glysmith.ai_model", NULL),
+  max_retries = 3,
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  api_key = getOption("glysmith.ai_api_key", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   checkmate::assert_string(description)
   checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
   checkmate::assert_string(group_col)
-  checkmate::assert_choice(model, c("deepseek-reasoner", "deepseek-chat"))
+  checkmate::assert_string(model, null.ok = TRUE)
   checkmate::assert_count(max_retries)
+  provider <- .normalize_ai_provider(provider)
+  checkmate::assert_string(api_key, null.ok = TRUE)
+  checkmate::assert_string(base_url, null.ok = TRUE)
   rlang::check_installed("ellmer")
 
-  api_key <- .get_api_key()
+  model <- .resolve_ai_model(provider, model)
+  api_key <- .get_api_key(provider = provider, api_key = api_key)
   system_prompt <- .inquire_blueprint_sys_prompt()
 
-  chat <- ellmer::chat_deepseek(
+  chat <- .create_ai_chat(
     system_prompt = system_prompt,
+    api_key = api_key,
+    provider = provider,
     model = model,
-    echo = "none",
-    credentials = function() api_key
+    base_url = base_url
   )
 
   # Initial prompt with dataset info
@@ -67,7 +83,12 @@ inquire_blueprint <- function(
   max_questions <- 20L
 
   # Print fun fact only once at the start
-  .print_ai_thinking(api_key)
+  .print_ai_thinking(
+    api_key,
+    provider = provider,
+    model = model,
+    base_url = base_url
+  )
 
   repeat {
     if (retry_count > 0) {
@@ -110,6 +131,9 @@ inquire_blueprint <- function(
         exp = exp,
         group_col = group_col,
         model = model,
+        provider = provider,
+        api_key = api_key,
+        base_url = base_url,
         max_retries = max_retries
       ))
     }
@@ -602,6 +626,9 @@ inquire_blueprint <- function(
 #' @param exp Optional experiment metadata passed to [modify_blueprint()].
 #' @param group_col Group column name passed to [modify_blueprint()].
 #' @param model Model name passed to [modify_blueprint()].
+#' @param provider AI provider passed to [modify_blueprint()].
+#' @param api_key API key passed to [modify_blueprint()].
+#' @param base_url Base URL passed to [modify_blueprint()].
 #' @param max_retries Maximum retries passed to [modify_blueprint()].
 #'
 #' @returns A confirmed `glysmith_blueprint` object.
@@ -613,6 +640,9 @@ inquire_blueprint <- function(
   exp,
   group_col,
   model,
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  api_key = getOption("glysmith.ai_api_key", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL),
   max_retries
 ) {
   checkmate::assert_class(bp, "glysmith_blueprint")
@@ -636,6 +666,9 @@ inquire_blueprint <- function(
       exp = exp,
       group_col = group_col,
       model = model,
+      provider = provider,
+      api_key = api_key,
+      base_url = base_url,
       max_retries = max_retries
     )
   }

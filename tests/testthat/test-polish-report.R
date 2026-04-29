@@ -360,7 +360,7 @@ test_that("build_step_reports uses AI polishing when enabled", {
   )
 
   local_mocked_bindings(
-    .polish_text = function(text, api_key, model = "deepseek-chat") {
+    .polish_text = function(text, api_key, ...) {
       paste0("polished: ", text)
     },
     .package = "glysmith"
@@ -397,7 +397,7 @@ test_that("build_plot_entries uses AI descriptions", {
       api_key,
       width = NULL,
       height = NULL,
-      model = "deepseek-chat"
+      ...
     ) {
       captured$label <<- label
       captured$description <<- description
@@ -413,6 +413,143 @@ test_that("build_plot_entries uses AI descriptions", {
   expect_equal(entries[[1]]$description, "AI desc")
   expect_equal(captured$api_key, "key")
   expect_true(grepl("Volcano plot", entries[[1]]$label, fixed = TRUE))
+})
+
+test_that("build_report_sections passes AI provider configuration downstream", {
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+
+  captured <- list()
+  local_mocked_bindings(
+    .get_api_key = function(provider) {
+      captured$key_provider <<- provider
+      "provider-key"
+    },
+    .build_step_reports = function(
+      x,
+      use_ai = FALSE,
+      api_key = NULL,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$step_provider <<- provider
+      captured$step_model <<- model
+      captured$step_base_url <<- base_url
+      list()
+    },
+    .build_plot_entries = function(
+      x,
+      use_ai = FALSE,
+      api_key = NULL,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$plot_provider <<- provider
+      list()
+    },
+    .organize_report_sections = function(
+      step_reports,
+      plot_entries,
+      api_key,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$section_provider <<- provider
+      NULL
+    },
+    .package = "glysmith"
+  )
+
+  suppressMessages(
+    glysmith:::.build_report_sections(
+      x,
+      use_ai = TRUE,
+      provider = "openai",
+      model = "gpt-test",
+      base_url = "https://example.test/v1"
+    )
+  )
+
+  expect_equal(captured$key_provider, "openai")
+  expect_equal(captured$step_provider, "openai")
+  expect_equal(captured$plot_provider, "openai")
+  expect_equal(captured$section_provider, "openai")
+  expect_equal(captured$step_model, "gpt-test")
+  expect_equal(captured$step_base_url, "https://example.test/v1")
+})
+
+test_that("build_report_sections uses package-level AI options", {
+  x <- structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(),
+      blueprint = structure(list(), class = "glysmith_blueprint")
+    ),
+    class = "glysmith_result"
+  )
+
+  captured <- list()
+  local_mocked_bindings(
+    .get_api_key = function(provider) {
+      captured$key_provider <<- provider
+      "provider-key"
+    },
+    .build_step_reports = function(
+      x,
+      use_ai = FALSE,
+      api_key = NULL,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$step_provider <<- provider
+      captured$step_model <<- model
+      captured$step_base_url <<- base_url
+      list()
+    },
+    .build_plot_entries = function(
+      x,
+      use_ai = FALSE,
+      api_key = NULL,
+      provider = "deepseek",
+      model = NULL,
+      base_url = NULL
+    ) {
+      captured$plot_provider <<- provider
+      list()
+    },
+    .organize_report_sections = function(...) NULL,
+    .package = "glysmith"
+  )
+
+  withr::local_options(list(
+    glysmith.ai_provider = "openai",
+    glysmith.ai_model = "gpt-option",
+    glysmith.ai_base_url = "https://example.test/v1"
+  ))
+
+  suppressMessages(glysmith:::.build_report_sections(x, use_ai = TRUE))
+
+  expect_equal(captured$key_provider, "openai")
+  expect_equal(captured$step_provider, "openai")
+  expect_equal(captured$plot_provider, "openai")
+  expect_equal(captured$step_model, "gpt-option")
+  expect_equal(captured$step_base_url, "https://example.test/v1")
 })
 
 test_that("organize_report_sections returns NULL for empty inputs", {
@@ -515,7 +652,7 @@ test_that(".polish_text returns original text for NULL or empty input", {
 test_that(".polish_text calls ask_ai with correct prompts", {
   captured <- list()
   local_mocked_bindings(
-    .ask_ai = function(system_prompt, user_prompt, api_key, model) {
+    .ask_ai = function(system_prompt, user_prompt, api_key, model, ...) {
       captured$system_prompt <<- system_prompt
       captured$user_prompt <<- user_prompt
       "polished text"

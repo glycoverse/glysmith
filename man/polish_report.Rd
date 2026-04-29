@@ -9,7 +9,11 @@ polish_report(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  use_ai = FALSE
+  use_ai = FALSE,
+  ai_provider = getOption("glysmith.ai_provider", "deepseek"),
+  ai_model = getOption("glysmith.ai_model", NULL),
+  ai_api_key = getOption("glysmith.ai_api_key", NULL),
+  ai_base_url = getOption("glysmith.ai_base_url", NULL)
 )
 }
 \arguments{
@@ -22,7 +26,23 @@ polish_report(
 \item{open}{Whether to open the report in a browser after rendering.}
 
 \item{use_ai}{Whether to polish the report text, organize sections, and generate plot descriptions using AI
-(deepseek-chat and deepseek-vision). Default is FALSE.}
+with the configured \code{ellmer} provider. Default is FALSE.}
+
+\item{ai_provider}{AI provider passed to \code{ellmer} when \code{use_ai = TRUE}.
+One of "deepseek", "openai", "anthropic", "gemini", "openrouter", or
+"openai_compatible". Defaults to
+\code{getOption("glysmith.ai_provider", "deepseek")}.}
+
+\item{ai_model}{AI model to use when \code{use_ai = TRUE}. Defaults to
+\code{getOption("glysmith.ai_model")}, or "deepseek-chat" for DeepSeek and
+the provider default for other providers.}
+
+\item{ai_api_key}{API key for the selected provider. If \code{NULL}, the provider
+specific environment variable is used. Defaults to
+\code{getOption("glysmith.ai_api_key")}.}
+
+\item{ai_base_url}{Optional base URL for custom or OpenAI-compatible endpoints.
+Defaults to \code{getOption("glysmith.ai_base_url")}.}
 }
 \value{
 The normalized path to the generated HTML file.
@@ -30,11 +50,9 @@ The normalized path to the generated HTML file.
 \description{
 Generate a self-contained HTML report for a \code{glysmith_result} object.
 The report is rendered via \code{rmarkdown::render()} using an internal R Markdown template.
-If \code{use_ai} is TRUE, the report text will be polished and organized into sections using LLM (deepseek-chat),
-and plots will be described with a multimodal model (deepseek-vl-chat).
-To use this feature, you have to provide an API key and set it in the environment variable \code{DEEPSEEK_API_KEY}
-by running \code{Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")}.
-You can apply the API key on https://platform.deepseek.com.
+If \code{use_ai} is TRUE, the report text will be polished, organized into
+sections, and paired with plot descriptions using the configured \code{ellmer}
+provider. DeepSeek is used by default for backward compatibility.
 }
 \examples{
 library(glyexp)
