@@ -13,7 +13,11 @@
   [`step_sig_enrich_wp()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_wp.md),
   and
   [`step_sig_enrich_do()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_do.md)
-  functions (#14).
+  functions for Network of Cancer Gene, WikiPathways, and Disease
+  Ontology enrichment analysis, respectively (#14).
+- AI features now support more model providers including OpenAI,
+  Anthropic, Gemini, OpenRouter, and OpenAI-compatible models. The
+  default model is still `deepseek-chat` (#15).
 
 ### Minor improvements and bug fixes
 

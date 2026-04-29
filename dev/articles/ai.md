@@ -8,7 +8,8 @@ boilerplate.
 
 ## Getting Started
 
-To enable AI features, you need a DeepSeek API key. You can obtain one
+To enable AI features, configure an API key for the LLM provider you
+want to use. DeepSeek is the default provider, and you can obtain a key
 from the [DeepSeek Platform](https://platform.deepseek.com).
 
 Once you have your key, set it as an environment variable in your R
@@ -17,6 +18,40 @@ session:
 ``` r
 Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
 ```
+
+You can also use other providers supported by `ellmer`. For example,
+OpenAI can be used by setting `OPENAI_API_KEY` and passing
+`provider = "openai"`:
+
+``` r
+Sys.setenv(OPENAI_API_KEY = "your_api_key")
+bp <- inquire_blueprint(
+  "I want to perform DEA and visualize the results.",
+  exp = your_exp,
+  provider = "openai",
+  model = "gpt-4.1"
+)
+```
+
+If you prefer to configure the provider once per R session, use
+package-level options:
+
+``` r
+options(
+  glysmith.ai_provider = "openai",
+  glysmith.ai_model = "gpt-4.1"
+)
+
+bp <- inquire_blueprint(
+  "I want to perform DEA and visualize the results.",
+  exp = your_exp
+)
+```
+
+For OpenAI-compatible endpoints, set `OPENAI_API_KEY` and pass both
+`provider = "openai_compatible"` and `base_url`. The corresponding
+options are `glysmith.ai_provider`, `glysmith.ai_model`,
+`glysmith.ai_api_key`, and `glysmith.ai_base_url`.
 
 *Note: This environment variable is session-specific. You will need to
 set it again in new R sessions, or add it to your `.Renviron` file for a
@@ -81,6 +116,19 @@ capabilities for report generation:
 
 ``` r
 polish_report(result, "report.html", use_ai = TRUE)
+```
+
+To use a non-default provider for reporting, pass the `ai_`
+configuration arguments:
+
+``` r
+polish_report(
+  result,
+  "report.html",
+  use_ai = TRUE,
+  ai_provider = "openai",
+  ai_model = "gpt-4.1"
+)
 ```
 
 In AI mode, the LLM performs several high-level tasks:

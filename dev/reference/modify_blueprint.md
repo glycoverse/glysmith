@@ -1,11 +1,10 @@
 # Modify a Blueprint using Natural Language
 
 **\[experimental\]** Ask a Large Language Model (LLM) to modify an
-existing blueprint for glycomics or glycoproteomics data analysis. To
-use this function, you need to have a DeepSeek API key. You can get a
-DeepSeek API key from https://platform.deepseek.com. Then set the
-environment variable `DEEPSEEK_API_KEY` to your API key with
-`Sys.setenv(DEEPSEEK_API_KEY = "your-api-key")`.
+existing blueprint for glycomics or glycoproteomics data analysis.
+DeepSeek is used by default for backward compatibility. Other `ellmer`
+providers can be selected with `provider`, `model`, and
+provider-specific API key configuration.
 
 ## Usage
 
@@ -16,8 +15,11 @@ modify_blueprint(
   qa_history = NULL,
   exp = NULL,
   group_col = "group",
-  model = "deepseek-chat",
-  max_retries = 3
+  model = getOption("glysmith.ai_model", NULL),
+  max_retries = 3,
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  api_key = getOption("glysmith.ai_api_key", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
 )
 ```
 
@@ -49,11 +51,30 @@ modify_blueprint(
 
 - model:
 
-  Model to use. Default to "deepseek-chat".
+  Model to use. Defaults to `getOption("glysmith.ai_model")`, or
+  "deepseek-chat" for DeepSeek and the provider default for other
+  providers.
 
 - max_retries:
 
   Maximum number of retries when the AI output is invalid. Default to 3.
+
+- provider:
+
+  AI provider passed to `ellmer`. One of "deepseek", "openai",
+  "anthropic", "gemini", "openrouter", or "openai_compatible". Defaults
+  to `getOption("glysmith.ai_provider", "deepseek")`.
+
+- api_key:
+
+  API key for the selected provider. If `NULL`, the provider specific
+  environment variable is used. Defaults to
+  `getOption("glysmith.ai_api_key")`.
+
+- base_url:
+
+  Optional base URL for custom or OpenAI-compatible endpoints. Defaults
+  to `getOption("glysmith.ai_base_url")`.
 
 ## Details
 

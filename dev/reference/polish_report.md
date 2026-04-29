@@ -4,12 +4,9 @@ Generate a self-contained HTML report for a `glysmith_result` object.
 The report is rendered via
 [`rmarkdown::render()`](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
 using an internal R Markdown template. If `use_ai` is TRUE, the report
-text will be polished and organized into sections using LLM
-(deepseek-chat), and plots will be described with a multimodal model
-(deepseek-vl-chat). To use this feature, you have to provide an API key
-and set it in the environment variable `DEEPSEEK_API_KEY` by running
-`Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")`. You can apply the API
-key on https://platform.deepseek.com.
+text will be polished, organized into sections, and paired with plot
+descriptions using the configured `ellmer` provider. DeepSeek is used by
+default for backward compatibility.
 
 ## Usage
 
@@ -19,7 +16,11 @@ polish_report(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  use_ai = FALSE
+  use_ai = FALSE,
+  ai_provider = getOption("glysmith.ai_provider", "deepseek"),
+  ai_model = getOption("glysmith.ai_model", NULL),
+  ai_api_key = getOption("glysmith.ai_api_key", NULL),
+  ai_base_url = getOption("glysmith.ai_base_url", NULL)
 )
 ```
 
@@ -44,8 +45,32 @@ polish_report(
 - use_ai:
 
   Whether to polish the report text, organize sections, and generate
-  plot descriptions using AI (deepseek-chat and deepseek-vision).
+  plot descriptions using AI with the configured `ellmer` provider.
   Default is FALSE.
+
+- ai_provider:
+
+  AI provider passed to `ellmer` when `use_ai = TRUE`. One of
+  "deepseek", "openai", "anthropic", "gemini", "openrouter", or
+  "openai_compatible". Defaults to
+  `getOption("glysmith.ai_provider", "deepseek")`.
+
+- ai_model:
+
+  AI model to use when `use_ai = TRUE`. Defaults to
+  `getOption("glysmith.ai_model")`, or "deepseek-chat" for DeepSeek and
+  the provider default for other providers.
+
+- ai_api_key:
+
+  API key for the selected provider. If `NULL`, the provider specific
+  environment variable is used. Defaults to
+  `getOption("glysmith.ai_api_key")`.
+
+- ai_base_url:
+
+  Optional base URL for custom or OpenAI-compatible endpoints. Defaults
+  to `getOption("glysmith.ai_base_url")`.
 
 ## Value
 
@@ -58,7 +83,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [739ms]
+#> ✔ Identification overview [822ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -109,13 +134,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.8s]
+#> ✔ Preprocessing [5.7s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [90ms]
+#> ✔ QC (post-preprocessing) [97ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [367ms]
+#> ✔ Principal component analysis [356ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -124,19 +149,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [68ms]
+#> ✔ Differential expression analysis (limma) [74ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [475ms]
+#> ✔ Volcano plot [527ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [38ms]
+#> ✔ Heatmap of significant variables [43ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.8s]
+#> ✔ Derived trait calculation [2s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -145,11 +170,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [53ms]
+#> ✔ Differential trait analysis (limma) [59ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [36ms]
+#> ✔ Heatmap of significant traits [41ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpopNzcl/file1ac4eeede6a.html"
+#> [1] "/tmp/Rtmp7L0k1o/file1b0928a8d92a.html"
 ```
