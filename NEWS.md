@@ -3,7 +3,8 @@
 ## New features
 
 * Add `step_infer_structure()` for inferring glycan structures from composition using `glyanno` (#13).
-* Add `step_sig_enrich_ncg()`, `step_sig_enrich_wp()`, and `step_sig_enrich_do()` functions (#14).
+* Add `step_sig_enrich_ncg()`, `step_sig_enrich_wp()`, and `step_sig_enrich_do()` functions for Network of Cancer Gene, WikiPathways, and Disease Ontology enrichment analysis, respectively (#14).
+* AI features now support more model providers including OpenAI, Anthropic, Gemini, OpenRouter, and OpenAI-compatible models. The default model is still `deepseek-chat` (#15).
 
 ## Minor improvements and bug fixes
 
