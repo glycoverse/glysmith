@@ -21,6 +21,9 @@ test_that("polish_report works with AI polish", {
           sep = "\n"
         ))
       }
+      if (grepl("report summarizer", system_prompt, fixed = TRUE)) {
+        return("AI summary of the most important findings.")
+      }
       "AI response"
     },
     .ask_ai_multimodal = function(...) "AI plot description"
@@ -85,6 +88,12 @@ test_that("polish_report works with AI polish", {
   expect_true(any(grepl("DEA analysis", output_lines, fixed = TRUE)))
   expect_true(any(grepl("AI response", output_lines, fixed = TRUE)))
   expect_true(any(grepl("AI plot description", output_lines, fixed = TRUE)))
+  expect_true(any(grepl("Summary", output_lines, fixed = TRUE)))
+  expect_true(any(grepl(
+    "AI summary of the most important findings.",
+    output_lines,
+    fixed = TRUE
+  )))
 })
 
 test_that("polish_report raises an error when API key is not set", {

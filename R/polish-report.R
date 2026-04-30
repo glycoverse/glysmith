@@ -3,15 +3,16 @@
 #' Generate a self-contained HTML report for a `glysmith_result` object.
 #' The report is rendered via `rmarkdown::render()` using an internal R Markdown template.
 #' If `use_ai` is TRUE, the report text will be polished, organized into
-#' sections, and paired with plot descriptions using the configured `ellmer`
-#' provider. DeepSeek is used by default for backward compatibility.
+#' sections, paired with plot descriptions, and summarized using the configured
+#' `ellmer` provider. DeepSeek is used by default for backward compatibility.
 #'
 #' @param x A `glysmith_result` object.
 #' @param output_file Path to the output HTML file.
 #' @param title Report title.
 #' @param open Whether to open the report in a browser after rendering.
-#' @param use_ai Whether to polish the report text, organize sections, and generate plot descriptions using AI
-#'   with the configured `ellmer` provider. Default is FALSE.
+#' @param use_ai Whether to polish the report text, organize sections, generate
+#'   plot descriptions, and add a summary using AI with the configured `ellmer`
+#'   provider. Default is FALSE.
 #' @param ai_provider AI provider passed to `ellmer` when `use_ai = TRUE`.
 #'   One of "deepseek", "openai", "anthropic", "gemini", "openrouter", or
 #'   "openai_compatible". Defaults to
@@ -230,10 +231,29 @@ polish_report <- function(
   }
 
   if (!is.null(section_plan)) {
-    return(.assemble_report_sections(step_reports, plot_entries, section_plan))
+    report_sections <- .assemble_report_sections(
+      step_reports,
+      plot_entries,
+      section_plan
+    )
+  } else {
+    report_sections <- .default_report_sections(step_reports, plot_entries)
   }
 
-  .default_report_sections(step_reports, plot_entries)
+  if (isTRUE(use_ai)) {
+    summary_section <- .summarize_report_findings(
+      report_sections,
+      api_key,
+      provider = provider,
+      model = model,
+      base_url = base_url
+    )
+    if (!is.null(summary_section)) {
+      report_sections <- append(report_sections, list(summary_section))
+    }
+  }
+
+  report_sections
 }
 
 #' Build a list of plot entries for reporting.
@@ -693,6 +713,139 @@ polish_report <- function(
     return(NULL)
   }
   plan
+}
+
+#' Summarize important report findings with AI.
+#'
+#' @param report_sections Report sections assembled for rendering.
+#' @param api_key API key for the LLM.
+#' @param provider AI provider.
+#' @param model AI model to use.
+#' @param base_url Optional base URL.
+#' @noRd
+.summarize_report_findings <- function(
+  report_sections,
+  api_key,
+  provider = getOption("glysmith.ai_provider", "deepseek"),
+  model = getOption("glysmith.ai_model", NULL),
+  base_url = getOption("glysmith.ai_base_url", NULL)
+) {
+  report_text <- .report_sections_summary_input(report_sections)
+  if (is.null(report_text) || !nzchar(report_text)) {
+    return(NULL)
+  }
+
+  provider_label <- .ai_provider_label(provider)
+  cli::cli_alert_info(
+    "Summarizing report findings with AI ({provider_label})..."
+  )
+
+  system_prompt <- paste(
+    "You are a scientific report summarizer.",
+    "Summarize the most important findings from a glycomics or",
+    "glycoproteomics analysis report.",
+    "Write a concise markdown section body with 2-4 bullet points or",
+    "one short paragraph.",
+    "Focus on analytical findings, group differences, enriched biology,",
+    "and noteworthy visual patterns when available.",
+    "Do not add facts that are not present in the report.",
+    "Output only the summary body, without a heading or preamble.",
+    sep = " "
+  )
+
+  summary <- tryCatch(
+    .ask_ai(
+      system_prompt,
+      report_text,
+      api_key,
+      model = model,
+      provider = provider,
+      base_url = base_url
+    ),
+    error = function(e) {
+      cli::cli_warn(c(
+        "AI report summary failed, omitting the summary section.",
+        "i" = "Error: {conditionMessage(e)}"
+      ))
+      NULL
+    }
+  )
+
+  summary <- .clean_ai_summary(summary)
+  if (is.null(summary) || !nzchar(summary)) {
+    return(NULL)
+  }
+
+  list(
+    title = "Summary",
+    entries = list(
+      list(
+        type = "step",
+        id = "summary",
+        label = "Summary",
+        content = summary,
+        has_content = TRUE
+      )
+    )
+  )
+}
+
+#' Build compact report text for AI summary generation.
+#'
+#' @param report_sections Report sections assembled for rendering.
+#' @noRd
+.report_sections_summary_input <- function(report_sections) {
+  if (length(report_sections) == 0) {
+    return(NULL)
+  }
+
+  lines <- purrr::map(report_sections, function(section) {
+    title <- section$title %||% "Analysis"
+    entries <- section$entries %||% list()
+    entry_lines <- purrr::map_chr(entries, function(entry) {
+      label <- entry$label %||% entry$id %||% "Result"
+      if (!is.null(entry$type) && entry$type == "step") {
+        if (!.has_report_content(entry$content)) {
+          return(NA_character_)
+        }
+        return(paste(label, entry$content, sep = ": "))
+      }
+      if (!is.null(entry$type) && entry$type == "plot") {
+        if (!.has_report_content(entry$description)) {
+          return(NA_character_)
+        }
+        return(paste(label, entry$description, sep = ": "))
+      }
+      NA_character_
+    })
+    entry_lines <- entry_lines[!is.na(entry_lines)]
+    if (length(entry_lines) == 0) {
+      return(NA_character_)
+    }
+    paste(c(paste0("## ", title), entry_lines), collapse = "\n")
+  })
+
+  lines <- lines[!is.na(lines)]
+  if (length(lines) == 0) {
+    return(NULL)
+  }
+  paste(lines, collapse = "\n\n")
+}
+
+#' Clean AI summary output.
+#'
+#' @param summary AI summary text.
+#' @noRd
+.clean_ai_summary <- function(summary) {
+  if (is.null(summary) || !is.character(summary) || length(summary) != 1) {
+    return(NULL)
+  }
+  summary <- stringr::str_remove_all(summary, "```[a-zA-Z]*|```")
+  summary <- stringr::str_trim(summary)
+  if (!nzchar(summary)) {
+    return(NULL)
+  }
+  summary
 }
 
 #' Parse AI output into a section plan.
