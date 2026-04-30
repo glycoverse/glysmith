@@ -25,8 +25,9 @@ polish_report(
 
 \item{open}{Whether to open the report in a browser after rendering.}
 
-\item{use_ai}{Whether to polish the report text, organize sections, and generate plot descriptions using AI
-with the configured \code{ellmer} provider. Default is FALSE.}
+\item{use_ai}{Whether to polish the report text, organize sections, generate
+plot descriptions, and add a summary using AI with the configured \code{ellmer}
+provider. Default is FALSE.}
 
 \item{ai_provider}{AI provider passed to \code{ellmer} when \code{use_ai = TRUE}.
 One of "deepseek", "openai", "anthropic", "gemini", "openrouter", or
@@ -51,8 +52,8 @@ The normalized path to the generated HTML file.
 Generate a self-contained HTML report for a \code{glysmith_result} object.
 The report is rendered via \code{rmarkdown::render()} using an internal R Markdown template.
 If \code{use_ai} is TRUE, the report text will be polished, organized into
-sections, and paired with plot descriptions using the configured \code{ellmer}
-provider. DeepSeek is used by default for backward compatibility.
+sections, paired with plot descriptions, and summarized using the configured
+\code{ellmer} provider. DeepSeek is used by default for backward compatibility.
 }
 \examples{
 library(glyexp)
