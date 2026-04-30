@@ -16,6 +16,7 @@ Once you have your key, set it as an environment variable in your R
 session:
 
 ``` r
+
 Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")
 ```
 
@@ -24,6 +25,7 @@ OpenAI can be used by setting `OPENAI_API_KEY` and passing
 `provider = "openai"`:
 
 ``` r
+
 Sys.setenv(OPENAI_API_KEY = "your_api_key")
 bp <- inquire_blueprint(
   "I want to perform DEA and visualize the results.",
@@ -37,6 +39,7 @@ If you prefer to configure the provider once per R session, use
 package-level options:
 
 ``` r
+
 options(
   glysmith.ai_provider = "openai",
   glysmith.ai_model = "gpt-4.1"
@@ -65,6 +68,7 @@ typically costs less than **\$0.01 per run**, offering
 professional-grade assistance for a fraction of a cent.
 
 ``` r
+
 library(glysmith)
 ```
 
@@ -77,6 +81,7 @@ English (or your language).
 will translate your requirements into a structured analytical blueprint.
 
 ``` r
+
 # Describe your goals in natural language
 bp <- inquire_blueprint("I want to perform DEA and visualize the results.", exp = your_exp)
 print(bp)
@@ -92,6 +97,7 @@ You can then pass it to
 [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md):
 
 ``` r
+
 res <- forge_analysis(exp, blueprint = bp)
 ```
 
@@ -102,6 +108,7 @@ If the initial blueprint needs adjustment, you can use
 to refine it iteratively without starting from scratch.
 
 ``` r
+
 # Add or remove steps using natural language
 new_bp <- modify_blueprint(bp, "Also include a PCA analysis.", exp = your_exp)
 print(new_bp)
@@ -115,6 +122,7 @@ uses robust default rules, setting `use_ai = TRUE` unlocks advanced AI
 capabilities for report generation:
 
 ``` r
+
 polish_report(result, "report.html", use_ai = TRUE)
 ```
 
@@ -122,6 +130,7 @@ To use a non-default provider for reporting, pass the `ai_`
 configuration arguments:
 
 ``` r
+
 polish_report(
   result,
   "report.html",
@@ -148,6 +157,7 @@ The entire pipeline, from raw data to a finished report, can be
 simplified into a few intelligent steps:
 
 ``` r
+
 # 1. Generate an analysis plan
 bp <- inquire_blueprint("Perform DEA and visualize key findings.", exp = your_exp)
 

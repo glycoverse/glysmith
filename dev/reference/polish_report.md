@@ -4,9 +4,9 @@ Generate a self-contained HTML report for a `glysmith_result` object.
 The report is rendered via
 [`rmarkdown::render()`](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
 using an internal R Markdown template. If `use_ai` is TRUE, the report
-text will be polished, organized into sections, and paired with plot
-descriptions using the configured `ellmer` provider. DeepSeek is used by
-default for backward compatibility.
+text will be polished, organized into sections, paired with plot
+descriptions, and summarized using the configured `ellmer` provider.
+DeepSeek is used by default for backward compatibility.
 
 ## Usage
 
@@ -44,9 +44,9 @@ polish_report(
 
 - use_ai:
 
-  Whether to polish the report text, organize sections, and generate
-  plot descriptions using AI with the configured `ellmer` provider.
-  Default is FALSE.
+  Whether to polish the report text, organize sections, generate plot
+  descriptions, and add a summary using AI with the configured `ellmer`
+  provider. Default is FALSE.
 
 - ai_provider:
 
@@ -83,7 +83,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [820ms]
+#> ✔ Identification overview [802ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -134,13 +134,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.7s]
+#> ✔ Preprocessing [5.6s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [93ms]
+#> ✔ QC (post-preprocessing) [135ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [350ms]
+#> ✔ Principal component analysis [341ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -152,16 +152,16 @@ result <- forge_analysis(exp)
 #> ✔ Differential expression analysis (limma) [74ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [527ms]
+#> ✔ Volcano plot [498ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
+#> ✔ Heatmap of significant variables [38ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [2s]
+#> ✔ Derived trait calculation [1.8s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -170,11 +170,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [57ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [40ms]
+#> ✔ Heatmap of significant traits [78ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmprH8ICY/file1b284a571d10.html"
+#> [1] "/tmp/RtmptkN6a3/file29eb4b2bdb18.html"
 ```

@@ -18,6 +18,7 @@ to install it separately, even if you have installed the meta package
 `glycoverse`.*
 
 ``` r
+
 library(glysmith)
 library(glyexp)
 ```
@@ -40,6 +41,7 @@ glyread](https://glycoverse.github.io/glyread/articles/glyread.html) or
 Experiments](https://glycoverse.github.io/glyexp/articles/create-exp.html).
 
 ``` r
+
 real_experiment
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
@@ -52,9 +54,8 @@ Now, let’s run the default analysis pipeline with just a single line of
 code.
 
 ``` r
+
 result <- forge_analysis(real_experiment)
-#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
-#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 result
 ```
 
@@ -94,6 +95,7 @@ Once you have your results, what’s next? You can export all tables and
 plots to a target directory in just a single line of code.
 
 ``` r
+
 quench_result(result, "path/to/save")
 ```
 
@@ -116,6 +118,7 @@ can use
 to generate a report directly from the results.
 
 ``` r
+
 polish_report(result, "path/to/save/report.html")
 ```
 
@@ -153,6 +156,7 @@ via
 [`blueprint_default()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint_default.md).
 
 ``` r
+
 blueprint_default()
 #> 
 #> ── Blueprint (13 steps) ──
@@ -179,6 +183,7 @@ instance, if you’d just like to perform differential expression analysis
 and plot the volcano plot, you could do:
 
 ``` r
+
 bp <- blueprint(
   step_preprocess(),
   step_dea_limma(),
@@ -191,6 +196,7 @@ result
 You can also save a blueprint to a file and reload it later:
 
 ``` r
+
 write_blueprint(bp, "path/to/save/bp.rds")
 bp <- read_blueprint("path/to/save/bp.rds")
 ```

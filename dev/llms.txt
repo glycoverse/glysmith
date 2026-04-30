@@ -26,6 +26,7 @@ You can install the latest release of glysmith from
 (**recommended**):
 
 ``` r
+
 # install.packages("pak")
 pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
 pak::pkg_install("glysmith")
@@ -34,12 +35,14 @@ pak::pkg_install("glysmith")
 Or from [GitHub](https://github.com/glycoverse/glysmith):
 
 ``` r
+
 pak::pkg_install("glycoverse/glysmith@*release")
 ```
 
 Or install the development version (NOT recommended):
 
 ``` r
+
 pak::pkg_install("glycoverse/glysmith")
 ```
 
@@ -48,6 +51,7 @@ packages. After installing `glysmith`, you also need to install
 additional dependencies to use this package:
 
 ``` r
+
 glysmith::check_glysmith_deps()
 ```
 
@@ -59,6 +63,7 @@ glycoverse](https://github.com/glycoverse/glycoverse#installation).
 ## Example
 
 ``` r
+
 library(glyread)
 library(glysmith)
 
