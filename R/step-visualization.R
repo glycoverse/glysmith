@@ -61,19 +61,41 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
     id = paste0("heatmap", on_meta$id_suffix),
     label = label,
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      p <- glyvis::plot_heatmap(exp, ...)
-      ctx_add_plot(
+      .run_heatmap(
         ctx,
-        plot_name,
-        p,
-        paste0("Heatmap of ", on, "."),
-        width = plot_width,
-        height = plot_height
+        on = on,
+        plot_name = plot_name,
+        plot_width = plot_width,
+        plot_height = plot_height,
+        ...
       )
     },
     require = on,
     signature = signature
+  )
+}
+
+#' Run heatmap plotting
+#'
+#' @param ctx Analysis context.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param plot_name Plot identifier.
+#' @param plot_width Plot width in inches.
+#' @param plot_height Plot height in inches.
+#' @param ... Additional arguments passed to [glyvis::plot_heatmap()].
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_heatmap <- function(ctx, on, plot_name, plot_width, plot_height, ...) {
+  exp <- ctx_get_data(ctx, on)
+  p <- glyvis::plot_heatmap(exp, ...)
+  ctx_add_plot(
+    ctx,
+    plot_name,
+    p,
+    paste0("Heatmap of ", on, "."),
+    width = plot_width,
+    height = plot_height
   )
 }
 
@@ -136,29 +158,71 @@ step_logo <- function(
     id = paste0("logo", on_meta$id_suffix),
     label = label,
     condition = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      if (glyexp::get_exp_type(exp) != "glycoproteomics") {
-        return(list(
-          check = FALSE,
-          reason = "logo plot is only applicable for glycoproteomics experiments"
-        ))
-      }
-      list(check = TRUE, reason = NULL)
+      .condition_logo(ctx, on = on)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
-      ctx_add_plot(
+      .run_logo(
         ctx,
-        plot_name,
-        p,
-        paste0("Logo plot of glycosylation sites for ", on, "."),
-        width = plot_width,
-        height = plot_height
+        on = on,
+        plot_name = plot_name,
+        n_aa = n_aa,
+        fasta = fasta,
+        plot_width = plot_width,
+        plot_height = plot_height,
+        ...
       )
     },
     require = on,
     signature = signature
+  )
+}
+
+#' Check whether logo plotting should run
+#'
+#' @param ctx Analysis context.
+#' @param on Name of the experiment data in `ctx$data`.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_logo <- function(ctx, on) {
+  exp <- ctx_get_data(ctx, on)
+  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+    return(list(
+      check = FALSE,
+      reason = "logo plot is only applicable for glycoproteomics experiments"
+    ))
+  }
+  list(check = TRUE, reason = NULL)
+}
+
+#' Run logo plotting
+#'
+#' @param ctx Analysis context.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param plot_name Plot identifier.
+#' @inheritParams step_logo
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_logo <- function(
+  ctx,
+  on,
+  plot_name,
+  n_aa,
+  fasta,
+  plot_width,
+  plot_height,
+  ...
+) {
+  exp <- ctx_get_data(ctx, on)
+  p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
+  ctx_add_plot(
+    ctx,
+    plot_name,
+    p,
+    paste0("Logo plot of glycosylation sites for ", on, "."),
+    width = plot_width,
+    height = plot_height
   )
 }
 
@@ -259,59 +323,91 @@ step_sig_boxplot <- function(
     id = paste0("sig_boxplot", on_meta$id_suffix),
     label = label,
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      n_vars <- nrow(exp)
-
-      # glyvis::plot_boxplot has a limit of 25 variables
-      # If experiment has more than 25 variables, select top n_top by p-value
-      if (nrow(exp) > 25) {
-        # Get DEA results to select top by p-value
-        dea_key <- switch(
-          on,
-          sig_exp = "dea_res",
-          sig_trait_exp = "dta_res",
-          sig_dynamic_motif_exp = "dynamic_dma_res",
-          sig_branch_motif_exp = "branch_dma_res"
-        )
-        dea_res <- ctx_get_data(ctx, dea_key)
-        tidy_res <- glystats::get_tidy_result(dea_res)
-
-        # Select top n_top variables by adjusted p-value (unique)
-        top_vars <- tidy_res |>
-          dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
-          dplyr::distinct(.data$variable, .keep_all = TRUE) |>
-          dplyr::slice_head(n = min(n_top, 25)) |>
-          dplyr::pull(.data$variable)
-
-        exp <- exp |>
-          glyexp::filter_var(.data$variable %in% top_vars)
-        n_vars <- length(top_vars)
-      }
-
-      p <- glyvis::plot_boxplot(exp, group_col = ctx$group_col, ...)
-
-      # Calculate dynamic plot dimensions based on number of variables
-      dims <- .calc_boxplot_dims(
-        n_vars,
-        panel_width,
-        panel_height,
-        min_width,
-        min_height,
-        max_width,
-        max_height
-      )
-
-      ctx_add_plot(
+      .run_sig_boxplot(
         ctx,
-        plot_name,
-        p,
-        paste0("Boxplot of significant variables from ", on, "."),
-        width = dims$width,
-        height = dims$height
+        on = on,
+        plot_name = plot_name,
+        n_top = n_top,
+        panel_width = panel_width,
+        panel_height = panel_height,
+        min_width = min_width,
+        min_height = min_height,
+        max_width = max_width,
+        max_height = max_height,
+        ...
       )
     },
     require = on,
     signature = signature
+  )
+}
+
+#' Run significant-variable boxplotting
+#'
+#' @param ctx Analysis context.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param plot_name Plot identifier.
+#' @inheritParams step_sig_boxplot
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_sig_boxplot <- function(
+  ctx,
+  on,
+  plot_name,
+  n_top,
+  panel_width,
+  panel_height,
+  min_width,
+  min_height,
+  max_width,
+  max_height,
+  ...
+) {
+  exp <- ctx_get_data(ctx, on)
+  n_vars <- nrow(exp)
+
+  if (nrow(exp) > 25) {
+    dea_key <- switch(
+      on,
+      sig_exp = "dea_res",
+      sig_trait_exp = "dta_res",
+      sig_dynamic_motif_exp = "dynamic_dma_res",
+      sig_branch_motif_exp = "branch_dma_res"
+    )
+    dea_res <- ctx_get_data(ctx, dea_key)
+    tidy_res <- glystats::get_tidy_result(dea_res)
+
+    top_vars <- tidy_res |>
+      dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
+      dplyr::distinct(.data$variable, .keep_all = TRUE) |>
+      dplyr::slice_head(n = min(n_top, 25)) |>
+      dplyr::pull(.data$variable)
+
+    exp <- exp |>
+      glyexp::filter_var(.data$variable %in% top_vars)
+    n_vars <- length(top_vars)
+  }
+
+  p <- glyvis::plot_boxplot(exp, group_col = ctx$group_col, ...)
+
+  dims <- .calc_boxplot_dims(
+    n_vars,
+    panel_width,
+    panel_height,
+    min_width,
+    min_height,
+    max_width,
+    max_height
+  )
+
+  ctx_add_plot(
+    ctx,
+    plot_name,
+    p,
+    paste0("Boxplot of significant variables from ", on, "."),
+    width = dims$width,
+    height = dims$height
   )
 }
 

@@ -73,68 +73,104 @@ step_pca <- function(
     id = id,
     label = paste0("Principal component analysis", on_meta$label_suffix),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      pca_res <- rlang::exec(
-        glystats::gly_pca,
-        exp,
+      .run_pca(
+        ctx,
+        id = id,
+        on = on,
         center = center,
         scale = scale,
-        !!!pca_args
+        loadings = loadings,
+        screeplot = screeplot,
+        plot_width = plot_width,
+        plot_height = plot_height,
+        pca_args = pca_args
       )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_samples"),
-        glystats::get_tidy_result(pca_res, "samples"),
-        paste0("PCA scores for each sample of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_variables"),
-        glystats::get_tidy_result(pca_res, "variables"),
-        paste0("PCA loadings for each variable of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_eigenvalues"),
-        glystats::get_tidy_result(pca_res, "eigenvalues"),
-        paste0("PCA eigenvalues of ", on, ".")
-      )
-      p_scores <- glyvis::plot_pca(pca_res, type = "individual")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_scores"),
-        p_scores,
-        paste0("PCA score plot colored by group of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      if (loadings) {
-        p_loadings <- glyvis::plot_pca(pca_res, type = "variables")
-        ctx <- ctx_add_plot(
-          ctx,
-          paste0(id, "_loadings"),
-          p_loadings,
-          paste0("PCA loading plot of ", on, "."),
-          width = plot_width,
-          height = plot_height
-        )
-      }
-      if (screeplot) {
-        p_screeplot <- glyvis::plot_pca(pca_res, type = "screeplot")
-        ctx <- ctx_add_plot(
-          ctx,
-          paste0(id, "_screeplot"),
-          p_screeplot,
-          paste0("PCA screeplot of ", on, "."),
-          width = plot_width,
-          height = plot_height
-        )
-      }
-      ctx
     },
     require = on,
     signature = signature
   )
+}
+
+#' Run PCA
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @inheritParams step_pca
+#' @param pca_args Additional arguments passed to `glystats::gly_pca()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_pca <- function(
+  ctx,
+  id,
+  on,
+  center,
+  scale,
+  loadings,
+  screeplot,
+  plot_width,
+  plot_height,
+  pca_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  pca_res <- rlang::exec(
+    glystats::gly_pca,
+    exp,
+    center = center,
+    scale = scale,
+    !!!pca_args
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_samples"),
+    glystats::get_tidy_result(pca_res, "samples"),
+    paste0("PCA scores for each sample of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_variables"),
+    glystats::get_tidy_result(pca_res, "variables"),
+    paste0("PCA loadings for each variable of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_eigenvalues"),
+    glystats::get_tidy_result(pca_res, "eigenvalues"),
+    paste0("PCA eigenvalues of ", on, ".")
+  )
+  p_scores <- glyvis::plot_pca(pca_res, type = "individual")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_scores"),
+    p_scores,
+    paste0("PCA score plot colored by group of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  if (loadings) {
+    p_loadings <- glyvis::plot_pca(pca_res, type = "variables")
+    ctx <- ctx_add_plot(
+      ctx,
+      paste0(id, "_loadings"),
+      p_loadings,
+      paste0("PCA loading plot of ", on, "."),
+      width = plot_width,
+      height = plot_height
+    )
+  }
+  if (screeplot) {
+    p_screeplot <- glyvis::plot_pca(pca_res, type = "screeplot")
+    ctx <- ctx_add_plot(
+      ctx,
+      paste0(id, "_screeplot"),
+      p_screeplot,
+      paste0("PCA screeplot of ", on, "."),
+      width = plot_width,
+      height = plot_height
+    )
+  }
+  ctx
 }
 
 #' Step: t-SNE
@@ -208,33 +244,64 @@ step_tsne <- function(
     id = id,
     label = "t-SNE",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      tsne <- rlang::exec(
-        glystats::gly_tsne,
-        exp,
+      .run_tsne(
+        ctx,
+        id = id,
+        on = on,
         dims = dims,
         perplexity = perplexity,
-        !!!tsne_args
+        plot_width = plot_width,
+        plot_height = plot_height,
+        tsne_args = tsne_args
       )
-      ctx <- ctx_add_table(
-        ctx,
-        id,
-        glystats::get_tidy_result(tsne),
-        paste0("t-SNE result of ", on, ".")
-      )
-      p <- glyvis::plot_tsne(tsne)
-      ctx <- ctx_add_plot(
-        ctx,
-        id,
-        p,
-        paste0("t-SNE plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      ctx
     },
     require = on,
     signature = signature
+  )
+}
+
+#' Run t-SNE
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @inheritParams step_tsne
+#' @param tsne_args Additional arguments passed to `glystats::gly_tsne()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_tsne <- function(
+  ctx,
+  id,
+  on,
+  dims,
+  perplexity,
+  plot_width,
+  plot_height,
+  tsne_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  tsne <- rlang::exec(
+    glystats::gly_tsne,
+    exp,
+    dims = dims,
+    perplexity = perplexity,
+    !!!tsne_args
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    id,
+    glystats::get_tidy_result(tsne),
+    paste0("t-SNE result of ", on, ".")
+  )
+  p <- glyvis::plot_tsne(tsne)
+  ctx_add_plot(
+    ctx,
+    id,
+    p,
+    paste0("t-SNE plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
   )
 }
 
@@ -309,33 +376,64 @@ step_umap <- function(
     id = id,
     label = "UMAP",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      umap <- rlang::exec(
-        glystats::gly_umap,
-        exp,
+      .run_umap(
+        ctx,
+        id = id,
+        on = on,
         n_neighbors = n_neighbors,
         n_components = n_components,
-        !!!umap_args
+        plot_width = plot_width,
+        plot_height = plot_height,
+        umap_args = umap_args
       )
-      ctx <- ctx_add_table(
-        ctx,
-        id,
-        glystats::get_tidy_result(umap),
-        paste0("UMAP result of ", on, ".")
-      )
-      p <- glyvis::plot_umap(umap)
-      ctx <- ctx_add_plot(
-        ctx,
-        id,
-        p,
-        paste0("UMAP plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      ctx
     },
     require = on,
     signature = signature
+  )
+}
+
+#' Run UMAP
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @inheritParams step_umap
+#' @param umap_args Additional arguments passed to `glystats::gly_umap()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_umap <- function(
+  ctx,
+  id,
+  on,
+  n_neighbors,
+  n_components,
+  plot_width,
+  plot_height,
+  umap_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  umap <- rlang::exec(
+    glystats::gly_umap,
+    exp,
+    n_neighbors = n_neighbors,
+    n_components = n_components,
+    !!!umap_args
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    id,
+    glystats::get_tidy_result(umap),
+    paste0("UMAP result of ", on, ".")
+  )
+  p <- glyvis::plot_umap(umap)
+  ctx_add_plot(
+    ctx,
+    id,
+    p,
+    paste0("UMAP plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
   )
 }
 
@@ -418,130 +516,171 @@ step_plsda <- function(
       on_meta$label_suffix
     ),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      plsda_res <- rlang::exec(
-        glystats::gly_plsda,
-        exp,
+      .run_plsda(
+        ctx,
+        id = id,
+        on = on,
         ncomp = ncomp,
         scale = scale,
-        !!!plsda_args
+        plot_width = plot_width,
+        plot_height = plot_height,
+        plsda_args = plsda_args
       )
-      tidy_res <- plsda_res$tidy_result
-
-      ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), plsda_res$raw_result)
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_samples"),
-        tidy_res$samples,
-        paste0("PLS-DA scores for each sample of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_variables"),
-        tidy_res$variables,
-        paste0("PLS-DA loadings for each variable of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_variance"),
-        tidy_res$variance,
-        paste0("PLS-DA explained variance of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_vip"),
-        tidy_res$vip,
-        paste0("PLS-DA VIP scores of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_perm_test"),
-        tidy_res$perm_test,
-        paste0("PLS-DA permutation test results of ", on, ".")
-      )
-
-      p_scores <- glyvis::plot_plsda(plsda_res, type = "scores")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_scores"),
-        p_scores,
-        paste0("PLS-DA score plot colored by group of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_loadings <- glyvis::plot_plsda(plsda_res, type = "loadings")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_loadings"),
-        p_loadings,
-        paste0("PLS-DA loading plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_variance <- glyvis::plot_plsda(plsda_res, type = "variance")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_variance"),
-        p_variance,
-        paste0("PLS-DA variance plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_vip <- glyvis::plot_plsda(plsda_res, type = "vip")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_vip"),
-        p_vip,
-        paste0("PLS-DA VIP score plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-
-      ctx
     },
     require = on,
     signature = signature,
     report = function(x) {
-      raw_res <- x$data[[paste0(id, "_raw_res")]]
-      model_df <- raw_res@modelDF
-      r2y <- model_df[["R2Y"]][1]
-      r2y_cum <- model_df[["R2Y(cum)"]][1]
-      q2 <- model_df[["Q2"]][1]
-      q2_cum <- model_df[["Q2(cum)"]][1]
-
-      vip_tbl <- x$tables[[paste0(id, "_vip")]]
-      n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
-
-      top5 <- vip_tbl |>
-        dplyr::arrange(dplyr::desc(.data$vip)) |>
-        dplyr::slice_head(n = 5)
-      top5_vars <- top5$variable
-
-      lines <- c(
-        paste0(
-          "Partial least squares discriminant analysis (PLS-DA) was performed."
-        ),
-        paste0(
-          "Model fit: R2Y = ",
-          round(r2y, 3),
-          " (cumulative: ",
-          round(r2y_cum, 3),
-          "), Q2 = ",
-          round(q2, 3),
-          " (cumulative: ",
-          round(q2_cum, 3),
-          ")."
-        ),
-        paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
-        paste0(
-          "Top 5 discriminant variables: ",
-          paste(top5_vars, collapse = ", "),
-          "."
-        )
-      )
-      paste(lines, collapse = "\n")
+      .report_plsda(x, id = id)
     }
   )
+}
+
+#' Run PLS-DA
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @inheritParams step_plsda
+#' @param plsda_args Additional arguments passed to `glystats::gly_plsda()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_plsda <- function(
+  ctx,
+  id,
+  on,
+  ncomp,
+  scale,
+  plot_width,
+  plot_height,
+  plsda_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  plsda_res <- rlang::exec(
+    glystats::gly_plsda,
+    exp,
+    ncomp = ncomp,
+    scale = scale,
+    !!!plsda_args
+  )
+  tidy_res <- plsda_res$tidy_result
+
+  ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), plsda_res$raw_result)
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_samples"),
+    tidy_res$samples,
+    paste0("PLS-DA scores for each sample of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_variables"),
+    tidy_res$variables,
+    paste0("PLS-DA loadings for each variable of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_variance"),
+    tidy_res$variance,
+    paste0("PLS-DA explained variance of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_vip"),
+    tidy_res$vip,
+    paste0("PLS-DA VIP scores of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_perm_test"),
+    tidy_res$perm_test,
+    paste0("PLS-DA permutation test results of ", on, ".")
+  )
+
+  p_scores <- glyvis::plot_plsda(plsda_res, type = "scores")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_scores"),
+    p_scores,
+    paste0("PLS-DA score plot colored by group of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  p_loadings <- glyvis::plot_plsda(plsda_res, type = "loadings")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_loadings"),
+    p_loadings,
+    paste0("PLS-DA loading plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  p_variance <- glyvis::plot_plsda(plsda_res, type = "variance")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_variance"),
+    p_variance,
+    paste0("PLS-DA variance plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  p_vip <- glyvis::plot_plsda(plsda_res, type = "vip")
+  ctx_add_plot(
+    ctx,
+    paste0(id, "_vip"),
+    p_vip,
+    paste0("PLS-DA VIP score plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+}
+
+#' Report PLS-DA results
+#'
+#' @param x Analysis context after running PLS-DA.
+#' @param id Step identifier.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_plsda <- function(x, id) {
+  raw_res <- x$data[[paste0(id, "_raw_res")]]
+  model_df <- raw_res@modelDF
+  r2y <- model_df[["R2Y"]][1]
+  r2y_cum <- model_df[["R2Y(cum)"]][1]
+  q2 <- model_df[["Q2"]][1]
+  q2_cum <- model_df[["Q2(cum)"]][1]
+
+  vip_tbl <- x$tables[[paste0(id, "_vip")]]
+  n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
+
+  top5 <- vip_tbl |>
+    dplyr::arrange(dplyr::desc(.data$vip)) |>
+    dplyr::slice_head(n = 5)
+  top5_vars <- top5$variable
+
+  lines <- c(
+    paste0(
+      "Partial least squares discriminant analysis (PLS-DA) was performed."
+    ),
+    paste0(
+      "Model fit: R2Y = ",
+      round(r2y, 3),
+      " (cumulative: ",
+      round(r2y_cum, 3),
+      "), Q2 = ",
+      round(q2, 3),
+      " (cumulative: ",
+      round(q2_cum, 3),
+      ")."
+    ),
+    paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
+    paste0(
+      "Top 5 discriminant variables: ",
+      paste(top5_vars, collapse = ", "),
+      "."
+    )
+  )
+  paste(lines, collapse = "\n")
 }
 
 #' Step: Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA)
@@ -627,159 +766,213 @@ step_oplsda <- function(
       on_meta$label_suffix
     ),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      oplsda_res <- rlang::exec(
-        glystats::gly_oplsda,
-        exp,
+      .run_oplsda(
+        ctx,
+        id = id,
+        on = on,
         pred_i = pred_i,
         ortho_i = ortho_i,
         scale = scale,
-        !!!oplsda_args
+        plot_width = plot_width,
+        plot_height = plot_height,
+        oplsda_args = oplsda_args
       )
-      tidy_res <- oplsda_res$tidy_result
-
-      ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), oplsda_res$raw_result)
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_samples"),
-        tidy_res$samples,
-        paste0("OPLS-DA scores for each sample of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_variables"),
-        tidy_res$variables,
-        paste0("OPLS-DA loadings for each variable of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_variance"),
-        tidy_res$variance,
-        paste0("OPLS-DA explained variance of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_vip"),
-        tidy_res$vip,
-        paste0("OPLS-DA VIP scores of ", on, ".")
-      )
-      ctx <- ctx_add_table(
-        ctx,
-        paste0(id, "_perm_test"),
-        tidy_res$perm_test,
-        paste0("OPLS-DA permutation test results of ", on, ".")
-      )
-
-      p_scores <- glyvis::plot_oplsda(oplsda_res, type = "scores")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_scores"),
-        p_scores,
-        paste0("OPLS-DA score plot colored by group of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_loadings <- glyvis::plot_oplsda(oplsda_res, type = "loadings")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_loadings"),
-        p_loadings,
-        paste0("OPLS-DA loading plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_variance <- glyvis::plot_oplsda(oplsda_res, type = "variance")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_variance"),
-        p_variance,
-        paste0("OPLS-DA variance plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-      p_vip <- glyvis::plot_oplsda(oplsda_res, type = "vip")
-      ctx <- ctx_add_plot(
-        ctx,
-        paste0(id, "_vip"),
-        p_vip,
-        paste0("OPLS-DA VIP score plot of ", on, "."),
-        width = plot_width,
-        height = plot_height
-      )
-
-      ctx
     },
     require = on,
     signature = signature,
     report = function(x) {
-      raw_res <- x$data[[paste0(id, "_raw_res")]]
-      model_df <- raw_res@modelDF
-      r2y <- model_df[["R2Y"]][1]
-      r2y_cum <- model_df[["R2Y(cum)"]][1]
-      q2 <- model_df[["Q2"]][1]
-      q2_cum <- model_df[["Q2(cum)"]][1]
-
-      vip_tbl <- x$tables[[paste0(id, "_vip")]]
-      n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
-
-      top5 <- vip_tbl |>
-        dplyr::arrange(dplyr::desc(.data$vip)) |>
-        dplyr::slice_head(n = 5)
-      top5_vars <- top5$variable
-
-      lines <- c(
-        paste0(
-          "Orthogonal partial least squares discriminant analysis (OPLS-DA) was performed."
-        ),
-        paste0(
-          "Model fit: R2Y = ",
-          round(r2y, 3),
-          " (cumulative: ",
-          round(r2y_cum, 3),
-          "), Q2 = ",
-          round(q2, 3),
-          " (cumulative: ",
-          round(q2_cum, 3),
-          ")."
-        ),
-        paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
-        paste0(
-          "Top 5 discriminant variables: ",
-          paste(top5_vars, collapse = ", "),
-          "."
-        )
-      )
-      paste(lines, collapse = "\n")
+      .report_oplsda(x, id = id)
     },
     condition = function(ctx) {
-      exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
-      if (is.null(exp)) {
-        return(list(check = FALSE, reason = "Experiment not found."))
-      }
-      sample_info <- glyexp::get_sample_info(exp)
-      group_col <- ctx$group_col
-      if (!group_col %in% colnames(sample_info)) {
-        return(list(
-          check = FALSE,
-          reason = paste0("Group column '", group_col, "' not found.")
-        ))
-      }
-      n_groups <- nlevels(sample_info[[group_col]])
-      if (n_groups != 2) {
-        groups <- levels(sample_info[[group_col]])
-        list(
-          check = FALSE,
-          reason = paste0(
-            "OPLS-DA requires exactly 2 groups, but found ",
-            n_groups,
-            " groups (",
-            paste(groups, collapse = ", "),
-            ")."
-          )
-        )
-      } else {
-        list(check = TRUE, reason = NULL)
-      }
+      .condition_oplsda(ctx, on = on)
     }
   )
+}
+
+#' Run OPLS-DA
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @inheritParams step_oplsda
+#' @param oplsda_args Additional arguments passed to `glystats::gly_oplsda()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_oplsda <- function(
+  ctx,
+  id,
+  on,
+  pred_i,
+  ortho_i,
+  scale,
+  plot_width,
+  plot_height,
+  oplsda_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  oplsda_res <- rlang::exec(
+    glystats::gly_oplsda,
+    exp,
+    pred_i = pred_i,
+    ortho_i = ortho_i,
+    scale = scale,
+    !!!oplsda_args
+  )
+  tidy_res <- oplsda_res$tidy_result
+
+  ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), oplsda_res$raw_result)
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_samples"),
+    tidy_res$samples,
+    paste0("OPLS-DA scores for each sample of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_variables"),
+    tidy_res$variables,
+    paste0("OPLS-DA loadings for each variable of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_variance"),
+    tidy_res$variance,
+    paste0("OPLS-DA explained variance of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_vip"),
+    tidy_res$vip,
+    paste0("OPLS-DA VIP scores of ", on, ".")
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    paste0(id, "_perm_test"),
+    tidy_res$perm_test,
+    paste0("OPLS-DA permutation test results of ", on, ".")
+  )
+
+  p_scores <- glyvis::plot_oplsda(oplsda_res, type = "scores")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_scores"),
+    p_scores,
+    paste0("OPLS-DA score plot colored by group of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  p_loadings <- glyvis::plot_oplsda(oplsda_res, type = "loadings")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_loadings"),
+    p_loadings,
+    paste0("OPLS-DA loading plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  p_variance <- glyvis::plot_oplsda(oplsda_res, type = "variance")
+  ctx <- ctx_add_plot(
+    ctx,
+    paste0(id, "_variance"),
+    p_variance,
+    paste0("OPLS-DA variance plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+  p_vip <- glyvis::plot_oplsda(oplsda_res, type = "vip")
+  ctx_add_plot(
+    ctx,
+    paste0(id, "_vip"),
+    p_vip,
+    paste0("OPLS-DA VIP score plot of ", on, "."),
+    width = plot_width,
+    height = plot_height
+  )
+}
+
+#' Report OPLS-DA results
+#'
+#' @param x Analysis context after running OPLS-DA.
+#' @param id Step identifier.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_oplsda <- function(x, id) {
+  raw_res <- x$data[[paste0(id, "_raw_res")]]
+  model_df <- raw_res@modelDF
+  r2y <- model_df[["R2Y"]][1]
+  r2y_cum <- model_df[["R2Y(cum)"]][1]
+  q2 <- model_df[["Q2"]][1]
+  q2_cum <- model_df[["Q2(cum)"]][1]
+
+  vip_tbl <- x$tables[[paste0(id, "_vip")]]
+  n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
+
+  top5 <- vip_tbl |>
+    dplyr::arrange(dplyr::desc(.data$vip)) |>
+    dplyr::slice_head(n = 5)
+  top5_vars <- top5$variable
+
+  lines <- c(
+    paste0(
+      "Orthogonal partial least squares discriminant analysis (OPLS-DA) was performed."
+    ),
+    paste0(
+      "Model fit: R2Y = ",
+      round(r2y, 3),
+      " (cumulative: ",
+      round(r2y_cum, 3),
+      "), Q2 = ",
+      round(q2, 3),
+      " (cumulative: ",
+      round(q2_cum, 3),
+      ")."
+    ),
+    paste0("Number of variables with VIP > 1: ", n_vip_gt_1, "."),
+    paste0(
+      "Top 5 discriminant variables: ",
+      paste(top5_vars, collapse = ", "),
+      "."
+    )
+  )
+  paste(lines, collapse = "\n")
+}
+
+#' Check whether OPLS-DA should run
+#'
+#' @param ctx Analysis context.
+#' @param on Name of the experiment data in `ctx$data`.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_oplsda <- function(ctx, on) {
+  exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
+  if (is.null(exp)) {
+    return(list(check = FALSE, reason = "Experiment not found."))
+  }
+  sample_info <- glyexp::get_sample_info(exp)
+  group_col <- ctx$group_col
+  if (!group_col %in% colnames(sample_info)) {
+    return(list(
+      check = FALSE,
+      reason = paste0("Group column '", group_col, "' not found.")
+    ))
+  }
+  n_groups <- nlevels(sample_info[[group_col]])
+  if (n_groups != 2) {
+    groups <- levels(sample_info[[group_col]])
+    list(
+      check = FALSE,
+      reason = paste0(
+        "OPLS-DA requires exactly 2 groups, but found ",
+        n_groups,
+        " groups (",
+        paste(groups, collapse = ", "),
+        ")."
+      )
+    )
+  } else {
+    list(check = TRUE, reason = NULL)
+  }
 }

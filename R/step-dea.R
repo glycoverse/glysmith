@@ -629,7 +629,16 @@ step_dea_kruskal <- function(
   paste(lines, collapse = "\n")
 }
 
-#' Internal helper for DEA steps
+#' Create a DEA step
+#'
+#' @param method DEA method.
+#' @param label Step label.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param signature Original call signature.
+#' @param dea_args Arguments passed to the glystats DEA function.
+#' @param filter_args Arguments passed to `glystats::filter_sig_vars()`.
+#'
+#' @returns A `glysmith_step` object.
 #' @noRd
 .step_dea <- function(
   method,
@@ -647,73 +656,107 @@ step_dea_kruskal <- function(
     id = paste0(meta$prefix, "_", method),
     label = paste0(meta$label, " analysis (", method, ")"),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      # Apply filtering for trait_exp if needed
-      if (on == "trait_exp") {
-        exp <- glyclean::remove_constant(exp)
-      }
-
-      dea_res <- switch(
-        method,
-        "limma" = rlang::exec(glystats::gly_limma, exp, !!!dea_args),
-        "ttest" = rlang::exec(glystats::gly_ttest, exp, !!!dea_args),
-        "anova" = rlang::exec(glystats::gly_anova, exp, !!!dea_args),
-        "wilcox" = rlang::exec(glystats::gly_wilcox, exp, !!!dea_args),
-        "kruskal" = rlang::exec(glystats::gly_kruskal, exp, !!!dea_args)
-      )
-      ctx <- ctx_add_data(ctx, paste0(meta$prefix, "_res"), dea_res)
-
-      if (method %in% c("anova", "kruskal")) {
-        ctx <- ctx_add_table(
-          ctx,
-          paste0(meta$prefix, "_main_test"),
-          glystats::get_tidy_result(dea_res, "main_test"),
-          paste0(
-            "Main test results of ANOVA or Kruskal-Wallis test for ",
-            meta$label,
-            " analysis."
-          )
-        )
-        ctx <- ctx_add_table(
-          ctx,
-          paste0(meta$prefix, "_post_hoc_test"),
-          glystats::get_tidy_result(dea_res, "post_hoc_test"),
-          paste0(
-            "Post-hoc test results of ANOVA or Kruskal-Wallis test for ",
-            meta$label,
-            " analysis."
-          )
-        )
-      } else {
-        ctx <- ctx_add_table(
-          ctx,
-          meta$prefix,
-          glystats::get_tidy_result(dea_res),
-          paste0(
-            meta$label,
-            " analysis results of all comparisons for all variables."
-          )
-        )
-      }
-      sig_exp <- rlang::exec(
-        glystats::filter_sig_vars,
-        exp,
-        res = dea_res,
-        !!!filter_args
-      )
-      ctx <- ctx_add_data(
+      .run_dea(
         ctx,
-        paste0("sig_", meta$require),
-        sig_exp,
-        glue::glue("Experiment with only significant {meta$name}s.")
+        method = method,
+        on = on,
+        meta = meta,
+        dea_args = dea_args,
+        filter_args = filter_args
       )
-      ctx
     },
     report = function(x) {
-      .dea_report(x, method, meta, on)
+      .report_dea(x, method = method, meta = meta, on = on)
     },
     generate = c(paste0(meta$prefix, "_res"), paste0("sig_", meta$require)),
     require = meta$require,
     signature = signature
   )
+}
+
+#' Run differential expression analysis
+#'
+#' @param ctx Analysis context.
+#' @param method DEA method.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param meta DEA metadata from `.get_dea_meta()`.
+#' @param dea_args Arguments passed to the glystats DEA function.
+#' @param filter_args Arguments passed to `glystats::filter_sig_vars()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_dea <- function(ctx, method, on, meta, dea_args, filter_args) {
+  exp <- ctx_get_data(ctx, on)
+  if (on == "trait_exp") {
+    exp <- glyclean::remove_constant(exp)
+  }
+
+  dea_res <- switch(
+    method,
+    "limma" = rlang::exec(glystats::gly_limma, exp, !!!dea_args),
+    "ttest" = rlang::exec(glystats::gly_ttest, exp, !!!dea_args),
+    "anova" = rlang::exec(glystats::gly_anova, exp, !!!dea_args),
+    "wilcox" = rlang::exec(glystats::gly_wilcox, exp, !!!dea_args),
+    "kruskal" = rlang::exec(glystats::gly_kruskal, exp, !!!dea_args)
+  )
+  ctx <- ctx_add_data(ctx, paste0(meta$prefix, "_res"), dea_res)
+
+  if (method %in% c("anova", "kruskal")) {
+    ctx <- ctx_add_table(
+      ctx,
+      paste0(meta$prefix, "_main_test"),
+      glystats::get_tidy_result(dea_res, "main_test"),
+      paste0(
+        "Main test results of ANOVA or Kruskal-Wallis test for ",
+        meta$label,
+        " analysis."
+      )
+    )
+    ctx <- ctx_add_table(
+      ctx,
+      paste0(meta$prefix, "_post_hoc_test"),
+      glystats::get_tidy_result(dea_res, "post_hoc_test"),
+      paste0(
+        "Post-hoc test results of ANOVA or Kruskal-Wallis test for ",
+        meta$label,
+        " analysis."
+      )
+    )
+  } else {
+    ctx <- ctx_add_table(
+      ctx,
+      meta$prefix,
+      glystats::get_tidy_result(dea_res),
+      paste0(
+        meta$label,
+        " analysis results of all comparisons for all variables."
+      )
+    )
+  }
+
+  sig_exp <- rlang::exec(
+    glystats::filter_sig_vars,
+    exp,
+    res = dea_res,
+    !!!filter_args
+  )
+  ctx_add_data(
+    ctx,
+    paste0("sig_", meta$require),
+    sig_exp,
+    glue::glue("Experiment with only significant {meta$name}s.")
+  )
+}
+
+#' Report differential expression analysis results
+#'
+#' @param x Analysis context after running DEA.
+#' @param method DEA method.
+#' @param meta DEA metadata from `.get_dea_meta()`.
+#' @param on Name of the experiment data in `ctx$data`.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_dea <- function(x, method, meta, on) {
+  .dea_report(x, method, meta, on)
 }

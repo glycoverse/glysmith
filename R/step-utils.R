@@ -1,3 +1,7 @@
+#' Get supported experiment targets for step `on` arguments
+#'
+#' @returns A character vector of supported context data names.
+#' @noRd
 .on_choices <- function() {
   c(
     "exp",
@@ -11,6 +15,12 @@
   )
 }
 
+#' Check whether an experiment has glycan structures
+#'
+#' @param exp A glyexp experiment object.
+#'
+#' @returns `TRUE` if `exp$var_info` has a `glycan_structure` column.
+#' @noRd
 .has_glycan_structure <- function(exp) {
   "glycan_structure" %in% colnames(exp$var_info)
 }

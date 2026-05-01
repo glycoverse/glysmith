@@ -82,84 +82,133 @@ step_correlation <- function(
     id = id,
     label = paste0("Correlation analysis", on_meta$label_suffix),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      cor_res <- rlang::exec(
-        glystats::gly_cor,
-        exp,
-        on = on_cor,
+      .run_correlation(
+        ctx,
+        id = id,
+        on = on,
+        on_cor = on_cor,
         method = method,
         p_adj_method = p_adj_method,
-        !!!cor_args
+        plot_width = plot_width,
+        plot_height = plot_height,
+        cor_args = cor_args
       )
-
-      # Add correlation table
-      tidy_result <- glystats::get_tidy_result(cor_res)
-      ctx <- ctx_add_table(
-        ctx,
-        id,
-        tidy_result,
-        paste0("Pairwise correlation results for ", on, " (", on_cor, "s).")
-      )
-
-      # Add correlation plot
-      p <- glyvis::plot_corrplot(cor_res)
-      ctx <- ctx_add_plot(
-        ctx,
-        id,
-        p,
-        paste0("Correlation matrix heatmap of ", on, " (", on_cor, "s)."),
-        width = plot_width,
-        height = plot_height
-      )
-
-      ctx
     },
     require = on,
     signature = signature,
     report = function(x) {
-      cor_tbl <- x$tables[[id]]
-      if (is.null(cor_tbl) || nrow(cor_tbl) == 0) {
-        return("No correlation results available.")
-      }
-
-      # Calculate median correlation
-      median_cor <- stats::median(cor_tbl$cor, na.rm = TRUE)
-
-      # Find highest correlation pair
-      top_row <- cor_tbl |>
-        dplyr::arrange(dplyr::desc(abs(.data$cor))) |>
-        dplyr::slice_head(n = 1)
-      highest_cor <- top_row$cor
-      item1 <- top_row[[1]]
-      item2 <- top_row[[2]]
-
-      # Determine column names based on on_cor
-      col1 <- if ("variable1" %in% colnames(cor_tbl)) "variable1" else "sample1"
-      col2 <- if ("variable2" %in% colnames(cor_tbl)) "variable2" else "sample2"
-
-      lines <- c(
-        paste0(
-          "Correlation analysis was performed on ",
-          on,
-          " (",
-          on_cor,
-          "s) using the ",
-          method,
-          " method."
-        ),
-        paste0("Number of pairs analyzed: ", nrow(cor_tbl), "."),
-        paste0("Median correlation coefficient: ", round(median_cor, 3), "."),
-        paste0(
-          "Highest correlation: ",
-          round(highest_cor, 3),
-          " between ",
-          top_row[[col1]],
-          " and ",
-          top_row[[col2]],
-          "."
-        )
+      .report_correlation(
+        x,
+        id = id,
+        on = on,
+        on_cor = on_cor,
+        method = method
       )
-      paste(lines, collapse = "\n")
     }
   )
+}
+
+#' Run correlation analysis
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param on_cor Whether to correlate variables or samples.
+#' @param method Correlation method.
+#' @param p_adj_method P-value adjustment method.
+#' @param plot_width Plot width in inches.
+#' @param plot_height Plot height in inches.
+#' @param cor_args Additional arguments passed to `glystats::gly_cor()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_correlation <- function(
+  ctx,
+  id,
+  on,
+  on_cor,
+  method,
+  p_adj_method,
+  plot_width,
+  plot_height,
+  cor_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  cor_res <- rlang::exec(
+    glystats::gly_cor,
+    exp,
+    on = on_cor,
+    method = method,
+    p_adj_method = p_adj_method,
+    !!!cor_args
+  )
+
+  tidy_result <- glystats::get_tidy_result(cor_res)
+  ctx <- ctx_add_table(
+    ctx,
+    id,
+    tidy_result,
+    paste0("Pairwise correlation results for ", on, " (", on_cor, "s).")
+  )
+
+  p <- glyvis::plot_corrplot(cor_res)
+  ctx_add_plot(
+    ctx,
+    id,
+    p,
+    paste0("Correlation matrix heatmap of ", on, " (", on_cor, "s)."),
+    width = plot_width,
+    height = plot_height
+  )
+}
+
+#' Report correlation analysis results
+#'
+#' @param x Analysis context after running correlation analysis.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param on_cor Whether variables or samples were correlated.
+#' @param method Correlation method.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_correlation <- function(x, id, on, on_cor, method) {
+  cor_tbl <- x$tables[[id]]
+  if (is.null(cor_tbl) || nrow(cor_tbl) == 0) {
+    return("No correlation results available.")
+  }
+
+  median_cor <- stats::median(cor_tbl$cor, na.rm = TRUE)
+
+  top_row <- cor_tbl |>
+    dplyr::arrange(dplyr::desc(abs(.data$cor))) |>
+    dplyr::slice_head(n = 1)
+  highest_cor <- top_row$cor
+
+  col1 <- if ("variable1" %in% colnames(cor_tbl)) "variable1" else "sample1"
+  col2 <- if ("variable2" %in% colnames(cor_tbl)) "variable2" else "sample2"
+
+  lines <- c(
+    paste0(
+      "Correlation analysis was performed on ",
+      on,
+      " (",
+      on_cor,
+      "s) using the ",
+      method,
+      " method."
+    ),
+    paste0("Number of pairs analyzed: ", nrow(cor_tbl), "."),
+    paste0("Median correlation coefficient: ", round(median_cor, 3), "."),
+    paste0(
+      "Highest correlation: ",
+      round(highest_cor, 3),
+      " between ",
+      top_row[[col1]],
+      " and ",
+      top_row[[col2]],
+      "."
+    )
+  )
+  paste(lines, collapse = "\n")
 }

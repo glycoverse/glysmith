@@ -412,96 +412,148 @@ step_sig_enrich <- function(
     id = step_id,
     label = label,
     condition = function(ctx) {
-      check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) ==
-        "glycoproteomics"
-      reason1 <- "input is not a glycoproteomics experiment"
-      check2 <- length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2
-      reason2 <- "input has more than 2 groups"
-      if (check1 && check2) {
-        list(check = TRUE, reason = NULL)
-      } else if (check1 && !check2) {
-        list(check = FALSE, reason = reason2)
-      } else if (!check1 && check2) {
-        list(check = FALSE, reason = reason1)
-      } else {
-        list(check = FALSE, reason = paste0(reason1, " and ", reason2))
-      }
+      .condition_sig_enrich(ctx)
     },
     run = function(ctx) {
-      dea_res <- ctx_get_data(ctx, "dea_res")
-      call_args <- enrich_args
-      if (universe == "detected") {
-        # Force universe to be the detected proteins, overriding any dots.
-        call_args$universe <- glyfun::detected_universe(ctx_get_data(
-          ctx,
-          "exp"
-        ))
-      }
-      enrich_res <- switch(
-        kind,
-        go = rlang::exec(glyfun::enrich_ora_go, dea_res, !!!call_args),
-        kegg = rlang::exec(glyfun::enrich_ora_kegg, dea_res, !!!call_args),
-        reactome = rlang::exec(
-          glyfun::enrich_ora_reactome,
-          dea_res,
-          !!!call_args
-        ),
-        ncg = rlang::exec(glyfun::enrich_ora_ncg, dea_res, !!!call_args),
-        wp = rlang::exec(glyfun::enrich_ora_wp, dea_res, !!!call_args),
-        do = rlang::exec(glyfun::enrich_ora_do, dea_res, !!!call_args)
-      )
-      ctx <- ctx_add_table(
+      .run_sig_enrich(
         ctx,
-        kind,
-        .tidy_glyfun_enrich_result(enrich_res),
-        paste0(toupper(kind), " enrichment analysis results.")
-      )
-      p <- .plot_glyfun_enrich(enrich_res, type = plot_type)
-      ctx_add_plot(
-        ctx,
-        kind,
-        p,
-        paste0(toupper(kind), " enrichment analysis plot."),
-        width = plot_width,
-        height = plot_height
+        kind = kind,
+        universe = universe,
+        plot_type = plot_type,
+        plot_width = plot_width,
+        plot_height = plot_height,
+        enrich_args = enrich_args
       )
     },
     report = function(x) {
-      tbl <- x$tables[[kind]]
-      n_sig <- sum(tbl$p_adj < 0.05)
-      msg <- paste0(
-        "Enrichment analysis was performed on differentially expressed variables."
-      )
-      if (n_sig > 0) {
-        msg <- paste0(
-          msg,
-          " Number of significant items (adjusted p < 0.05): ",
-          n_sig,
-          ".\n\n"
-        )
-        all_sig_terms <- tbl$description[tbl$p_adj < 0.05]
-        all_sig_terms_part <- paste(all_sig_terms, collapse = ", ")
-        msg <- paste0(
-          msg,
-          glue::glue(
-            "<AI>Summarize these terms in 1 sentence: {all_sig_terms_part}</AI>"
-          )
-        )
-        msg <- paste0(
-          msg,
-          "Top terms: \n\n",
-          paste("- ", tbl$description[1:min(5, n_sig)], collapse = "\n"),
-          "\n"
-        )
-      } else {
-        msg <- paste0(msg, " No significant items (adjusted p < 0.05).\n")
-      }
-      msg
+      .report_sig_enrich(x, kind = kind)
     },
     require = c("exp", "dea_res"),
     retry = retry,
     signature = signature
   )
+}
+
+#' Check whether enrichment analysis should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_sig_enrich <- function(ctx) {
+  check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) ==
+    "glycoproteomics"
+  reason1 <- "input is not a glycoproteomics experiment"
+  check2 <- length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2
+  reason2 <- "input has more than 2 groups"
+  if (check1 && check2) {
+    list(check = TRUE, reason = NULL)
+  } else if (check1 && !check2) {
+    list(check = FALSE, reason = reason2)
+  } else if (!check1 && check2) {
+    list(check = FALSE, reason = reason1)
+  } else {
+    list(check = FALSE, reason = paste0(reason1, " and ", reason2))
+  }
+}
+
+#' Run enrichment analysis
+#'
+#' @param ctx Analysis context.
+#' @param kind Enrichment backend.
+#' @param universe Background universe.
+#' @param plot_type Plot type.
+#' @param plot_width Plot width in inches.
+#' @param plot_height Plot height in inches.
+#' @param enrich_args Additional arguments passed to the enrichment backend.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_sig_enrich <- function(
+  ctx,
+  kind,
+  universe,
+  plot_type,
+  plot_width,
+  plot_height,
+  enrich_args
+) {
+  dea_res <- ctx_get_data(ctx, "dea_res")
+  call_args <- enrich_args
+  if (universe == "detected") {
+    call_args$universe <- glyfun::detected_universe(ctx_get_data(
+      ctx,
+      "exp"
+    ))
+  }
+  enrich_res <- switch(
+    kind,
+    go = rlang::exec(glyfun::enrich_ora_go, dea_res, !!!call_args),
+    kegg = rlang::exec(glyfun::enrich_ora_kegg, dea_res, !!!call_args),
+    reactome = rlang::exec(
+      glyfun::enrich_ora_reactome,
+      dea_res,
+      !!!call_args
+    ),
+    ncg = rlang::exec(glyfun::enrich_ora_ncg, dea_res, !!!call_args),
+    wp = rlang::exec(glyfun::enrich_ora_wp, dea_res, !!!call_args),
+    do = rlang::exec(glyfun::enrich_ora_do, dea_res, !!!call_args)
+  )
+  ctx <- ctx_add_table(
+    ctx,
+    kind,
+    .tidy_glyfun_enrich_result(enrich_res),
+    paste0(toupper(kind), " enrichment analysis results.")
+  )
+  p <- .plot_glyfun_enrich(enrich_res, type = plot_type)
+  ctx_add_plot(
+    ctx,
+    kind,
+    p,
+    paste0(toupper(kind), " enrichment analysis plot."),
+    width = plot_width,
+    height = plot_height
+  )
+}
+
+#' Report enrichment analysis results
+#'
+#' @param x Analysis context after running enrichment analysis.
+#' @param kind Enrichment backend.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_sig_enrich <- function(x, kind) {
+  tbl <- x$tables[[kind]]
+  n_sig <- sum(tbl$p_adj < 0.05)
+  msg <- paste0(
+    "Enrichment analysis was performed on differentially expressed variables."
+  )
+  if (n_sig > 0) {
+    msg <- paste0(
+      msg,
+      " Number of significant items (adjusted p < 0.05): ",
+      n_sig,
+      ".\n\n"
+    )
+    all_sig_terms <- tbl$description[tbl$p_adj < 0.05]
+    all_sig_terms_part <- paste(all_sig_terms, collapse = ", ")
+    msg <- paste0(
+      msg,
+      glue::glue(
+        "<AI>Summarize these terms in 1 sentence: {all_sig_terms_part}</AI>"
+      )
+    )
+    msg <- paste0(
+      msg,
+      "Top terms: \n\n",
+      paste("- ", tbl$description[1:min(5, n_sig)], collapse = "\n"),
+      "\n"
+    )
+  } else {
+    msg <- paste0(msg, " No significant items (adjusted p < 0.05).\n")
+  }
+  msg
 }
 
 #' Tidy a glyfun enrichment result for GlySmith tables

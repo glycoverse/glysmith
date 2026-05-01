@@ -43,41 +43,85 @@ step_volcano <- function(
     id = "volcano",
     label = "Volcano plot",
     condition = function(ctx) {
-      dea_res <- ctx_get_data(ctx, "dea_res")
-      check <- !inherits(dea_res, "glystats_anova_res") &&
-        !inherits(dea_res, "glystats_kruskal_res")
-      reason <- "volcano plot is not supported for ANOVA or Kruskal-Wallis DEA results."
-      list(check = check, reason = reason)
+      .condition_volcano(ctx)
     },
     run = function(ctx) {
-      dea_res <- ctx_get_data(ctx, "dea_res")
-      if (inherits(dea_res, "glystats_limma_res")) {
-        .run_step_volcano_limma(
-          ctx,
-          log2fc_cutoff,
-          p_cutoff,
-          p_col,
-          plot_width,
-          plot_height,
-          ...
-        )
-      } else {
-        .run_step_volcano_ttest_wilcox(
-          ctx,
-          log2fc_cutoff,
-          p_cutoff,
-          p_col,
-          plot_width,
-          plot_height,
-          ...
-        )
-      }
+      .run_volcano(
+        ctx,
+        log2fc_cutoff = log2fc_cutoff,
+        p_cutoff = p_cutoff,
+        p_col = p_col,
+        plot_width = plot_width,
+        plot_height = plot_height,
+        ...
+      )
     },
     require = "dea_res",
     signature = signature
   )
 }
 
+#' Check whether volcano plotting should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_volcano <- function(ctx) {
+  dea_res <- ctx_get_data(ctx, "dea_res")
+  check <- !inherits(dea_res, "glystats_anova_res") &&
+    !inherits(dea_res, "glystats_kruskal_res")
+  reason <- "volcano plot is not supported for ANOVA or Kruskal-Wallis DEA results."
+  list(check = check, reason = reason)
+}
+
+#' Run volcano plotting
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_volcano
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_volcano <- function(
+  ctx,
+  log2fc_cutoff,
+  p_cutoff,
+  p_col,
+  plot_width,
+  plot_height,
+  ...
+) {
+  dea_res <- ctx_get_data(ctx, "dea_res")
+  if (inherits(dea_res, "glystats_limma_res")) {
+    .run_step_volcano_limma(
+      ctx,
+      log2fc_cutoff,
+      p_cutoff,
+      p_col,
+      plot_width,
+      plot_height,
+      ...
+    )
+  } else {
+    .run_step_volcano_ttest_wilcox(
+      ctx,
+      log2fc_cutoff,
+      p_cutoff,
+      p_col,
+      plot_width,
+      plot_height,
+      ...
+    )
+  }
+}
+
+#' Run volcano plots for limma contrasts
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_volcano
+#'
+#' @returns Updated analysis context.
+#' @noRd
 .run_step_volcano_limma <- function(
   ctx,
   log2fc_cutoff,
@@ -111,6 +155,13 @@ step_volcano <- function(
   ctx
 }
 
+#' Run a volcano plot for t-test or Wilcoxon results
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_volcano
+#'
+#' @returns Updated analysis context.
+#' @noRd
 .run_step_volcano_ttest_wilcox <- function(
   ctx,
   log2fc_cutoff,

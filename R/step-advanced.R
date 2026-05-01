@@ -54,81 +54,113 @@ step_infer_structure <- function(
   step(
     id = "infer_structure",
     label = "Glycan structure inference",
-    condition = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      if (.has_glycan_structure(exp)) {
-        return(list(
-          check = FALSE,
-          reason = "glycan structures are already available in the experiment"
-        ))
-      }
-      if (!"glycan_composition" %in% colnames(exp$var_info)) {
-        return(list(
-          check = FALSE,
-          reason = "glycan compositions are not available in the experiment"
-        ))
-      }
-      list(check = TRUE, reason = NULL)
-    },
+    condition = .condition_infer_structure,
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      db_to_use <- glydb::glydb_structures(
-        structure_level = structure_level,
-        species = species,
-        glycan_type = glyexp::get_glycan_type(exp)
-      )
-
-      comps <- exp$var_info$glycan_composition
-      if (glyrepr::get_mono_type(db_to_use) == "generic") {
-        comps <- glyrepr::convert_to_generic(comps)
-      }
-
-      inferred_structures <- glyanno::comp_to_struc(
-        comps,
-        db = db_to_use,
-        return_best = TRUE
-      )
-      inference_tbl <- exp$var_info |>
-        dplyr::mutate(
-          glycan_structure = inferred_structures,
-          matched = !is.na(.data$glycan_structure)
-        )
-
-      inferred_exp <- exp
-      inferred_exp$var_info$glycan_structure <- inferred_structures
-      inferred_exp <- inferred_exp |>
-        glyexp::filter_var(!is.na(.data$glycan_structure))
-
-      ctx <- ctx_add_data(ctx, "exp", inferred_exp)
-      ctx <- ctx_add_data(ctx, "uninferred_exp", exp)
-      ctx <- ctx_add_table(
+      .run_infer_structure(
         ctx,
-        "inferred_structures",
-        inference_tbl,
-        "Glycan structure inference results."
-      )
-      ctx
-    },
-    report = function(x) {
-      tbl <- x$tables[["inferred_structures"]]
-      n_total <- nrow(tbl)
-      n_matched <- sum(tbl$matched)
-      n_removed <- n_total - n_matched
-      paste0(
-        "Glycan structures were inferred from glycan compositions. ",
-        "Matched variables: ",
-        n_matched,
-        " of ",
-        n_total,
-        ". ",
-        "Variables without inferred structures removed: ",
-        n_removed,
-        "."
+        structure_level = structure_level,
+        species = species
       )
     },
+    report = .report_infer_structure,
     require = "exp",
     generate = "uninferred_exp",
     signature = signature
+  )
+}
+
+#' Check whether glycan structure inference should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_infer_structure <- function(ctx) {
+  exp <- ctx_get_data(ctx, "exp")
+  if (.has_glycan_structure(exp)) {
+    return(list(
+      check = FALSE,
+      reason = "glycan structures are already available in the experiment"
+    ))
+  }
+  if (!"glycan_composition" %in% colnames(exp$var_info)) {
+    return(list(
+      check = FALSE,
+      reason = "glycan compositions are not available in the experiment"
+    ))
+  }
+  list(check = TRUE, reason = NULL)
+}
+
+#' Run glycan structure inference
+#'
+#' @param ctx Analysis context.
+#' @param structure_level Structure level passed to [glydb::glydb_structures()].
+#' @param species Species name used to restrict the glycan structure database.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_infer_structure <- function(ctx, structure_level, species) {
+  exp <- ctx_get_data(ctx, "exp")
+  db_to_use <- glydb::glydb_structures(
+    structure_level = structure_level,
+    species = species,
+    glycan_type = glyexp::get_glycan_type(exp)
+  )
+
+  comps <- exp$var_info$glycan_composition
+  if (glyrepr::get_mono_type(db_to_use) == "generic") {
+    comps <- glyrepr::convert_to_generic(comps)
+  }
+
+  inferred_structures <- glyanno::comp_to_struc(
+    comps,
+    db = db_to_use,
+    return_best = TRUE
+  )
+  inference_tbl <- exp$var_info |>
+    dplyr::mutate(
+      glycan_structure = inferred_structures,
+      matched = !is.na(.data$glycan_structure)
+    )
+
+  inferred_exp <- exp
+  inferred_exp$var_info$glycan_structure <- inferred_structures
+  inferred_exp <- inferred_exp |>
+    glyexp::filter_var(!is.na(.data$glycan_structure))
+
+  ctx <- ctx_add_data(ctx, "exp", inferred_exp)
+  ctx <- ctx_add_data(ctx, "uninferred_exp", exp)
+  ctx <- ctx_add_table(
+    ctx,
+    "inferred_structures",
+    inference_tbl,
+    "Glycan structure inference results."
+  )
+  ctx
+}
+
+#' Report glycan structure inference results
+#'
+#' @param x Analysis context after running structure inference.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_infer_structure <- function(x) {
+  tbl <- x$tables[["inferred_structures"]]
+  n_total <- nrow(tbl)
+  n_matched <- sum(tbl$matched)
+  n_removed <- n_total - n_matched
+  paste0(
+    "Glycan structures were inferred from glycan compositions. ",
+    "Matched variables: ",
+    n_matched,
+    " of ",
+    n_total,
+    ". ",
+    "Variables without inferred structures removed: ",
+    n_removed,
+    "."
   )
 }
 
@@ -174,56 +206,90 @@ step_derive_traits <- function(
     id = "derive_traits",
     label = "Derived trait calculation",
     condition = function(ctx) {
-      check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
-      reason <- "glycan structures are not available in the experiment"
-      list(check = check, reason = reason)
+      .condition_derive_traits(ctx)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      trait_exp <- glydet::derive_traits(
-        exp,
+      .run_derive_traits(
+        ctx,
         trait_fns = trait_fns,
         mp_fns = mp_fns,
         mp_cols = mp_cols
       )
-      ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
-      ctx <- ctx_add_table(
-        ctx,
-        "derived_traits",
-        tibble::as_tibble(trait_exp),
-        "Derived trait calculation results."
-      )
-      ctx
     },
     report = function(x) {
-      tbl <- x$tables[["derived_traits"]]
-      if (glyexp::get_exp_type(x$exp) == "glycomics") {
-        item_name <- "Derived traits"
-      } else {
-        item_name <- "Site-specific derived traits"
-      }
-      msg <- paste0(
-        "Derived traits were calculated. ",
-        "Number of derived traits: ",
-        length(unique(tbl$trait)),
-        "."
-      )
-      trait_definition_tbl <- tbl |>
-        dplyr::distinct(.data$trait, .data$explanation)
-      definition_parts <- paste0(
-        "- ",
-        trait_definition_tbl$trait,
-        ": ",
-        trait_definition_tbl$explanation
-      )
-      definition_parts <- paste(definition_parts, collapse = "\n")
-      msg <- paste0(msg, "\n\n", "Trait definitions:\n\n", definition_parts)
-      msg
+      .report_derive_traits(x)
     },
     generate = "trait_exp",
     require = "exp",
     signature = signature
   )
+}
+
+#' Check whether derived trait calculation should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_derive_traits <- function(ctx) {
+  check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
+  reason <- "glycan structures are not available in the experiment"
+  list(check = check, reason = reason)
+}
+
+#' Run derived trait calculation
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_derive_traits
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_derive_traits <- function(ctx, trait_fns, mp_fns, mp_cols) {
+  exp <- ctx_get_data(ctx, "exp")
+  trait_exp <- glydet::derive_traits(
+    exp,
+    trait_fns = trait_fns,
+    mp_fns = mp_fns,
+    mp_cols = mp_cols
+  )
+  ctx <- ctx_add_data(ctx, "trait_exp", trait_exp)
+  ctx_add_table(
+    ctx,
+    "derived_traits",
+    tibble::as_tibble(trait_exp),
+    "Derived trait calculation results."
+  )
+}
+
+#' Report derived trait calculation results
+#'
+#' @param x Analysis context after running derived trait calculation.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_derive_traits <- function(x) {
+  tbl <- x$tables[["derived_traits"]]
+  if (glyexp::get_exp_type(x$exp) == "glycomics") {
+    item_name <- "Derived traits"
+  } else {
+    item_name <- "Site-specific derived traits"
+  }
+  msg <- paste0(
+    "Derived traits were calculated. ",
+    "Number of derived traits: ",
+    length(unique(tbl$trait)),
+    "."
+  )
+  trait_definition_tbl <- tbl |>
+    dplyr::distinct(.data$trait, .data$explanation)
+  definition_parts <- paste0(
+    "- ",
+    trait_definition_tbl$trait,
+    ": ",
+    trait_definition_tbl$explanation
+  )
+  definition_parts <- paste(definition_parts, collapse = "\n")
+  paste0(msg, "\n\n", "Trait definitions:\n\n", definition_parts)
 }
 
 #' Step: Quantify Dynamic Motifs
@@ -266,44 +332,74 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
     id = "quantify_dynamic_motifs",
     label = "Dynamic motif quantification",
     condition = function(ctx) {
-      check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
-      reason <- "glycan structures are not available in the experiment"
-      list(check = check, reason = reason)
+      .condition_quantify_dynamic_motifs(ctx)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      motifs <- glymotif::dynamic_motifs(max_size = max_size)
-
-      dynamic_motif_exp <- glydet::quantify_motifs(
-        exp,
-        motifs = motifs,
-        method = method,
-        ignore_linkages = FALSE
-      )
-
-      ctx <- ctx_add_data(ctx, "dynamic_motif_exp", dynamic_motif_exp)
-      ctx <- ctx_add_table(
-        ctx,
-        "dynamic_motifs",
-        tibble::as_tibble(dynamic_motif_exp),
-        "Dynamic motif quantification results."
-      )
-      ctx
+      .run_quantify_dynamic_motifs(ctx, max_size = max_size, method = method)
     },
     report = function(x) {
-      tbl <- x$tables[["dynamic_motifs"]]
-      n_motifs <- length(unique(tbl$motif))
-      paste0(
-        "Dynamic motif quantification was performed. ",
-        "All motifs were extracted. ",
-        "Number of quantified motifs: ",
-        n_motifs,
-        "."
-      )
+      .report_quantify_dynamic_motifs(x)
     },
     generate = "dynamic_motif_exp",
     require = "exp",
     signature = signature
+  )
+}
+
+#' Check whether dynamic motif quantification should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_quantify_dynamic_motifs <- function(ctx) {
+  check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
+  reason <- "glycan structures are not available in the experiment"
+  list(check = check, reason = reason)
+}
+
+#' Run dynamic motif quantification
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_quantify_dynamic_motifs
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_quantify_dynamic_motifs <- function(ctx, max_size, method) {
+  exp <- ctx_get_data(ctx, "exp")
+  motifs <- glymotif::dynamic_motifs(max_size = max_size)
+
+  dynamic_motif_exp <- glydet::quantify_motifs(
+    exp,
+    motifs = motifs,
+    method = method,
+    ignore_linkages = FALSE
+  )
+
+  ctx <- ctx_add_data(ctx, "dynamic_motif_exp", dynamic_motif_exp)
+  ctx_add_table(
+    ctx,
+    "dynamic_motifs",
+    tibble::as_tibble(dynamic_motif_exp),
+    "Dynamic motif quantification results."
+  )
+}
+
+#' Report dynamic motif quantification results
+#'
+#' @param x Analysis context after running dynamic motif quantification.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_quantify_dynamic_motifs <- function(x) {
+  tbl <- x$tables[["dynamic_motifs"]]
+  n_motifs <- length(unique(tbl$motif))
+  paste0(
+    "Dynamic motif quantification was performed. ",
+    "All motifs were extracted. ",
+    "Number of quantified motifs: ",
+    n_motifs,
+    "."
   )
 }
 
@@ -346,56 +442,86 @@ step_quantify_branch_motifs <- function(method = "relative") {
     id = "quantify_branch_motifs",
     label = "Branch motif quantification",
     condition = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      if (!.has_glycan_structure(exp)) {
-        return(list(
-          check = FALSE,
-          reason = "glycan structures are not available in the experiment"
-        ))
-      }
-      type <- glyexp::get_glycan_type(exp)
-      if (type != "N") {
-        return(list(
-          check = FALSE,
-          reason = "branch motif quantification only works with N-glycans"
-        ))
-      }
-      list(check = TRUE, reason = NULL)
+      .condition_quantify_branch_motifs(ctx)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      motifs <- glymotif::branch_motifs()
-
-      branch_motif_exp <- glydet::quantify_motifs(
-        exp,
-        motifs = motifs,
-        method = method,
-        ignore_linkages = FALSE
-      )
-
-      ctx <- ctx_add_data(ctx, "branch_motif_exp", branch_motif_exp)
-      ctx <- ctx_add_table(
-        ctx,
-        "branch_motifs",
-        tibble::as_tibble(branch_motif_exp),
-        "Branch motif quantification results."
-      )
-      ctx
+      .run_quantify_branch_motifs(ctx, method = method)
     },
     report = function(x) {
-      tbl <- x$tables[["branch_motifs"]]
-      n_motifs <- length(unique(tbl$motif))
-      paste0(
-        "Branch motif quantification was performed. ",
-        "Branching motifs for N-glycans were extracted. ",
-        "Number of quantified motifs: ",
-        n_motifs,
-        "."
-      )
+      .report_quantify_branch_motifs(x)
     },
     generate = "branch_motif_exp",
     require = "exp",
     signature = signature
+  )
+}
+
+#' Check whether branch motif quantification should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_quantify_branch_motifs <- function(ctx) {
+  exp <- ctx_get_data(ctx, "exp")
+  if (!.has_glycan_structure(exp)) {
+    return(list(
+      check = FALSE,
+      reason = "glycan structures are not available in the experiment"
+    ))
+  }
+  type <- glyexp::get_glycan_type(exp)
+  if (type != "N") {
+    return(list(
+      check = FALSE,
+      reason = "branch motif quantification only works with N-glycans"
+    ))
+  }
+  list(check = TRUE, reason = NULL)
+}
+
+#' Run branch motif quantification
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_quantify_branch_motifs
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_quantify_branch_motifs <- function(ctx, method) {
+  exp <- ctx_get_data(ctx, "exp")
+  motifs <- glymotif::branch_motifs()
+
+  branch_motif_exp <- glydet::quantify_motifs(
+    exp,
+    motifs = motifs,
+    method = method,
+    ignore_linkages = FALSE
+  )
+
+  ctx <- ctx_add_data(ctx, "branch_motif_exp", branch_motif_exp)
+  ctx_add_table(
+    ctx,
+    "branch_motifs",
+    tibble::as_tibble(branch_motif_exp),
+    "Branch motif quantification results."
+  )
+}
+
+#' Report branch motif quantification results
+#'
+#' @param x Analysis context after running branch motif quantification.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_quantify_branch_motifs <- function(x) {
+  tbl <- x$tables[["branch_motifs"]]
+  n_motifs <- length(unique(tbl$motif))
+  paste0(
+    "Branch motif quantification was performed. ",
+    "Branching motifs for N-glycans were extracted. ",
+    "Number of quantified motifs: ",
+    n_motifs,
+    "."
   )
 }
 
@@ -443,61 +569,92 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
     id = "roc",
     label = "ROC analysis",
     condition = function(ctx) {
-      if (length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2) {
-        list(check = TRUE, reason = NULL)
-      } else {
-        list(check = FALSE, reason = "more than 2 groups are in the experiment")
-      }
+      .condition_roc(ctx)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      roc_res <- glystats::gly_roc(exp, pos_class = pos_class)
-
-      # Save full AUC results
-      ctx <- ctx_add_table(
+      .run_roc(
         ctx,
-        "roc_auc",
-        roc_res$tidy_result$auc,
-        "ROC AUC values for all variables."
+        pos_class = pos_class,
+        plot_width = plot_width,
+        plot_height = plot_height
       )
-
-      # Extract top 10 variables
-      top_vars <- roc_res$tidy_result$auc |>
-        dplyr::slice_max(.data$auc, n = 10, with_ties = FALSE) |>
-        dplyr::pull("variable")
-
-      # Filter experiment and plot
-      sub_exp <- exp |>
-        glyexp::filter_var(.data$variable %in% top_vars)
-
-      p_roc <- glyvis::plot_roc(sub_exp, type = "roc")
-
-      ctx <- ctx_add_plot(
-        ctx,
-        "roc_curves",
-        p_roc,
-        "ROC curves for top 10 variables.",
-        width = plot_width,
-        height = plot_height
-      )
-
-      ctx
     },
     report = function(x) {
-      auc_vals <- x$tables$roc_auc$auc
-
-      n_gt_0.8 <- sum(auc_vals > 0.8, na.rm = TRUE)
-      n_gt_0.9 <- sum(auc_vals > 0.9, na.rm = TRUE)
-      max_auc <- max(auc_vals, na.rm = TRUE)
-
-      glue::glue(
-        "ROC analysis was performed. ",
-        "There are {n_gt_0.8} variables with AUC > 0.8, ",
-        "{n_gt_0.9} variables with AUC > 0.9. ",
-        "The highest AUC is {round(max_auc, 3)}."
-      )
+      .report_roc(x)
     },
     require = "exp",
     signature = signature
+  )
+}
+
+#' Check whether ROC analysis should run
+#'
+#' @param ctx Analysis context.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_roc <- function(ctx) {
+  if (length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2) {
+    list(check = TRUE, reason = NULL)
+  } else {
+    list(check = FALSE, reason = "more than 2 groups are in the experiment")
+  }
+}
+
+#' Run ROC analysis
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_roc
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_roc <- function(ctx, pos_class, plot_width, plot_height) {
+  exp <- ctx_get_data(ctx, "exp")
+  roc_res <- glystats::gly_roc(exp, pos_class = pos_class)
+
+  ctx <- ctx_add_table(
+    ctx,
+    "roc_auc",
+    roc_res$tidy_result$auc,
+    "ROC AUC values for all variables."
+  )
+
+  top_vars <- roc_res$tidy_result$auc |>
+    dplyr::slice_max(.data$auc, n = 10, with_ties = FALSE) |>
+    dplyr::pull("variable")
+
+  sub_exp <- exp |>
+    glyexp::filter_var(.data$variable %in% top_vars)
+
+  p_roc <- glyvis::plot_roc(sub_exp, type = "roc")
+
+  ctx_add_plot(
+    ctx,
+    "roc_curves",
+    p_roc,
+    "ROC curves for top 10 variables.",
+    width = plot_width,
+    height = plot_height
+  )
+}
+
+#' Report ROC analysis results
+#'
+#' @param x Analysis context after running ROC analysis.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_roc <- function(x) {
+  auc_vals <- x$tables$roc_auc$auc
+
+  n_gt_0.8 <- sum(auc_vals > 0.8, na.rm = TRUE)
+  n_gt_0.9 <- sum(auc_vals > 0.9, na.rm = TRUE)
+  max_auc <- max(auc_vals, na.rm = TRUE)
+
+  glue::glue(
+    "ROC analysis was performed. ",
+    "There are {n_gt_0.8} variables with AUC > 0.8, ",
+    "{n_gt_0.9} variables with AUC > 0.9. ",
+    "The highest AUC is {round(max_auc, 3)}."
   )
 }

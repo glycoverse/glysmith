@@ -78,20 +78,37 @@ step_plot_qc <- function(
     label = label,
     repeatable = TRUE,
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      ctx <- .run_qc_plots(
+      .run_plot_qc(
         ctx,
-        exp,
-        when,
-        batch_col,
-        rep_col,
-        plot_width,
-        plot_height
+        when = when,
+        batch_col = batch_col,
+        rep_col = rep_col,
+        plot_width = plot_width,
+        plot_height = plot_height
       )
-      ctx
     },
     require = "exp",
     signature = signature
+  )
+}
+
+#' Run QC plotting
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_plot_qc
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_plot_qc <- function(ctx, when, batch_col, rep_col, plot_width, plot_height) {
+  exp <- ctx_get_data(ctx, "exp")
+  .run_qc_plots(
+    ctx,
+    exp,
+    when,
+    batch_col,
+    rep_col,
+    plot_width,
+    plot_height
   )
 }
 
@@ -298,9 +315,8 @@ step_preprocess <- function(
     id = "preprocess",
     label = "Preprocessing",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      clean_exp <- glyclean::auto_clean(
-        exp,
+      .run_preprocess(
+        ctx,
         batch_col = batch_col,
         qc_name = qc_name,
         normalize_to_try = normalize_to_try,
@@ -310,28 +326,69 @@ step_preprocess <- function(
         check_batch_confounding = check_batch_confounding,
         batch_confounding_threshold = batch_confounding_threshold
       )
-      clean_exp <- glyexp::filter_obs(clean_exp, .data$group != .env$qc_name)
-      ctx <- ctx_add_data(ctx, "exp", clean_exp) # overwrite exp with preprocessed exp
-      ctx <- ctx_add_data(ctx, "raw_exp", exp) # keep raw exp for reference
-      ctx
     },
     report = function(x) {
-      text <- paste(x$meta$logs$preprocess, collapse = "\n")
-      replacements <- c(
-        "gfs" = "glycoform (with structure)",
-        "gf" = "glycoform",
-        "gps" = "glycopeptide (with structure)",
-        "gp" = "glycopeptide"
-      )
-      for (pattern in names(replacements)) {
-        text <- stringr::str_replace_all(text, pattern, replacements[[pattern]])
-      }
-      paste0("<AI>", text, "</AI>")
+      .report_preprocess(x)
     },
     require = "exp",
     generate = "raw_exp",
     signature = signature
   )
+}
+
+#' Run preprocessing
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_preprocess
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_preprocess <- function(
+  ctx,
+  batch_col,
+  qc_name,
+  normalize_to_try,
+  impute_to_try,
+  remove_preset,
+  batch_prop_threshold,
+  check_batch_confounding,
+  batch_confounding_threshold
+) {
+  exp <- ctx_get_data(ctx, "exp")
+  clean_exp <- glyclean::auto_clean(
+    exp,
+    batch_col = batch_col,
+    qc_name = qc_name,
+    normalize_to_try = normalize_to_try,
+    impute_to_try = impute_to_try,
+    remove_preset = remove_preset,
+    batch_prop_threshold = batch_prop_threshold,
+    check_batch_confounding = check_batch_confounding,
+    batch_confounding_threshold = batch_confounding_threshold
+  )
+  clean_exp <- glyexp::filter_obs(clean_exp, .data$group != .env$qc_name)
+  ctx <- ctx_add_data(ctx, "exp", clean_exp)
+  ctx_add_data(ctx, "raw_exp", exp)
+}
+
+#' Report preprocessing results
+#'
+#' @param x Analysis context after preprocessing.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_preprocess <- function(x) {
+  text <- paste(x$meta$logs$preprocess, collapse = "\n")
+  replacements <- c(
+    "gfs" = "glycoform (with structure)",
+    "gf" = "glycoform",
+    "gps" = "glycopeptide (with structure)",
+    "gp" = "glycopeptide"
+  )
+  for (pattern in names(replacements)) {
+    text <- stringr::str_replace_all(text, pattern, replacements[[pattern]])
+  }
+  paste0("<AI>", text, "</AI>")
 }
 
 #' Step: Subset Groups
@@ -378,28 +435,10 @@ step_subset_groups <- function(groups = NULL) {
     id = "subset_groups",
     label = "Subset groups",
     condition = function(ctx) {
-      if (is.null(groups)) {
-        return(list(check = FALSE, reason = "group subset is not provided"))
-      }
-      list(check = TRUE, reason = NULL)
+      .condition_subset_groups(ctx, groups = groups)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      available <- unique(as.character(exp$sample_info$group))
-      missing <- setdiff(groups, available)
-      if (length(missing) > 0) {
-        missing_txt <- paste(missing, collapse = ", ")
-        cli::cli_abort("Group(s) not found in experiment: {missing_txt}.")
-      }
-
-      full_exp <- exp
-      exp <- exp |>
-        glyexp::filter_obs(.data$group %in% groups)
-      exp$sample_info$group <- factor(exp$sample_info$group, levels = groups)
-
-      ctx <- ctx_add_data(ctx, "exp", exp)
-      ctx <- ctx_add_data(ctx, "full_exp", full_exp)
-      ctx
+      .run_subset_groups(ctx, groups = groups)
     },
     require = "exp",
     generate = "full_exp",
@@ -407,6 +446,51 @@ step_subset_groups <- function(groups = NULL) {
   )
 }
 
+#' Check whether group subsetting should run
+#'
+#' @param ctx Analysis context.
+#' @param groups Group names to keep.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_subset_groups <- function(ctx, groups) {
+  if (is.null(groups)) {
+    return(list(check = FALSE, reason = "group subset is not provided"))
+  }
+  list(check = TRUE, reason = NULL)
+}
+
+#' Run group subsetting
+#'
+#' @param ctx Analysis context.
+#' @param groups Group names to keep.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_subset_groups <- function(ctx, groups) {
+  exp <- ctx_get_data(ctx, "exp")
+  available <- unique(as.character(exp$sample_info$group))
+  missing <- setdiff(groups, available)
+  if (length(missing) > 0) {
+    missing_txt <- paste(missing, collapse = ", ")
+    cli::cli_abort("Group(s) not found in experiment: {missing_txt}.")
+  }
+
+  full_exp <- exp
+  exp <- exp |>
+    glyexp::filter_obs(.data$group %in% groups)
+  exp$sample_info$group <- factor(exp$sample_info$group, levels = groups)
+
+  ctx <- ctx_add_data(ctx, "exp", exp)
+  ctx_add_data(ctx, "full_exp", full_exp)
+}
+
+#' Read a protein expression matrix
+#'
+#' @param path Path to a `.csv`, `.tsv`, or `.rds` protein expression matrix.
+#'
+#' @returns A numeric matrix with protein accessions as row names.
+#' @noRd
 .read_pro_expr_mat <- function(path) {
   checkmate::assert_character(path, len = 1)
   if (!fs::file_exists(path)) {
@@ -536,44 +620,75 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
     id = "adjust_protein",
     label = "Protein adjustment",
     condition = function(ctx) {
-      if (is.null(pro_expr_path)) {
-        return(list(
-          check = FALSE,
-          reason = "protein expression path is not provided"
-        ))
-      }
-      if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
-        return(list(
-          check = FALSE,
-          reason = "input is not a glycoproteomics experiment"
-        ))
-      }
-      list(check = TRUE, reason = NULL)
+      .condition_adjust_protein(ctx, pro_expr_path = pro_expr_path)
     },
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      pro_expr_mat <- .read_pro_expr_mat(pro_expr_path)
-      adj_exp <- glyclean::adjust_protein(exp, pro_expr_mat, method = method)
-      ctx <- ctx_add_data(ctx, "exp", adj_exp)
-      ctx <- ctx_add_data(ctx, "unadj_exp", exp)
-      ctx
+      .run_adjust_protein(ctx, pro_expr_path = pro_expr_path, method = method)
     },
     report = function(x) {
-      logs <- x$meta$logs$adjust_protein %||% list()
-      msg_lines <- logs$message %||% character(0)
-      if (length(msg_lines) == 0) {
-        msg_lines <- logs$output %||% character(0)
-      }
-      base <- "Protein-adjusted glycoform quantification was performed."
-      if (length(msg_lines) == 0) {
-        return(base)
-      }
-      paste(c(base, msg_lines), collapse = "\n")
+      .report_adjust_protein(x)
     },
     require = "exp",
     generate = "unadj_exp",
     signature = signature
   )
+}
+
+#' Check whether protein adjustment should run
+#'
+#' @param ctx Analysis context.
+#' @param pro_expr_path Path to the protein expression matrix file.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_adjust_protein <- function(ctx, pro_expr_path) {
+  if (is.null(pro_expr_path)) {
+    return(list(
+      check = FALSE,
+      reason = "protein expression path is not provided"
+    ))
+  }
+  if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
+    return(list(
+      check = FALSE,
+      reason = "input is not a glycoproteomics experiment"
+    ))
+  }
+  list(check = TRUE, reason = NULL)
+}
+
+#' Run protein abundance adjustment
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_adjust_protein
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_adjust_protein <- function(ctx, pro_expr_path, method) {
+  exp <- ctx_get_data(ctx, "exp")
+  pro_expr_mat <- .read_pro_expr_mat(pro_expr_path)
+  adj_exp <- glyclean::adjust_protein(exp, pro_expr_mat, method = method)
+  ctx <- ctx_add_data(ctx, "exp", adj_exp)
+  ctx_add_data(ctx, "unadj_exp", exp)
+}
+
+#' Report protein abundance adjustment results
+#'
+#' @param x Analysis context after protein adjustment.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_adjust_protein <- function(x) {
+  logs <- x$meta$logs$adjust_protein %||% list()
+  msg_lines <- logs$message %||% character(0)
+  if (length(msg_lines) == 0) {
+    msg_lines <- logs$output %||% character(0)
+  }
+  base <- "Protein-adjusted glycoform quantification was performed."
+  if (length(msg_lines) == 0) {
+    return(base)
+  }
+  paste(c(base, msg_lines), collapse = "\n")
 }
 
 #' Step: Identification Overview
@@ -611,39 +726,60 @@ step_ident_overview <- function(count_struct = NULL) {
     id = "ident_overview",
     label = "Identification overview",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, "exp")
-      tbl <- glyexp::summarize_experiment(exp, count_struct = count_struct)
-      ctx_add_table(
-        ctx,
-        "summary",
-        tbl,
-        "Identification overview of the experiment."
-      )
+      .run_ident_overview(ctx, count_struct = count_struct)
     },
     report = function(x) {
-      tbl <- x$tables[["summary"]]
-      total_tbl <- dplyr::filter(tbl, stringr::str_starts(.data$item, "total_"))
-      total_parts <- paste0(
-        total_tbl$n,
-        " ",
-        stringr::str_remove(total_tbl$item, "total_"),
-        "s"
-      )
-      sample_tbl <- dplyr::filter(
-        tbl,
-        stringr::str_ends(.data$item, "_per_sample")
-      )
-      sample_parts <- paste0(
-        sample_tbl$n,
-        " ",
-        stringr::str_remove(sample_tbl$item, "_per_sample"),
-        "s"
-      )
-      glue::glue(
-        "In total, there are {paste(total_parts, collapse = ', ')}. On average, there are {paste(sample_parts, collapse = ', ')} per sample."
-      )
+      .report_ident_overview(x)
     },
     require = "exp",
     signature = signature
+  )
+}
+
+#' Run identification overview
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_ident_overview
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_ident_overview <- function(ctx, count_struct) {
+  exp <- ctx_get_data(ctx, "exp")
+  tbl <- glyexp::summarize_experiment(exp, count_struct = count_struct)
+  ctx_add_table(
+    ctx,
+    "summary",
+    tbl,
+    "Identification overview of the experiment."
+  )
+}
+
+#' Report identification overview results
+#'
+#' @param x Analysis context after identification overview.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_ident_overview <- function(x) {
+  tbl <- x$tables[["summary"]]
+  total_tbl <- dplyr::filter(tbl, stringr::str_starts(.data$item, "total_"))
+  total_parts <- paste0(
+    total_tbl$n,
+    " ",
+    stringr::str_remove(total_tbl$item, "total_"),
+    "s"
+  )
+  sample_tbl <- dplyr::filter(
+    tbl,
+    stringr::str_ends(.data$item, "_per_sample")
+  )
+  sample_parts <- paste0(
+    sample_tbl$n,
+    " ",
+    stringr::str_remove(sample_tbl$item, "_per_sample"),
+    "s"
+  )
+  glue::glue(
+    "In total, there are {paste(total_parts, collapse = ', ')}. On average, there are {paste(sample_parts, collapse = ', ')} per sample."
   )
 }

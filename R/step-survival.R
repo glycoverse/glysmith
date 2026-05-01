@@ -77,91 +77,146 @@ step_cox <- function(
     id = id,
     label = paste0("Cox proportional hazards model", on_meta$label_suffix),
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
-      cox_res <- rlang::exec(
-        glystats::gly_cox,
-        exp,
+      .run_cox(
+        ctx,
+        id = id,
+        on = on,
         time_col = time_col,
         event_col = event_col,
         p_adj_method = p_adj_method,
-        !!!cox_args
+        cox_args = cox_args
       )
-      tidy_result <- glystats::get_tidy_result(cox_res)
-      ctx <- ctx_add_table(
-        ctx,
-        id,
-        tidy_result,
-        paste0("Cox regression results for ", on, ".")
-      )
-      ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), cox_res$raw_result)
-      ctx
     },
     require = on,
     signature = signature,
     report = function(x) {
-      cox_tbl <- x$tables[[id]]
-      if (is.null(cox_tbl) || nrow(cox_tbl) == 0) {
-        return("No Cox regression results available.")
-      }
-
-      n_sig <- sum(cox_tbl$p_adj < 0.05, na.rm = TRUE)
-      n_total <- nrow(cox_tbl)
-
-      # Find most significant variable
-      top_row <- cox_tbl |>
-        dplyr::arrange(.data$p_adj) |>
-        dplyr::slice_head(n = 1)
-      top_var <- top_row$variable
-      top_hr <- top_row$hr
-      top_p_adj <- top_row$p_adj
-
-      lines <- c(
-        paste0("Cox proportional hazards model was performed on ", on, "."),
-        paste0("Number of variables analyzed: ", n_total, "."),
-        paste0(
-          "Number of significant variables (adjusted p < 0.05): ",
-          n_sig,
-          "."
-        ),
-        paste0(
-          "Top associated variable: ",
-          top_var,
-          " (HR = ",
-          round(top_hr, 3),
-          ", adjusted p = ",
-          format(top_p_adj, scientific = TRUE, digits = 3),
-          ")."
-        )
-      )
-      paste(lines, collapse = "\n")
+      .report_cox(x, id = id, on = on)
     },
     condition = function(ctx) {
-      exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
-      if (is.null(exp)) {
-        return(list(check = FALSE, reason = "Experiment not found."))
-      }
-      sample_info <- glyexp::get_sample_info(exp)
-      if (!time_col %in% colnames(sample_info)) {
-        return(list(
-          check = FALSE,
-          reason = paste0(
-            "Time column '",
-            time_col,
-            "' not found in sample info."
-          )
-        ))
-      }
-      if (!event_col %in% colnames(sample_info)) {
-        return(list(
-          check = FALSE,
-          reason = paste0(
-            "Event column '",
-            event_col,
-            "' not found in sample info."
-          )
-        ))
-      }
-      list(check = TRUE, reason = NULL)
+      .condition_cox(ctx, on = on, time_col = time_col, event_col = event_col)
     }
   )
+}
+
+#' Run Cox proportional hazards analysis
+#'
+#' @param ctx Analysis context.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param time_col Survival time column.
+#' @param event_col Event indicator column.
+#' @param p_adj_method P-value adjustment method.
+#' @param cox_args Additional arguments passed to `glystats::gly_cox()`.
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_cox <- function(
+  ctx,
+  id,
+  on,
+  time_col,
+  event_col,
+  p_adj_method,
+  cox_args
+) {
+  exp <- ctx_get_data(ctx, on)
+  cox_res <- rlang::exec(
+    glystats::gly_cox,
+    exp,
+    time_col = time_col,
+    event_col = event_col,
+    p_adj_method = p_adj_method,
+    !!!cox_args
+  )
+  tidy_result <- glystats::get_tidy_result(cox_res)
+  ctx <- ctx_add_table(
+    ctx,
+    id,
+    tidy_result,
+    paste0("Cox regression results for ", on, ".")
+  )
+  ctx_add_data(ctx, paste0(id, "_raw_res"), cox_res$raw_result)
+}
+
+#' Report Cox proportional hazards analysis results
+#'
+#' @param x Analysis context after running Cox analysis.
+#' @param id Step identifier.
+#' @param on Name of the experiment data in `ctx$data`.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_cox <- function(x, id, on) {
+  cox_tbl <- x$tables[[id]]
+  if (is.null(cox_tbl) || nrow(cox_tbl) == 0) {
+    return("No Cox regression results available.")
+  }
+
+  n_sig <- sum(cox_tbl$p_adj < 0.05, na.rm = TRUE)
+  n_total <- nrow(cox_tbl)
+
+  top_row <- cox_tbl |>
+    dplyr::arrange(.data$p_adj) |>
+    dplyr::slice_head(n = 1)
+  top_var <- top_row$variable
+  top_hr <- top_row$hr
+  top_p_adj <- top_row$p_adj
+
+  lines <- c(
+    paste0("Cox proportional hazards model was performed on ", on, "."),
+    paste0("Number of variables analyzed: ", n_total, "."),
+    paste0(
+      "Number of significant variables (adjusted p < 0.05): ",
+      n_sig,
+      "."
+    ),
+    paste0(
+      "Top associated variable: ",
+      top_var,
+      " (HR = ",
+      round(top_hr, 3),
+      ", adjusted p = ",
+      format(top_p_adj, scientific = TRUE, digits = 3),
+      ")."
+    )
+  )
+  paste(lines, collapse = "\n")
+}
+
+#' Check whether Cox analysis should run
+#'
+#' @param ctx Analysis context.
+#' @param on Name of the experiment data in `ctx$data`.
+#' @param time_col Survival time column.
+#' @param event_col Event indicator column.
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_cox <- function(ctx, on, time_col, event_col) {
+  exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
+  if (is.null(exp)) {
+    return(list(check = FALSE, reason = "Experiment not found."))
+  }
+  sample_info <- glyexp::get_sample_info(exp)
+  if (!time_col %in% colnames(sample_info)) {
+    return(list(
+      check = FALSE,
+      reason = paste0(
+        "Time column '",
+        time_col,
+        "' not found in sample info."
+      )
+    ))
+  }
+  if (!event_col %in% colnames(sample_info)) {
+    return(list(
+      check = FALSE,
+      reason = paste0(
+        "Event column '",
+        event_col,
+        "' not found in sample info."
+      )
+    ))
+  }
+  list(check = TRUE, reason = NULL)
 }
