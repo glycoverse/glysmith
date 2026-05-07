@@ -20,7 +20,7 @@ step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
   A named list of derived trait functions created by trait factories.
   Names of the list are the names of the derived traits. Default is
   `NULL`, which means all derived traits in
-  [`basic_traits()`](https://glycoverse.github.io/glydet/reference/basic_traits.html)
+  [`basic_traits()`](https://glycoverse.github.io/glydet/reference/traits_basic.html)
   are calculated.
 
 - mp_fns:
