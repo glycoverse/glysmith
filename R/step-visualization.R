@@ -71,6 +71,7 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
       )
     },
     require = on,
+    packages = c("glyvis", "pheatmap"),
     signature = signature
   )
 }
@@ -173,6 +174,7 @@ step_logo <- function(
       )
     },
     require = on,
+    packages = c("glyexp", "glyvis", "ggseqlogo", "UniProt.ws"),
     signature = signature
   )
 }
@@ -338,6 +340,7 @@ step_sig_boxplot <- function(
       )
     },
     require = on,
+    packages = c("glyexp", "glystats", "glyvis"),
     signature = signature
   )
 }

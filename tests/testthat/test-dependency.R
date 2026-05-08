@@ -1,25 +1,43 @@
-test_that("check_glysmith_deps returns TRUE when all packages are installed", {
-  skip_if_not_installed("desc")
-  skip_if_glysmith_deps_not_installed()
+test_that("step package dependencies are collected from a blueprint", {
+  bp <- blueprint(
+    step_ident_overview(),
+    step_infer_structure()
+  )
 
-  # All suggests packages should be installed in test environment
-  expect_true(check_glysmith_deps(action = "note"))
+  pkgs <- collect_blueprint_packages(bp)
+
+  expect_true(all(c("glyexp", "glyanno", "glydb", "glyrepr") %in% pkgs))
 })
 
-test_that("check_glysmith_deps errors with action = 'error' when packages missing", {
-  skip_if_not_installed("desc")
+test_that("blueprint-scoped dependencies exclude unused glycoverse packages", {
+  bp <- blueprint_default(enrich = FALSE, traits = FALSE)
 
-  # Mock a fake package that doesn't exist
-  local_mocked_bindings(
-    get_suggests_packages = function() {
-      c("this_package_definitely_does_not_exist_12345")
-    },
-    .package = "glysmith"
+  pkgs <- collect_blueprint_packages(bp)
+
+  expect_false("glyanno" %in% pkgs)
+  expect_false("glydb" %in% pkgs)
+})
+
+test_that("check_glysmith_deps uses only blueprint packages", {
+  bp <- blueprint(
+    step(
+      "custom",
+      "Custom step",
+      function(ctx) ctx,
+      packages = "this_package_definitely_does_not_exist_12345"
+    )
   )
 
   expect_error(
-    check_glysmith_deps(action = "error"),
+    check_glysmith_deps(blueprint = bp, action = "error"),
     "not installed"
+  )
+})
+
+test_that("check_glysmith_deps validates blueprint input", {
+  expect_error(
+    check_glysmith_deps(blueprint = list(), action = "note"),
+    "glysmith_blueprint"
   )
 })
 

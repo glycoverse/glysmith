@@ -29,7 +29,7 @@ forge_analysis <- function(
   blueprint = blueprint_default(),
   group_col = "group"
 ) {
-  check_glysmith_deps(action = "error")
+  check_glysmith_deps(blueprint = blueprint, action = "error")
   checkmate::assert_class(exp, "glyexp_experiment")
   checkmate::assert_string(group_col)
   if (!group_col %in% colnames(exp$sample_info)) {

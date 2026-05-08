@@ -88,6 +88,7 @@ step_plot_qc <- function(
       )
     },
     require = "exp",
+    packages = "glyclean",
     signature = signature
   )
 }
@@ -332,6 +333,7 @@ step_preprocess <- function(
     },
     require = "exp",
     generate = "raw_exp",
+    packages = c("glyclean", "glyexp"),
     signature = signature
   )
 }
@@ -442,6 +444,7 @@ step_subset_groups <- function(groups = NULL) {
     },
     require = "exp",
     generate = "full_exp",
+    packages = "glyexp",
     signature = signature
   )
 }
@@ -630,6 +633,7 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
     },
     require = "exp",
     generate = "unadj_exp",
+    packages = c("glyclean", "glyexp"),
     signature = signature
   )
 }
@@ -732,6 +736,7 @@ step_ident_overview <- function(count_struct = NULL) {
       .report_ident_overview(x)
     },
     require = "exp",
+    packages = "glyexp",
     signature = signature
   )
 }

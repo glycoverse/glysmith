@@ -670,6 +670,7 @@ step_dea_kruskal <- function(
     },
     generate = c(paste0(meta$prefix, "_res"), paste0("sig_", meta$require)),
     require = meta$require,
+    packages = c("glyclean", "glyexp", "glystats"),
     signature = signature
   )
 }

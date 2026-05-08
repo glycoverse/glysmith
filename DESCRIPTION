@@ -21,6 +21,16 @@ Description: glysmith provides high-level, end-to-end workflows for glycomics
     with minimal code while retaining full flexibility for customization.
 License: MIT + file LICENSE
 Suggests:
+    glyclean (>= 0.10.1),
+    glyanno (>= 0.4.2),
+    glydb (>= 0.4.0),
+    glydet (>= 0.10.1),
+    glyexp (>= 0.11.0),
+    glyfun (>= 0.1.0),
+    glyrepr (>= 0.11.0),
+    glystats (>= 0.6.2),
+    glyvis (>= 0.5.0),
+    glymotif (>= 0.13.0),
     knitr,
     withr,
     pROC,
@@ -56,23 +66,12 @@ Imports:
     fs,
     ggplot2,
     glue,
-    glyclean (>= 0.10.1),
-    glyanno (>= 0.4.2),
-    glydb (>= 0.4.0),
-    glydet (>= 0.10.1),
-    glyexp (>= 0.11.0),
-    glyfun (>= 0.1.0),
-    glyrepr (>= 0.11.0),
-    glystats (>= 0.6.2),
-    glyvis (>= 0.5.0),
-    glymotif (>= 0.13.0),
     jsonlite,
     purrr,
     readr,
     rlang,
     rmarkdown,
     stringr,
-    tibble,
-    desc
+    tibble
 Depends: R (>= 4.1.0)
 VignetteBuilder: knitr
