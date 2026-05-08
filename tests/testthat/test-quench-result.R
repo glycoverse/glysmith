@@ -143,6 +143,26 @@ test_that("quench_result rejects invalid overwrite input", {
   expect_true(fs::file_exists(sentinel))
 })
 
+test_that("quench_result does not create stray Rplots.pdf", {
+  x <- glysmith_result(
+    exp = list(dummy = TRUE),
+    plots = list(
+      scatter = ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
+        ggplot2::geom_point()
+    ),
+    tables = list(),
+    meta = list(),
+    data = list(),
+    blueprint = new_blueprint(list(step_pca()))
+  )
+
+  withr::local_dir(withr::local_tempdir())
+  suppressWarnings(suppressMessages(
+    quench_result(x, "quench-out", plot_ext = "png")
+  ))
+  expect_false(fs::file_exists("Rplots.pdf"))
+})
+
 test_that("write_result_readme falls back when explanations are empty", {
   x <- glysmith_result(
     exp = list(),
