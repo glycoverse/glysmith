@@ -31,9 +31,11 @@ Save processed experiment, plots and tables of a glysmith result object to a dir
 A \code{README.md} file will also be generated to describe the saved outputs.
 }
 \examples{
+\dontrun{
 library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 quench_result(result, tempdir())
+}
 
 }

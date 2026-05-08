@@ -28,10 +28,12 @@
 #'
 #' @returns The normalized path to the generated HTML file.
 #' @examples
+#' \dontrun{
 #' library(glyexp)
 #' exp <- real_experiment2
 #' result <- forge_analysis(exp)
 #' polish_report(result, tempfile(fileext = ".html"), open = FALSE)
+#' }
 #'
 #' @export
 polish_report <- function(

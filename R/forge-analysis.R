@@ -19,9 +19,11 @@
 #'   - `blueprint`: the blueprint used for the analysis.
 #'
 #' @examples
+#' \dontrun{
 #' exp <- glyexp::real_experiment2
 #' result <- forge_analysis(exp)
 #' print(result)
+#' }
 #'
 #' @export
 forge_analysis <- function(

@@ -56,9 +56,11 @@ sections, paired with plot descriptions, and summarized using the configured
 \code{ellmer} provider. DeepSeek is used by default for backward compatibility.
 }
 \examples{
+\dontrun{
 library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
+}
 
 }

@@ -34,8 +34,10 @@ with keys like \code{tables$summary} and \code{plots$pca}.
 This function performs a comprehensive analysis for group comparison.
 }
 \examples{
+\dontrun{
 exp <- glyexp::real_experiment2
 result <- forge_analysis(exp)
 print(result)
+}
 
 }

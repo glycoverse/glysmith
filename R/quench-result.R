@@ -11,10 +11,12 @@
 #' @param plot_height The height of the plot in inches. Default is 5.
 #'
 #' @examples
+#' \dontrun{
 #' library(glyexp)
 #' exp <- real_experiment2
 #' result <- forge_analysis(exp)
 #' quench_result(result, tempdir())
+#' }
 #'
 #' @export
 quench_result <- function(
