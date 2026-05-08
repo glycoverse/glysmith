@@ -33,6 +33,8 @@
 - Enrichment analysis now uses `glyfun` instead of `glystats`, as
   enrichment analysis functions in `glystats` have been deprecated in
   favor of `glyfun` (#10).
+- [`quench_result()`](https://glycoverse.github.io/glysmith/dev/reference/quench_result.md)
+  no longer leaves a stray `Rplots.pdf` in the working directory (#18).
 
 ## glysmith 0.10.1
 
