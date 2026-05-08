@@ -65,6 +65,7 @@ step_infer_structure <- function(
     report = .report_infer_structure,
     require = "exp",
     generate = "uninferred_exp",
+    packages = c("glyanno", "glydb", "glyexp", "glyrepr"),
     signature = signature
   )
 }
@@ -221,6 +222,7 @@ step_derive_traits <- function(
     },
     generate = "trait_exp",
     require = "exp",
+    packages = c("glydet", "glyexp"),
     signature = signature
   )
 }
@@ -342,6 +344,7 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
     },
     generate = "dynamic_motif_exp",
     require = "exp",
+    packages = c("glydet", "glymotif"),
     signature = signature
   )
 }
@@ -452,6 +455,7 @@ step_quantify_branch_motifs <- function(method = "relative") {
     },
     generate = "branch_motif_exp",
     require = "exp",
+    packages = c("glydet", "glyexp", "glymotif"),
     signature = signature
   )
 }
@@ -583,6 +587,7 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
       .report_roc(x)
     },
     require = "exp",
+    packages = c("glyexp", "glystats", "glyvis", "pROC"),
     signature = signature
   )
 }

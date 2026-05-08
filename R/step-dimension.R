@@ -87,6 +87,7 @@ step_pca <- function(
       )
     },
     require = on,
+    packages = c("glystats", "glyvis"),
     signature = signature
   )
 }
@@ -256,6 +257,7 @@ step_tsne <- function(
       )
     },
     require = on,
+    packages = c("glystats", "glyvis", "Rtsne"),
     signature = signature
   )
 }
@@ -388,6 +390,7 @@ step_umap <- function(
       )
     },
     require = on,
+    packages = c("glystats", "glyvis", "uwot"),
     signature = signature
   )
 }
@@ -528,6 +531,7 @@ step_plsda <- function(
       )
     },
     require = on,
+    packages = c("glystats", "glyvis", "ropls"),
     signature = signature,
     report = function(x) {
       .report_plsda(x, id = id)
@@ -779,6 +783,7 @@ step_oplsda <- function(
       )
     },
     require = on,
+    packages = c("glystats", "glyvis", "ropls"),
     signature = signature,
     report = function(x) {
       .report_oplsda(x, id = id)

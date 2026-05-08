@@ -95,6 +95,7 @@ step_correlation <- function(
       )
     },
     require = on,
+    packages = c("glystats", "glyvis"),
     signature = signature,
     report = function(x) {
       .report_correlation(

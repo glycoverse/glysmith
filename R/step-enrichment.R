@@ -429,6 +429,7 @@ step_sig_enrich <- function(
       .report_sig_enrich(x, kind = kind)
     },
     require = c("exp", "dea_res"),
+    packages = c("glyexp", "glyfun", "enrichplot"),
     retry = retry,
     signature = signature
   )

@@ -2,11 +2,16 @@
 % Please edit documentation in R/dependency.R
 \name{check_glysmith_deps}
 \alias{check_glysmith_deps}
-\title{Check glysmith Suggests dependencies}
+\title{Check glysmith dependencies for a blueprint}
 \usage{
-check_glysmith_deps(action = c("ask", "error", "note"))
+check_glysmith_deps(
+  blueprint = blueprint_default(),
+  action = c("ask", "error", "note")
+)
 }
 \arguments{
+\item{blueprint}{A \code{\link[=blueprint]{blueprint()}}. Defaults to \code{\link[=blueprint_default]{blueprint_default()}}.}
+
 \item{action}{Character string indicating what to do if packages are missing:
 \itemize{
 \item \code{"ask"} (default): Prompt the user to install missing packages
@@ -20,18 +25,20 @@ Returns \code{TRUE} invisibly if all packages are installed. If
 user declines.
 }
 \description{
-Checks if all packages listed in the Suggests field of DESCRIPTION are
-installed. If any are missing, prompts the user to install them using \code{pak}.
+Checks whether the packages required by steps in a blueprint are installed.
+This does not install or check every package listed in \code{Suggests}; it only
+checks the packages declared by the steps in \code{blueprint}.
 }
 \examples{
 \dontrun{
-# Check and prompt to install missing packages
+# Check dependencies required by the default blueprint
 check_glysmith_deps()
 
-# Just report status without prompting
-check_glysmith_deps(action = "note")
-
-# Error if packages are missing
-check_glysmith_deps(action = "error")
+# Check dependencies required by a custom blueprint
+bp <- blueprint(
+  step_ident_overview(),
+  step_pca()
+)
+check_glysmith_deps(bp)
 }
 }
