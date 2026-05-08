@@ -20,7 +20,7 @@ step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
   A named list of derived trait functions created by trait factories.
   Names of the list are the names of the derived traits. Default is
   `NULL`, which means all derived traits in
-  [`basic_traits()`](https://glycoverse.github.io/glydet/reference/traits_basic.html)
+  [`traits_basic()`](https://glycoverse.github.io/glydet/reference/traits_basic.html)
   are calculated.
 
 - mp_fns:
@@ -36,11 +36,13 @@ step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
 
   A character vector of column names in the `var_info` tibble to use as
   meta-properties. If names are provided, they will be used as names of
-  the meta-properties, otherwise the column names will be used.
-  Meta-properties specified in `mp_cols` will overwrite those introduced
-  by `mp_fns` with the same names, including the built-in
-  meta-properties. Default is `NULL`, which means no columns are used as
-  meta-properties.
+  the meta-properties, otherwise the column names will be used. When
+  `mp_cols` is specified, the selected columns overwrite meta-properties
+  introduced by `mp_fns` with the same names, including built-in
+  meta-properties. Default is `NULL`, which means all columns in
+  `var_info` are available as meta-properties by their existing names.
+  In this default mode, meta-properties introduced by `mp_fns` take
+  precedence over `var_info` columns with the same names.
 
 ## Value
 

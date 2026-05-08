@@ -14,7 +14,7 @@
   [`cast_data()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
   : Get Data from GlySmith Result
 - [`check_glysmith_deps()`](https://glycoverse.github.io/glysmith/dev/reference/check_glysmith_deps.md)
-  : Check glysmith Suggests dependencies
+  : Check glysmith dependencies for a blueprint
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md)
   : Perform the Whole Analysis Pipeline
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)

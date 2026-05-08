@@ -62,7 +62,7 @@ Need glycan structure information.</p>
 <dl><dt id="arg-trait-fns">trait_fns<a class="anchor" aria-label="anchor" href="#arg-trait-fns"></a></dt>
 <dd><p>A named list of derived trait functions created by trait factories.
 Names of the list are the names of the derived traits.
-Default is <code>NULL</code>, which means all derived traits in <code><a href="https://glycoverse.github.io/glydet/reference/traits_basic.html" class="external-link">basic_traits()</a></code> are calculated.</p></dd>
+Default is <code>NULL</code>, which means all derived traits in <code><a href="https://glycoverse.github.io/glydet/reference/traits_basic.html" class="external-link">traits_basic()</a></code> are calculated.</p></dd>
 
 
 <dt id="arg-mp-fns">mp_fns<a class="anchor" aria-label="anchor" href="#arg-mp-fns"></a></dt>
@@ -76,9 +76,11 @@ Default is <code>NULL</code>, which means all meta-properties in <code><a href="
 <dd><p>A character vector of column names in the <code>var_info</code> tibble to use as meta-properties.
 If names are provided, they will be used as names of the meta-properties,
 otherwise the column names will be used.
-Meta-properties specified in <code>mp_cols</code> will overwrite those introduced by <code>mp_fns</code> with the same names,
-including the built-in meta-properties.
-Default is <code>NULL</code>, which means no columns are used as meta-properties.</p></dd>
+When <code>mp_cols</code> is specified, the selected columns overwrite meta-properties introduced by <code>mp_fns</code>
+with the same names, including built-in meta-properties.
+Default is <code>NULL</code>, which means all columns in <code>var_info</code> are available as meta-properties by their
+existing names. In this default mode, meta-properties introduced by <code>mp_fns</code> take precedence over
+<code>var_info</code> columns with the same names.</p></dd>
 
 </dl></div>
     <div class="section level2">

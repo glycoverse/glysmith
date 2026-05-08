@@ -83,7 +83,7 @@ library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 #> ℹ Identification overview
-#> ✔ Identification overview [845ms]
+#> ✔ Identification overview [621ms]
 #> 
 #> ℹ Preprocessing
 #> 
@@ -134,13 +134,13 @@ result <- forge_analysis(exp)
 #> ℹ Preprocessing
 #> ✔ Batch correction completed.
 #> ℹ Preprocessing
-#> ✔ Preprocessing [5.7s]
+#> ✔ Preprocessing [4.7s]
 #> 
 #> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [101ms]
+#> ✔ QC (post-preprocessing) [77ms]
 #> 
 #> ℹ Principal component analysis
-#> ✔ Principal component analysis [403ms]
+#> ✔ Principal component analysis [280ms]
 #> 
 #> ℹ Differential expression analysis (limma)
 #> ℹ Number of groups: 4
@@ -149,19 +149,19 @@ result <- forge_analysis(exp)
 #> ℹ Differential expression analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [77ms]
+#> ✔ Differential expression analysis (limma) [54ms]
 #> 
 #> ℹ Volcano plot
-#> ✔ Volcano plot [477ms]
+#> ✔ Volcano plot [351ms]
 #> 
 #> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
+#> ✔ Heatmap of significant variables [61ms]
 #> 
 #> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
 #> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.9s]
+#> ✔ Derived trait calculation [1.3s]
 #> 
 #> ℹ Differential trait analysis (limma)
 #> ℹ Number of groups: 4
@@ -170,11 +170,11 @@ result <- forge_analysis(exp)
 #> ℹ Differential trait analysis (limma)
 #> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
 #> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [58ms]
+#> ✔ Differential trait analysis (limma) [45ms]
 #> 
 #> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [41ms]
+#> ✔ Heatmap of significant traits [31ms]
 #> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/RtmpMSsUVQ/file1b0f3d4c1aa1.html"
+#> [1] "/tmp/RtmpssJ80p/file1aca7f8d49eb.html"
 ```
