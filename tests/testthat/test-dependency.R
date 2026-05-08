@@ -18,6 +18,29 @@ test_that("blueprint-scoped dependencies exclude unused glycoverse packages", {
   expect_false("glydb" %in% pkgs)
 })
 
+test_that("dependency install hint includes glycoverse r-universe repo", {
+  hint <- format_dependency_install_hint(c("glydb", "pROC"))
+
+  expect_true(any(grepl("https://glycoverse.r-universe.dev", hint, fixed = TRUE)))
+  expect_true(any(grepl("pak::pkg_install", hint, fixed = TRUE)))
+  expect_true(any(grepl("glydb", hint, fixed = TRUE)))
+  expect_true(any(grepl("pROC", hint, fixed = TRUE)))
+})
+
+test_that("dependency repos preserve existing repositories", {
+  repos <- dependency_repos(c(
+    CRAN = "@CRAN@",
+    BioCsoft = "https://bioconductor.org/packages/release/bioc"
+  ))
+
+  expect_equal(unname(repos["glycoverse"]), "https://glycoverse.r-universe.dev")
+  expect_equal(unname(repos["CRAN"]), "https://cloud.r-project.org")
+  expect_equal(
+    unname(repos["BioCsoft"]),
+    "https://bioconductor.org/packages/release/bioc"
+  )
+})
+
 test_that("check_glysmith_deps uses only blueprint packages", {
   bp <- blueprint(
     step(
