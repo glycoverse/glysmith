@@ -1,16 +1,27 @@
-# Check glysmith Suggests dependencies
+# Check glysmith dependencies for a blueprint
 
-Checks if all packages listed in the Suggests field of DESCRIPTION are
-installed. If any are missing, prompts the user to install them using
-`pak`.
+Checks whether the packages required by steps in a blueprint are
+installed. This does not install or check every package listed in
+`Suggests`; it only checks the packages declared by the steps in
+`blueprint`.
 
 ## Usage
 
 ``` r
-check_glysmith_deps(action = c("ask", "error", "note"))
+check_glysmith_deps(
+  blueprint = blueprint_default(),
+  action = c("ask", "error", "note")
+)
 ```
 
 ## Arguments
+
+- blueprint:
+
+  A
+  [`blueprint()`](https://glycoverse.github.io/glysmith/reference/blueprint.md).
+  Defaults to
+  [`blueprint_default()`](https://glycoverse.github.io/glysmith/reference/blueprint_default.md).
 
 - action:
 
@@ -32,13 +43,14 @@ user declines.
 
 ``` r
 if (FALSE) { # \dontrun{
-# Check and prompt to install missing packages
+# Check dependencies required by the default blueprint
 check_glysmith_deps()
 
-# Just report status without prompting
-check_glysmith_deps(action = "note")
-
-# Error if packages are missing
-check_glysmith_deps(action = "error")
+# Check dependencies required by a custom blueprint
+bp <- blueprint(
+  step_ident_overview(),
+  step_pca()
+)
+check_glysmith_deps(bp)
 } # }
 ```

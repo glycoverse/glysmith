@@ -14,7 +14,7 @@
   [`cast_data()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
   : Get Data from GlySmith Result
 - [`check_glysmith_deps()`](https://glycoverse.github.io/glysmith/reference/check_glysmith_deps.md)
-  : Check glysmith Suggests dependencies
+  : Check glysmith dependencies for a blueprint
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md)
   : Perform the Whole Analysis Pipeline
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
@@ -48,6 +48,8 @@
   : Step: Heatmap
 - [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md)
   : Step: Identification Overview
+- [`step_infer_structure()`](https://glycoverse.github.io/glysmith/reference/step_infer_structure.md)
+  : Step: Infer Glycan Structures
 - [`step_logo()`](https://glycoverse.github.io/glysmith/reference/step_logo.md)
   : Step: Logo Plot
 - [`step_oplsda()`](https://glycoverse.github.io/glysmith/reference/step_oplsda.md)
@@ -69,12 +71,19 @@
   : Step: ROC Analysis
 - [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.md)
   : Step: Significant Variables Boxplot
+- [`step_sig_enrich_do()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_do.md)
+  : Step: DO Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md)
   : Step: GO Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md)
   : Step: KEGG Enrichment Analysis on Differentially Expressed Variables
+- [`step_sig_enrich_ncg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_ncg.md)
+  : Step: NCG Enrichment Analysis on Differentially Expressed Variables
 - [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md)
   : Step: Reactome Enrichment Analysis on Differentially Expressed
+  Variables
+- [`step_sig_enrich_wp()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_wp.md)
+  : Step: WikiPathways Enrichment Analysis on Differentially Expressed
   Variables
 - [`step_subset_groups()`](https://glycoverse.github.io/glysmith/reference/step_subset_groups.md)
   : Step: Subset Groups

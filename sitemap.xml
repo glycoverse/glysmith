@@ -18,7 +18,6 @@
 <url><loc>https://glycoverse.github.io/glysmith/reference/cast_exp.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/check_glysmith_deps.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/forge_analysis.html</loc></url>
-<url><loc>https://glycoverse.github.io/glysmith/reference/get_suggests_packages.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/glysmith-package.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/index.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/inquire_blueprint.html</loc></url>
@@ -36,6 +35,7 @@
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_derive_traits.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_heatmap.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_ident_overview.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_infer_structure.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_logo.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_oplsda.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_pca.html</loc></url>
@@ -46,9 +46,12 @@
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_roc.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_enrich_do.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_enrich_ncg.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/reference/step_sig_enrich_wp.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_subset_groups.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_tsne.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/reference/step_umap.html</loc></url>

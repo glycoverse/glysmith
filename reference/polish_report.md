@@ -4,12 +4,9 @@ Generate a self-contained HTML report for a `glysmith_result` object.
 The report is rendered via
 [`rmarkdown::render()`](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
 using an internal R Markdown template. If `use_ai` is TRUE, the report
-text will be polished and organized into sections using LLM
-(deepseek-chat), and plots will be described with a multimodal model
-(deepseek-vl-chat). To use this feature, you have to provide an API key
-and set it in the environment variable `DEEPSEEK_API_KEY` by running
-`Sys.setenv(DEEPSEEK_API_KEY = "your_api_key")`. You can apply the API
-key on https://platform.deepseek.com.
+text will be polished, organized into sections, paired with plot
+descriptions, and summarized using the configured `ellmer` provider.
+DeepSeek is used by default for backward compatibility.
 
 ## Usage
 
@@ -19,7 +16,11 @@ polish_report(
   output_file,
   title = "GlySmith report",
   open = interactive(),
-  use_ai = FALSE
+  use_ai = FALSE,
+  ai_provider = getOption("glysmith.ai_provider", "deepseek"),
+  ai_model = getOption("glysmith.ai_model", NULL),
+  ai_api_key = getOption("glysmith.ai_api_key", NULL),
+  ai_base_url = getOption("glysmith.ai_base_url", NULL)
 )
 ```
 
@@ -43,9 +44,33 @@ polish_report(
 
 - use_ai:
 
-  Whether to polish the report text, organize sections, and generate
-  plot descriptions using AI (deepseek-chat and deepseek-vision).
-  Default is FALSE.
+  Whether to polish the report text, organize sections, generate plot
+  descriptions, and add a summary using AI with the configured `ellmer`
+  provider. Default is FALSE.
+
+- ai_provider:
+
+  AI provider passed to `ellmer` when `use_ai = TRUE`. One of
+  "deepseek", "openai", "anthropic", "gemini", "openrouter", or
+  "openai_compatible". Defaults to
+  `getOption("glysmith.ai_provider", "deepseek")`.
+
+- ai_model:
+
+  AI model to use when `use_ai = TRUE`. Defaults to
+  `getOption("glysmith.ai_model")`, or "deepseek-chat" for DeepSeek and
+  the provider default for other providers.
+
+- ai_api_key:
+
+  API key for the selected provider. If `NULL`, the provider specific
+  environment variable is used. Defaults to
+  `getOption("glysmith.ai_api_key")`.
+
+- ai_base_url:
+
+  Optional base URL for custom or OpenAI-compatible endpoints. Defaults
+  to `getOption("glysmith.ai_base_url")`.
 
 ## Value
 
@@ -54,110 +79,10 @@ The normalized path to the generated HTML file.
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
-#> ℹ Identification overview
-#> ✔ Identification overview [804ms]
-#> 
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Removing variables with too many missing values ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ℹ No QC samples found. Using all samples.
-#> ℹ Preprocessing
-#> ℹ Applying preset "discovery"...
-#> ℹ Preprocessing
-#> ℹ Total removed: 10 (14.93%) variables.
-#> ℹ Preprocessing
-#> ✔ Variable removal completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Normalizing data ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ℹ No QC samples found. Using default normalization method based on experiment type.
-#> ℹ Preprocessing
-#> ℹ Experiment type is "glycomics". Using `normalize_median_quotient()` + `normalize_total_area()`.
-#> ℹ Preprocessing
-#> ✔ Normalization completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Normalizing data (Total Area) ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ✔ Total area normalization completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Imputing missing values ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ℹ No QC samples found. Using default imputation method based on sample size.
-#> ℹ Preprocessing
-#> ℹ Sample size > 100, using `impute_miss_forest()`.
-#> ℹ Preprocessing
-#> ✔ Imputation completed.
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ── Correcting batch effects ──
-#> ℹ Preprocessing
-#> 
-#> ℹ Preprocessing
-#> ℹ Batch column  not found in sample_info. Skipping batch correction.
-#> ℹ Preprocessing
-#> ✔ Batch correction completed.
-#> ℹ Preprocessing
-#> ✔ Preprocessing [6s]
-#> 
-#> ℹ QC (post-preprocessing)
-#> ✔ QC (post-preprocessing) [88ms]
-#> 
-#> ℹ Principal component analysis
-#> ✔ Principal component analysis [336ms]
-#> 
-#> ℹ Differential expression analysis (limma)
-#> ℹ Number of groups: 4
-#> ℹ Differential expression analysis (limma)
-#> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential expression analysis (limma)
-#> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential expression analysis (limma)
-#> ✔ Differential expression analysis (limma) [67ms]
-#> 
-#> ℹ Volcano plot
-#> ✔ Volcano plot [477ms]
-#> 
-#> ℹ Heatmap of significant variables
-#> ✔ Heatmap of significant variables [42ms]
-#> 
-#> ℹ Skipping `step_sig_enrich_go()` because input is not a glycoproteomics experiment and input has more than 2 groups.
-#> ℹ Skipping `step_sig_enrich_kegg()` because input is not a glycoproteomics experiment and input has more than 2 groups.
-#> ℹ Skipping `step_sig_enrich_reactome()` because input is not a glycoproteomics experiment and input has more than 2 groups.
-#> ℹ Derived trait calculation
-#> ✔ Derived trait calculation [1.5s]
-#> 
-#> ℹ Differential trait analysis (limma)
-#> ℹ Number of groups: 4
-#> ℹ Differential trait analysis (limma)
-#> ℹ Groups: "H", "M", "Y", and "C"
-#> ℹ Differential trait analysis (limma)
-#> ℹ Pairwise comparisons will be performed, with levels coming first as reference groups.
-#> ℹ Differential trait analysis (limma)
-#> ✔ Differential trait analysis (limma) [53ms]
-#> 
-#> ℹ Heatmap of significant traits
-#> ✔ Heatmap of significant traits [37ms]
-#> 
 polish_report(result, tempfile(fileext = ".html"), open = FALSE)
-#> [1] "/tmp/Rtmplayv3B/file1adf4343f7a9.html"
+} # }
 ```

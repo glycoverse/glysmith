@@ -1,6 +1,7 @@
 # Custom Blueprint
 
 ``` r
+
 library(glysmith)
 ```
 
@@ -11,6 +12,7 @@ what to do. By default,
 runs a default blueprint:
 
 ``` r
+
 blueprint_default()
 #> 
 #> ── Blueprint (13 steps) ──
@@ -48,6 +50,7 @@ with
 [`blueprint()`](https://glycoverse.github.io/glysmith/reference/blueprint.md):
 
 ``` r
+
 bp <- blueprint(
   step_ident_overview(),  # Identification overview
   step_preprocess(),      # Preprocess (normalization, imputation, etc.)
@@ -60,48 +63,53 @@ Now `bp` is ready to go — just pass it as the second argument to
 [`forge_analysis()`](https://glycoverse.github.io/glysmith/reference/forge_analysis.md):
 
 ``` r
+
 res <- forge_analysis(exp, bp)
 ```
 
 Here’s the full lineup of available step functions:
 
-| Function                                                                                                            | Description                                                 | Require Glycan Structure | Experiment Type |
-|:--------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------|:------------------------:|:---------------:|
-| **Preprocessing**                                                                                                   |                                                             |                          |                 |
-| [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md)                   | Summarize the experiment (identification overview)          |            No            |      GP/G       |
-| [`step_plot_qc()`](https://glycoverse.github.io/glysmith/reference/step_plot_qc.md)                                 | Generate quality control plots                              |            No            |      GP/G       |
-| [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md)                           | Preprocess the experiment (normalization, imputation, etc.) |            No            |      GP/G       |
-| [`step_subset_groups()`](https://glycoverse.github.io/glysmith/reference/step_subset_groups.md)                     | Subset the experiment to specific groups                    |            No            |      GP/G       |
-| [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/reference/step_adjust_protein.md)                   | Adjust glycoform quantification by protein abundance        |            No            |       GP        |
-| **Differential Analysis**                                                                                           |                                                             |                          |                 |
-| [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md)                             | Differential expression analysis using limma                |            No            |      GP/G       |
-| [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md)                             | Differential expression analysis using t-test               |            No            |      GP/G       |
-| [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md)                             | Differential expression analysis using ANOVA                |            No            |      GP/G       |
-| [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md)                           | Differential expression analysis using Wilcoxon test        |            No            |      GP/G       |
-| [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md)                         | Differential expression analysis using Kruskal-Wallis test  |            No            |      GP/G       |
-| **Visualization**                                                                                                   |                                                             |                          |                 |
-| [`step_volcano()`](https://glycoverse.github.io/glysmith/reference/step_volcano.md)                                 | Create volcano plot from DEA results                        |            No            |      GP/G       |
-| [`step_heatmap()`](https://glycoverse.github.io/glysmith/reference/step_heatmap.md)                                 | Create heatmap plot                                         |            No            |      GP/G       |
-| [`step_logo()`](https://glycoverse.github.io/glysmith/reference/step_logo.md)                                       | Create logo plot for glycosylation sites                    |            No            |       GP        |
-| [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.md)                         | Boxplots for significant variables from DEA                 |            No            |      GP/G       |
-| **Dimension Reduction**                                                                                             |                                                             |                          |                 |
-| [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md)                                         | Principal Component Analysis                                |            No            |      GP/G       |
-| [`step_tsne()`](https://glycoverse.github.io/glysmith/reference/step_tsne.md)                                       | t-SNE analysis                                              |            No            |      GP/G       |
-| [`step_umap()`](https://glycoverse.github.io/glysmith/reference/step_umap.md)                                       | UMAP analysis                                               |            No            |      GP/G       |
-| [`step_plsda()`](https://glycoverse.github.io/glysmith/reference/step_plsda.md)                                     | Partial Least Squares Discriminant Analysis                 |            No            |      GP/G       |
-| [`step_oplsda()`](https://glycoverse.github.io/glysmith/reference/step_oplsda.md)                                   | Orthogonal Partial Least Squares Discriminant Analysis      |            No            |      GP/G       |
-| **Correlation & Enrichment**                                                                                        |                                                             |                          |                 |
-| [`step_correlation()`](https://glycoverse.github.io/glysmith/reference/step_correlation.md)                         | Pairwise correlation analysis                               |            No            |      GP/G       |
-| [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md)                     | GO enrichment analysis on DE variables                      |            No            |       GP        |
-| [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md)                 | KEGG enrichment analysis on DE variables                    |            No            |       GP        |
-| [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md)         | Reactome enrichment analysis on DE variables                |            No            |       GP        |
-| **Advanced Analysis**                                                                                               |                                                             |                          |                 |
-| [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md)                     | Calculate glycan derived traits                             |         **Yes**          |      GP/G       |
-| [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md) | Quantify dynamic glycan motifs                              |         **Yes**          |      GP/G       |
-| [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md)   | Quantify N-glycan branch motifs                             |         **Yes**          |      GP/G       |
-| [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md)                                         | ROC analysis for biomarker discovery                        |            No            |      GP/G       |
-| **Survival Analysis**                                                                                               |                                                             |                          |                 |
-| [`step_cox()`](https://glycoverse.github.io/glysmith/reference/step_cox.md)                                         | Cox proportional hazards model                              |            No            |      GP/G       |
+| Function | Description | Require Glycan Structure | Experiment Type |
+|:---|:---|:--:|:--:|
+| **Preprocessing** |  |  |  |
+| [`step_ident_overview()`](https://glycoverse.github.io/glysmith/reference/step_ident_overview.md) | Summarize the experiment (identification overview) | No | GP/G |
+| [`step_plot_qc()`](https://glycoverse.github.io/glysmith/reference/step_plot_qc.md) | Generate quality control plots | No | GP/G |
+| [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md) | Preprocess the experiment (normalization, imputation, etc.) | No | GP/G |
+| [`step_subset_groups()`](https://glycoverse.github.io/glysmith/reference/step_subset_groups.md) | Subset the experiment to specific groups | No | GP/G |
+| [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/reference/step_adjust_protein.md) | Adjust glycoform quantification by protein abundance | No | GP |
+| **Differential Analysis** |  |  |  |
+| [`step_dea_limma()`](https://glycoverse.github.io/glysmith/reference/step_dea_limma.md) | Differential expression analysis using limma | No | GP/G |
+| [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/reference/step_dea_ttest.md) | Differential expression analysis using t-test | No | GP/G |
+| [`step_dea_anova()`](https://glycoverse.github.io/glysmith/reference/step_dea_anova.md) | Differential expression analysis using ANOVA | No | GP/G |
+| [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/reference/step_dea_wilcox.md) | Differential expression analysis using Wilcoxon test | No | GP/G |
+| [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/reference/step_dea_kruskal.md) | Differential expression analysis using Kruskal-Wallis test | No | GP/G |
+| **Visualization** |  |  |  |
+| [`step_volcano()`](https://glycoverse.github.io/glysmith/reference/step_volcano.md) | Create volcano plot from DEA results | No | GP/G |
+| [`step_heatmap()`](https://glycoverse.github.io/glysmith/reference/step_heatmap.md) | Create heatmap plot | No | GP/G |
+| [`step_logo()`](https://glycoverse.github.io/glysmith/reference/step_logo.md) | Create logo plot for glycosylation sites | No | GP |
+| [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/reference/step_sig_boxplot.md) | Boxplots for significant variables from DEA | No | GP/G |
+| **Dimension Reduction** |  |  |  |
+| [`step_pca()`](https://glycoverse.github.io/glysmith/reference/step_pca.md) | Principal Component Analysis | No | GP/G |
+| [`step_tsne()`](https://glycoverse.github.io/glysmith/reference/step_tsne.md) | t-SNE analysis | No | GP/G |
+| [`step_umap()`](https://glycoverse.github.io/glysmith/reference/step_umap.md) | UMAP analysis | No | GP/G |
+| [`step_plsda()`](https://glycoverse.github.io/glysmith/reference/step_plsda.md) | Partial Least Squares Discriminant Analysis | No | GP/G |
+| [`step_oplsda()`](https://glycoverse.github.io/glysmith/reference/step_oplsda.md) | Orthogonal Partial Least Squares Discriminant Analysis | No | GP/G |
+| **Correlation & Enrichment** |  |  |  |
+| [`step_correlation()`](https://glycoverse.github.io/glysmith/reference/step_correlation.md) | Pairwise correlation analysis | No | GP/G |
+| [`step_sig_enrich_go()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_go.md) | GO enrichment analysis on DE variables | No | GP |
+| [`step_sig_enrich_kegg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_kegg.md) | KEGG enrichment analysis on DE variables | No | GP |
+| [`step_sig_enrich_reactome()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_reactome.md) | Reactome enrichment analysis on DE variables | No | GP |
+| [`step_sig_enrich_ncg()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_ncg.md) | NCG enrichment analysis on DE variables | No | GP |
+| [`step_sig_enrich_wp()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_wp.md) | WikiPathways enrichment analysis on DE variables | No | GP |
+| [`step_sig_enrich_do()`](https://glycoverse.github.io/glysmith/reference/step_sig_enrich_do.md) | Disease Ontology enrichment analysis on DE variables | No | GP |
+| **Advanced Analysis** |  |  |  |
+| [`step_infer_structure()`](https://glycoverse.github.io/glysmith/reference/step_infer_structure.md) | Infer glycan structures from glycan compositions | No | GP/G |
+| [`step_derive_traits()`](https://glycoverse.github.io/glysmith/reference/step_derive_traits.md) | Calculate glycan derived traits | **Yes** | GP/G |
+| [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_dynamic_motifs.md) | Quantify dynamic glycan motifs | **Yes** | GP/G |
+| [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/reference/step_quantify_branch_motifs.md) | Quantify N-glycan branch motifs | **Yes** | GP/G |
+| [`step_roc()`](https://glycoverse.github.io/glysmith/reference/step_roc.md) | ROC analysis for biomarker discovery | No | GP/G |
+| **Survival Analysis** |  |  |  |
+| [`step_cox()`](https://glycoverse.github.io/glysmith/reference/step_cox.md) | Cox proportional hazards model | No | GP/G |
 
 *GP: glycoproteomics, G: glycomics*
 
@@ -114,6 +122,7 @@ needs results from a DEA step like
 So this blueprint won’t work:
 
 ``` r
+
 blueprint(  # this will error
   step_preprocess(),      # Preprocess (normalization, imputation, etc.)
   step_volcano(),         # Volcano plot
@@ -131,6 +140,7 @@ So as long as you run one of these DEA steps before
 you’re good to go:
 
 ``` r
+
 bp <- blueprint(
   step_preprocess(),      # Preprocess (normalization, imputation, etc.)
   step_dea_ttest(),       # DEA with t-test
@@ -143,6 +153,7 @@ all intermediate data gets stored along the way, so the blueprint is
 valid as long as the required data exists somewhere upstream:
 
 ``` r
+
 bp <- blueprint(
   step_preprocess(),      # Preprocess (normalization, imputation, etc.)
   step_dea_ttest(),       # DEA with t-test (generates data required by `step_volcano()`)
@@ -162,6 +173,7 @@ data like “sig_exp” instead — just remember you’ll need to run a DEA
 step first:
 
 ``` r
+
 bp <- blueprint(
   step_preprocess(),             # Preprocess (normalization, imputation, etc.)
   step_dea_limma(),              # DEA with limma
@@ -177,6 +189,7 @@ can grab what they need.
 Let’s see another example:
 
 ``` r
+
 bp <- blueprint(
   # Data required: `exp`
   # Data generated: `exp` (overwrite)
@@ -206,6 +219,7 @@ what it produces. Let’s look at a more complex example to cement this.
 Try tracing through the dataflow yourself:
 
 ``` r
+
 bp <- blueprint(
   step_ident_overview(),
   step_preprocess(),
@@ -235,6 +249,7 @@ if you want to compare different DEA methods? You might try something
 like this:
 
 ``` r
+
 blueprint(
   step_preprocess(),
   step_dea_limma(),
@@ -260,6 +275,7 @@ steps in
 [`br()`](https://glycoverse.github.io/glysmith/reference/br.md):
 
 ``` r
+
 bp <- blueprint(
   step_preprocess(),
   br("limma", step_dea_limma(), step_volcano()),

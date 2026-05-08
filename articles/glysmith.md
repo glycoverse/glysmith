@@ -18,6 +18,7 @@ to install it separately, even if you have installed the meta package
 `glycoverse`.*
 
 ``` r
+
 library(glysmith)
 library(glyexp)
 ```
@@ -40,6 +41,7 @@ glyread](https://glycoverse.github.io/glyread/articles/glyread.html) or
 Experiments](https://glycoverse.github.io/glyexp/articles/create-exp.html).
 
 ``` r
+
 real_experiment
 #> 
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
@@ -52,6 +54,7 @@ Now, let’s run the default analysis pipeline with just a single line of
 code.
 
 ``` r
+
 result <- forge_analysis(real_experiment)
 result
 ```
@@ -72,11 +75,11 @@ That’s it! You’ve completed the following steps in one go:
 - Generated a heatmap for significant glycoforms using
   [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
 - Conducted GO enrichment analysis using
-  [`glystats::gly_enrich_go()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glyfun::enrich_ora_go()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_go.html).
 - Performed KEGG enrichment analysis using
-  [`glystats::gly_enrich_kegg()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glyfun::enrich_ora_kegg()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_kegg.html).
 - Performed Reactome enrichment analysis using
-  [`glystats::gly_enrich_reactome()`](https://glycoverse.github.io/glystats/reference/gly_enrich_go.html).
+  [`glyfun::enrich_ora_reactome()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_reactome.html).
 - Derived site-specific traits using
   [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).
 - Conducted differential trait analysis with
@@ -92,6 +95,7 @@ Once you have your results, what’s next? You can export all tables and
 plots to a target directory in just a single line of code.
 
 ``` r
+
 quench_result(result, "path/to/save")
 ```
 
@@ -114,6 +118,7 @@ can use
 to generate a report directly from the results.
 
 ``` r
+
 polish_report(result, "path/to/save/report.html")
 ```
 
@@ -151,6 +156,7 @@ via
 [`blueprint_default()`](https://glycoverse.github.io/glysmith/reference/blueprint_default.md).
 
 ``` r
+
 blueprint_default()
 #> 
 #> ── Blueprint (13 steps) ──
@@ -177,6 +183,7 @@ instance, if you’d just like to perform differential expression analysis
 and plot the volcano plot, you could do:
 
 ``` r
+
 bp <- blueprint(
   step_preprocess(),
   step_dea_limma(),
@@ -189,6 +196,7 @@ result
 You can also save a blueprint to a file and reload it later:
 
 ``` r
+
 write_blueprint(bp, "path/to/save/bp.rds")
 bp <- read_blueprint("path/to/save/bp.rds")
 ```
