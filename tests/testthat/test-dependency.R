@@ -56,6 +56,15 @@ test_that("dependency repos preserve existing repositories", {
   )
 })
 
+test_that("dependency repos handle unnamed repository vectors", {
+  expect_no_error(
+    repos <- dependency_repos(c("https://cloud.r-project.org"))
+  )
+
+  expect_equal(unname(repos["glycoverse"]), "https://glycoverse.r-universe.dev")
+  expect_equal(unname(repos["CRAN"]), "https://cloud.r-project.org")
+})
+
 test_that("check_glysmith_deps uses only blueprint packages", {
   bp <- blueprint(
     step(

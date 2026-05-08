@@ -101,7 +101,7 @@ collect_blueprint_packages <- function(blueprint) {
 
   blueprint |>
     purrr::map("packages", .default = character(0)) |>
-    purrr::list_c(ptype = character()) |>
+    unlist(use.names = FALSE) |>
     unique() |>
     sort()
 }
@@ -204,6 +204,10 @@ dependency_repos <- function(repos = getOption("repos")) {
 
   repos <- repos[repo_names != "glycoverse"]
   repo_names <- names(repos)
+  if (is.null(repo_names)) {
+    repo_names <- rep("", length(repos))
+  }
+
   if (!"CRAN" %in% repo_names) {
     repos <- c(repos, CRAN = "https://cloud.r-project.org")
   } else if (identical(unname(repos[["CRAN"]]), "@CRAN@")) {
