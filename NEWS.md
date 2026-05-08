@@ -1,4 +1,4 @@
-# glysmith (development version)
+# glysmith 0.11.0
 
 ## New features
 
