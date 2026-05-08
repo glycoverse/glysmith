@@ -88,7 +88,7 @@ step_cox <- function(
       )
     },
     require = on,
-    packages = c("glyexp", "glystats", "survival"),
+    packages = c("glystats", "survival"),
     signature = signature,
     report = function(x) {
       .report_cox(x, id = id, on = on)

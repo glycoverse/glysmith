@@ -174,7 +174,7 @@ step_logo <- function(
       )
     },
     require = on,
-    packages = c("glyexp", "glyvis", "ggseqlogo", "UniProt.ws"),
+    packages = c("glyvis", "ggseqlogo", "UniProt.ws"),
     signature = signature
   )
 }
@@ -340,7 +340,7 @@ step_sig_boxplot <- function(
       )
     },
     require = on,
-    packages = c("glyexp", "glystats", "glyvis"),
+    packages = c("glystats", "glyvis"),
     signature = signature
   )
 }
