@@ -55,21 +55,17 @@ quench_result <- function(
       # New format: list with plot, width, height
       width <- plot_obj$width %||% plot_width
       height <- plot_obj$height %||% plot_height
-      # Force evaluation to handle lazy promises on older R versions
-      plot_to_save <- ggplot2::ggplotGrob(plot_obj$plot)
       .quietly(ggplot2::ggsave(
         file_path,
-        plot_to_save,
+        plot = plot_obj$plot,
         width = width,
         height = height
       ))
     } else {
       # Legacy format: just the ggplot object
-      # Force evaluation to handle lazy promises on older R versions
-      plot_to_save <- ggplot2::ggplotGrob(cast_plot(x, plot))
       .quietly(ggplot2::ggsave(
         file_path,
-        plot_to_save,
+        plot = cast_plot(x, plot),
         width = plot_width,
         height = plot_height
       ))
