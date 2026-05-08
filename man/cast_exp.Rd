@@ -32,11 +32,13 @@ cast_data(x, name = NULL)
 Helper functions to get processed experiment, plots, tables or data from a glysmith result object.
 }
 \examples{
+\dontrun{
 library(glyexp)
 exp <- real_experiment2
 result <- forge_analysis(exp)
 cast_exp(result)
 cast_table(result)
 cast_table(result, "summary")
+}
 
 }

@@ -34,12 +34,14 @@ print.glysmith_result <- function(x, ...) {
 #'   - `cast_table()`: a [tibble::tibble()].
 #'   - `cast_data()`: can be any R object.
 #' @examples
+#' \dontrun{
 #' library(glyexp)
 #' exp <- real_experiment2
 #' result <- forge_analysis(exp)
 #' cast_exp(result)
 #' cast_table(result)
 #' cast_table(result, "summary")
+#' }
 #'
 #' @export
 cast_exp <- function(x) {
