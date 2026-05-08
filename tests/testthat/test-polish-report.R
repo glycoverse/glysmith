@@ -1,6 +1,32 @@
+test_polish_result <- function() {
+  bp <- structure(
+    list(
+      preprocess = list(
+        id = "preprocess",
+        label = "Preprocessing",
+        report = function(x) "Preprocess report."
+      )
+    ),
+    class = "glysmith_blueprint"
+  )
+  structure(
+    list(
+      exp = list(),
+      data = list(),
+      plots = list(),
+      tables = list(),
+      meta = list(
+        steps = "preprocess",
+        explanation = list()
+      ),
+      blueprint = bp
+    ),
+    class = "glysmith_result"
+  )
+}
+
 test_that("polish_report works", {
-  exp <- glyexp::real_experiment2
-  suppressMessages(result <- forge_analysis(exp))
+  result <- test_polish_result()
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
   suppressMessages(polish_report(result, output_file, open = FALSE))
@@ -100,10 +126,8 @@ test_that("polish_report raises an error when API key is not set", {
   skip_on_ci()
   skip_on_cran()
   local_mocked_bindings(.ask_ai = function(...) "AI response")
-  exp <- glyexp::real_experiment2
-  bp <- blueprint(step_preprocess())
   withr::local_envvar(c(DEEPSEEK_API_KEY = ""))
-  suppressMessages(result <- forge_analysis(exp, blueprint = bp))
+  result <- test_polish_result()
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
   expect_error(
@@ -123,10 +147,8 @@ test_that("polish_report captures AI errors", {
     .ask_ai = function(...) stop("AI error"),
     .ask_ai_multimodal = function(...) "AI plot description"
   )
-  exp <- glyexp::real_experiment2
-  bp <- blueprint(step_preprocess())
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_api_key"))
-  suppressMessages(result <- forge_analysis(exp, blueprint = bp))
+  result <- test_polish_result()
   tmp_dir <- withr::local_tempdir()
   output_file <- fs::path(tmp_dir, "polish_report.html")
   warn_msgs <- character(0)
