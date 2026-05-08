@@ -442,8 +442,7 @@ step_sig_enrich <- function(
 #' @returns A list with `check` and `reason`.
 #' @noRd
 .condition_sig_enrich <- function(ctx) {
-  check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) ==
-    "glycoproteomics"
+  check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics"
   reason1 <- "input is not a glycoproteomics experiment"
   check2 <- length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2
   reason2 <- "input has more than 2 groups"

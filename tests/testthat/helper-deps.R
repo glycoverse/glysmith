@@ -1,4 +1,6 @@
-skip_if_glysmith_deps_not_installed <- function(blueprint = blueprint_default()) {
+skip_if_glysmith_deps_not_installed <- function(
+  blueprint = blueprint_default()
+) {
   pkgs <- collect_blueprint_packages(blueprint)
   purrr::walk(pkgs, testthat::skip_if_not_installed)
 }

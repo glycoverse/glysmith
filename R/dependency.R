@@ -53,7 +53,9 @@ check_glysmith_deps <- function(
           rlang::check_installed(pkgs)
         }
       } else {
-        cli::cli_alert_success("All packages required by the blueprint are installed.")
+        cli::cli_alert_success(
+          "All packages required by the blueprint are installed."
+        )
       }
       invisible(TRUE)
     },
@@ -74,7 +76,9 @@ check_glysmith_deps <- function(
         cli::cli_inform(format_dependency_install_hint(missing))
         invisible(FALSE)
       } else {
-        cli::cli_alert_success("All packages required by the blueprint are installed.")
+        cli::cli_alert_success(
+          "All packages required by the blueprint are installed."
+        )
         invisible(TRUE)
       }
     }
