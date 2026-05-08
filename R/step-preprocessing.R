@@ -100,7 +100,14 @@ step_plot_qc <- function(
 #'
 #' @returns Updated analysis context.
 #' @noRd
-.run_plot_qc <- function(ctx, when, batch_col, rep_col, plot_width, plot_height) {
+.run_plot_qc <- function(
+  ctx,
+  when,
+  batch_col,
+  rep_col,
+  plot_width,
+  plot_height
+) {
   exp <- ctx_get_data(ctx, "exp")
   .run_qc_plots(
     ctx,

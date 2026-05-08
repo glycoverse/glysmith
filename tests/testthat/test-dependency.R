@@ -21,7 +21,11 @@ test_that("blueprint-scoped dependencies exclude unused glycoverse packages", {
 test_that("dependency install hint includes glycoverse r-universe repo", {
   hint <- format_dependency_install_hint(c("glydb", "pROC"))
 
-  expect_true(any(grepl("https://glycoverse.r-universe.dev", hint, fixed = TRUE)))
+  expect_true(any(grepl(
+    "https://glycoverse.r-universe.dev",
+    hint,
+    fixed = TRUE
+  )))
   expect_true(any(grepl("pak::pkg_install", hint, fixed = TRUE)))
   expect_true(any(grepl("glydb", hint, fixed = TRUE)))
   expect_true(any(grepl("pROC", hint, fixed = TRUE)))
