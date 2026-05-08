@@ -9,6 +9,7 @@
 
 ## Minor improvements and bug fixes
 
+* `check_glysmith_deps()` now checks only the packages required by the supplied blueprint, instead of asking users to install every optional dependency. Step-specific glycoverse packages are optional again, with installation guidance for the glycoverse r-universe repository (#17).
 * Enrichment analysis now uses `glyfun` instead of `glystats`, as enrichment analysis functions in `glystats` have been deprecated in favor of `glyfun` (#10).
 
 # glysmith 0.10.1
