@@ -61,22 +61,6 @@ This ensures that no matter if preprocessing is performed or not,
 the "active" experiment is always under the key \code{exp}.
 The previous \code{exp} is saved as \code{raw_exp} for reference.
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Always include this step by default unless the user explicitly excludes it
-or tell you she/he has already performed preprocessing.
-\item Ask for the column name for batch information if not provided.
-\item Ask for QC samples in the experiment if not provided. If so, ask the group name of the QC samples.
-Explain to the user that if it is "QC" for example, the samples with "QC" in the \code{group_col} column will be considered as QC samples.
-And these QC samples will be used for choosing the best normalization and imputation methods.
-Also mention that QC samples will be excluded after preprocessing.
-\item If the user intents to perform biomarker related analysis, set \code{remove_preset} to "biomarker".
-\item Use default values for other arguments unless the user explicitly specifies otherwise.
-}
-}
-
 \examples{
 step_preprocess()
 step_preprocess(remove_preset = "discovery")

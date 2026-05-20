@@ -34,13 +34,6 @@
 #' Plots generated (with suffixes):
 #' - `correlation`: A correlation matrix heatmap
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step to explore relationships between variables or samples.
-#' - Be careful to use when sample size or variable number is large (> 50).
-#'   Before using this step for large data, ask the user if they want to proceed.
-#'
 #' @param on Name of the experiment to run correlation analysis on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
 #'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".

@@ -32,16 +32,6 @@ Data generated:
 
 This step overwrites \code{exp} in the context with the subset experiment.
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Use this step when the experiment has more than 2 groups but the user wants a specific two-group comparison.
-\item Ask the user which two groups to compare, and place this step before DEA and enrichment steps.
-\item Use the order of the user-provided groups to set factor levels.
-}
-}
-
 \examples{
 step_subset_groups(groups = c("H", "C"))
 }

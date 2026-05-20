@@ -80,17 +80,6 @@ Tables generated:
 \item \code{branch_dma}: A table containing the DMA result (if \code{on = "branch_motif_exp"})
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step only if the user explicitly asks for Wilcoxon test.
-\item If the experiment has more than 2 groups but the user wants a specific two-group
-comparison, ask which two groups to compare and include
-\code{step_subset_groups(groups = c("A", "B"))} before this step.
-}
-}
-
 \examples{
 step_dea_wilcox()
 step_dea_wilcox(on = "trait_exp")  # Differential trait analysis

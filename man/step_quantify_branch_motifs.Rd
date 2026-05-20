@@ -35,15 +35,6 @@ Tables generated:
 \item \code{branch_motifs}: A table containing the quantified branch motifs.
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step if motif analysis is needed specifically for N-glycans.
-\item This step should be followed by DEA and visualization steps.
-}
-}
-
 \examples{
 step_quantify_branch_motifs()
 }

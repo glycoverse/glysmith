@@ -19,17 +19,6 @@
 #' - `inferred_structures`: A table containing the inferred structure for each
 #'   original variable and whether inference succeeded.
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step when the user requests structure-aware analysis but the
-#'   experiment has glycan compositions and no glycan structures.
-#' - This step should be placed before [step_derive_traits()],
-#'   [step_quantify_dynamic_motifs()], or [step_quantify_branch_motifs()].
-#' - Mention that variables without inferred structures are removed.
-#' - Always ask for species restriction to improve inference accuracy,
-#'   but allow users to skip it if they want.
-#'
 #' @param species Species name used to restrict the glycan structure database.
 #'   Default is `NULL`, which does not restrict by species.
 #' @param structure_level Structure level passed to [glydb::glydb_structures()].
@@ -184,12 +173,6 @@ step_infer_structure <- function(
 #' Tables generated:
 #' - `derived_traits`: A table containing the derived traits.
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step by default if the experiment has glycan structures.
-#' - After this step, it should be followed by the DEA and visualization steps.
-#'
 #' @inheritParams glydet::derive_traits
 #'
 #' @return A `glysmith_step` object.
@@ -313,12 +296,6 @@ step_derive_traits <- function(
 #' Tables generated:
 #' - `dynamic_motifs`: A table containing the quantified motifs.
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step if motif analysis is needed for non-N-glycans or when comprehensive motif extraction is desired.
-#' - This step should be followed by DEA and visualization steps.
-#'
 #' @param max_size Maximum size of motifs to extract. Default is 3.
 #' @param method Method for motif quantification ("relative" or "absolute"). Default is "relative".
 #'
@@ -424,12 +401,6 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
 #'
 #' Tables generated:
 #' - `branch_motifs`: A table containing the quantified branch motifs.
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step if motif analysis is needed specifically for N-glycans.
-#' - This step should be followed by DEA and visualization steps.
 #'
 #' @param method Method for motif quantification ("relative" or "absolute"). Default is "relative".
 #'
@@ -547,15 +518,6 @@ step_quantify_branch_motifs <- function(method = "relative") {
 #'
 #' Plots generated:
 #' - `roc_curves`: ROC curves for the top 10 variables
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step if the user explicitly asks for ROC analysis,
-#'   or if he/she mentions "biomarker(s)" in the prompt.
-#' - If the experiment has more than 2 groups but the user wants a specific two-group
-#'   comparison, ask which two groups to compare and include
-#'   `step_subset_groups(groups = c("A", "B"))` before this step.
 #'
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 5.

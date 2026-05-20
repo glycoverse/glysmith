@@ -58,15 +58,6 @@ Plots generated:
 When \code{when = "pre"}, plots are prefixed with \code{qc_pre_} to distinguish from post-QC plots.
 When \code{when = "post"} or \code{NULL}, plots use the standard \code{qc_} prefix.
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item By default, include this step ONLY after \code{step_preprocess()}.
-\item You MUST provide the when parameter to specify when the QC is being run.
-}
-}
-
 \examples{
 step_plot_qc(when = "pre")
 step_plot_qc(when = "post")

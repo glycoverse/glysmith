@@ -56,15 +56,6 @@ Plots generated:
 \item \code{sig_branch_motif_heatmap}: A heatmap plot (if \code{on = "sig_branch_motif_exp"})
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step if needed.
-\item It is recommended to use this step on significant results (e.g. \code{on = "sig_exp"}) if available.
-}
-}
-
 \examples{
 step_heatmap()
 step_heatmap(on = "sig_exp")

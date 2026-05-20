@@ -82,16 +82,6 @@ Plots generated (with suffixes):
 \item \code{correlation}: A correlation matrix heatmap
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step to explore relationships between variables or samples.
-\item Be careful to use when sample size or variable number is large (> 50).
-Before using this step for large data, ask the user if they want to proceed.
-}
-}
-
 \examples{
 step_correlation()
 step_correlation(on = "sig_exp")

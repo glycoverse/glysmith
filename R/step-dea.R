@@ -37,11 +37,6 @@
 #' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
 #' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Use this step to perform DEA by default, unless the user asks for other methods.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -130,14 +125,6 @@ step_dea_limma <- function(
 #' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
 #' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only if the user explicitly asks for t-test.
-#' - If the experiment has more than 2 groups but the user wants a specific two-group
-#'   comparison, ask which two groups to compare and include
-#'   `step_subset_groups(groups = c("A", "B"))` before this step.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -217,11 +204,6 @@ step_dea_ttest <- function(
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
 #' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only if the user explicitly asks for ANOVA.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
@@ -305,14 +287,6 @@ step_dea_anova <- function(
 #' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
 #' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only if the user explicitly asks for Wilcoxon test.
-#' - If the experiment has more than 2 groups but the user wants a specific two-group
-#'   comparison, ask which two groups to compare and include
-#'   `step_subset_groups(groups = c("A", "B"))` before this step.
-#'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.
 #'   Use `"trait_exp"` for differential trait analysis.
@@ -393,11 +367,6 @@ step_dea_wilcox <- function(
 #' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
 #' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
 #' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only if the user explicitly asks for Kruskal-Wallis test.
 #'
 #' @param on Name of the experiment data in `ctx$data` to run analysis on.
 #'   Default is `"exp"` for differential expression analysis.

@@ -48,19 +48,6 @@ Tables generated:
 \item \code{go_enrich}: A table containing the GO enrichment results.
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step by default if DEA is performed on glycoproteomics data.
-\item Leave \code{universe} to "all" (by default) unless the user explicitly mentions that
-the background should be the detected variables in \code{exp}.
-\item If the experiment has more than 2 groups but the user wants enrichment for a
-specific two-group comparison, ask which two groups to compare and include
-\code{step_subset_groups(groups = c("A", "B"))} before DEA and enrichment steps.
-}
-}
-
 \examples{
 step_sig_enrich_go()
 step_sig_enrich_go(plot_type = "barplot")

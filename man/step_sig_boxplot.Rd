@@ -80,16 +80,6 @@ Plots generated:
 \item \code{sig_branch_motif_boxplot}: A boxplot of significant branch motifs (if \code{on = "sig_branch_motif_exp"})
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step after DEA steps to visualize the significant variables.
-\item This step is particularly useful for understanding the expression patterns
-of the most differentially expressed features across groups.
-}
-}
-
 \examples{
 step_sig_boxplot()
 step_sig_boxplot(n_top = 12)

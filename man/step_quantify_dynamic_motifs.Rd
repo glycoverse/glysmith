@@ -37,15 +37,6 @@ Tables generated:
 \item \code{dynamic_motifs}: A table containing the quantified motifs.
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step if motif analysis is needed for non-N-glycans or when comprehensive motif extraction is desired.
-\item This step should be followed by DEA and visualization steps.
-}
-}
-
 \examples{
 step_quantify_dynamic_motifs()
 }

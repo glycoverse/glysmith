@@ -41,18 +41,6 @@ Plots generated:
 \item \code{roc_curves}: ROC curves for the top 10 variables
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step if the user explicitly asks for ROC analysis,
-or if he/she mentions "biomarker(s)" in the prompt.
-\item If the experiment has more than 2 groups but the user wants a specific two-group
-comparison, ask which two groups to compare and include
-\code{step_subset_groups(groups = c("A", "B"))} before this step.
-}
-}
-
 \examples{
 step_roc()
 }
