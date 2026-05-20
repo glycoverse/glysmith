@@ -81,6 +81,7 @@ inquire_blueprint <- function(
   retry_count <- 0L
   question_count <- 0L
   max_questions <- 20L
+  show_retry_feedback <- FALSE
 
   # Print fun fact only once at the start
   .print_ai_thinking(
@@ -91,12 +92,13 @@ inquire_blueprint <- function(
   )
 
   repeat {
-    if (retry_count > 0) {
+    if (show_retry_feedback) {
       cli::cli_text("\n")
       cli::cli_alert_info(
         "Attempt {retry_count}/{max_retries}: Retrying with feedback..."
       )
       cli::cli_text("\n")
+      show_retry_feedback <- FALSE
     }
 
     # Call AI
@@ -142,6 +144,7 @@ inquire_blueprint <- function(
     error_msg <- result$error
     if (retry_count < max_retries) {
       retry_count <- retry_count + 1L
+      show_retry_feedback <- TRUE
       current_prompt <- paste0(
         "The previous blueprint was invalid:\n",
         error_msg,

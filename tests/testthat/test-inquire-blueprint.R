@@ -297,6 +297,54 @@ test_that("inquire_blueprint retries on invalid output", {
   expect_true(error_feedback_received)
 })
 
+test_that("inquire_blueprint prints retry feedback only for invalid outputs", {
+  skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
+
+  call_count <- 0
+  answers <- c("exploring structural features", "all four groups")
+
+  mock_chat_fun <- function(prompt) {
+    call_count <<- call_count + 1
+    switch(
+      call_count,
+      "invalid_code",
+      '{"question":"What is your main research objective?"}',
+      '{"question":"Which groups do you want to compare?"}',
+      '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+    )
+  }
+
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  local_mocked_bindings(
+    .ask_single_question = function(question) {
+      answer <- answers[[1]]
+      answers <<- answers[-1]
+      answer
+    },
+    .package = "glysmith"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "fake-key"))
+
+  messages <- character(0)
+  withCallingHandlers(
+    bp <- inquire_blueprint("test description", max_retries = 2),
+    message = function(cnd) {
+      messages <<- c(messages, conditionMessage(cnd))
+      invokeRestart("muffleMessage")
+    }
+  )
+
+  expect_s3_class(bp, "glysmith_blueprint")
+  expect_equal(call_count, 4)
+  expect_equal(sum(grepl("Retrying with feedback", messages)), 1)
+})
+
 test_that("inquire_blueprint reflects full error details back to LLM", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()
