@@ -559,6 +559,16 @@ test_that("inquire_blueprint uses internal step prompts", {
   expect_true(grepl("USAGE: Include this step if needed", block, fixed = TRUE))
 })
 
+test_that("internal step prompts are plain system-prompt text", {
+  prompt_text <- paste(glysmith:::.step_ai_prompts(), collapse = "\n")
+
+  expect_false(grepl("\\[step_[a-z0-9_]+\\(\\)\\]", prompt_text))
+  expect_false(grepl("With out", prompt_text, fixed = TRUE))
+  expect_false(grepl("Uniprot", prompt_text, fixed = TRUE))
+  expect_false(grepl("users explicitly asks", prompt_text, fixed = TRUE))
+  expect_false(grepl("intents", prompt_text, fixed = TRUE))
+})
+
 test_that("step AI prompts are not exposed in generated documentation", {
   skip_if_not_installed("tools")
   rd_db <- glysmith:::.get_rd_database()
