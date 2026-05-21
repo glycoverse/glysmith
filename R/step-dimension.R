@@ -33,11 +33,6 @@
 #' - `pca_loadings`: A PCA loading plot (if `loadings = TRUE`)
 #' - `pca_screeplot`: A PCA screeplot (if `screeplot = TRUE`)
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step if needed.
-#'
 #' @param on Name of the experiment to run PCA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
 #'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
@@ -209,11 +204,6 @@ step_pca <- function(
 #' Plots generated (with suffixes):
 #' - `tsne`: The t-SNE plot
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only when the user explicitly asks for t-SNE.
-#'
 #' @param on Name of the experiment to run t-SNE on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
 #'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
@@ -341,11 +331,6 @@ step_tsne <- function(
 #'
 #' Plots generated (with suffixes):
 #' - `umap`: The UMAP plot
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only when the user explicitly asks for UMAP.
 #'
 #' @param on Name of the experiment to run UMAP on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
@@ -477,11 +462,6 @@ step_umap <- function(
 #' - `plsda_loadings`: A PLS-DA loading plot
 #' - `plsda_variance`: A PLS-DA variance (scree) plot
 #' - `plsda_vip`: A PLS-DA VIP score plot
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step when users explicitly asks for PLS-DA.
 #'
 #' @param on Name of the experiment to run PLS-DA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
@@ -724,13 +704,6 @@ step_plsda <- function(
 #' - `oplsda_loadings`: An OPLS-DA loading plot
 #' - `oplsda_variance`: An OPLS-DA variance (scree) plot
 #' - `oplsda_vip`: An OPLS-DA VIP score plot
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step when users explicitly asks for OPLS-DA.
-#' - This step only works with binary classification (exactly 2 groups).
-#'   If multiple groups are found, ask if `step_subset_groups()` should be run first.
 #'
 #' @param on Name of the experiment to run OPLS-DA on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",

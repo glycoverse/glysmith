@@ -15,11 +15,6 @@
 #' Plots generated:
 #' - `volcano`: A volcano plot
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Always include this step by default if DEA is performed, and the DEA method is not ANOVA or Kruskal-Wallis.
-#'
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 6.
 #' @inheritParams glyvis::plot_volcano

@@ -58,16 +58,6 @@ Plots generated:
 \item \code{sig_logo}: A logo plot (if \code{on = "sig_exp"})
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step if the user explicitly asks for logo plot.
-\item If used, ask user if a FASTA file is provided.
-Tell the user that if not, protein sequences will be fetched from Uniprot automatically.
-}
-}
-
 \examples{
 step_logo()
 step_logo(fasta = "proteins.fasta")

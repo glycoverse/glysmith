@@ -81,14 +81,6 @@ Plots generated (with suffixes):
 \item \code{pca_screeplot}: A PCA screeplot (if \code{screeplot = TRUE})
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step if needed.
-}
-}
-
 \examples{
 step_pca()
 }

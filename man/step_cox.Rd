@@ -75,16 +75,6 @@ Tables generated (with suffixes):
 }
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step when users want to identify variables associated with survival outcomes.
-\item This step requires survival data (time and event columns) in the sample information.
-\item Always ask for the column names for survival data, unless explicitly provided.
-}
-}
-
 \examples{
 step_cox()
 step_cox(time_col = "survival_time", event_col = "death")

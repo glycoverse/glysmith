@@ -44,21 +44,6 @@ This ensures that no matter if adjustment is performed or not,
 the "active" experiment is always under the key \code{exp}.
 The previous \code{exp} is saved as \code{unadj_exp} for reference.
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step only if the user explicitly asks for protein adjustment.
-\item If protein adjustment is needed and the \code{pro_expr_path} is not provided, ask for it and explain how to prepare the file:
-\itemize{
-\item CSV/TSV: first column is protein accessions; remaining columns are sample names.
-\item RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.
-}
-\item You MUST provide a detailed explanation of how to prepare the file.
-\item With out the file, the step is invalid.
-}
-}
-
 \examples{
 fake_pro_expr_mat <- matrix(rnorm(100), nrow = 10, ncol = 10)
 rownames(fake_pro_expr_mat) <- paste0("P", seq_len(10))

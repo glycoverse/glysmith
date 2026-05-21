@@ -506,6 +506,7 @@ inquire_blueprint <- function(
 .generate_step_descriptions <- function() {
   steps <- all_steps()
   rd_db <- .get_rd_database()
+  step_prompts <- .step_ai_prompts()
 
   desc_list <- purrr::map_chr(steps, function(step_obj) {
     # Extract function name from signature: step_xxx(...) -> step_xxx
@@ -537,15 +538,9 @@ inquire_blueprint <- function(
         title <- .get_rd_tag_text(rd, "\\title")
         description <- .get_rd_tag_text(rd, "\\description")
         details <- .get_rd_tag_text(rd, "\\details")
-        ai_prompt <- .get_rd_section_text(rd, "AI Prompt")
         desc_text <- paste(description, details)
         # Clean up newlines and excessive spaces
         desc_text <- stringr::str_squish(desc_text)
-        ai_text <- stringr::str_squish(ai_prompt)
-        ai_text <- stringr::str_remove(
-          ai_text,
-          stringr::fixed("This section is for AI in inquire_blueprint() only.")
-        )
 
         # Extract arguments
         args <- .get_rd_arguments(rd)
@@ -567,6 +562,7 @@ inquire_blueprint <- function(
         }
       }
     }
+    ai_text <- step_prompts[[func_name]] %||% ""
 
     # Construct the block
     # - `step_name`

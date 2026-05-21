@@ -36,13 +36,6 @@
 #'   - `hr`: Hazard ratio (exp(coefficient))
 #'   - `p_adj`: Adjusted p-value (if p_adj_method is not NULL)
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step when users want to identify variables associated with survival outcomes.
-#' - This step requires survival data (time and event columns) in the sample information.
-#' - Always ask for the column names for survival data, unless explicitly provided.
-#'
 #' @param on Name of the experiment to run Cox regression on.
 #'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
 #'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".

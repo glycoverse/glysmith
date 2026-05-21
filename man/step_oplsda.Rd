@@ -79,16 +79,6 @@ Plots generated (with suffixes):
 \item \code{oplsda_vip}: An OPLS-DA VIP score plot
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step when users explicitly asks for OPLS-DA.
-\item This step only works with binary classification (exactly 2 groups).
-If multiple groups are found, ask if \code{step_subset_groups()} should be run first.
-}
-}
-
 \examples{
 step_oplsda()
 step_oplsda(pred_i = 1, ortho_i = 1)

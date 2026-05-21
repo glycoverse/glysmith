@@ -76,14 +76,6 @@ Plots generated (with suffixes):
 \item \code{plsda_vip}: A PLS-DA VIP score plot
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step when users explicitly asks for PLS-DA.
-}
-}
-
 \examples{
 step_plsda()
 step_plsda(ncomp = 3)

@@ -532,6 +532,58 @@ test_that("inquire_blueprint includes step parameters in system prompt", {
   expect_true(grepl("`on`", block))
 })
 
+test_that("inquire_blueprint uses internal step prompts", {
+  prompts <- glysmith:::.step_ai_prompts()
+  prompt <- .inquire_blueprint_sys_prompt()
+
+  expect_type(prompts, "character")
+  expect_true("step_pca" %in% names(prompts))
+  expect_setequal(
+    names(prompts),
+    purrr::map_chr(all_steps(), function(x) {
+      stringr::str_extract(x$signature, "^[a-z0-9_]+")
+    })
+  )
+  expect_match(
+    prompts[["step_pca"]],
+    "Include this step if needed",
+    fixed = TRUE
+  )
+
+  block <- regmatches(
+    prompt,
+    regexpr("- `step_pca`[\\s\\S]*?(?=- `step_|$)", prompt, perl = TRUE)
+  )
+
+  expect_true(length(block) > 0)
+  expect_true(grepl("USAGE: Include this step if needed", block, fixed = TRUE))
+})
+
+test_that("internal step prompts are plain system-prompt text", {
+  prompt_text <- paste(glysmith:::.step_ai_prompts(), collapse = "\n")
+
+  expect_false(grepl("\\[step_[a-z0-9_]+\\(\\)\\]", prompt_text))
+  expect_false(grepl("With out", prompt_text, fixed = TRUE))
+  expect_false(grepl("Uniprot", prompt_text, fixed = TRUE))
+  expect_false(grepl("users explicitly asks", prompt_text, fixed = TRUE))
+  expect_false(grepl("intents", prompt_text, fixed = TRUE))
+})
+
+test_that("step AI prompts are not exposed in generated documentation", {
+  skip_if_not_installed("tools")
+  rd_db <- glysmith:::.get_rd_database()
+  if (is.null(rd_db)) {
+    skip("Rd database not available")
+  }
+
+  step_docs <- rd_db[grepl("^step_", names(rd_db))]
+  sections <- purrr::map_chr(step_docs, function(rd) {
+    glysmith:::.get_rd_section_text(rd, "AI Prompt")
+  })
+
+  expect_false(any(nzchar(sections)))
+})
+
 test_that("ask_single_question errors when non-interactive", {
   skip_if(interactive())
   expect_error(

@@ -42,20 +42,6 @@ Tables generated:
 original variable and whether inference succeeded.
 }
 }
-\section{AI Prompt}{
-
-\emph{This section is for AI in \code{\link[=inquire_blueprint]{inquire_blueprint()}} only.}
-\itemize{
-\item Include this step when the user requests structure-aware analysis but the
-experiment has glycan compositions and no glycan structures.
-\item This step should be placed before \code{\link[=step_derive_traits]{step_derive_traits()}},
-\code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}, or \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item Mention that variables without inferred structures are removed.
-\item Always ask for species restriction to improve inference accuracy,
-but allow users to skip it if they want.
-}
-}
-
 \examples{
 step_infer_structure()
 step_infer_structure(species = "Homo sapiens")

@@ -25,12 +25,6 @@
 #' When `when = "pre"`, plots are prefixed with `qc_pre_` to distinguish from post-QC plots.
 #' When `when = "post"` or `NULL`, plots use the standard `qc_` prefix.
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - By default, include this step ONLY after `step_preprocess()`.
-#' - You MUST provide the when parameter to specify when the QC is being run.
-#'
 #' @param when Character string indicating when this QC step is run.
 #'   Use `"pre"` for pre-preprocessing QC, `"post"` for post-preprocessing QC,
 #'   or any other value for generic QC. This is appended to the step ID.
@@ -277,19 +271,6 @@ step_plot_qc <- function(
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `raw_exp` for reference.
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Always include this step by default unless the user explicitly excludes it
-#' or tell you she/he has already performed preprocessing.
-#' - Ask for the column name for batch information if not provided.
-#' - Ask for QC samples in the experiment if not provided. If so, ask the group name of the QC samples.
-#'   Explain to the user that if it is "QC" for example, the samples with "QC" in the `group_col` column will be considered as QC samples.
-#'   And these QC samples will be used for choosing the best normalization and imputation methods.
-#'   Also mention that QC samples will be excluded after preprocessing.
-#' - If the user intents to perform biomarker related analysis, set `remove_preset` to "biomarker".
-#' - Use default values for other arguments unless the user explicitly specifies otherwise.
-#'
 #' @param batch_col Column name for batch information (for QC plots and batch effect handling).
 #' @param qc_name Name of QC sample group (used for QC sample detection in preprocessing).
 #' @param normalize_to_try Normalization methods to try during auto_clean.
@@ -417,13 +398,6 @@ step_preprocess <- function(
 #' - `full_exp`: The original experiment before subsetting
 #'
 #' This step overwrites `exp` in the context with the subset experiment.
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Use this step when the experiment has more than 2 groups but the user wants a specific two-group comparison.
-#' - Ask the user which two groups to compare, and place this step before DEA and enrichment steps.
-#' - Use the order of the user-provided groups to set factor levels.
 #'
 #' @param groups Group names to keep. If `NULL`, this step will be skipped.
 #'
@@ -586,16 +560,6 @@ step_subset_groups <- function(groups = NULL) {
 #' the "active" experiment is always under the key `exp`.
 #' The previous `exp` is saved as `unadj_exp` for reference.
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step only if the user explicitly asks for protein adjustment.
-#' - If protein adjustment is needed and the `pro_expr_path` is not provided, ask for it and explain how to prepare the file:
-#'   - CSV/TSV: first column is protein accessions; remaining columns are sample names.
-#'   - RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.
-#' - You MUST provide a detailed explanation of how to prepare the file.
-#' - With out the file, the step is invalid.
-#'
 #' @param pro_expr_path Path to the protein expression matrix file.
 #'   If `NULL`, this step will be skipped.
 #'   Can be:
@@ -716,12 +680,6 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
 #'
 #' Tables generated:
 #' - `summary`: A table containing the identification overview of the experiment
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Always include this step by default unless the user explicitly excludes it.
-#' - Use it as the first step in the blueprint.
 #'
 #' @inheritParams glyexp::summarize_experiment
 #'

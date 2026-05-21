@@ -29,12 +29,6 @@
 #' - `branch_motif_heatmap`: A heatmap plot (if `on = "branch_motif_exp"`)
 #' - `sig_branch_motif_heatmap`: A heatmap plot (if `on = "sig_branch_motif_exp"`)
 #'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step if needed.
-#' - It is recommended to use this step on significant results (e.g. `on = "sig_exp"`) if available.
-#'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp",
 #'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
@@ -119,13 +113,6 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' Plots generated:
 #' - `logo`: A logo plot (if `on = "exp"`)
 #' - `sig_logo`: A logo plot (if `on = "sig_exp"`)
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step if the user explicitly asks for logo plot.
-#' - If used, ask user if a FASTA file is provided.
-#'   Tell the user that if not, protein sequences will be fetched from Uniprot automatically.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "exp", "sig_exp". Default is "exp".
@@ -259,13 +246,6 @@ step_logo <- function(
 #' - `sig_trait_boxplot`: A boxplot of significant traits (if `on = "sig_trait_exp"`)
 #' - `sig_dynamic_motif_boxplot`: A boxplot of significant dynamic motifs (if `on = "sig_dynamic_motif_exp"`)
 #' - `sig_branch_motif_boxplot`: A boxplot of significant branch motifs (if `on = "sig_branch_motif_exp"`)
-#'
-#' @section AI Prompt:
-#' *This section is for AI in [inquire_blueprint()] only.*
-#'
-#' - Include this step after DEA steps to visualize the significant variables.
-#' - This step is particularly useful for understanding the expression patterns
-#'   of the most differentially expressed features across groups.
 #'
 #' @param on Name of the experiment data in `ctx$data` to plot.
 #'   One of "sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
