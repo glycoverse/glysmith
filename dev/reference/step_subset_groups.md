@@ -36,20 +36,6 @@ Data generated:
 
 This step overwrites `exp` in the context with the subset experiment.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Use this step when the experiment has more than 2 groups but the user
-  wants a specific two-group comparison.
-
-- Ask the user which two groups to compare, and place this step before
-  DEA and enrichment steps.
-
-- Use the order of the user-provided groups to set factor levels.
-
 ## Examples
 
 ``` r

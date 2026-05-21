@@ -127,14 +127,6 @@ Plots generated (with suffixes):
 
 - `pca_screeplot`: A PCA screeplot (if `screeplot = TRUE`)
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step if needed.
-
 ## See also
 
 [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html),

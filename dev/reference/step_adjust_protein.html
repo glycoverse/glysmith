@@ -86,17 +86,6 @@ the "active" experiment is always under the key <code>exp</code>.
 The previous <code>exp</code> is saved as <code>unadj_exp</code> for reference.</p>
     </div>
     <div class="section level2">
-    <h2 id="ai-prompt">AI Prompt<a class="anchor" aria-label="anchor" href="#ai-prompt"></a></h2>
-
-
-<p><em>This section is for AI in <code><a href="inquire_blueprint.html">inquire_blueprint()</a></code> only.</em></p><ul><li><p>Include this step only if the user explicitly asks for protein adjustment.</p></li>
-<li><p>If protein adjustment is needed and the <code>pro_expr_path</code> is not provided, ask for it and explain how to prepare the file:</p><ul><li><p>CSV/TSV: first column is protein accessions; remaining columns are sample names.</p></li>
-<li><p>RDS: a matrix/data.frame with row names as protein accessions and columns as sample names.</p></li>
-</ul></li>
-<li><p>You MUST provide a detailed explanation of how to prepare the file.</p></li>
-<li><p>With out the file, the step is invalid.</p></li>
-</ul></div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glyclean/reference/adjust_protein.html" class="external-link">glyclean::adjust_protein()</a></code></p></div>
     </div>

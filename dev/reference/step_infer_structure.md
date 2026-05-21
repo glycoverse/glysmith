@@ -48,26 +48,6 @@ Tables generated:
 - `inferred_structures`: A table containing the inferred structure for
   each original variable and whether inference succeeded.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step when the user requests structure-aware analysis but
-  the experiment has glycan compositions and no glycan structures.
-
-- This step should be placed before
-  [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md),
-  [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.md),
-  or
-  [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_branch_motifs.md).
-
-- Mention that variables without inferred structures are removed.
-
-- Always ask for species restriction to improve inference accuracy, but
-  allow users to skip it if they want.
-
 ## See also
 
 [`glyanno::comp_to_struc()`](https://glycoverse.github.io/glyanno/reference/comp_to_struc.html),

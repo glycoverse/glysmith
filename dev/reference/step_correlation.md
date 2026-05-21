@@ -127,19 +127,6 @@ Plots generated (with suffixes):
 
 - `correlation`: A correlation matrix heatmap
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step to explore relationships between variables or
-  samples.
-
-- Be careful to use when sample size or variable number is large (\>
-  50). Before using this step for large data, ask the user if they want
-  to proceed.
-
 ## See also
 
 [`glystats::gly_cor()`](https://glycoverse.github.io/glystats/reference/gly_cor.html),

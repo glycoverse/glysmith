@@ -103,17 +103,6 @@ One of "all" (all genes in OrgDb), "detected" (detected variables in <code>exp</
 </ul><p>Tables generated:</p><ul><li><p><code>kegg_enrich</code>: A table containing the KEGG enrichment results.</p></li>
 </ul></div>
     <div class="section level2">
-    <h2 id="ai-prompt">AI Prompt<a class="anchor" aria-label="anchor" href="#ai-prompt"></a></h2>
-
-
-<p><em>This section is for AI in <code><a href="inquire_blueprint.html">inquire_blueprint()</a></code> only.</em></p><ul><li><p>Include this step by default if DEA is performed on glycoproteomics data.</p></li>
-<li><p>Leave <code>universe</code> to "all" (by default) unless the user explicitly mentions that
-the background should be the detected variables in <code>exp</code>.</p></li>
-<li><p>If the experiment has more than 2 groups but the user wants enrichment for a
-specific two-group comparison, ask which two groups to compare and include
-<code>step_subset_groups(groups = c("A", "B"))</code> before DEA and enrichment steps.</p></li>
-</ul></div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glyfun/reference/enrich_ora_kegg.html" class="external-link">glyfun::enrich_ora_kegg()</a></code></p></div>
     </div>

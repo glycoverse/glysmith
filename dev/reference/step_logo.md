@@ -81,17 +81,6 @@ Plots generated:
 
 - `sig_logo`: A logo plot (if `on = "sig_exp"`)
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step if the user explicitly asks for logo plot.
-
-- If used, ask user if a FASTA file is provided. Tell the user that if
-  not, protein sequences will be fetched from Uniprot automatically.
-
 ## See also
 
 [`glyvis::plot_logo()`](https://glycoverse.github.io/glyvis/reference/plot_logo.html)

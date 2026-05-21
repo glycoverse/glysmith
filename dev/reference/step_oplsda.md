@@ -131,19 +131,6 @@ Plots generated (with suffixes):
 
 - `oplsda_vip`: An OPLS-DA VIP score plot
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step when users explicitly asks for OPLS-DA.
-
-- This step only works with binary classification (exactly 2 groups). If
-  multiple groups are found, ask if
-  [`step_subset_groups()`](https://glycoverse.github.io/glysmith/dev/reference/step_subset_groups.md)
-  should be run first.
-
 ## See also
 
 [`glystats::gly_oplsda()`](https://glycoverse.github.io/glystats/reference/gly_oplsda.html),

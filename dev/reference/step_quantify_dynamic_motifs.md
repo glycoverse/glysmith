@@ -44,17 +44,6 @@ Tables generated:
 
 - `dynamic_motifs`: A table containing the quantified motifs.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step if motif analysis is needed for non-N-glycans or
-  when comprehensive motif extraction is desired.
-
-- This step should be followed by DEA and visualization steps.
-
 ## See also
 
 [`glydet::quantify_motifs()`](https://glycoverse.github.io/glydet/reference/quantify_motifs.html),

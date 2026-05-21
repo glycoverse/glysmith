@@ -117,18 +117,6 @@ Tables generated:
 - `branch_dma`: A table containing the DMA result (if
   `on = "branch_motif_exp"`)
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step only if the user explicitly asks for Wilcoxon test.
-
-- If the experiment has more than 2 groups but the user wants a specific
-  two-group comparison, ask which two groups to compare and include
-  `step_subset_groups(groups = c("A", "B"))` before this step.
-
 ## See also
 
 [`glystats::gly_wilcox()`](https://glycoverse.github.io/glystats/reference/gly_wilcox.html)

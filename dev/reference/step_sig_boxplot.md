@@ -120,18 +120,6 @@ Plots generated:
 - `sig_branch_motif_boxplot`: A boxplot of significant branch motifs (if
   `on = "sig_branch_motif_exp"`)
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-only.*
-
-- Include this step after DEA steps to visualize the significant
-  variables.
-
-- This step is particularly useful for understanding the expression
-  patterns of the most differentially expressed features across groups.
-
 ## See also
 
 [`glyvis::plot_boxplot()`](https://glycoverse.github.io/glyvis/reference/plot_boxplot.html)
