@@ -1,5 +1,13 @@
 # glysmith (development version)
 
+## Breaking changes
+
+* `step_preprocess()` no longer has a `qc_name` argument, no longer passes `qc_name` to `glyclean::auto_clean()`, and no longer removes QC samples after preprocessing.
+
+## Minor improvements and bug fixes
+
+* `inquire_blueprint()` no longer asks users about QC sample names.
+
 # glysmith 0.11.0
 
 ## New features

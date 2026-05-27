@@ -12,7 +12,7 @@ test_that("step_preprocess overwrites exp and writes raw_exp", {
   expect_false(sum(new_exp$expr_mat, na.rm = TRUE) == old_sum)
 })
 
-test_that("step_preprocess removes QC samples if exist", {
+test_that("step_preprocess keeps QC samples if present", {
   # Create experiment with QC samples
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
@@ -52,11 +52,39 @@ test_that("step_preprocess removes QC samples if exist", {
   bp <- blueprint(step_preprocess())
   suppressMessages(res <- forge_analysis(exp_with_qc, bp))
 
-  # Verify QC samples are removed after preprocessing
+  # Verify QC samples are left for users to handle explicitly.
   groups_after <- unique(as.character(res$exp$sample_info$group))
-  expect_false("QC" %in% groups_after)
-  expect_equal(nrow(res$exp$sample_info), 12) # Only original samples remain
-  expect_false(any(grepl("^QC", res$exp$sample_info$sample)))
+  samples_after <- as.character(res$exp$sample_info$sample)
+  expect_true("QC" %in% groups_after)
+  expect_true(all(c("QC1", "QC2") %in% samples_after))
+})
+
+test_that("step_preprocess does not pass qc_name to auto_clean", {
+  exp <- glyexp::real_experiment |>
+    glyexp::slice_head_var(10)
+  passed_args <- NULL
+
+  local_mocked_bindings(
+    auto_clean = function(exp, ...) {
+      passed_args <<- names(list(...))
+      exp
+    },
+    .package = "glyclean"
+  )
+
+  ctx <- glysmith:::new_ctx(exp, "group")
+  suppressMessages(glysmith:::.run_preprocess(
+    ctx,
+    batch_col = "batch",
+    normalize_to_try = NULL,
+    impute_to_try = NULL,
+    remove_preset = "discovery",
+    batch_prop_threshold = 0.3,
+    check_batch_confounding = TRUE,
+    batch_confounding_threshold = 0.4
+  ))
+
+  expect_false("qc_name" %in% passed_args)
 })
 
 test_that("step_plot_qc generates plots with correct prefixes", {

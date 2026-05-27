@@ -6,7 +6,6 @@
 \usage{
 step_preprocess(
   batch_col = "batch",
-  qc_name = "QC",
   normalize_to_try = NULL,
   impute_to_try = NULL,
   remove_preset = "discovery",
@@ -18,8 +17,6 @@ step_preprocess(
 }
 \arguments{
 \item{batch_col}{Column name for batch information (for QC plots and batch effect handling).}
-
-\item{qc_name}{Name of QC sample group (used for QC sample detection in preprocessing).}
 
 \item{normalize_to_try}{Normalization methods to try during auto_clean.}
 
@@ -39,8 +36,7 @@ step_preprocess(
 A \code{glysmith_step} object.
 }
 \description{
-Preprocess the experiment using \code{glyclean::auto_clean()},
-and remove quality control (QC) samples if exist.
+Preprocess the experiment using \code{glyclean::auto_clean()}.
 This step can be omitted if the experiment is already preprocessed.
 
 This step requires \code{exp} (experiment data).

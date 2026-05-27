@@ -253,8 +253,7 @@ step_plot_qc <- function(
 #' Step: Preprocessing
 #'
 #' @description
-#' Preprocess the experiment using `glyclean::auto_clean()`,
-#' and remove quality control (QC) samples if exist.
+#' Preprocess the experiment using `glyclean::auto_clean()`.
 #' This step can be omitted if the experiment is already preprocessed.
 #'
 #' This step requires `exp` (experiment data).
@@ -272,7 +271,6 @@ step_plot_qc <- function(
 #' The previous `exp` is saved as `raw_exp` for reference.
 #'
 #' @param batch_col Column name for batch information (for QC plots and batch effect handling).
-#' @param qc_name Name of QC sample group (used for QC sample detection in preprocessing).
 #' @param normalize_to_try Normalization methods to try during auto_clean.
 #' @param impute_to_try Imputation methods to try during auto_clean.
 #' @param remove_preset Preset for data removal: "discovery", "biomarker", or NULL.
@@ -289,7 +287,6 @@ step_plot_qc <- function(
 #' @export
 step_preprocess <- function(
   batch_col = "batch",
-  qc_name = "QC",
   normalize_to_try = NULL,
   impute_to_try = NULL,
   remove_preset = "discovery",
@@ -307,7 +304,6 @@ step_preprocess <- function(
       .run_preprocess(
         ctx,
         batch_col = batch_col,
-        qc_name = qc_name,
         normalize_to_try = normalize_to_try,
         impute_to_try = impute_to_try,
         remove_preset = remove_preset,
@@ -336,7 +332,6 @@ step_preprocess <- function(
 .run_preprocess <- function(
   ctx,
   batch_col,
-  qc_name,
   normalize_to_try,
   impute_to_try,
   remove_preset,
@@ -348,7 +343,6 @@ step_preprocess <- function(
   clean_exp <- glyclean::auto_clean(
     exp,
     batch_col = batch_col,
-    qc_name = qc_name,
     normalize_to_try = normalize_to_try,
     impute_to_try = impute_to_try,
     remove_preset = remove_preset,
@@ -356,7 +350,6 @@ step_preprocess <- function(
     check_batch_confounding = check_batch_confounding,
     batch_confounding_threshold = batch_confounding_threshold
   )
-  clean_exp <- glyexp::filter_obs(clean_exp, .data$group != .env$qc_name)
   ctx <- ctx_add_data(ctx, "exp", clean_exp)
   ctx_add_data(ctx, "raw_exp", exp)
 }

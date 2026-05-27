@@ -385,8 +385,6 @@ inquire_blueprint <- function(
     "SPLIT compound questions into separate questions:",
     "- BAD: 'Do you have batch information? If yes, what is the column name?'",
     "- GOOD: Q1='Do you have batch information?' Q2='What is the column name for batch information?'",
-    "- BAD: 'Do you have QC samples and if so, what is the group name?'",
-    "- GOOD: Q1='Do you have QC samples?' Q2='What is the group name for QC samples?'",
     "\n",
     "After receiving the user's answer, the conversation continues and you can ask another question or return the blueprint when ready.",
     "Only return the blueprint when you have enough information.",

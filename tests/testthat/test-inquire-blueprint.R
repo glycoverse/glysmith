@@ -517,6 +517,15 @@ test_that("system prompt uses single-question format", {
     grepl("Example flow", prompt),
     info = "System prompt should include example flow"
   )
+
+  expect_false(
+    grepl("QC samples", prompt, fixed = TRUE),
+    info = "System prompt should not ask about QC samples"
+  )
+  expect_false(
+    grepl("qc_name", prompt, fixed = TRUE),
+    info = "System prompt should not expose deprecated qc_name"
+  )
 })
 
 test_that("inquire_blueprint includes step parameters in system prompt", {
