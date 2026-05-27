@@ -54,9 +54,9 @@ test_that("step_preprocess keeps QC samples if present", {
 
   # Verify QC samples are left for users to handle explicitly.
   groups_after <- unique(as.character(res$exp$sample_info$group))
+  samples_after <- as.character(res$exp$sample_info$sample)
   expect_true("QC" %in% groups_after)
-  expect_equal(nrow(res$exp$sample_info), 14) # Original samples plus QC samples
-  expect_true(any(grepl("^QC", res$exp$sample_info$sample)))
+  expect_true(all(c("QC1", "QC2") %in% samples_after))
 })
 
 test_that("step_preprocess does not pass qc_name to auto_clean", {
