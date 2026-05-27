@@ -359,7 +359,7 @@ step_sig_boxplot <- function(
       sig_branch_motif_exp = "branch_dma_res"
     )
     dea_res <- ctx_get_data(ctx, dea_key)
-    tidy_res <- glystats::get_tidy_result(dea_res)
+    tidy_res <- .get_sig_boxplot_tidy_result(dea_res)
 
     top_vars <- tidy_res |>
       dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
@@ -428,4 +428,18 @@ step_sig_boxplot <- function(
   height <- max(min_height, min(height, max_height))
 
   list(width = width, height = height)
+}
+
+#' Get DEA result table used to rank significant boxplot variables
+#'
+#' @param dea_res A glystats differential-analysis result object.
+#'
+#' @returns A tidy result table.
+#' @noRd
+.get_sig_boxplot_tidy_result <- function(dea_res) {
+  if (inherits(dea_res, c("glystats_anova_res", "glystats_kruskal_res"))) {
+    return(glystats::get_tidy_result(dea_res, which = "main_test"))
+  }
+
+  glystats::get_tidy_result(dea_res)
 }

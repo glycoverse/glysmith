@@ -133,6 +133,21 @@ test_that("step_sig_boxplot works with step_dea_anova", {
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
+test_that("step_sig_boxplot ranks top variables after step_dea_anova", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_var(50) |>
+      glyclean::auto_clean()
+  )
+  bp <- blueprint(
+    step_dea_anova(filter_p_adj_cutoff = 1),
+    step_sig_boxplot()
+  )
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true(nrow(res$data$sig_exp) > 25)
+  expect_true("sig_boxplot_sig" %in% names(res$plots))
+})
+
 test_that("step_sig_boxplot works with step_dea_kruskal", {
   skip_if_not_installed("FSA")
   suppressMessages(
@@ -145,5 +160,21 @@ test_that("step_sig_boxplot works with step_dea_kruskal", {
     step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true("sig_boxplot_sig" %in% names(res$plots))
+})
+
+test_that("step_sig_boxplot ranks top variables after step_dea_kruskal", {
+  skip_if_not_installed("FSA")
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_var(50) |>
+      glyclean::auto_clean()
+  )
+  bp <- blueprint(
+    step_dea_kruskal(filter_p_adj_cutoff = 1),
+    step_sig_boxplot()
+  )
+  suppressMessages(res <- forge_analysis(exp, bp))
+  expect_true(nrow(res$data$sig_exp) > 25)
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
