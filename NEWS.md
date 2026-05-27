@@ -2,11 +2,15 @@
 
 ## Breaking changes
 
-* `step_preprocess()` no longer has a `qc_name` argument, no longer passes `qc_name` to `glyclean::auto_clean()`, and no longer removes QC samples after preprocessing.
+* `step_preprocess()` no longer has a `qc_name` argument, no longer passes `qc_name` to `glyclean::auto_clean()`, and no longer removes QC samples after preprocessing. (#20)
 
 ## Minor improvements and bug fixes
 
-* `inquire_blueprint()` no longer asks users about QC sample names.
+* `step_sig_boxplot()` now ranks top variables correctly after `step_dea_anova()` and `step_dea_kruskal()`. (#21)
+* `inquire_blueprint()` no longer asks users about QC sample names. (#20)
+* `inquire_blueprint()` now defaults to ANOVA or t-test for glycomics DEA analysis, instead of limma. (8d8ece4)
+* Fix the incorrect retry message in `inquire_blueprint()` when the LLM fails to generate a blueprint. (44a271c)
+* AI prompts for `inquire_blueprint()` are removed from the function documentations. (#19)
 
 # glysmith 0.11.0
 
