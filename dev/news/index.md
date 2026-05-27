@@ -2,6 +2,18 @@
 
 ## glysmith (development version)
 
+### Breaking changes
+
+- [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
+  no longer has a `qc_name` argument, no longer passes `qc_name` to
+  [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html),
+  and no longer removes QC samples after preprocessing.
+
+### Minor improvements and bug fixes
+
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  no longer asks users about QC sample names.
+
 ## glysmith 0.11.0
 
 ### New features

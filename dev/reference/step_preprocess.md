@@ -1,9 +1,8 @@
 # Step: Preprocessing
 
 Preprocess the experiment using
-[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html),
-and remove quality control (QC) samples if exist. This step can be
-omitted if the experiment is already preprocessed.
+[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
+This step can be omitted if the experiment is already preprocessed.
 
 This step requires `exp` (experiment data).
 
@@ -12,7 +11,6 @@ This step requires `exp` (experiment data).
 ``` r
 step_preprocess(
   batch_col = "batch",
-  qc_name = "QC",
   normalize_to_try = NULL,
   impute_to_try = NULL,
   remove_preset = "discovery",
@@ -29,11 +27,6 @@ step_preprocess(
 
   Column name for batch information (for QC plots and batch effect
   handling).
-
-- qc_name:
-
-  Name of QC sample group (used for QC sample detection in
-  preprocessing).
 
 - normalize_to_try:
 
