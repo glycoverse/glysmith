@@ -41,12 +41,18 @@
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li>
-<code><a href="../reference/step_preprocess.html">step_preprocess()</a></code> no longer has a <code>qc_name</code> argument, no longer passes <code>qc_name</code> to <code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code>, and no longer removes QC samples after preprocessing.</li>
+<code><a href="../reference/step_preprocess.html">step_preprocess()</a></code> no longer has a <code>qc_name</code> argument, no longer passes <code>qc_name</code> to <code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code>, and no longer removes QC samples after preprocessing. (#20)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-and-bug-fixes-development-version">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-development-version"></a></h3>
 <ul><li>
-<code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> no longer asks users about QC sample names.</li>
+<code><a href="../reference/step_sig_boxplot.html">step_sig_boxplot()</a></code> now ranks top variables correctly after <code><a href="../reference/step_dea_anova.html">step_dea_anova()</a></code> and <code><a href="../reference/step_dea_kruskal.html">step_dea_kruskal()</a></code>. (#21)</li>
+<li>
+<code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> no longer asks users about QC sample names. (#20)</li>
+<li>
+<code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> now defaults to ANOVA or t-test for glycomics DEA analysis, instead of limma. (8d8ece4)</li>
+<li>Fix the incorrect retry message in <code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> when the LLM fails to generate a blueprint. (44a271c)</li>
+<li>AI prompts for <code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code> are removed from the function documentations. (#19)</li>
 </ul></div>
 </div>
     <div class="section level2">

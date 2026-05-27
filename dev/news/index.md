@@ -7,12 +7,27 @@
 - [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
   no longer has a `qc_name` argument, no longer passes `qc_name` to
   [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html),
-  and no longer removes QC samples after preprocessing.
+  and no longer removes QC samples after preprocessing. (#20)
 
 ### Minor improvements and bug fixes
 
+- [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
+  now ranks top variables correctly after
+  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.md)
+  and
+  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md).
+  (#21)
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-  no longer asks users about QC sample names.
+  no longer asks users about QC sample names. (#20)
+- [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  now defaults to ANOVA or t-test for glycomics DEA analysis, instead of
+  limma. (8d8ece4)
+- Fix the incorrect retry message in
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  when the LLM fails to generate a blueprint. (44a271c)
+- AI prompts for
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  are removed from the function documentations. (#19)
 
 ## glysmith 0.11.0
 
