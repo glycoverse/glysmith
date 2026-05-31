@@ -11,12 +11,9 @@
 
 ### Minor improvements and bug fixes
 
-- [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
-  now ranks top variables correctly after
-  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.md)
-  and
-  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md).
-  (#21)
+- Fix the bug that
+  [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
+  sometimes failed to generate boxplots. (#21)
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
   no longer asks users about QC sample names. (#20)
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
