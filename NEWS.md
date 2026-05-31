@@ -6,7 +6,7 @@
 
 ## Minor improvements and bug fixes
 
-* `step_sig_boxplot()` now ranks top variables correctly after `step_dea_anova()` and `step_dea_kruskal()`. (#21)
+* Fix the bug that `step_sig_boxplot()` sometimes failed to generate boxplots. (#21)
 * `inquire_blueprint()` no longer asks users about QC sample names. (#20)
 * `inquire_blueprint()` now defaults to ANOVA or t-test for glycomics DEA analysis, instead of limma. (8d8ece4)
 * Fix the incorrect retry message in `inquire_blueprint()` when the LLM fails to generate a blueprint. (44a271c)
