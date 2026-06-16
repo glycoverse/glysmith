@@ -1,9 +1,8 @@
 # Step: Preprocessing
 
 Preprocess the experiment using
-[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html),
-and remove quality control (QC) samples if exist. This step can be
-omitted if the experiment is already preprocessed.
+[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
+This step can be omitted if the experiment is already preprocessed.
 
 This step requires `exp` (experiment data).
 
@@ -12,7 +11,6 @@ This step requires `exp` (experiment data).
 ``` r
 step_preprocess(
   batch_col = "batch",
-  qc_name = "QC",
   normalize_to_try = NULL,
   impute_to_try = NULL,
   remove_preset = "discovery",
@@ -29,11 +27,6 @@ step_preprocess(
 
   Column name for batch information (for QC plots and batch effect
   handling).
-
-- qc_name:
-
-  Name of QC sample group (used for QC sample detection in
-  preprocessing).
 
 - normalize_to_try:
 
@@ -82,30 +75,6 @@ the preprocessed experiment. This ensures that no matter if
 preprocessing is performed or not, the "active" experiment is always
 under the key `exp`. The previous `exp` is saved as `raw_exp` for
 reference.
-
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Always include this step by default unless the user explicitly
-  excludes it or tell you she/he has already performed preprocessing.
-
-- Ask for the column name for batch information if not provided.
-
-- Ask for QC samples in the experiment if not provided. If so, ask the
-  group name of the QC samples. Explain to the user that if it is "QC"
-  for example, the samples with "QC" in the `group_col` column will be
-  considered as QC samples. And these QC samples will be used for
-  choosing the best normalization and imputation methods. Also mention
-  that QC samples will be excluded after preprocessing.
-
-- If the user intents to perform biomarker related analysis, set
-  `remove_preset` to "biomarker".
-
-- Use default values for other arguments unless the user explicitly
-  specifies otherwise.
 
 ## See also
 

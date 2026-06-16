@@ -83,18 +83,6 @@ When `when = "pre"`, plots are prefixed with `qc_pre_` to distinguish
 from post-QC plots. When `when = "post"` or `NULL`, plots use the
 standard `qc_` prefix.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- By default, include this step ONLY after
-  [`step_preprocess()`](https://glycoverse.github.io/glysmith/reference/step_preprocess.md).
-
-- You MUST provide the when parameter to specify when the QC is being
-  run.
-
 ## See also
 
 [`glyclean::plot_missing_heatmap()`](https://glycoverse.github.io/glyclean/reference/plot_missing_heatmap.html),

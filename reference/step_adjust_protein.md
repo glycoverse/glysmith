@@ -52,28 +52,6 @@ the adjusted experiment. This ensures that no matter if adjustment is
 performed or not, the "active" experiment is always under the key `exp`.
 The previous `exp` is saved as `unadj_exp` for reference.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Include this step only if the user explicitly asks for protein
-  adjustment.
-
-- If protein adjustment is needed and the `pro_expr_path` is not
-  provided, ask for it and explain how to prepare the file:
-
-  - CSV/TSV: first column is protein accessions; remaining columns are
-    sample names.
-
-  - RDS: a matrix/data.frame with row names as protein accessions and
-    columns as sample names.
-
-- You MUST provide a detailed explanation of how to prepare the file.
-
-- With out the file, the step is invalid.
-
 ## See also
 
 [`glyclean::adjust_protein()`](https://glycoverse.github.io/glyclean/reference/adjust_protein.html)

@@ -125,14 +125,6 @@ Plots generated (with suffixes):
 
 - `plsda_vip`: A PLS-DA VIP score plot
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Include this step when users explicitly asks for PLS-DA.
-
 ## See also
 
 [`glystats::gly_plsda()`](https://glycoverse.github.io/glystats/reference/gly_plsda.html),

@@ -40,17 +40,6 @@ Tables generated:
 
 - `branch_motifs`: A table containing the quantified branch motifs.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Include this step if motif analysis is needed specifically for
-  N-glycans.
-
-- This step should be followed by DEA and visualization steps.
-
 ## See also
 
 [`glydet::quantify_motifs()`](https://glycoverse.github.io/glydet/reference/quantify_motifs.html),

@@ -66,23 +66,6 @@ Tables generated:
 
 - `wp_enrich`: A table containing the WikiPathways enrichment results.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Include this step if user asks for it.
-
-- Leave `universe` to "all" (by default) unless the user explicitly
-  mentions that the background should be the detected variables in
-  `exp`.
-
-- If the experiment has more than 2 groups but the user wants enrichment
-  for a specific two-group comparison, ask which two groups to compare
-  and include `step_subset_groups(groups = c("A", "B"))` before DEA and
-  enrichment steps.
-
 ## See also
 
 [`glyfun::enrich_ora_wp()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_wp.html)

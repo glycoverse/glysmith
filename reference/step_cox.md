@@ -117,21 +117,6 @@ Tables generated (with suffixes):
 
   - `p_adj`: Adjusted p-value (if p_adj_method is not NULL)
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Include this step when users want to identify variables associated
-  with survival outcomes.
-
-- This step requires survival data (time and event columns) in the
-  sample information.
-
-- Always ask for the column names for survival data, unless explicitly
-  provided.
-
 ## See also
 
 [`glystats::gly_cox()`](https://glycoverse.github.io/glystats/reference/gly_cox.html),

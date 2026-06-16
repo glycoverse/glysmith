@@ -66,24 +66,6 @@ Tables generated:
 
 - `go_enrich`: A table containing the GO enrichment results.
 
-## AI Prompt
-
-*This section is for AI in
-[`inquire_blueprint()`](https://glycoverse.github.io/glysmith/reference/inquire_blueprint.md)
-only.*
-
-- Include this step by default if DEA is performed on glycoproteomics
-  data.
-
-- Leave `universe` to "all" (by default) unless the user explicitly
-  mentions that the background should be the detected variables in
-  `exp`.
-
-- If the experiment has more than 2 groups but the user wants enrichment
-  for a specific two-group comparison, ask which two groups to compare
-  and include `step_subset_groups(groups = c("A", "B"))` before DEA and
-  enrichment steps.
-
 ## See also
 
 [`glyfun::enrich_ora_go()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_go.html)
