@@ -2,6 +2,8 @@
 
 ## glysmith (development version)
 
+## glysmith 0.12.0
+
 ### Breaking changes
 
 - [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
