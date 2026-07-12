@@ -67,11 +67,14 @@ Imports:
     glyexp (>= 0.11.0),
     glue,
     jsonlite,
+    methods,
     purrr,
     readr,
     rlang,
     rmarkdown,
+    S4Vectors,
     stringr,
+    SummarizedExperiment,
     tibble
 Depends: R (>= 4.1.0)
 VignetteBuilder: knitr

@@ -184,7 +184,8 @@ step_plot_qc <- function(
   )
 
   # Add batch PCA plot if batch_col is available
-  if (!is.null(batch_col) && batch_col %in% colnames(exp$sample_info)) {
+  sample_info <- .get_sample_info(exp)
+  if (!is.null(batch_col) && batch_col %in% colnames(sample_info)) {
     common_plots <- c(
       common_plots,
       list(list(
@@ -196,7 +197,7 @@ step_plot_qc <- function(
   }
 
   # Add replicate scatter plot if rep_col is available
-  if (!is.null(rep_col) && rep_col %in% colnames(exp$sample_info)) {
+  if (!is.null(rep_col) && rep_col %in% colnames(sample_info)) {
     common_plots <- c(
       common_plots,
       list(list(
@@ -340,16 +341,21 @@ step_preprocess <- function(
   batch_confounding_threshold
 ) {
   exp <- ctx_get_data(ctx, "exp")
-  clean_exp <- glyclean::auto_clean(
-    exp,
+  clean_args <- list(
     batch_col = batch_col,
-    normalize_to_try = normalize_to_try,
-    impute_to_try = impute_to_try,
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
     batch_confounding_threshold = batch_confounding_threshold
   )
+  supported_args <- names(formals(glyclean::auto_clean))
+  if ("normalize_to_try" %in% supported_args) {
+    clean_args[["normalize_to_try"]] <- normalize_to_try
+  }
+  if ("impute_to_try" %in% supported_args) {
+    clean_args[["impute_to_try"]] <- impute_to_try
+  }
+  clean_exp <- rlang::exec(glyclean::auto_clean, exp, !!!clean_args)
   ctx <- ctx_add_data(ctx, "exp", clean_exp)
   ctx_add_data(ctx, "raw_exp", exp)
 }
@@ -445,7 +451,8 @@ step_subset_groups <- function(groups = NULL) {
 #' @noRd
 .run_subset_groups <- function(ctx, groups) {
   exp <- ctx_get_data(ctx, "exp")
-  available <- unique(as.character(exp$sample_info$group))
+  sample_info <- .get_sample_info(exp)
+  available <- unique(as.character(sample_info[["group"]]))
   missing <- setdiff(groups, available)
   if (length(missing) > 0) {
     missing_txt <- paste(missing, collapse = ", ")
@@ -453,9 +460,7 @@ step_subset_groups <- function(groups = NULL) {
   }
 
   full_exp <- exp
-  exp <- exp |>
-    glyexp::filter_obs(.data$group %in% groups)
-  exp$sample_info$group <- factor(exp$sample_info$group, levels = groups)
+  exp <- .filter_groups(exp, groups)
 
   ctx <- ctx_add_data(ctx, "exp", exp)
   ctx_add_data(ctx, "full_exp", full_exp)
@@ -615,7 +620,7 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
       reason = "protein expression path is not provided"
     ))
   }
-  if (glyexp::get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
+  if (.get_exp_type(ctx_get_data(ctx, "exp")) != "glycoproteomics") {
     return(list(
       check = FALSE,
       reason = "input is not a glycoproteomics experiment"

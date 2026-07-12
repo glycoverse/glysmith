@@ -5,11 +5,16 @@ test_that("step_preprocess overwrites exp and writes raw_exp", {
   # We use sum to check if the expression matrix is changed
   old_sum <- sum(exp$expr_mat, na.rm = TRUE)
   bp <- blueprint(step_preprocess())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   new_exp <- res$data$exp
   raw_exp <- res$data$raw_exp
-  expect_equal(sum(raw_exp$expr_mat, na.rm = TRUE), old_sum)
-  expect_false(sum(new_exp$expr_mat, na.rm = TRUE) == old_sum)
+  expect_equal(
+    sum(SummarizedExperiment::assay(raw_exp), na.rm = TRUE),
+    old_sum
+  )
+  expect_false(
+    sum(SummarizedExperiment::assay(new_exp), na.rm = TRUE) == old_sum
+  )
 })
 
 test_that("step_preprocess keeps QC samples if present", {
@@ -50,11 +55,15 @@ test_that("step_preprocess keeps QC samples if present", {
 
   # Run preprocessing
   bp <- blueprint(step_preprocess())
-  suppressMessages(res <- forge_analysis(exp_with_qc, bp))
+  suppressMessages(res <- forge_analysis_se(exp_with_qc, bp))
 
   # Verify QC samples are left for users to handle explicitly.
-  groups_after <- unique(as.character(res$exp$sample_info$group))
-  samples_after <- as.character(res$exp$sample_info$sample)
+  sample_info_after <- tibble::as_tibble(
+    SummarizedExperiment::colData(res$exp),
+    rownames = "sample"
+  )
+  groups_after <- unique(as.character(sample_info_after$group))
+  samples_after <- sample_info_after$sample
   expect_true("QC" %in% groups_after)
   expect_true(all(c("QC1", "QC2") %in% samples_after))
 })
@@ -93,14 +102,14 @@ test_that("step_plot_qc generates plots with correct prefixes", {
 
   # Test pre-QC with qc_pre_ prefix (includes missing value plots)
   bp_pre <- blueprint(step_plot_qc(when = "pre"))
-  suppressMessages(res_pre <- forge_analysis(exp, bp_pre))
+  suppressMessages(res_pre <- forge_analysis_se(exp, bp_pre))
   expect_true("qc_pre_missing_heatmap" %in% names(res_pre$plots))
   expect_false("qc_missing_heatmap" %in% names(res_pre$plots))
   expect_true("qc_pre_tic_bar" %in% names(res_pre$plots)) # common plot with pre_ prefix
 
   # Test post-QC with standard qc_ prefix (missing value plots are pre-only)
   bp_post <- blueprint(step_plot_qc(when = "post"))
-  suppressMessages(res_post <- forge_analysis(exp, bp_post))
+  suppressMessages(res_post <- forge_analysis_se(exp, bp_post))
   expect_true("qc_tic_bar" %in% names(res_post$plots)) # common plot uses standard prefix
   expect_false("qc_pre_tic_bar" %in% names(res_post$plots))
 })
@@ -118,7 +127,7 @@ test_that("step_plot_qc can appear twice in a blueprint", {
   expect_equal(names(bp)[1], "plot_qc_pre")
   expect_equal(names(bp)[3], "plot_qc_post")
 
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   # Pre-QC has pre_ prefix for all plots including common ones
   expect_true("qc_pre_missing_heatmap" %in% names(res$plots))
   expect_true("qc_pre_tic_bar" %in% names(res$plots))
@@ -133,14 +142,19 @@ test_that("step_subset_groups filters exp and keeps full_exp", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
   bp <- blueprint(step_subset_groups(groups = c("H", "C")))
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  groups <- unique(as.character(res$data$exp$sample_info$group))
+  sample_info <- tibble::as_tibble(
+    SummarizedExperiment::colData(res$data$exp),
+    rownames = "sample"
+  )
+  groups <- unique(as.character(sample_info$group))
   expect_setequal(groups, c("H", "C"))
-  expect_equal(levels(res$data$exp$sample_info$group), c("H", "C"))
+  expect_equal(levels(sample_info$group), c("H", "C"))
   expect_true("full_exp" %in% names(res$data))
+  full_sample_info <- SummarizedExperiment::colData(res$data$full_exp)
   expect_gt(
-    length(unique(as.character(res$data$full_exp$sample_info$group))),
+    length(unique(as.character(full_sample_info$group))),
     length(groups)
   )
 })
@@ -150,7 +164,7 @@ test_that("step_ident_overview generates summary", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
   bp <- blueprint(step_ident_overview())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("summary" %in% names(res$tables))
 })
 
@@ -193,7 +207,7 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
 
   run_adjust <- function(path) {
     bp <- blueprint(step_adjust_protein(path))
-    suppressMessages(forge_analysis(exp, bp))
+    suppressMessages(forge_analysis_se(exp, bp))
   }
 
   purrr::walk(c(csv_path, tsv_path, rds_path), function(path) {
@@ -202,8 +216,8 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
     expect_true("exp" %in% names(res$data))
     expect_false(
       isTRUE(all.equal(
-        sum(res$data$exp$expr_mat, na.rm = TRUE),
-        sum(res$data$unadj_exp$expr_mat, na.rm = TRUE)
+        sum(SummarizedExperiment::assay(res$data$exp), na.rm = TRUE),
+        sum(SummarizedExperiment::assay(res$data$unadj_exp), na.rm = TRUE)
       ))
     )
   })

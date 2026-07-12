@@ -6,7 +6,7 @@ test_that("step_heatmap generates plot", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_heatmap())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("heatmap" %in% names(res$plots))
 })
 
@@ -21,7 +21,7 @@ test_that("step_heatmap works on sig_exp", {
     step_dea_limma(),
     step_heatmap(on = "sig_exp")
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("heatmap_sig" %in% names(res$plots))
 })
 
@@ -34,7 +34,7 @@ test_that("step_logo is skipped for glycomics experiments", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_logo())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_false("logo" %in% names(res$plots))
 })
 
@@ -49,7 +49,7 @@ test_that("step_sig_boxplot generates plot", {
     step_dea_limma(),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -63,7 +63,7 @@ test_that("step_sig_boxplot with n_top limit", {
     step_dea_limma(),
     step_sig_boxplot(n_top = 10)
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -83,7 +83,7 @@ test_that("step_sig_boxplot works with step_dea_limma", {
     step_dea_limma(),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -99,7 +99,7 @@ test_that("step_sig_boxplot works with step_dea_ttest", {
     step_dea_ttest(),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -115,7 +115,7 @@ test_that("step_sig_boxplot works with step_dea_wilcox", {
     step_dea_wilcox(),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -129,7 +129,7 @@ test_that("step_sig_boxplot works with step_dea_anova", {
     step_dea_anova(),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -143,7 +143,7 @@ test_that("step_sig_boxplot ranks top variables after step_dea_anova", {
     step_dea_anova(filter_p_adj_cutoff = 1),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true(nrow(res$data$sig_exp) > 25)
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
@@ -159,7 +159,7 @@ test_that("step_sig_boxplot works with step_dea_kruskal", {
     step_dea_kruskal(),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })
 
@@ -174,7 +174,7 @@ test_that("step_sig_boxplot ranks top variables after step_dea_kruskal", {
     step_dea_kruskal(filter_p_adj_cutoff = 1),
     step_sig_boxplot()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true(nrow(res$data$sig_exp) > 25)
   expect_true("sig_boxplot_sig" %in% names(res$plots))
 })

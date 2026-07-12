@@ -32,20 +32,29 @@ forge_analysis <- function(
   group_col = "group"
 ) {
   check_glysmith_deps(blueprint = blueprint, action = "error")
-  checkmate::assert_class(exp, "glyexp_experiment")
+  .assert_data_container(exp)
   checkmate::assert_string(group_col)
-  if (!group_col %in% colnames(exp$sample_info)) {
+  legacy <- glyexp::is_experiment(exp)
+  exp <- .as_glyco_se(exp)
+  sample_info <- .get_sample_info(exp)
+  if (!group_col %in% colnames(sample_info)) {
     cli::cli_abort(
       "Column name '{group_col}' is not found in the sample information."
     )
   }
-  exp$sample_info[["group"]] <- droplevels(as.factor(exp$sample_info[[
+  sample_info[["group"]] <- droplevels(as.factor(sample_info[[
     group_col
   ]]))
+  exp <- .set_sample_info(exp, sample_info)
 
   ctx <- new_ctx(exp, group_col)
   ctx <- run_blueprint(blueprint, ctx)
 
+  ctx$data <- purrr::map(
+    ctx$data,
+    .restore_data_container,
+    legacy = legacy
+  )
   exp <- ctx_get_data(ctx, "exp")
   glysmith_result(
     exp = exp,

@@ -929,7 +929,7 @@ step_oplsda <- function(
   if (is.null(exp)) {
     return(list(check = FALSE, reason = "Experiment not found."))
   }
-  sample_info <- glyexp::get_sample_info(exp)
+  sample_info <- .get_sample_info(exp)
   group_col <- ctx$group_col
   if (!group_col %in% colnames(sample_info)) {
     return(list(

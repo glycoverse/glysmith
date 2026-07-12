@@ -83,7 +83,7 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' @noRd
 .run_heatmap <- function(ctx, on, plot_name, plot_width, plot_height, ...) {
   exp <- ctx_get_data(ctx, on)
-  p <- glyvis::plot_heatmap(exp, ...)
+  p <- glyvis::plot_heatmap(.as_legacy_experiment(exp), ...)
   ctx_add_plot(
     ctx,
     plot_name,
@@ -175,7 +175,7 @@ step_logo <- function(
 #' @noRd
 .condition_logo <- function(ctx, on) {
   exp <- ctx_get_data(ctx, on)
-  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+  if (.get_exp_type(exp) != "glycoproteomics") {
     return(list(
       check = FALSE,
       reason = "logo plot is only applicable for glycoproteomics experiments"
@@ -204,7 +204,12 @@ step_logo <- function(
   ...
 ) {
   exp <- ctx_get_data(ctx, on)
-  p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
+  p <- glyvis::plot_logo(
+    .as_legacy_experiment(exp),
+    n_aa = n_aa,
+    fasta = fasta,
+    ...
+  )
   ctx_add_plot(
     ctx,
     plot_name,
@@ -367,12 +372,15 @@ step_sig_boxplot <- function(
       dplyr::slice_head(n = min(n_top, 25)) |>
       dplyr::pull(.data$variable)
 
-    exp <- exp |>
-      glyexp::filter_var(.data$variable %in% top_vars)
+    exp <- .filter_variables(exp, top_vars)
     n_vars <- length(top_vars)
   }
 
-  p <- glyvis::plot_boxplot(exp, group_col = ctx$group_col, ...)
+  p <- glyvis::plot_boxplot(
+    .as_legacy_experiment(exp),
+    group_col = ctx$group_col,
+    ...
+  )
 
   dims <- .calc_boxplot_dims(
     n_vars,

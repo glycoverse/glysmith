@@ -38,7 +38,7 @@ test_that("step_correlation runs and generates results", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_correlation())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("correlation" %in% names(res$tables))
   expect_true("correlation" %in% names(res$plots))
@@ -51,7 +51,7 @@ test_that("step_correlation on sample runs and generates results", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_correlation(on_cor = "sample"))
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("correlation" %in% names(res$tables))
   expect_true("correlation" %in% names(res$plots))
@@ -64,7 +64,7 @@ test_that("step_correlation generates correlation table with expected columns", 
       glyclean::auto_clean()
   )
   bp <- blueprint(step_correlation())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   corr_table <- res$tables$correlation
   expect_true(nrow(corr_table) > 0)
@@ -79,7 +79,7 @@ test_that("step_correlation with spearman generates results", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_correlation(method = "spearman"))
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("correlation" %in% names(res$tables))
 })
@@ -91,7 +91,7 @@ test_that("step_correlation report function works", {
       glyexp::slice_head_var(10) |>
       glyclean::auto_clean()
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   step <- res$blueprint$correlation
   report_output <- step$report(res)
@@ -110,7 +110,7 @@ test_that("step_correlation on trait_exp works", {
     step_derive_traits(),
     step_correlation(on = "trait_exp")
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("correlation_trait" %in% names(res$tables))
 })
@@ -125,7 +125,7 @@ test_that("step_correlation on dynamic_motif_exp works", {
     step_quantify_dynamic_motifs(),
     step_correlation(on = "dynamic_motif_exp")
   )
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("correlation_dynamic_motif" %in% names(res$tables))
 })
 
@@ -136,7 +136,7 @@ test_that("step_correlation on sample runs and generates results", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_correlation(on_cor = "sample"))
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   # Should complete successfully
   expect_true("correlation" %in% names(res$tables))

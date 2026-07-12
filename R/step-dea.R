@@ -493,7 +493,7 @@ step_dea_kruskal <- function(
 #' @noRd
 .dea_get_item_name <- function(exp, on) {
   if (on == "trait_exp") {
-    if (glyexp::get_exp_type(exp) == "glycomics") {
+    if (.get_exp_type(exp) == "glycomics") {
       "traits"
     } else {
       "site-specific traits"

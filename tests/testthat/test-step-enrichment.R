@@ -8,7 +8,8 @@ run_sig_enrich_step <- function(step_fun, kind) {
       glyexp::filter_obs(group %in% c("H", "C")) |>
       glyexp::mutate_obs(group = factor(group)) |>
       glyexp::slice_head_var(20) |>
-      glyclean::auto_clean()
+      glyclean::auto_clean() |>
+      as_test_glyco_se()
   )
 
   ctx <- new_ctx(exp, "group")

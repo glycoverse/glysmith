@@ -30,6 +30,7 @@ test_that("step_cox condition passes when time_col exists", {
   exp <- glyexp::real_experiment2
   exp$sample_info$time <- runif(nrow(exp$sample_info), 1, 100)
   exp$sample_info$event <- sample(0:1, nrow(exp$sample_info), replace = TRUE)
+  exp <- as_test_glyco_se(exp)
 
   mock_ctx <- structure(
     list(
@@ -49,6 +50,7 @@ test_that("step_cox condition fails when time_col missing", {
   exp <- glyexp::real_experiment2
   # Add event but not time
   exp$sample_info$event <- sample(0:1, nrow(exp$sample_info), replace = TRUE)
+  exp <- as_test_glyco_se(exp)
 
   mock_ctx <- structure(
     list(
@@ -68,6 +70,7 @@ test_that("step_cox condition fails when event_col missing", {
   exp <- glyexp::real_experiment2
   # Add time but not event
   exp$sample_info$time <- runif(nrow(exp$sample_info), 1, 100)
+  exp <- as_test_glyco_se(exp)
 
   mock_ctx <- structure(
     list(
@@ -115,7 +118,7 @@ test_that("step_cox report function works with results", {
   )
 
   bp <- blueprint(step_cox())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   step <- res$blueprint$cox
   suppressMessages(report_output <- step$report(res))
@@ -168,7 +171,7 @@ test_that("step_cox generates table with expected columns", {
   )
 
   bp <- blueprint(step_cox())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   cox_table <- res$tables$cox
   expect_true(nrow(cox_table) > 0)
@@ -195,7 +198,7 @@ test_that("step_cox stores raw result", {
   )
 
   bp <- blueprint(step_cox())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("cox_raw_res" %in% names(res$data))
 })

@@ -399,3 +399,234 @@
 .is_interactive <- function() {
   interactive() && !nzchar(Sys.getenv("TESTTHAT"))
 }
+
+# Data-container helpers -------------------------------------------------------
+
+#' Check a glysmith data container
+#'
+#' @param exp A `glyexp::experiment()`, `GlycomicSE`, or `GlycoproteomicSE`
+#'   object.
+#'
+#' @returns `NULL` invisibly, or an error if `exp` is unsupported.
+#' @noRd
+.assert_data_container <- function(exp) {
+  if (
+    glyexp::is_experiment(exp) ||
+      glyexp::is_glycomic_se(exp) ||
+      glyexp::is_glycoproteomic_se(exp)
+  ) {
+    return(invisible(NULL))
+  }
+
+  cli::cli_abort(
+    paste0(
+      "{.arg exp} must be a {.cls glyexp_experiment}, ",
+      "{.cls GlycomicSE}, or {.cls GlycoproteomicSE} object."
+    )
+  )
+}
+
+#' Convert a supported data container to a glyco SummarizedExperiment
+#'
+#' @inheritParams .assert_data_container
+#'
+#' @returns A `GlycomicSE` or `GlycoproteomicSE` object.
+#' @noRd
+.as_glyco_se <- function(exp) {
+  if (glyexp::is_glycomic_se(exp) || glyexp::is_glycoproteomic_se(exp)) {
+    return(exp)
+  }
+
+  switch(
+    glyexp::get_exp_type(exp),
+    glycomics = glyexp::as_glycomic_se(exp),
+    glycoproteomics = glyexp::as_glycoproteomic_se(exp),
+    cli::cli_abort(
+      "{.arg exp} must contain glycomics or glycoproteomics data."
+    )
+  )
+}
+
+#' Restore a legacy experiment container
+#'
+#' @param exp A data object produced while running a blueprint.
+#' @param legacy Whether the original input was a `glyexp::experiment()`.
+#'
+#' @returns `exp`, converted to `glyexp::experiment()` when appropriate.
+#' @noRd
+.restore_data_container <- function(exp, legacy) {
+  if (legacy && methods::is(exp, "SummarizedExperiment")) {
+    return(glyexp::from_se(exp))
+  }
+  exp
+}
+
+#' Adapt a SummarizedExperiment for a legacy-only dependency
+#'
+#' @param exp A `SummarizedExperiment` object.
+#'
+#' @returns A `glyexp::experiment()` with the same assay and annotations.
+#' @noRd
+.as_legacy_experiment <- function(exp) {
+  glyexp::from_se(exp)
+}
+
+#' Extract sample information
+#'
+#' @param exp A glyco `SummarizedExperiment` object.
+#'
+#' @returns A tibble with a `sample` identifier column.
+#' @noRd
+.get_sample_info <- function(exp) {
+  if (glyexp::is_experiment(exp)) {
+    return(glyexp::get_sample_info(exp))
+  }
+  info <- SummarizedExperiment::colData(exp)
+  if ("sample" %in% colnames(info)) {
+    return(tibble::as_tibble(info))
+  }
+  tibble::as_tibble(info, rownames = "sample")
+}
+
+#' Replace sample information
+#'
+#' @param exp A glyco `SummarizedExperiment` object.
+#' @param sample_info A data frame containing replacement sample information.
+#'
+#' @returns `exp` with updated `colData`.
+#' @noRd
+.set_sample_info <- function(exp, sample_info) {
+  if (glyexp::is_experiment(exp)) {
+    exp$sample_info <- sample_info
+    return(exp)
+  }
+  samples <- sample_info[["sample"]] %||% colnames(exp)
+  sample_info <- dplyr::select(sample_info, -dplyr::any_of("sample"))
+  SummarizedExperiment::colData(exp) <- S4Vectors::DataFrame(
+    sample_info,
+    row.names = samples,
+    check.names = FALSE
+  )
+  exp
+}
+
+#' Extract variable information
+#'
+#' @inheritParams .get_sample_info
+#'
+#' @returns A tibble with a `variable` identifier column.
+#' @noRd
+.get_var_info <- function(exp) {
+  if (glyexp::is_experiment(exp)) {
+    return(glyexp::get_var_info(exp))
+  }
+  info <- SummarizedExperiment::rowData(exp)
+  if ("variable" %in% colnames(info)) {
+    return(tibble::as_tibble(info))
+  }
+  tibble::as_tibble(info, rownames = "variable")
+}
+
+#' Replace variable information
+#'
+#' @param exp A glyco `SummarizedExperiment` object.
+#' @param var_info A data frame containing replacement variable information.
+#'
+#' @returns `exp` with updated `rowData`.
+#' @noRd
+.set_var_info <- function(exp, var_info) {
+  if (glyexp::is_experiment(exp)) {
+    exp$var_info <- var_info
+    return(exp)
+  }
+  variables <- var_info[["variable"]] %||% rownames(exp)
+  var_info <- dplyr::select(var_info, -dplyr::any_of("variable"))
+  SummarizedExperiment::rowData(exp) <- S4Vectors::DataFrame(
+    var_info,
+    row.names = variables,
+    check.names = FALSE
+  )
+  exp
+}
+
+#' Extract the experiment type
+#'
+#' @inheritParams .get_sample_info
+#'
+#' @returns Either `"glycomics"` or `"glycoproteomics"`.
+#' @noRd
+.get_exp_type <- function(exp) {
+  if (glyexp::is_experiment(exp)) {
+    return(glyexp::get_exp_type(exp))
+  }
+  if (glyexp::is_glycomic_se(exp)) {
+    return("glycomics")
+  }
+  "glycoproteomics"
+}
+
+#' Extract the glycan type
+#'
+#' @inheritParams .get_sample_info
+#'
+#' @returns The glycan type stored in `metadata(exp)`.
+#' @noRd
+.get_glycan_type <- function(exp) {
+  if (glyexp::is_experiment(exp)) {
+    return(glyexp::get_glycan_type(exp))
+  }
+  S4Vectors::metadata(exp)[["glycan_type"]]
+}
+
+#' Subset samples by group
+#'
+#' @inheritParams .get_sample_info
+#' @param groups Group values to retain, in the desired factor-level order.
+#'
+#' @returns A class-preserving subset of `exp`.
+#' @noRd
+.filter_groups <- function(exp, groups) {
+  sample_info <- .get_sample_info(exp)
+  keep <- sample_info[["group"]] %in% groups
+  exp <- exp[, keep]
+  sample_info <- .get_sample_info(exp)
+  sample_info[["group"]] <- factor(sample_info[["group"]], levels = groups)
+  .set_sample_info(exp, sample_info)
+}
+
+#' Subset variables by identifier
+#'
+#' @inheritParams .get_sample_info
+#' @param variables Variable identifiers to retain.
+#'
+#' @returns A class-preserving subset of `exp`.
+#' @noRd
+.filter_variables <- function(exp, variables) {
+  exp[rownames(exp) %in% variables, ]
+}
+
+#' Convert a glyco SummarizedExperiment to long-form data
+#'
+#' @inheritParams .get_sample_info
+#'
+#' @returns A tibble containing sample information, variable information, and
+#'   an abundance `value` column.
+#' @noRd
+.as_data_tibble <- function(exp) {
+  expr_mat <- as.matrix(SummarizedExperiment::assay(exp, 1))
+  values <- tibble::tibble(
+    sample = rep(colnames(exp), times = nrow(exp)),
+    variable = rep(rownames(exp), each = ncol(exp)),
+    value = as.vector(t(expr_mat))
+  )
+  values |>
+    dplyr::left_join(.get_sample_info(exp), by = "sample") |>
+    dplyr::left_join(.get_var_info(exp), by = "variable") |>
+    dplyr::select(
+      .data$sample,
+      dplyr::any_of(setdiff(colnames(.get_sample_info(exp)), "sample")),
+      .data$variable,
+      dplyr::any_of(setdiff(colnames(.get_var_info(exp)), "variable")),
+      .data$value
+    )
+}

@@ -191,7 +191,7 @@ step_cox <- function(
   if (is.null(exp)) {
     return(list(check = FALSE, reason = "Experiment not found."))
   }
-  sample_info <- glyexp::get_sample_info(exp)
+  sample_info <- .get_sample_info(exp)
   if (!time_col %in% colnames(sample_info)) {
     return(list(
       check = FALSE,

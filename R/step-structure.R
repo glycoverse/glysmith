@@ -73,7 +73,7 @@ step_infer_structure <- function(
       reason = "glycan structures are already available in the experiment"
     ))
   }
-  if (!"glycan_composition" %in% colnames(exp$var_info)) {
+  if (!"glycan_composition" %in% colnames(.get_var_info(exp))) {
     return(list(
       check = FALSE,
       reason = "glycan compositions are not available in the experiment"
@@ -95,10 +95,11 @@ step_infer_structure <- function(
   db_to_use <- glydb::glydb_structures(
     structure_level = structure_level,
     species = species,
-    glycan_type = glyexp::get_glycan_type(exp)
+    glycan_type = .get_glycan_type(exp)
   )
 
-  comps <- exp$var_info$glycan_composition
+  var_info <- .get_var_info(exp)
+  comps <- var_info[["glycan_composition"]]
   if (glyrepr::get_mono_type(db_to_use) == "generic") {
     comps <- glyrepr::convert_to_generic(comps)
   }
@@ -108,16 +109,15 @@ step_infer_structure <- function(
     db = db_to_use,
     return_best = TRUE
   )
-  inference_tbl <- exp$var_info |>
+  inference_tbl <- var_info |>
     dplyr::mutate(
       glycan_structure = inferred_structures,
       matched = !is.na(.data$glycan_structure)
     )
 
-  inferred_exp <- exp
-  inferred_exp$var_info$glycan_structure <- inferred_structures
-  inferred_exp <- inferred_exp |>
-    glyexp::filter_var(!is.na(.data$glycan_structure))
+  var_info[["glycan_structure"]] <- inferred_structures
+  inferred_exp <- .set_var_info(exp, var_info)
+  inferred_exp <- inferred_exp[!is.na(inferred_structures), ]
 
   ctx <- ctx_add_data(ctx, "exp", inferred_exp)
   ctx <- ctx_add_data(ctx, "uninferred_exp", exp)
@@ -241,7 +241,7 @@ step_derive_traits <- function(
   ctx_add_table(
     ctx,
     "derived_traits",
-    tibble::as_tibble(trait_exp),
+    .as_data_tibble(trait_exp),
     "Derived trait calculation results."
   )
 }
@@ -254,7 +254,7 @@ step_derive_traits <- function(
 #' @noRd
 .report_derive_traits <- function(x) {
   tbl <- x$tables[["derived_traits"]]
-  if (glyexp::get_exp_type(x$exp) == "glycomics") {
+  if (.get_exp_type(x$exp) == "glycomics") {
     item_name <- "Derived traits"
   } else {
     item_name <- "Site-specific derived traits"
@@ -360,7 +360,7 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
   ctx_add_table(
     ctx,
     "dynamic_motifs",
-    tibble::as_tibble(dynamic_motif_exp),
+    .as_data_tibble(dynamic_motif_exp),
     "Dynamic motif quantification results."
   )
 }
@@ -445,7 +445,7 @@ step_quantify_branch_motifs <- function(method = "relative") {
       reason = "glycan structures are not available in the experiment"
     ))
   }
-  type <- glyexp::get_glycan_type(exp)
+  type <- .get_glycan_type(exp)
   if (type != "N") {
     return(list(
       check = FALSE,
@@ -477,7 +477,7 @@ step_quantify_branch_motifs <- function(method = "relative") {
   ctx_add_table(
     ctx,
     "branch_motifs",
-    tibble::as_tibble(branch_motif_exp),
+    .as_data_tibble(branch_motif_exp),
     "Branch motif quantification results."
   )
 }
@@ -561,7 +561,8 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
 #' @returns A list with `check` and `reason`.
 #' @noRd
 .condition_roc <- function(ctx) {
-  if (length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2) {
+  groups <- .get_sample_info(ctx_get_data(ctx, "exp"))[["group"]]
+  if (length(unique(groups)) == 2) {
     list(check = TRUE, reason = NULL)
   } else {
     list(check = FALSE, reason = "more than 2 groups are in the experiment")
@@ -590,10 +591,9 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
     dplyr::slice_max(.data$auc, n = 10, with_ties = FALSE) |>
     dplyr::pull("variable")
 
-  sub_exp <- exp |>
-    glyexp::filter_var(.data$variable %in% top_vars)
+  sub_exp <- .filter_variables(exp, top_vars)
 
-  p_roc <- glyvis::plot_roc(sub_exp, type = "roc")
+  p_roc <- glyvis::plot_roc(.as_legacy_experiment(sub_exp), type = "roc")
 
   ctx_add_plot(
     ctx,

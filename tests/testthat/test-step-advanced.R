@@ -47,14 +47,15 @@ test_that("step_infer_structure adds structures and filters unmatched variables"
   )
   bp <- blueprint(step_infer_structure())
 
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_false("db" %in% names(formals(step_infer_structure)))
   expect_true("infer_structure" %in% names(glysmith:::all_steps()))
-  expect_true("glycan_structure" %in% colnames(res$exp$var_info))
-  expect_false(any(is.na(res$exp$var_info$glycan_structure)))
-  expect_equal(res$exp$var_info$variable, c("V1", "V2"))
-  expect_equal(rownames(res$exp$expr_mat), c("V1", "V2"))
+  var_info <- SummarizedExperiment::rowData(res$exp)
+  expect_true("glycan_structure" %in% colnames(var_info))
+  expect_false(any(is.na(var_info$glycan_structure)))
+  expect_equal(rownames(var_info), c("V1", "V2"))
+  expect_equal(rownames(res$exp), c("V1", "V2"))
   expect_true("uninferred_exp" %in% names(res$data))
 })
 
@@ -67,7 +68,7 @@ test_that("step_infer_structure records inference results before filtering", {
   )
   bp <- blueprint(step_infer_structure())
 
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("inferred_structures" %in% names(res$tables))
   expect_equal(nrow(res$tables$inferred_structures), 3)
@@ -93,7 +94,7 @@ test_that("step_infer_structure builds database from species, structure level, a
   )
 
   bp <- blueprint(step_infer_structure(species = "Homo sapiens"))
-  suppressMessages(forge_analysis(exp, bp))
+  suppressMessages(forge_analysis_se(exp, bp))
 
   expect_equal(length(calls), 1)
   expect_equal(calls[[1]]$structure_level, "topological")
@@ -114,10 +115,11 @@ test_that("step_infer_structure supports basic generic structure databases", {
   )
 
   bp <- blueprint(step_infer_structure(structure_level = "basic"))
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  expect_equal(res$exp$var_info$variable, c("V1", "V2"))
-  expect_false(any(is.na(res$exp$var_info$glycan_structure)))
+  var_info <- SummarizedExperiment::rowData(res$exp)
+  expect_equal(rownames(var_info), c("V1", "V2"))
+  expect_false(any(is.na(var_info$glycan_structure)))
 })
 
 # ----- step_derive_traits -----
@@ -128,7 +130,7 @@ test_that("step_derive_traits generates trait_exp and tables", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_derive_traits())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("trait_exp" %in% names(res$data))
   expect_true("derived_traits" %in% names(res$tables))
 })
@@ -141,7 +143,7 @@ test_that("step_quantify_dynamic_motifs generates dynamic_motif_exp and tables",
       glyclean::auto_clean()
   )
   bp <- blueprint(step_quantify_dynamic_motifs())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("dynamic_motif_exp" %in% names(res$data))
   expect_true("dynamic_motifs" %in% names(res$tables))
 })
@@ -154,7 +156,7 @@ test_that("step_quantify_branch_motifs generates branch_motif_exp and tables", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_quantify_branch_motifs())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("branch_motif_exp" %in% names(res$data))
   expect_true("branch_motifs" %in% names(res$tables))
 })
@@ -171,7 +173,7 @@ test_that("step_quantify_branch_motifs skips for non-N-glycans", {
   bp <- blueprint(step_quantify_branch_motifs())
   # Step should be skipped (message about skipping)
   expect_message(
-    forge_analysis(exp, bp),
+    forge_analysis_se(exp, bp),
     "Skipping.*branch motif quantification only works with N-glycans"
   )
 })
@@ -186,7 +188,7 @@ test_that("step_roc generates results", {
       glyclean::auto_clean()
   )
   bp <- blueprint(step_roc())
-  suppressMessages(res <- forge_analysis(exp, bp))
+  suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("roc_auc" %in% names(res$tables))
   expect_true("roc_curves" %in% names(res$plots))
