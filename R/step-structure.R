@@ -593,7 +593,7 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
 
   sub_exp <- .filter_variables(exp, top_vars)
 
-  p_roc <- glyvis::plot_roc(.as_legacy_experiment(sub_exp), type = "roc")
+  p_roc <- glyvis::plot_roc(sub_exp, type = "roc")
 
   ctx_add_plot(
     ctx,

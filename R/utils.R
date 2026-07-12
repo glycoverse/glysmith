@@ -461,16 +461,6 @@
   exp
 }
 
-#' Adapt a SummarizedExperiment for a legacy-only dependency
-#'
-#' @param exp A `SummarizedExperiment` object.
-#'
-#' @returns A `glyexp::experiment()` with the same assay and annotations.
-#' @noRd
-.as_legacy_experiment <- function(exp) {
-  glyexp::from_se(exp)
-}
-
 #' Extract sample information
 #'
 #' @param exp A glyco `SummarizedExperiment` object.
