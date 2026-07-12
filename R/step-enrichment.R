@@ -423,7 +423,7 @@ step_sig_enrich <- function(
   call_args <- enrich_args
   if (universe == "detected") {
     exp <- ctx_get_data(ctx, "exp")
-    call_args$universe <- .get_var_info(exp)[["protein"]]
+    call_args$universe <- glyfun::detected_universe(exp)
   }
   enrich_res <- switch(
     kind,
