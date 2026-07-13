@@ -5,7 +5,7 @@ test_that("default blueprint workflow forges, quenches, and polishes results", {
   skip_if_glysmith_deps_not_installed(bp)
 
   exp <- glyexp::real_experiment2
-  suppressMessages(result <- forge_analysis(exp, blueprint = bp))
+  suppressMessages(result <- forge_analysis_se(exp, blueprint = bp))
 
   expect_s3_class(result, "glysmith_result")
   expect_identical(result$blueprint, bp)

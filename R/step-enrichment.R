@@ -382,9 +382,10 @@ step_sig_enrich <- function(
 #' @returns A list with `check` and `reason`.
 #' @noRd
 .condition_sig_enrich <- function(ctx) {
-  check1 <- glyexp::get_exp_type(ctx_get_data(ctx, "exp")) == "glycoproteomics"
+  exp <- ctx_get_data(ctx, "exp")
+  check1 <- .get_exp_type(exp) == "glycoproteomics"
   reason1 <- "input is not a glycoproteomics experiment"
-  check2 <- length(unique(ctx_get_data(ctx, "exp")$sample_info$group)) == 2
+  check2 <- length(unique(.get_sample_info(exp)[["group"]])) == 2
   reason2 <- "input has more than 2 groups"
   if (check1 && check2) {
     list(check = TRUE, reason = NULL)
@@ -421,10 +422,8 @@ step_sig_enrich <- function(
   dea_res <- ctx_get_data(ctx, "dea_res")
   call_args <- enrich_args
   if (universe == "detected") {
-    call_args$universe <- glyfun::detected_universe(ctx_get_data(
-      ctx,
-      "exp"
-    ))
+    exp <- ctx_get_data(ctx, "exp")
+    call_args$universe <- glyfun::detected_universe(exp)
   }
   enrich_res <- switch(
     kind,

@@ -175,7 +175,7 @@ step_logo <- function(
 #' @noRd
 .condition_logo <- function(ctx, on) {
   exp <- ctx_get_data(ctx, on)
-  if (glyexp::get_exp_type(exp) != "glycoproteomics") {
+  if (.get_exp_type(exp) != "glycoproteomics") {
     return(list(
       check = FALSE,
       reason = "logo plot is only applicable for glycoproteomics experiments"
@@ -367,8 +367,7 @@ step_sig_boxplot <- function(
       dplyr::slice_head(n = min(n_top, 25)) |>
       dplyr::pull(.data$variable)
 
-    exp <- exp |>
-      glyexp::filter_var(.data$variable %in% top_vars)
+    exp <- .filter_variables(exp, top_vars)
     n_vars <- length(top_vars)
   }
 

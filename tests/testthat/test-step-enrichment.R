@@ -8,7 +8,8 @@ run_sig_enrich_step <- function(step_fun, kind) {
       glyexp::filter_obs(group %in% c("H", "C")) |>
       glyexp::mutate_obs(group = factor(group)) |>
       glyexp::slice_head_var(20) |>
-      glyclean::auto_clean()
+      glyclean::auto_clean() |>
+      as_test_glyco_se()
   )
 
   ctx <- new_ctx(exp, "group")
@@ -29,6 +30,10 @@ run_sig_enrich_step <- function(step_fun, kind) {
     structure(mock_tbl, class = c("mock_enrich", class(mock_tbl)))
   }
   local_mocked_bindings(
+    detected_universe = function(x) {
+      called$detected_universe_input <- x
+      "P12345"
+    },
     enrich_ora_go = mock_enrich,
     enrich_ora_kegg = mock_enrich,
     enrich_ora_reactome = mock_enrich,
@@ -84,4 +89,5 @@ test_that("step_sig_enrich passes detected proteins as universe", {
 
   expect_type(called$args$universe, "character")
   expect_false(inherits(called$args$universe, "glyexp_experiment"))
+  expect_s4_class(called$detected_universe_input, "GlycoproteomicSE")
 })

@@ -17,12 +17,12 @@
 
 #' Check whether an experiment has glycan structures
 #'
-#' @param exp A glyexp experiment object.
+#' @param exp A glyco `SummarizedExperiment` object.
 #'
-#' @returns `TRUE` if `exp$var_info` has a `glycan_structure` column.
+#' @returns `TRUE` if variable information has a `glycan_structure` column.
 #' @noRd
 .has_glycan_structure <- function(exp) {
-  "glycan_structure" %in% colnames(exp$var_info)
+  "glycan_structure" %in% colnames(.get_var_info(exp))
 }
 
 #' Resolve properties from 'on' parameter
