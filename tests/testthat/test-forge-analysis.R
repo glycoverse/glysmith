@@ -36,6 +36,9 @@ test_that("forge_analysis keeps experiment backward compatibility", {
   local_mock_forge_pipeline()
 
   exp <- glyexp::real_experiment2
+  if (!inherits(exp, "glyexp_experiment")) {
+    exp <- suppressWarnings(glyexp::from_se(exp))
+  }
   suppressMessages(result <- glysmith::forge_analysis(exp))
   expect_s3_class(result$exp, "glyexp_experiment")
   expect_true(is.factor(result$exp$sample_info$group))

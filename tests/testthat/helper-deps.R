@@ -6,8 +6,11 @@ skip_if_glysmith_deps_not_installed <- function(
 }
 
 as_test_glyco_se <- function(exp) {
+  if (methods::is(exp, "SummarizedExperiment")) {
+    return(exp)
+  }
   switch(
-    glyexp::get_exp_type(exp),
+    S4Vectors::metadata(glyexp::as_se(exp))[["exp_type"]],
     glycomics = glyexp::as_glycomic_se(exp),
     glycoproteomics = glyexp::as_glycoproteomic_se(exp)
   )
@@ -19,7 +22,7 @@ forge_analysis_se <- function(
   group_col = "group"
 ) {
   skip_if_glysmith_deps_not_installed(blueprint)
-  if (glyexp::is_experiment(exp)) {
+  if (inherits(exp, "glyexp_experiment")) {
     exp <- as_test_glyco_se(exp)
   }
   glysmith::forge_analysis(exp, blueprint = blueprint, group_col = group_col)

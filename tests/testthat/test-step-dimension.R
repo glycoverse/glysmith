@@ -1,4 +1,20 @@
 # ----- step_pca -----
+make_pca_exp <- function() {
+  SummarizedExperiment::SummarizedExperiment(
+    assays = list(
+      abundance = matrix(
+        seq_len(24),
+        nrow = 4,
+        dimnames = list(paste0("V", 1:4), paste0("S", 1:6))
+      )
+    ),
+    colData = S4Vectors::DataFrame(
+      group = factor(rep(c("A", "B"), each = 3)),
+      row.names = paste0("S", 1:6)
+    )
+  )
+}
+
 test_that("step_pca generates plots and tables", {
   suppressMessages(
     exp <- glyexp::real_experiment |>
@@ -32,8 +48,7 @@ test_that("step_pca works on sig_exp", {
 })
 
 test_that("step_pca does not generate loadings plot when loadings = FALSE", {
-  data(toy_experiment, package = "glyexp")
-  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  ctx <- glysmith:::new_ctx(exp = make_pca_exp(), group_col = "group")
   step <- step_pca(on = "exp", loadings = FALSE)
   ctx_new <- step$run(ctx)
   expect_null(ctx_new$plots$pca_loadings)
@@ -42,8 +57,7 @@ test_that("step_pca does not generate loadings plot when loadings = FALSE", {
 })
 
 test_that("step_pca generates loadings plot when loadings = TRUE", {
-  data(toy_experiment, package = "glyexp")
-  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  ctx <- glysmith:::new_ctx(exp = make_pca_exp(), group_col = "group")
   step <- step_pca(on = "exp", loadings = TRUE)
   ctx_new <- step$run(ctx)
   expect_true(!is.null(ctx_new$plots$pca_loadings))
@@ -52,8 +66,7 @@ test_that("step_pca generates loadings plot when loadings = TRUE", {
 })
 
 test_that("step_pca does not generate screeplot when screeplot = FALSE", {
-  data(toy_experiment, package = "glyexp")
-  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  ctx <- glysmith:::new_ctx(exp = make_pca_exp(), group_col = "group")
   step <- step_pca(on = "exp", screeplot = FALSE)
   ctx_new <- step$run(ctx)
   expect_null(ctx_new$plots$pca_screeplot)
@@ -62,8 +75,7 @@ test_that("step_pca does not generate screeplot when screeplot = FALSE", {
 })
 
 test_that("step_pca generates screeplot when screeplot = TRUE", {
-  data(toy_experiment, package = "glyexp")
-  ctx <- glysmith:::new_ctx(exp = toy_experiment, group_col = "group")
+  ctx <- glysmith:::new_ctx(exp = make_pca_exp(), group_col = "group")
   step <- step_pca(on = "exp", screeplot = TRUE)
   ctx_new <- step$run(ctx)
   expect_true(!is.null(ctx_new$plots$pca_screeplot))

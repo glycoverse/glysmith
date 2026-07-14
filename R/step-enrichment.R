@@ -539,7 +539,7 @@ step_sig_enrich <- function(
   switch(
     type,
     dotplot = enrichplot::dotplot(enrich_res, ...),
-    barplot = barplot(enrich_res, ...),
+    barplot = graphics::barplot(enrich_res, ...),
     network = enrichplot::emapplot(
       enrichplot::pairwise_termsim(enrich_res),
       ...

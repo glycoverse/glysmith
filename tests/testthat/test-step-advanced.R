@@ -169,7 +169,8 @@ test_that("step_quantify_branch_motifs skips for non-N-glycans", {
   )
   # Modify the experiment to have O-glycan type
   # Must set after auto_clean() since it resets meta_data
-  exp$meta_data$glycan_type <- "O"
+  exp <- as_test_glyco_se(exp)
+  S4Vectors::metadata(exp)$glycan_type <- "O"
   bp <- blueprint(step_quantify_branch_motifs())
   # Step should be skipped (message about skipping)
   expect_message(

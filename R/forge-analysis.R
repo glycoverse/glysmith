@@ -34,7 +34,7 @@ forge_analysis <- function(
   check_glysmith_deps(blueprint = blueprint, action = "error")
   .assert_data_container(exp)
   checkmate::assert_string(group_col)
-  legacy <- glyexp::is_experiment(exp)
+  legacy <- inherits(exp, "glyexp_experiment")
   exp <- .as_glyco_se(exp)
   sample_info <- .get_sample_info(exp)
   if (!group_col %in% colnames(sample_info)) {

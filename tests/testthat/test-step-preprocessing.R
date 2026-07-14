@@ -2,8 +2,9 @@
 test_that("step_preprocess overwrites exp and writes raw_exp", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
+  exp <- as_test_glyco_se(exp)
   # We use sum to check if the expression matrix is changed
-  old_sum <- sum(exp$expr_mat, na.rm = TRUE)
+  old_sum <- sum(SummarizedExperiment::assay(exp), na.rm = TRUE)
   bp <- blueprint(step_preprocess())
   suppressMessages(res <- forge_analysis_se(exp, bp))
   new_exp <- res$data$exp
@@ -21,37 +22,46 @@ test_that("step_preprocess keeps QC samples if present", {
   # Create experiment with QC samples
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
-  exp_data <- unclass(exp)
-
+  exp <- as_test_glyco_se(exp)
   # Extend sample_info with QC samples
   new_sample_info <- dplyr::bind_rows(
-    exp_data$sample_info,
+    tibble::as_tibble(SummarizedExperiment::colData(exp), rownames = "sample"),
     tibble::tibble(
       sample = c("QC1", "QC2"),
-      group = factor("QC", levels = c(levels(exp_data$sample_info$group), "QC"))
+      group = factor(
+        "QC",
+        levels = c(
+          levels(SummarizedExperiment::colData(exp)$group),
+          "QC"
+        )
+      )
     )
   )
 
   # Extend expr_mat with QC columns (duplicate existing samples as QC)
   new_expr_mat <- cbind(
-    exp_data$expr_mat,
-    QC1 = exp_data$expr_mat[, "C1"],
-    QC2 = exp_data$expr_mat[, "C2"]
+    SummarizedExperiment::assay(exp),
+    QC1 = SummarizedExperiment::assay(exp)[, "C1"],
+    QC2 = SummarizedExperiment::assay(exp)[, "C2"]
   )
 
   # Create new experiment with QC samples
-  exp_with_qc <- glyexp::experiment(
-    expr_mat = new_expr_mat,
-    sample_info = new_sample_info,
-    var_info = exp_data$var_info,
-    exp_type = "glycoproteomics",
-    glycan_type = "N"
+  exp_with_qc <- glyexp::GlycoproteomicSE(
+    abundance = new_expr_mat,
+    colData = S4Vectors::DataFrame(
+      dplyr::select(new_sample_info, -"sample"),
+      row.names = new_sample_info$sample
+    ),
+    rowData = SummarizedExperiment::rowData(exp),
+    metadata = S4Vectors::metadata(exp)
   )
 
   # Verify QC samples exist before preprocessing
-  groups_before <- unique(as.character(exp_with_qc$sample_info$group))
+  groups_before <- unique(as.character(
+    SummarizedExperiment::colData(exp_with_qc)$group
+  ))
   expect_true("QC" %in% groups_before)
-  expect_equal(nrow(exp_with_qc$sample_info), 14) # 12 original + 2 QC
+  expect_equal(ncol(exp_with_qc), 14) # 12 original + 2 QC
 
   # Run preprocessing
   bp <- blueprint(step_preprocess())
@@ -71,6 +81,7 @@ test_that("step_preprocess keeps QC samples if present", {
 test_that("step_preprocess does not pass qc_name to auto_clean", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
+  exp <- as_test_glyco_se(exp)
   passed_args <- NULL
 
   local_mocked_bindings(
@@ -99,6 +110,7 @@ test_that("step_preprocess does not pass qc_name to auto_clean", {
 test_that("step_plot_qc generates plots with correct prefixes", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
+  exp <- as_test_glyco_se(exp)
 
   # Test pre-QC with qc_pre_ prefix (includes missing value plots)
   bp_pre <- blueprint(step_plot_qc(when = "pre"))
@@ -117,6 +129,7 @@ test_that("step_plot_qc generates plots with correct prefixes", {
 test_that("step_plot_qc can appear twice in a blueprint", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
+  exp <- as_test_glyco_se(exp)
 
   bp <- blueprint(
     step_plot_qc(when = "pre"),
@@ -141,6 +154,7 @@ test_that("step_plot_qc can appear twice in a blueprint", {
 test_that("step_subset_groups filters exp and keeps full_exp", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
+  exp <- as_test_glyco_se(exp)
   bp <- blueprint(step_subset_groups(groups = c("H", "C")))
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
@@ -163,6 +177,7 @@ test_that("step_subset_groups filters exp and keeps full_exp", {
 test_that("step_ident_overview generates summary", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(10)
+  exp <- as_test_glyco_se(exp)
   bp <- blueprint(step_ident_overview())
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("summary" %in% names(res$tables))
@@ -170,10 +185,16 @@ test_that("step_ident_overview generates summary", {
 
 # ----- step_adjust_protein -----
 make_protein_expr <- function(exp) {
-  protein_tbl <- exp$var_info |>
+  protein_tbl <- tibble::as_tibble(
+    SummarizedExperiment::rowData(exp),
+    rownames = "variable"
+  ) |>
     dplyr::select(dplyr::all_of(c("variable", "protein")))
 
-  expr_tbl <- tibble::as_tibble(exp$expr_mat, rownames = "variable") |>
+  expr_tbl <- tibble::as_tibble(
+    SummarizedExperiment::assay(exp),
+    rownames = "variable"
+  ) |>
     dplyr::left_join(protein_tbl, by = "variable") |>
     dplyr::group_by(.data$protein) |>
     dplyr::summarise(
@@ -195,6 +216,7 @@ make_protein_expr <- function(exp) {
 test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
   exp <- glyexp::real_experiment |>
     glyexp::slice_head_var(50)
+  exp <- as_test_glyco_se(exp)
 
   pro_expr <- make_protein_expr(exp)
   csv_path <- tempfile(fileext = ".csv")

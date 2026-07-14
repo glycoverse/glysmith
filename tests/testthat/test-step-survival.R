@@ -27,9 +27,13 @@ test_that("step_cox with no p-adjustment works", {
 
 test_that("step_cox condition passes when time_col exists", {
   # Create mock experiment with survival data
-  exp <- glyexp::real_experiment2
-  exp$sample_info$time <- runif(nrow(exp$sample_info), 1, 100)
-  exp$sample_info$event <- sample(0:1, nrow(exp$sample_info), replace = TRUE)
+  exp <- as_test_glyco_se(glyexp::real_experiment2)
+  SummarizedExperiment::colData(exp)$time <- runif(ncol(exp), 1, 100)
+  SummarizedExperiment::colData(exp)$event <- sample(
+    0:1,
+    ncol(exp),
+    replace = TRUE
+  )
   exp <- as_test_glyco_se(exp)
 
   mock_ctx <- structure(
@@ -47,9 +51,13 @@ test_that("step_cox condition passes when time_col exists", {
 })
 
 test_that("step_cox condition fails when time_col missing", {
-  exp <- glyexp::real_experiment2
+  exp <- as_test_glyco_se(glyexp::real_experiment2)
   # Add event but not time
-  exp$sample_info$event <- sample(0:1, nrow(exp$sample_info), replace = TRUE)
+  SummarizedExperiment::colData(exp)$event <- sample(
+    0:1,
+    ncol(exp),
+    replace = TRUE
+  )
   exp <- as_test_glyco_se(exp)
 
   mock_ctx <- structure(
@@ -67,9 +75,9 @@ test_that("step_cox condition fails when time_col missing", {
 })
 
 test_that("step_cox condition fails when event_col missing", {
-  exp <- glyexp::real_experiment2
+  exp <- as_test_glyco_se(glyexp::real_experiment2)
   # Add time but not event
-  exp$sample_info$time <- runif(nrow(exp$sample_info), 1, 100)
+  SummarizedExperiment::colData(exp)$time <- runif(ncol(exp), 1, 100)
   exp <- as_test_glyco_se(exp)
 
   mock_ctx <- structure(
@@ -106,15 +114,18 @@ test_that("step_cox report function works with results", {
   skip_on_cran()
 
   # Create mock experiment with survival data
-  exp <- glyexp::real_experiment2
-  n_samples <- nrow(exp$sample_info)
-  exp$sample_info$time <- runif(n_samples, 1, 100)
-  exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
+  exp <- as_test_glyco_se(glyexp::real_experiment2)
+  n_samples <- ncol(exp)
+  SummarizedExperiment::colData(exp)$time <- runif(n_samples, 1, 100)
+  SummarizedExperiment::colData(exp)$event <- sample(
+    0:1,
+    n_samples,
+    replace = TRUE
+  )
 
+  exp <- exp[seq_len(10), ]
   suppressMessages(
-    exp <- exp |>
-      glyexp::slice_head_var(10) |>
-      glyclean::auto_clean()
+    exp <- glyclean::auto_clean(exp)
   )
 
   bp <- blueprint(step_cox())
@@ -159,15 +170,18 @@ test_that("step_cox generates table with expected columns", {
   skip_on_cran()
 
   # Create mock experiment with survival data
-  exp <- glyexp::real_experiment2
-  n_samples <- nrow(exp$sample_info)
-  exp$sample_info$time <- runif(n_samples, 1, 100)
-  exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
+  exp <- as_test_glyco_se(glyexp::real_experiment2)
+  n_samples <- ncol(exp)
+  SummarizedExperiment::colData(exp)$time <- runif(n_samples, 1, 100)
+  SummarizedExperiment::colData(exp)$event <- sample(
+    0:1,
+    n_samples,
+    replace = TRUE
+  )
 
+  exp <- exp[seq_len(5), ]
   suppressMessages(
-    exp <- exp |>
-      glyexp::slice_head_var(5) |>
-      glyclean::auto_clean()
+    exp <- glyclean::auto_clean(exp)
   )
 
   bp <- blueprint(step_cox())
@@ -186,15 +200,18 @@ test_that("step_cox stores raw result", {
   skip_on_cran()
 
   # Create mock experiment with survival data
-  exp <- glyexp::real_experiment2
-  n_samples <- nrow(exp$sample_info)
-  exp$sample_info$time <- runif(n_samples, 1, 100)
-  exp$sample_info$event <- sample(0:1, n_samples, replace = TRUE)
+  exp <- as_test_glyco_se(glyexp::real_experiment2)
+  n_samples <- ncol(exp)
+  SummarizedExperiment::colData(exp)$time <- runif(n_samples, 1, 100)
+  SummarizedExperiment::colData(exp)$event <- sample(
+    0:1,
+    n_samples,
+    replace = TRUE
+  )
 
+  exp <- exp[seq_len(5), ]
   suppressMessages(
-    exp <- exp |>
-      glyexp::slice_head_var(5) |>
-      glyclean::auto_clean()
+    exp <- glyclean::auto_clean(exp)
   )
 
   bp <- blueprint(step_cox())

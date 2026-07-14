@@ -411,7 +411,7 @@
 #' @noRd
 .assert_data_container <- function(exp) {
   if (
-    glyexp::is_experiment(exp) ||
+    inherits(exp, "glyexp_experiment") ||
       glyexp::is_glycomic_se(exp) ||
       glyexp::is_glycoproteomic_se(exp)
   ) {
@@ -438,7 +438,7 @@
   }
 
   switch(
-    glyexp::get_exp_type(exp),
+    S4Vectors::metadata(glyexp::as_se(exp))[["exp_type"]],
     glycomics = glyexp::as_glycomic_se(exp),
     glycoproteomics = glyexp::as_glycoproteomic_se(exp),
     cli::cli_abort(
@@ -468,8 +468,8 @@
 #' @returns A tibble with a `sample` identifier column.
 #' @noRd
 .get_sample_info <- function(exp) {
-  if (glyexp::is_experiment(exp)) {
-    return(glyexp::get_sample_info(exp))
+  if (inherits(exp, "glyexp_experiment")) {
+    return(exp$sample_info)
   }
   info <- SummarizedExperiment::colData(exp)
   if ("sample" %in% colnames(info)) {
@@ -486,7 +486,7 @@
 #' @returns `exp` with updated `colData`.
 #' @noRd
 .set_sample_info <- function(exp, sample_info) {
-  if (glyexp::is_experiment(exp)) {
+  if (inherits(exp, "glyexp_experiment")) {
     exp$sample_info <- sample_info
     return(exp)
   }
@@ -507,8 +507,8 @@
 #' @returns A tibble with a `variable` identifier column.
 #' @noRd
 .get_var_info <- function(exp) {
-  if (glyexp::is_experiment(exp)) {
-    return(glyexp::get_var_info(exp))
+  if (inherits(exp, "glyexp_experiment")) {
+    return(exp$var_info)
   }
   info <- SummarizedExperiment::rowData(exp)
   if ("variable" %in% colnames(info)) {
@@ -525,7 +525,7 @@
 #' @returns `exp` with updated `rowData`.
 #' @noRd
 .set_var_info <- function(exp, var_info) {
-  if (glyexp::is_experiment(exp)) {
+  if (inherits(exp, "glyexp_experiment")) {
     exp$var_info <- var_info
     return(exp)
   }
@@ -546,8 +546,8 @@
 #' @returns Either `"glycomics"` or `"glycoproteomics"`.
 #' @noRd
 .get_exp_type <- function(exp) {
-  if (glyexp::is_experiment(exp)) {
-    return(glyexp::get_exp_type(exp))
+  if (inherits(exp, "glyexp_experiment")) {
+    return(exp$meta_data$exp_type)
   }
   if (glyexp::is_glycomic_se(exp)) {
     return("glycomics")
@@ -562,8 +562,8 @@
 #' @returns The glycan type stored in `metadata(exp)`.
 #' @noRd
 .get_glycan_type <- function(exp) {
-  if (glyexp::is_experiment(exp)) {
-    return(glyexp::get_glycan_type(exp))
+  if (inherits(exp, "glyexp_experiment")) {
+    return(exp$meta_data$glycan_type)
   }
   S4Vectors::metadata(exp)[["glycan_type"]]
 }
