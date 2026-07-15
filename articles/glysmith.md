@@ -21,6 +21,8 @@ to install it separately, even if you have installed the meta package
 
 library(glysmith)
 library(glyexp)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 ```
 
 ## Analyze your data with a single line of code
@@ -47,7 +49,7 @@ real_experiment
 #> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
 #> ℹ Expression matrix: 12 samples, 4262 variables
 #> ℹ Sample information fields: group <fct>
-#> ℹ Variable information fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <glyrpr_c>, glycan_structure <glyrpr_s>
+#> ℹ Variable information fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
 ```
 
 Now, let’s run the default analysis pipeline with just a single line of

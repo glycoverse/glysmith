@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,7 +80,9 @@ packages. You need to install it separately, even if you have installed
 the meta package <code>glycoverse</code>.</em></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glysmith/">glysmith</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glyexp/" class="external-link">glyexp</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by</span></span>
+<span><span class="co">#&gt; 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="analyze-your-data-with-a-single-line-of-code">Analyze your data with a single line of code<a class="anchor" aria-label="anchor" href="#analyze-your-data-with-a-single-line-of-code"></a>
 </h2>
@@ -102,7 +104,7 @@ Experiments</a>.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">4262</span> variables</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;glyrpr_c&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;glyrpr_s&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span></span></span></code></pre></div>
 <p>Now, let’s run the default analysis pipeline with just a single line
 of code.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -245,7 +247,7 @@ vignette</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
