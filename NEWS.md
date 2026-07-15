@@ -1,3 +1,5 @@
+# glysmith (development version)
+
 # glysmith 0.12.1
 
 * `forge_analysis()` and workflow steps now natively support `GlycomicSE` and `GlycoproteomicSE` inputs while retaining `experiment()` compatibility across supported `glyexp` versions. (#22)
