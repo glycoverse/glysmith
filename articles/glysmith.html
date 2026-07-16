@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,25 +86,27 @@ the meta package <code>glycoverse</code>.</em></p>
 <div class="section level2">
 <h2 id="analyze-your-data-with-a-single-line-of-code">Analyze your data with a single line of code<a class="anchor" aria-label="anchor" href="#analyze-your-data-with-a-single-line-of-code"></a>
 </h2>
-<p>We will demonstrate using the built-in experiment object from
-<code>glyexp</code>. This is an N-glycoproteomics dataset containing 12
-samples across four different liver conditions: healthy controls (H),
-hepatitis (M), cirrhosis (Y), and hepatocellular carcinoma (C), with 3
-samples for each group. Please note, the dataset is raw and has not been
-normalized or imputed.</p>
+<p>We will demonstrate using the built-in <code>GlycoproteomicSE</code>
+object from <code>glyexp</code>. This is an N-glycoproteomics dataset
+containing 12 samples across four different liver conditions: healthy
+controls (H), hepatitis (M), cirrhosis (Y), and hepatocellular carcinoma
+(C), with 3 samples for each group. Please note, the dataset is raw and
+has not been normalized or imputed.</p>
 <p>To work with your own data, you can use <code>glyread</code> to
 import outputs from tools like pGlyco3, MSFragger-Glyco, or Byonic;
-Alternatively, you can create your own experiment object. For more
-details, see <a href="https://glycoverse.github.io/glyread/articles/glyread.html" class="external-link">Get
+Alternatively, you can create your own <code>GlycomicSE</code> or
+<code>GlycoproteomicSE</code> object. For more details, see <a href="https://glycoverse.github.io/glyread/articles/glyread.html" class="external-link">Get
 Started with glyread</a> or <a href="https://glycoverse.github.io/glyexp/articles/create-exp.html" class="external-link">Creating
-Experiments</a>.</p>
+Glyco SE Containers</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">real_experiment</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Glycoproteomics Experiment</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Expression matrix: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">4262</span> variables</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Sample information fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Variable information fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">GlycoproteomicSE</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Abundance assay: <span style="color: #0000BB;">12</span> samples, <span style="color: #0000BB;">4262</span> variables</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Glycan type: N</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Row data fields: <span style="color: #00BB00;">peptide</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">peptide_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">protein</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">protein_site</span> <span style="color: #0000BB;">&lt;int&gt;</span>, <span style="color: #00BB00;">gene</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_composition</span> <span style="color: #0000BB;">&lt;comp&gt;</span>, <span style="color: #00BB00;">glycan_structure</span> <span style="color: #0000BB;">&lt;struct&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Column data fields: <span style="color: #00BB00;">group</span> <span style="color: #0000BB;">&lt;fct&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Metadata fields: <span style="color: #00BB00;">exp_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">glycan_type</span> <span style="color: #0000BB;">&lt;chr&gt;</span>, <span style="color: #00BB00;">quant_method</span> <span style="color: #0000BB;">&lt;chr&gt;</span></span></span></code></pre></div>
 <p>Now, let’s run the default analysis pipeline with just a single line
 of code.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">

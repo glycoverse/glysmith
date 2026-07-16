@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -136,7 +136,8 @@ structured analytical blueprint.</p>
 <code class="sourceCode R"><span><span class="co"># Describe your goals in natural language</span></span>
 <span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inquire_blueprint.html">inquire_blueprint</a></span><span class="op">(</span><span class="st">"I want to perform DEA and visualize the results."</span>, exp <span class="op">=</span> <span class="va">your_exp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bp</span><span class="op">)</span></span></code></pre></div>
-<p>By providing the experiment object (<code>exp</code>), the LLM can
+<p>By providing a <code>GlycomicSE</code> or
+<code>GlycoproteomicSE</code> object as <code>exp</code>, the LLM can
 understand your data structure and experimental design, ensuring the
 generated blueprint is tailored to your specific dataset. The function
 also prints a brief rationale for the chosen steps to the console.</p>

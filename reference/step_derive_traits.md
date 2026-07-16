@@ -34,15 +34,16 @@ step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
 
 - mp_cols:
 
-  A character vector of column names in the `var_info` tibble to use as
-  meta-properties. If names are provided, they will be used as names of
-  the meta-properties, otherwise the column names will be used. When
-  `mp_cols` is specified, the selected columns overwrite meta-properties
-  introduced by `mp_fns` with the same names, including built-in
-  meta-properties. Default is `NULL`, which means all columns in
-  `var_info` are available as meta-properties by their existing names.
-  In this default mode, meta-properties introduced by `mp_fns` take
-  precedence over `var_info` columns with the same names.
+  A character vector of column names in
+  [`SummarizedExperiment::rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  to use as meta-properties. If names are provided, they will be used as
+  names of the meta-properties, otherwise the column names will be used.
+  When `mp_cols` is specified, the selected columns overwrite
+  meta-properties introduced by `mp_fns` with the same names, including
+  built-in meta-properties. Default is `NULL`, which means all columns
+  in `rowData()` are available as meta-properties by their existing
+  names. In this default mode, meta-properties introduced by `mp_fns`
+  take precedence over `rowData()` columns with the same names.
 
 ## Value
 

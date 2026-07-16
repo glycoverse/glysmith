@@ -28,8 +28,12 @@ cast_data(x, name = NULL)
 
 ## Value
 
-- `cast_exp()`: a
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html).
+- `cast_exp()`: a processed
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  or
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  object for new-container inputs. Legacy inputs retain their container
+  class.
 
 - `cast_plot()`: a
   [`ggplot2::ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html).

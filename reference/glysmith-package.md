@@ -8,13 +8,14 @@ visualization into unified, one-command analytical pipelines. Featuring
 AI-assisted pipeline generation, glysmith can intelligently translate
 natural language research questions into executable analysis blueprints,
 streamlining complex bioinformatics workflows. Built on top of the
-experiment() data container and domain-knowledge-aware infrastructure
-provided by glyclean, glydet, glymotif, glystats, glyvis, and related
-packages, glysmith enables users to quickly forge polished tables,
-figures, and analysis reports suitable for publication. The package is
-designed for reproducibility and ease of use, allowing both novice and
-advanced users to obtain standardized and structure-aware results with
-minimal code while retaining full flexibility for customization.
+'GlycomicSE' and 'GlycoproteomicSE' data containers and
+domain-knowledge-aware infrastructure provided by glyclean, glydet,
+glymotif, glystats, glyvis, and related packages, glysmith enables users
+to quickly forge polished tables, figures, and analysis reports suitable
+for publication. The package is designed for reproducibility and ease of
+use, allowing both novice and advanced users to obtain standardized and
+structure-aware results with minimal code while retaining full
+flexibility for customization.
 
 ## See also
 

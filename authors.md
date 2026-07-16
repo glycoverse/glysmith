@@ -8,13 +8,13 @@
 ## Citation
 
 Fu B (2026). *glysmith: Full-Featured Analysis Pipeline for Glycomics
-and Glycoproteomics*. R package version 0.12.1,
+and Glycoproteomics*. R package version 0.12.2,
 <https://glycoverse.github.io/glysmith/>.
 
     @Manual{,
       title = {glysmith: Full-Featured Analysis Pipeline for Glycomics and Glycoproteomics},
       author = {Bin Fu},
       year = {2026},
-      note = {R package version 0.12.1},
+      note = {R package version 0.12.2},
       url = {https://glycoverse.github.io/glysmith/},
     }

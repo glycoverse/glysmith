@@ -27,29 +27,31 @@ library(glyexp)
 
 ## Analyze your data with a single line of code
 
-We will demonstrate using the built-in experiment object from `glyexp`.
-This is an N-glycoproteomics dataset containing 12 samples across four
-different liver conditions: healthy controls (H), hepatitis (M),
-cirrhosis (Y), and hepatocellular carcinoma (C), with 3 samples for each
-group. Please note, the dataset is raw and has not been normalized or
-imputed.
+We will demonstrate using the built-in `GlycoproteomicSE` object from
+`glyexp`. This is an N-glycoproteomics dataset containing 12 samples
+across four different liver conditions: healthy controls (H), hepatitis
+(M), cirrhosis (Y), and hepatocellular carcinoma (C), with 3 samples for
+each group. Please note, the dataset is raw and has not been normalized
+or imputed.
 
 To work with your own data, you can use `glyread` to import outputs from
 tools like pGlyco3, MSFragger-Glyco, or Byonic; Alternatively, you can
-create your own experiment object. For more details, see [Get Started
-with
+create your own `GlycomicSE` or `GlycoproteomicSE` object. For more
+details, see [Get Started with
 glyread](https://glycoverse.github.io/glyread/articles/glyread.html) or
-[Creating
-Experiments](https://glycoverse.github.io/glyexp/articles/create-exp.html).
+[Creating Glyco SE
+Containers](https://glycoverse.github.io/glyexp/articles/create-exp.html).
 
 ``` r
 
 real_experiment
 #> 
-#> ── Glycoproteomics Experiment ──────────────────────────────────────────────────
-#> ℹ Expression matrix: 12 samples, 4262 variables
-#> ℹ Sample information fields: group <fct>
-#> ℹ Variable information fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
+#> ── GlycoproteomicSE ────────────────────────────────────────────────────────────
+#> ℹ Abundance assay: 12 samples, 4262 variables
+#> ℹ Glycan type: N
+#> ℹ Row data fields: peptide <chr>, peptide_site <int>, protein <chr>, protein_site <int>, gene <chr>, glycan_composition <comp>, glycan_structure <struct>
+#> ℹ Column data fields: group <fct>
+#> ℹ Metadata fields: exp_type <chr>, glycan_type <chr>, quant_method <chr>
 ```
 
 Now, let’s run the default analysis pipeline with just a single line of

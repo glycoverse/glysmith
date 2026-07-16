@@ -13,7 +13,7 @@ This step requires exp (experiment data)."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,14 +73,16 @@ Default is <code>NULL</code>, which means all meta-properties in <code><a href="
 
 
 <dt id="arg-mp-cols">mp_cols<a class="anchor" aria-label="anchor" href="#arg-mp-cols"></a></dt>
-<dd><p>A character vector of column names in the <code>var_info</code> tibble to use as meta-properties.
+<dd><p>A character vector of column names in <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">SummarizedExperiment::rowData()</a></code>
+to use as meta-properties.
 If names are provided, they will be used as names of the meta-properties,
 otherwise the column names will be used.
 When <code>mp_cols</code> is specified, the selected columns overwrite meta-properties introduced by <code>mp_fns</code>
 with the same names, including built-in meta-properties.
-Default is <code>NULL</code>, which means all columns in <code>var_info</code> are available as meta-properties by their
-existing names. In this default mode, meta-properties introduced by <code>mp_fns</code> take precedence over
-<code>var_info</code> columns with the same names.</p></dd>
+Default is <code>NULL</code>, which means all columns in <code>rowData()</code> are available as
+meta-properties by their existing names. In this default mode,
+meta-properties introduced by <code>mp_fns</code> take precedence over <code>rowData()</code>
+columns with the same names.</p></dd>
 
 </dl></div>
     <div class="section level2">
