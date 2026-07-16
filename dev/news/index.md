@@ -2,6 +2,8 @@
 
 ## glysmith (development version)
 
+## glysmith 0.12.2
+
 - Documentation now recommends `GlycomicSE` and `GlycoproteomicSE`;
   [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
   and
