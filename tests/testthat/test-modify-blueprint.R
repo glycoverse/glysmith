@@ -28,6 +28,36 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   expect_length(bp_updated, 3)
 })
 
+test_that("modify_blueprint accepts new and legacy glyco containers", {
+  skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
+
+  prompts <- character()
+  mock_chat_fun <- function(prompt) {
+    prompts <<- c(prompts, prompt)
+    paste0(
+      '{"explanation":"Add PCA.",',
+      '"steps":["step_preprocess()","step_pca()"]}'
+    )
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+  bp <- blueprint(step_preprocess())
+
+  results <- lapply(test_glysmith_containers(), function(exp) {
+    suppressMessages(modify_blueprint(bp, "Add PCA.", exp = exp))
+  })
+
+  expect_true(all(vapply(results, inherits, logical(1), "glysmith_blueprint")))
+  expect_match(prompts[[1]], "Experiment type: glycomics", fixed = TRUE)
+  expect_match(prompts[[2]], "Experiment type: glycoproteomics", fixed = TRUE)
+  expect_match(prompts[[3]], "Experiment type: glycomics", fixed = TRUE)
+})
+
 test_that("modify_blueprint can use a non-DeepSeek provider", {
   skip_if_not_installed("ellmer")
   local_mock_glycan_fact()

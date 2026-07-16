@@ -16,8 +16,10 @@
 #' @param bp A `glysmith_blueprint` object.
 #' @param description A description of how you want to modify the blueprint.
 #' @param qa_history Character vector of Q&A pairs from [inquire_blueprint()].
-#' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
-#' @param group_col The column name of the group variable in the experiment. Default to "group".
+#' @param exp Optional. A [glyexp::GlycomicSE()] or
+#'   [glyexp::GlycoproteomicSE()] object that provides more context to the LLM.
+#' @param group_col The column name of the group variable in `colData(exp)`.
+#'   Defaults to `"group"`.
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #' @param model Model to use. Defaults to `getOption("glysmith.ai_model")`,
 #'   or "deepseek-chat" for DeepSeek and the provider default for other providers.
@@ -46,7 +48,9 @@ modify_blueprint <- function(
   checkmate::assert_class(bp, "glysmith_blueprint")
   checkmate::assert_string(description)
   checkmate::assert_character(qa_history, null.ok = TRUE)
-  checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
+  if (!is.null(exp)) {
+    .assert_data_container(exp)
+  }
   checkmate::assert_string(group_col)
   checkmate::assert_string(model, null.ok = TRUE)
   checkmate::assert_count(max_retries)

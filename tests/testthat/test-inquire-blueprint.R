@@ -22,6 +22,32 @@ test_that("inquire_blueprint works with valid AI output", {
   expect_equal(bp[[2]]$id, "pca")
 })
 
+test_that("inquire_blueprint accepts new and legacy glyco containers", {
+  skip_if_not_installed("ellmer")
+  local_mock_glycan_fact()
+
+  prompts <- character()
+  mock_chat_fun <- function(prompt) {
+    prompts <<- c(prompts, prompt)
+    '{"explanation":"Run PCA.","steps":["step_pca()"]}'
+  }
+  local_mocked_bindings(
+    chat_deepseek = function(...) list(chat = mock_chat_fun),
+    .package = "ellmer"
+  )
+
+  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
+
+  results <- lapply(test_glysmith_containers(), function(exp) {
+    suppressMessages(inquire_blueprint("Run PCA.", exp = exp))
+  })
+
+  expect_true(all(vapply(results, inherits, logical(1), "glysmith_blueprint")))
+  expect_match(prompts[[1]], "Experiment type: glycomics", fixed = TRUE)
+  expect_match(prompts[[2]], "Experiment type: glycoproteomics", fixed = TRUE)
+  expect_match(prompts[[3]], "Experiment type: glycomics", fixed = TRUE)
+})
+
 test_that("inquire_blueprint supports branches", {
   skip_on_ci()
   skip_if_not_installed("ellmer")
@@ -929,6 +955,27 @@ test_that(".process_blueprint_response rejects non-array steps", {
 test_that(".generate_exp_info returns empty for NULL experiment", {
   result <- glysmith:::.generate_exp_info(NULL, "group")
   expect_equal(result, "")
+})
+
+test_that(".generate_exp_info supports new and legacy glyco containers", {
+  info <- lapply(test_glysmith_containers(), function(exp) {
+    glysmith:::.generate_exp_info(exp, "group")
+  })
+
+  expect_match(info$glycomic, "Experiment type: glycomics", fixed = TRUE)
+  expect_match(
+    info$glycoproteomic,
+    "Experiment type: glycoproteomics",
+    fixed = TRUE
+  )
+  expect_match(info$legacy, "Experiment type: glycomics", fixed = TRUE)
+  expect_match(
+    info$glycoproteomic,
+    "Glycan structure available: Yes",
+    fixed = TRUE
+  )
+  expect_match(info$glycoproteomic, "$ glycan_structure", fixed = TRUE)
+  expect_match(info$glycoproteomic, "<glyrepr_structure>", fixed = TRUE)
 })
 
 test_that(".get_rd_database returns database or NULL", {

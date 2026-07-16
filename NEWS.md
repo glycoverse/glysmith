@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* Documentation now recommends `GlycomicSE` and `GlycoproteomicSE`; `inquire_blueprint()` and `modify_blueprint()` accept these containers while retaining legacy input compatibility for Stage II of glycoverse/glyexp#15. (#23)
+
 # glysmith 0.12.1
 
 * `forge_analysis()` and workflow steps now natively support `GlycomicSE` and `GlycoproteomicSE` inputs while retaining `experiment()` compatibility across supported `glyexp` versions. (#22)

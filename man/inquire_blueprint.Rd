@@ -18,9 +18,11 @@ inquire_blueprint(
 \arguments{
 \item{description}{A description of what you want to analysis.}
 
-\item{exp}{Optional. A \code{glyexp::experiment()} object to provide more context to the LLM.}
+\item{exp}{Optional. A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object that provides more context to the LLM.}
 
-\item{group_col}{The column name of the group variable in the experiment. Default to "group".}
+\item{group_col}{The column name of the group variable in \code{colData(exp)}.
+Defaults to \code{"group"}.}
 
 \item{model}{Model to use. Defaults to \code{getOption("glysmith.ai_model")},
 or "deepseek-chat" for DeepSeek and the provider default for other providers.}

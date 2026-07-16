@@ -22,7 +22,9 @@ cast_data(x, name = NULL)
 }
 \value{
 \itemize{
-\item \code{cast_exp()}: a \code{\link[glyexp:experiment]{glyexp::experiment()}}.
+\item \code{cast_exp()}: a processed \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object for new-container inputs. Legacy
+inputs retain their container class.
 \item \code{cast_plot()}: a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}.
 \item \code{cast_table()}: a \code{\link[tibble:tibble]{tibble::tibble()}}.
 \item \code{cast_data()}: can be any R object.

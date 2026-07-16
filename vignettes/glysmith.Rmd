@@ -37,16 +37,16 @@ has_glysmith_deps <- isTRUE(suppressMessages(check_glysmith_deps(action = "note"
 
 ## Analyze your data with a single line of code
 
-We will demonstrate using the built-in experiment object from `glyexp`.
+We will demonstrate using the built-in `GlycoproteomicSE` object from `glyexp`.
 This is an N-glycoproteomics dataset containing 12 samples across four different liver conditions:
 healthy controls (H), hepatitis (M), cirrhosis (Y), and hepatocellular carcinoma (C),
 with 3 samples for each group.
 Please note, the dataset is raw and has not been normalized or imputed.
 
 To work with your own data, you can use `glyread` to import outputs from tools like pGlyco3, MSFragger-Glyco, or Byonic;
-Alternatively, you can create your own experiment object.
+Alternatively, you can create your own `GlycomicSE` or `GlycoproteomicSE` object.
 For more details, see [Get Started with glyread](https://glycoverse.github.io/glyread/articles/glyread.html)
-or [Creating Experiments](https://glycoverse.github.io/glyexp/articles/create-exp.html).
+or [Creating Glyco SE Containers](https://glycoverse.github.io/glyexp/articles/create-exp.html).
 
 ```{r}
 real_experiment

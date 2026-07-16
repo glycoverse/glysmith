@@ -7,7 +7,7 @@
 forge_analysis(exp, blueprint = blueprint_default(), group_col = "group")
 }
 \arguments{
-\item{exp}{A \code{glyexp::experiment()} object.}
+\item{exp}{A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or \code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object.}
 
 \item{blueprint}{A \code{glysmith_blueprint} object. Default is \code{\link[=blueprint_default]{blueprint_default()}}.}
 
@@ -17,7 +17,7 @@ Used for various analyses. Default is "group".}
 \value{
 A \code{glysmith_result} object, with the following components:
 \itemize{
-\item \code{exp}: the experiment after preprocessing.
+\item \code{exp}: the glyco data container after preprocessing.
 \item \code{plots}: a named list of ggplot objects.
 \item \code{tables}: a named list of tibbles.
 \item \code{meta}: a named list of metadata, containing:

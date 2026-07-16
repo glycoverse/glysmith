@@ -404,8 +404,8 @@
 
 #' Check a glysmith data container
 #'
-#' @param exp A `glyexp::experiment()`, `GlycomicSE`, or `GlycoproteomicSE`
-#'   object.
+#' @param exp A `GlycomicSE`, `GlycoproteomicSE`, or supported legacy glyexp
+#'   data container.
 #'
 #' @returns `NULL` invisibly, or an error if `exp` is unsupported.
 #' @noRd
@@ -450,9 +450,9 @@
 #' Restore a legacy experiment container
 #'
 #' @param exp A data object produced while running a blueprint.
-#' @param legacy Whether the original input was a `glyexp::experiment()`.
+#' @param legacy Whether the original input used the legacy glyexp container.
 #'
-#' @returns `exp`, converted to `glyexp::experiment()` when appropriate.
+#' @returns `exp`, converted back to the legacy container when appropriate.
 #' @noRd
 .restore_data_container <- function(exp, legacy) {
   if (legacy && methods::is(exp, "SummarizedExperiment")) {

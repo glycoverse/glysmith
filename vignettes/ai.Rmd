@@ -84,7 +84,8 @@ bp <- inquire_blueprint("I want to perform DEA and visualize the results.", exp 
 print(bp)
 ```
 
-By providing the experiment object (`exp`), the LLM can understand your data structure and experimental design,
+By providing a `GlycomicSE` or `GlycoproteomicSE` object as `exp`, the LLM can
+understand your data structure and experimental design,
 ensuring the generated blueprint is tailored to your specific dataset.
 The function also prints a brief rationale for the chosen steps to the console.
 
