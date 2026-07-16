@@ -16,6 +16,18 @@ as_test_glyco_se <- function(exp) {
   )
 }
 
+test_glysmith_containers <- function() {
+  glycomic <- glyexp::as_glycomic_se(glyexp::real_experiment2)
+  glycoproteomic <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
+  legacy <- suppressWarnings(glyexp::from_se(glycomic))
+
+  list(
+    glycomic = glycomic,
+    glycoproteomic = glycoproteomic,
+    legacy = legacy
+  )
+}
+
 forge_analysis_se <- function(
   exp,
   blueprint = blueprint_default(),

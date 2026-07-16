@@ -24,9 +24,11 @@ modify_blueprint(
 
 \item{qa_history}{Character vector of Q&A pairs from \code{\link[=inquire_blueprint]{inquire_blueprint()}}.}
 
-\item{exp}{Optional. A \code{glyexp::experiment()} object to provide more context to the LLM.}
+\item{exp}{Optional. A \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or
+\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object that provides more context to the LLM.}
 
-\item{group_col}{The column name of the group variable in the experiment. Default to "group".}
+\item{group_col}{The column name of the group variable in \code{colData(exp)}.
+Defaults to \code{"group"}.}
 
 \item{model}{Model to use. Defaults to \code{getOption("glysmith.ai_model")},
 or "deepseek-chat" for DeepSeek and the provider default for other providers.}

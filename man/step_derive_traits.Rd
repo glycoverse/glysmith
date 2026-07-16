@@ -16,14 +16,16 @@ This parameter is useful if your trait functions use custom meta-properties
 other than those in \code{\link[glydet:all_mp_fns]{all_mp_fns()}}.
 Default is \code{NULL}, which means all meta-properties in \code{\link[glydet:all_mp_fns]{all_mp_fns()}} are used.}
 
-\item{mp_cols}{A character vector of column names in the \code{var_info} tibble to use as meta-properties.
+\item{mp_cols}{A character vector of column names in \code{\link[SummarizedExperiment:SummarizedExperiment-class]{SummarizedExperiment::rowData()}}
+to use as meta-properties.
 If names are provided, they will be used as names of the meta-properties,
 otherwise the column names will be used.
 When \code{mp_cols} is specified, the selected columns overwrite meta-properties introduced by \code{mp_fns}
 with the same names, including built-in meta-properties.
-Default is \code{NULL}, which means all columns in \code{var_info} are available as meta-properties by their
-existing names. In this default mode, meta-properties introduced by \code{mp_fns} take precedence over
-\code{var_info} columns with the same names.}
+Default is \code{NULL}, which means all columns in \code{rowData()} are available as
+meta-properties by their existing names. In this default mode,
+meta-properties introduced by \code{mp_fns} take precedence over \code{rowData()}
+columns with the same names.}
 }
 \value{
 A \code{glysmith_step} object.

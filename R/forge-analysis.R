@@ -2,13 +2,13 @@
 #'
 #' This function performs a comprehensive analysis for group comparison.
 #'
-#' @param exp A `glyexp::experiment()` object.
+#' @param exp A [glyexp::GlycomicSE()] or [glyexp::GlycoproteomicSE()] object.
 #' @param blueprint A `glysmith_blueprint` object. Default is [blueprint_default()].
 #' @param group_col Column name of group information in the sample information.
 #'   Used for various analyses. Default is "group".
 #'
 #' @returns A `glysmith_result` object, with the following components:
-#'   - `exp`: the experiment after preprocessing.
+#'   - `exp`: the glyco data container after preprocessing.
 #'   - `plots`: a named list of ggplot objects.
 #'   - `tables`: a named list of tibbles.
 #'   - `meta`: a named list of metadata, containing:

@@ -29,7 +29,9 @@ print.glysmith_result <- function(x, ...) {
 #' @param name The name of the plot or table to get. If not specified, return available names.
 #'
 #' @returns
-#'   - `cast_exp()`: a [glyexp::experiment()].
+#'   - `cast_exp()`: a processed [glyexp::GlycomicSE()] or
+#'     [glyexp::GlycoproteomicSE()] object for new-container inputs. Legacy
+#'     inputs retain their container class.
 #'   - `cast_plot()`: a [ggplot2::ggplot()].
 #'   - `cast_table()`: a [tibble::tibble()].
 #'   - `cast_data()`: can be any R object.

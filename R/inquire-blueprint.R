@@ -24,8 +24,10 @@
 #' - "I have a glycomics dataset. I want to calculate derived traits and perform DEA on them."
 #'
 #' @param description A description of what you want to analysis.
-#' @param exp Optional. A `glyexp::experiment()` object to provide more context to the LLM.
-#' @param group_col The column name of the group variable in the experiment. Default to "group".
+#' @param exp Optional. A [glyexp::GlycomicSE()] or
+#'   [glyexp::GlycoproteomicSE()] object that provides more context to the LLM.
+#' @param group_col The column name of the group variable in `colData(exp)`.
+#'   Defaults to `"group"`.
 #' @param max_retries Maximum number of retries when the AI output is invalid. Default to 3.
 #' @param model Model to use. Defaults to `getOption("glysmith.ai_model")`,
 #'   or "deepseek-chat" for DeepSeek and the provider default for other providers.
@@ -50,7 +52,9 @@ inquire_blueprint <- function(
   base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   checkmate::assert_string(description)
-  checkmate::assert_class(exp, "glyexp_experiment", null.ok = TRUE)
+  if (!is.null(exp)) {
+    .assert_data_container(exp)
+  }
   checkmate::assert_string(group_col)
   checkmate::assert_string(model, null.ok = TRUE)
   checkmate::assert_count(max_retries)
@@ -423,20 +427,22 @@ inquire_blueprint <- function(
     return("")
   }
 
-  n_samples <- ncol(exp)
-  n_variables <- nrow(exp)
-  glycan_type <- glyexp::get_glycan_type(exp)
-  exp_type <- glyexp::get_exp_type(exp)
-  has_structure <- "glycan_structure" %in% colnames(exp$var_info)
-  n_groups <- length(unique(exp$sample_info[[group_col]]))
+  glycan_type <- .get_glycan_type(exp)
+  exp_type <- .get_exp_type(exp)
+  sample_info <- .get_sample_info(exp)
+  var_info <- .get_var_info(exp)
+  n_samples <- nrow(sample_info)
+  n_variables <- nrow(var_info)
+  has_structure <- "glycan_structure" %in% colnames(var_info)
+  n_groups <- length(unique(sample_info[[group_col]]))
 
   # Generate summaries for sample_info and var_info
   sample_info_summary <- .summarize_tibble(
-    exp$sample_info,
+    sample_info,
     "sample_info",
     group_col
   )
-  var_info_summary <- .summarize_tibble(exp$var_info, "var_info")
+  var_info_summary <- .summarize_tibble(var_info, "var_info")
 
   paste0(
     "\nDataset information:\n",
@@ -472,9 +478,20 @@ inquire_blueprint <- function(
     return(paste0("- ", name, ": (empty)"))
   }
 
+  # Graph-backed rowData list columns can fail during pillar formatting.
+  # Keep their names and classes in the prompt without formatting the graphs.
+  preview <- utils::head(tbl, 5L)
+  preview <- lapply(preview, function(x) {
+    if (!is.list(x)) {
+      return(x)
+    }
+    rep_len(paste0("<", class(x)[[1]], ">"), length(x))
+  }) |>
+    tibble::as_tibble(.name_repair = "minimal")
+
   # Use dplyr::glimpse for compact summary
   # Capture output and add highlighting for group column
-  glimpse_output <- utils::capture.output(dplyr::glimpse(tbl))
+  glimpse_output <- utils::capture.output(dplyr::glimpse(preview))
 
   # Remove header lines from glimpse (e.g., "Rows: 100", "Columns: 2")
   glimpse_output <- glimpse_output[-c(1, 2)]

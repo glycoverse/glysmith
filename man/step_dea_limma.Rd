@@ -28,10 +28,10 @@ Use \code{"branch_motif_exp"} for differential branch motif analysis.}
 Must be one of the methods supported by \code{stats::p.adjust()}. Default is "BH" (Benjamini-Hochberg).
 Set to NULL to skip p-value adjustment.}
 
-\item{covariate_cols}{(Only for \code{\link[glystats:gly_limma]{gly_limma()}}) A character vector specifying column names in sample information
+\item{covariate_cols}{A character vector specifying column names in sample information
 to include as covariates in the limma model. Default is NULL.}
 
-\item{subject_col}{(Only for \code{\link[glystats:gly_limma]{gly_limma()}}) A character string specifying the column name in sample information
+\item{subject_col}{A character string specifying the column name in sample information
 that contains subject identifiers for paired comparisons. Default is NULL.}
 
 \item{ref_group}{A character string specifying the reference group.
