@@ -41,13 +41,15 @@ modify_blueprint(
 - exp:
 
   Optional. A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
-  object to provide more context to the LLM.
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  or
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
+  object that provides more context to the LLM.
 
 - group_col:
 
-  The column name of the group variable in the experiment. Default to
-  "group".
+  The column name of the group variable in `colData(exp)`. Defaults to
+  `"group"`.
 
 - model:
 

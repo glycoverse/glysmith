@@ -2,6 +2,13 @@
 
 ## glysmith (development version)
 
+- Documentation now recommends `GlycomicSE` and `GlycoproteomicSE`;
+  [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
+  and
+  [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md)
+  accept these containers while retaining legacy input compatibility for
+  Stage II of glycoverse/glyexp#15. (#23)
+
 ## glysmith 0.12.1
 
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md)

@@ -60,15 +60,11 @@ step_dea_limma(
 
 - covariate_cols:
 
-  (Only for
-  [`gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html))
   A character vector specifying column names in sample information to
   include as covariates in the limma model. Default is NULL.
 
 - subject_col:
 
-  (Only for
-  [`gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html))
   A character string specifying the column name in sample information
   that contains subject identifiers for paired comparisons. Default is
   NULL.

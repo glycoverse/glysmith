@@ -13,7 +13,9 @@ forge_analysis(exp, blueprint = blueprint_default(), group_col = "group")
 - exp:
 
   A
-  [`glyexp::experiment()`](https://glycoverse.github.io/glyexp/reference/experiment.html)
+  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
+  or
+  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
   object.
 
 - blueprint:
@@ -30,7 +32,7 @@ forge_analysis(exp, blueprint = blueprint_default(), group_col = "group")
 
 A `glysmith_result` object, with the following components:
 
-- `exp`: the experiment after preprocessing.
+- `exp`: the glyco data container after preprocessing.
 
 - `plots`: a named list of ggplot objects.
 
