@@ -100,7 +100,7 @@ step_infer_structure <- function(
 
   var_info <- .get_var_info(exp)
   comps <- var_info[["glycan_composition"]]
-  if (glyrepr::get_mono_type(db_to_use) == "generic") {
+  if (isTRUE(all(glyrepr::get_mono_type(db_to_use) == "generic"))) {
     comps <- glyrepr::convert_to_generic(comps)
   }
 

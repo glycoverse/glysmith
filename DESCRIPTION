@@ -23,14 +23,14 @@ Description: glysmith provides high-level, end-to-end workflows for glycomics
 License: MIT + file LICENSE
 Suggests:
     glyclean (>= 0.10.1),
-    glyanno (>= 0.4.2),
+    glyanno (>= 0.6.1),
     glydb (>= 0.4.0),
     glydet (>= 0.10.1),
     glyfun (>= 0.1.0),
-    glyrepr (>= 0.11.0),
+    glyrepr (>= 1.0.0),
     glystats (>= 0.6.2),
     glyvis (>= 0.5.0),
-    glymotif (>= 0.13.0),
+    glymotif (>= 0.19.0),
     knitr,
     withr,
     pROC,
