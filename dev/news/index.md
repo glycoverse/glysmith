@@ -2,6 +2,10 @@
 
 ## glysmith (development version)
 
+- [`step_infer_structure()`](https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.md)
+  now requires `glyanno` 0.6.1 or later for compatibility with
+  element-wise glycan residue types.
+
 ## glysmith 0.12.2
 
 - Documentation now recommends `GlycomicSE` and `GlycoproteomicSE`;
