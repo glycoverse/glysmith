@@ -41,9 +41,13 @@ step_derive_traits(trait_fns = NULL, mp_fns = NULL, mp_cols = NULL)
   When `mp_cols` is specified, the selected columns overwrite
   meta-properties introduced by `mp_fns` with the same names, including
   built-in meta-properties. Default is `NULL`, which means all columns
-  in `rowData()` are available as meta-properties by their existing
-  names. In this default mode, meta-properties introduced by `mp_fns`
-  take precedence over `rowData()` columns with the same names.
+  in
+  [`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  are available as meta-properties by their existing names. In this
+  default mode, meta-properties introduced by `mp_fns` take precedence
+  over
+  [`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
+  columns with the same names.
 
 ## Value
 
