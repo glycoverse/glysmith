@@ -47,8 +47,15 @@ pak::pkg_install("glysmith")
 
 Or from [GitHub](https://github.com/glycoverse/glysmith):
 
+Install the latest releases of this package and its required Glycoverse
+dependencies together from GitHub:
+
 ``` r
-pak::pkg_install("glycoverse/glysmith@*release")
+pak::pkg_install(c(
+  "glycoverse/glyrepr@*release",
+  "glycoverse/glyexp@*release",
+  "glycoverse/glysmith@*release"
+))
 ```
 
 Or install the development version (NOT recommended):
