@@ -87,7 +87,9 @@ br <- function(name, ...) {
     report = report,
     require = require,
     generate = generate,
+    packages = step$packages %||% character(0),
     condition = condition,
+    repeatable = step$repeatable %||% FALSE,
     retry = step$retry %||% 0L,
     signature = paste0("br(\"", branch, "\", ", step$signature, ")")
   )

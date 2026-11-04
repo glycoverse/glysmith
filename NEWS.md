@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* Steps inside `br()` now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.
+
 # glysmith 0.12.3
 
 * `step_infer_structure()` now requires `glyanno` 0.6.1 or later for compatibility with element-wise glycan residue types.
