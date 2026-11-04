@@ -19,7 +19,9 @@ as_test_glyco_se <- function(exp) {
 test_glysmith_containers <- function() {
   glycomic <- glyexp::as_glycomic_se(glyexp::real_experiment2)
   glycoproteomic <- glyexp::as_glycoproteomic_se(glyexp::real_experiment)
-  legacy <- suppressWarnings(glyexp::from_se(glycomic))
+  legacy <- suppressWarnings(
+    glyexp::from_se(glycomic, exp_type = "glycomics")
+  )
 
   list(
     glycomic = glycomic,
