@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* `quench_result()` now treats an empty overwrite answer as cancellation, matching its `[y/N]` prompt and preserving existing directories unless overwrite is explicitly confirmed.
+
 # glysmith 0.12.3
 
 * `step_infer_structure()` now requires `glyanno` 0.6.1 or later for compatibility with element-wise glycan residue types.
