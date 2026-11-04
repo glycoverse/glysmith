@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* Quiet output during result export now restores an existing message sink, including after errors or nested quiet operations.
+
 # glysmith 0.12.3
 
 * `step_infer_structure()` now requires `glyanno` 0.6.1 or later for compatibility with element-wise glycan residue types.

@@ -202,3 +202,37 @@ test_that("quietly suppresses selected warnings and returns results", {
   expect_warning(glysmith:::.quietly(warning("Other warning")), "Other warning")
   expect_error(glysmith:::.quietly(stop("Boom")), "Boom")
 })
+
+
+test_that("quietly restores an existing message sink on success and error", {
+  path <- withr::local_tempfile()
+  con <- file(path, open = "wt")
+  original <- getConnection(sink.number(type = "message"))
+  withr::defer({
+    sink(original, type = "message")
+    close(con)
+  })
+  sink(con, type = "message")
+
+  expect_equal(glysmith:::.quietly(1 + 1), 2)
+  expect_identical(sink.number(type = "message"), as.integer(con))
+  expect_error(glysmith:::.quietly(stop("Boom")), "Boom")
+  expect_identical(sink.number(type = "message"), as.integer(con))
+  writeLines("after quietly", getConnection(sink.number(type = "message")))
+  flush(con)
+  expect_match(paste(readLines(path), collapse = "\n"), "after quietly")
+})
+
+test_that("nested quietly calls restore the outer message sink", {
+  original <- sink.number(type = "message")
+  output_sinks <- sink.number()
+  inner_restored <- glysmith:::.quietly({
+    outer <- sink.number(type = "message")
+    glysmith:::.quietly(message("inner"))
+    identical(sink.number(type = "message"), outer)
+  })
+
+  expect_true(inner_restored)
+  expect_identical(sink.number(type = "message"), original)
+  expect_identical(sink.number(), output_sinks)
+})
