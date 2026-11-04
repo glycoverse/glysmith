@@ -58,3 +58,25 @@ test_that("cast_plot without name returns names", {
   result <- result_for_test()
   expect_equal(cast_plot(result), c("plot1", "plot2"))
 })
+
+
+test_that("cast_plot unwraps plots stored with export dimensions", {
+  plot <- ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
+    ggplot2::geom_point()
+  ctx <- new_ctx(list(), "group")
+  ctx <- ctx_add_plot(ctx, "scatter", plot, width = 7, height = 4)
+  result <- result_for_test()
+  result$plots <- ctx$plots
+
+  expect_identical(cast_plot(result, "scatter"), plot)
+  expect_no_error(cast_plot(result, "scatter") + ggplot2::theme_minimal())
+  expect_identical(cast_plot(result), "scatter")
+})
+
+test_that("cast_plot preserves legacy plots without metadata wrappers", {
+  plot <- ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt))
+  result <- result_for_test()
+  result$plots <- list(scatter = plot)
+
+  expect_identical(cast_plot(result, "scatter"), plot)
+})

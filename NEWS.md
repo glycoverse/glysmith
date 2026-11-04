@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* `cast_plot()` now returns the plot itself when it is stored with export dimensions, preserving its documented return type and allowing further ggplot2 customization.
+
 # glysmith 0.12.3
 
 * `step_infer_structure()` now requires `glyanno` 0.6.1 or later for compatibility with element-wise glycan residue types.
