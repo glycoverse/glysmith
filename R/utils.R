@@ -475,7 +475,9 @@
   if ("sample" %in% colnames(info)) {
     return(tibble::as_tibble(info))
   }
-  tibble::as_tibble(info, rownames = "sample")
+  sample_info <- tibble::as_tibble(info, rownames = "sample")
+  sample_info[["sample"]] <- colnames(exp) %||% sample_info[["sample"]]
+  sample_info
 }
 
 #' Replace sample information
@@ -514,7 +516,9 @@
   if ("variable" %in% colnames(info)) {
     return(tibble::as_tibble(info))
   }
-  tibble::as_tibble(info, rownames = "variable")
+  var_info <- tibble::as_tibble(info, rownames = "variable")
+  var_info[["variable"]] <- rownames(exp) %||% var_info[["variable"]]
+  var_info
 }
 
 #' Replace variable information

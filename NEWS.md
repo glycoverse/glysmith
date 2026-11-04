@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* Metadata helpers preserve repeated sample and variable identifiers when converting SummarizedExperiment annotations to tibbles.
+
 # glysmith 0.12.3
 
 * `step_infer_structure()` now requires `glyanno` 0.6.1 or later for compatibility with element-wise glycan residue types.
