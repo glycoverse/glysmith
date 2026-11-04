@@ -27,7 +27,7 @@
 #'
 #' @param when Character string indicating when this QC step is run.
 #'   Use `"pre"` for pre-preprocessing QC, `"post"` for post-preprocessing QC,
-#'   or any other value for generic QC. This is appended to the step ID.
+#'   or `"generic"` (also `NULL`) for generic QC. This is appended to the step ID.
 #'   Default is `"post"`.
 #' @param batch_col Column name for batch information (for `glyclean::plot_batch_pca()`).
 #' @param rep_col Column name for replicate information (for `glyclean::plot_rep_scatter()`).
@@ -49,6 +49,7 @@ step_plot_qc <- function(
 ) {
   checkmate::assert_choice(when, c("pre", "post", "generic"), null.ok = TRUE)
   signature <- rlang::expr_deparse(match.call())
+  when <- when %||% "generic"
 
   # Build step ID based on when parameter
   if (identical(when, "post")) {
