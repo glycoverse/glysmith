@@ -21,6 +21,8 @@ to install it separately, even if you have installed the meta package
 
 library(glysmith)
 library(glyexp)
+#> Warning: replacing previous import 'S4Arrays::makeNindexFromArrayViewport' by
+#> 'DelayedArray::makeNindexFromArrayViewport' when loading 'SummarizedExperiment'
 ```
 
 ## Analyze your data with a single line of code

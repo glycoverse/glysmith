@@ -2,6 +2,11 @@
 
 ## glysmith (development version)
 
+## glysmith 0.12.4
+
+- Package checks now support glyexp 0.19.0 by explicitly specifying the
+  experiment type when constructing legacy test fixtures. (#31)
+
 ## glysmith 0.12.3
 
 - [`step_infer_structure()`](https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.md)
