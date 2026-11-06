@@ -2,6 +2,9 @@
 
 ## glysmith (development version)
 
+- Metadata helpers preserve repeated sample and variable identifiers
+  when converting SummarizedExperiment annotations to tibbles.
+
 - [`step_oplsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.md)
   now counts observed groups in custom character columns and ignores
   unused factor levels, instead of incorrectly skipping valid two-group
