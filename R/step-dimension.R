@@ -937,9 +937,10 @@ step_oplsda <- function(
       reason = paste0("Group column '", group_col, "' not found.")
     ))
   }
-  n_groups <- nlevels(sample_info[[group_col]])
+  group <- droplevels(as.factor(sample_info[[group_col]]))
+  n_groups <- nlevels(group)
   if (n_groups != 2) {
-    groups <- levels(sample_info[[group_col]])
+    groups <- levels(group)
     list(
       check = FALSE,
       reason = paste0(
