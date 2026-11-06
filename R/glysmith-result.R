@@ -54,7 +54,11 @@ cast_exp <- function(x) {
 #' @rdname cast_exp
 #' @export
 cast_plot <- function(x, name = NULL) {
-  cast_component(x, "plots", name, "Plot")
+  plot <- cast_component(x, "plots", name, "Plot")
+  if (!is.null(name) && is.list(plot) && "plot" %in% names(plot)) {
+    return(plot[["plot"]])
+  }
+  plot
 }
 
 #' @rdname cast_exp

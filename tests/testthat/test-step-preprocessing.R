@@ -244,3 +244,14 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
     )
   })
 })
+
+
+test_that("step_plot_qc accepts NULL as the generic QC stage", {
+  qc <- step_plot_qc(when = NULL)
+
+  expect_s3_class(qc, "glysmith_step")
+  expect_identical(qc$id, "plot_qc_generic")
+  expect_identical(qc$label, "QC")
+  expect_true(qc$repeatable)
+  expect_no_error(blueprint(qc))
+})

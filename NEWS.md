@@ -2,6 +2,16 @@
 
 * `step_oplsda()` now counts observed groups in custom character columns and ignores unused factor levels, instead of incorrectly skipping valid two-group analyses.
 
+* `step_plot_qc(when = NULL)` now creates the documented generic QC step instead of failing while selecting its label.
+
+* Quiet output during result export now restores an existing message sink, including after errors or nested quiet operations.
+
+* `cast_plot()` now returns the plot itself when it is stored with export dimensions, preserving its documented return type and allowing further ggplot2 customization.
+
+* Steps inside `br()` now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.
+
+* `quench_result()` now treats an empty overwrite answer as cancellation, matching its `[y/N]` prompt and preserving existing directories unless overwrite is explicitly confirmed.
+
 # glysmith 0.12.4
 
 * Package checks now support glyexp 0.19.0 by explicitly specifying the experiment type when constructing legacy test fixtures. (#31)

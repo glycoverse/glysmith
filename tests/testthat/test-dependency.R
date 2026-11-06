@@ -94,3 +94,25 @@ test_that("check_glysmith_deps validates action parameter", {
     "must be one of"
   )
 })
+
+
+test_that("branch steps retain dependencies for blueprint preflight checks", {
+  missing <- "this_package_definitely_does_not_exist_12345"
+  bp <- blueprint(
+    br(
+      "analysis",
+      step(
+        "custom",
+        "Custom step",
+        function(ctx) ctx,
+        packages = missing
+      )
+    )
+  )
+
+  expect_identical(collect_blueprint_packages(bp), missing)
+  expect_error(
+    check_glysmith_deps(blueprint = bp, action = "error"),
+    "not installed"
+  )
+})
