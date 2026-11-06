@@ -15,7 +15,7 @@ step_plot_qc(
 \arguments{
 \item{when}{Character string indicating when this QC step is run.
 Use \code{"pre"} for pre-preprocessing QC, \code{"post"} for post-preprocessing QC,
-or any other value for generic QC. This is appended to the step ID.
+or \code{"generic"} (also \code{NULL}) for generic QC. This is appended to the step ID.
 Default is \code{"post"}.}
 
 \item{batch_col}{Column name for batch information (for \code{glyclean::plot_batch_pca()}).}
