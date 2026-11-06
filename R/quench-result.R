@@ -35,9 +35,9 @@ quench_result <- function(
   if (fs::dir_exists(dir)) {
     ans <- .ask_overwrite_dir()
     ans <- tolower(trimws(ans))
-    if (ans == "n") {
+    if (ans == "n" || ans == "") {
       cli::cli_abort("Operation cancelled. Result not saved.")
-    } else if (ans == "y" || ans == "") {
+    } else if (ans == "y") {
       fs::dir_delete(dir)
     } else {
       cli::cli_abort("Invalid input. Operation cancelled. Result not saved.")
