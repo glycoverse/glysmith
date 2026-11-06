@@ -2,6 +2,10 @@
 
 * Steps inside `br()` now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.
 
+# glysmith 0.12.4
+
+* Package checks now support glyexp 0.19.0 by explicitly specifying the experiment type when constructing legacy test fixtures. (#31)
+
 # glysmith 0.12.3
 
 * `step_infer_structure()` now requires `glyanno` 0.6.1 or later for compatibility with element-wise glycan residue types.
