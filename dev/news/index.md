@@ -2,6 +2,11 @@
 
 ## glysmith (development version)
 
+- [`step_oplsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.md)
+  now counts observed groups in custom character columns and ignores
+  unused factor levels, instead of incorrectly skipping valid two-group
+  analyses.
+
 - `step_plot_qc(when = NULL)` now creates the documented generic QC step
   instead of failing while selecting its label.
 
