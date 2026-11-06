@@ -236,3 +236,21 @@ test_that("nested quietly calls restore the outer message sink", {
   expect_identical(sink.number(type = "message"), original)
   expect_identical(sink.number(), output_sinks)
 })
+
+test_that("quench_result preserves existing files on an empty overwrite answer", {
+  x <- minimal_quench_result()
+  out_dir <- fs::path(withr::local_tempdir(), "quench-out")
+  fs::dir_create(out_dir)
+  sentinel <- fs::path(out_dir, "keep.txt")
+  writeLines("original results", sentinel)
+
+  for (answer in c("", "  ")) {
+    local_mocked_bindings(
+      .ask_overwrite_dir = function() answer,
+      .package = "glysmith"
+    )
+    expect_error(quench_result(x, out_dir), "Operation cancelled")
+    expect_identical(readLines(sentinel), "original results")
+    expect_false(fs::file_exists(fs::path(out_dir, "README.md")))
+  }
+})
