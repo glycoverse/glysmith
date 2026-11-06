@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* Metadata helpers preserve repeated sample and variable identifiers when converting SummarizedExperiment annotations to tibbles.
+
 * `step_oplsda()` now counts observed groups in custom character columns and ignores unused factor levels, instead of incorrectly skipping valid two-group analyses.
 
 * `step_plot_qc(when = NULL)` now creates the documented generic QC step instead of failing while selecting its label.

@@ -475,7 +475,9 @@
   if ("sample" %in% colnames(info)) {
     return(tibble::as_tibble(info))
   }
-  tibble::as_tibble(info, rownames = "sample")
+  sample_info <- tibble::as_tibble(info, rownames = "sample")
+  sample_info[["sample"]] <- colnames(exp) %||% sample_info[["sample"]]
+  sample_info
 }
 
 #' Replace sample information
@@ -514,7 +516,9 @@
   if ("variable" %in% colnames(info)) {
     return(tibble::as_tibble(info))
   }
-  tibble::as_tibble(info, rownames = "variable")
+  var_info <- tibble::as_tibble(info, rownames = "variable")
+  var_info[["variable"]] <- rownames(exp) %||% var_info[["variable"]]
+  var_info
 }
 
 #' Replace variable information
@@ -604,19 +608,15 @@
 #' @noRd
 .as_data_tibble <- function(exp) {
   expr_mat <- as.matrix(SummarizedExperiment::assay(exp, 1))
-  values <- tibble::tibble(
-    sample = rep(colnames(exp), times = nrow(exp)),
-    variable = rep(rownames(exp), each = ncol(exp)),
-    value = as.vector(t(expr_mat))
+  sample_info <- .get_sample_info(exp)
+  var_info <- .get_var_info(exp)
+  sample_index <- rep(seq_len(ncol(exp)), times = nrow(exp))
+  variable_index <- rep(seq_len(nrow(exp)), each = ncol(exp))
+
+  # Metadata rows are aligned with the assay, even when identifiers repeat.
+  dplyr::bind_cols(
+    sample_info[sample_index, , drop = FALSE],
+    var_info[variable_index, , drop = FALSE],
+    tibble::tibble(value = as.vector(t(expr_mat)))
   )
-  values |>
-    dplyr::left_join(.get_sample_info(exp), by = "sample") |>
-    dplyr::left_join(.get_var_info(exp), by = "variable") |>
-    dplyr::select(
-      .data$sample,
-      dplyr::any_of(setdiff(colnames(.get_sample_info(exp)), "sample")),
-      .data$variable,
-      dplyr::any_of(setdiff(colnames(.get_var_info(exp)), "variable")),
-      .data$value
-    )
 }
