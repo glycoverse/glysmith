@@ -2,6 +2,11 @@
 
 ## glysmith (development version)
 
+- [`cast_plot()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
+  now returns the plot itself when it is stored with export dimensions,
+  preserving its documented return type and allowing further ggplot2
+  customization.
+
 - Steps inside
   [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md)
   now retain their package dependencies and repeatability, so dependency
