@@ -2,6 +2,11 @@
 
 ## glysmith (development version)
 
+- [`quench_result()`](https://glycoverse.github.io/glysmith/dev/reference/quench_result.md)
+  now treats an empty overwrite answer as cancellation, matching its
+  `[y/N]` prompt and preserving existing directories unless overwrite is
+  explicitly confirmed.
+
 ## glysmith 0.12.4
 
 - Package checks now support glyexp 0.19.0 by explicitly specifying the
