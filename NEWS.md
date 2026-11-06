@@ -2,6 +2,8 @@
 
 * Steps inside `br()` now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.
 
+* `quench_result()` now treats an empty overwrite answer as cancellation, matching its `[y/N]` prompt and preserving existing directories unless overwrite is explicitly confirmed.
+
 # glysmith 0.12.4
 
 * Package checks now support glyexp 0.19.0 by explicitly specifying the experiment type when constructing legacy test fixtures. (#31)
