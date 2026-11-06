@@ -2,6 +2,9 @@
 
 ## glysmith (development version)
 
+- Quiet output during result export now restores an existing message
+  sink, including after errors or nested quiet operations.
+
 - [`cast_plot()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
   now returns the plot itself when it is stored with export dimensions,
   preserving its documented return type and allowing further ggplot2
