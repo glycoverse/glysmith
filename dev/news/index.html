@@ -38,7 +38,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glysmith-development-version">glysmith (development version)<a class="anchor" aria-label="anchor" href="#glysmith-development-version"></a></h2>
-<ul><li><p>Quiet output during result export now restores an existing message sink, including after errors or nested quiet operations.</p></li>
+<ul><li><p><code>step_plot_qc(when = NULL)</code> now creates the documented generic QC step instead of failing while selecting its label.</p></li>
+<li><p>Quiet output during result export now restores an existing message sink, including after errors or nested quiet operations.</p></li>
 <li><p><code><a href="../reference/cast_exp.html">cast_plot()</a></code> now returns the plot itself when it is stored with export dimensions, preserving its documented return type and allowing further ggplot2 customization.</p></li>
 <li><p>Steps inside <code><a href="../reference/br.html">br()</a></code> now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.</p></li>
 <li><p><code><a href="../reference/quench_result.html">quench_result()</a></code> now treats an empty overwrite answer as cancellation, matching its <code>[y/N]</code> prompt and preserving existing directories unless overwrite is explicitly confirmed.</p></li>

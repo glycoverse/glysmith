@@ -2,6 +2,9 @@
 
 ## glysmith (development version)
 
+- `step_plot_qc(when = NULL)` now creates the documented generic QC step
+  instead of failing while selecting its label.
+
 - Quiet output during result export now restores an existing message
   sink, including after errors or nested quiet operations.
 
