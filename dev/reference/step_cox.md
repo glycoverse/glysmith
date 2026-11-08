@@ -103,7 +103,7 @@ Tables generated (with suffixes):
 
 - `cox`: A table containing Cox regression results with columns:
 
-  - `variable`: Variable name
+  - `.variable` (or `variable` for older results): Variable identifier
 
   - `coefficient`: Regression coefficient (log hazard ratio)
 

@@ -2,6 +2,10 @@
 
 ## glysmith (development version)
 
+- Analysis reports and top-variable selection support glystats
+  dot-prefixed identifiers while preserving ordinary `variable` and
+  `sample` annotations and compatibility with older results. (#32)
+
 - Metadata helpers preserve repeated sample and variable identifiers
   when converting SummarizedExperiment annotations to tibbles.
 
