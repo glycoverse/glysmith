@@ -22,7 +22,7 @@ Description: glysmith provides high-level, end-to-end workflows for glycomics
     with minimal code while retaining full flexibility for customization.
 License: MIT + file LICENSE
 Suggests:
-    glyclean (>= 0.10.1),
+    glyclean (>= 0.17.0),
     glyanno (>= 0.6.1),
     glydb (>= 0.4.0),
     glydet (>= 0.10.1),
