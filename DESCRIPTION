@@ -79,3 +79,6 @@ Imports:
     tibble
 Depends: R (>= 4.1.0)
 VignetteBuilder: knitr
+Remotes:
+    glycoverse/glyexp@cb24f10236c3cb3cc56b762e77de5e2b3e54cd47,
+    glycoverse/glystats@028258d0a263c99841610710dbb869637c7fa32b
