@@ -2,6 +2,11 @@
 
 ## glysmith (development version)
 
+- SE metadata round trips and analysis pipelines preserve axis names and
+  ordinary `sample`/`variable` annotations. Structure-report tables now
+  expose axis IDs as `.sample`/`.variable`, repairing conflicting
+  annotation names without dropping their values. (#34)
+
 - [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md)
   forwards `pro_scale` to glyclean, preserving raw-input defaults and
   allowing independently log-transformed protein matrices. (#33)
