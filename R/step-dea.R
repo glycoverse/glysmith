@@ -505,10 +505,11 @@ step_dea_kruskal <- function(
 
 #' Count total significant variables in DEA results
 #' @param tbl A tibble with DEA results
+#' @param id_col Identity column selected from the result schema.
 #' @returns Number of unique significant variables
 #' @noRd
-.dea_count_sig_total <- function(tbl) {
-  sig_vars <- tbl$variable[!is.na(tbl$p_adj) & tbl$p_adj < 0.05]
+.dea_count_sig_total <- function(tbl, id_col = "variable") {
+  sig_vars <- tbl[[id_col]][!is.na(tbl$p_adj) & tbl$p_adj < 0.05]
   length(unique(sig_vars))
 }
 
@@ -558,7 +559,8 @@ step_dea_kruskal <- function(
   }
 
   item_name <- .dea_get_item_name(x$exp, on)
-  sig_total <- .dea_count_sig_total(tbl)
+  id_col <- .stats_id_column(x$data[[paste0(meta$prefix, "_res")]])
+  sig_total <- .dea_count_sig_total(tbl, id_col)
   is_multigroup <- .dea_is_multigroup(tbl)
 
   lines <- c(paste0(meta$label, " analysis was performed."))

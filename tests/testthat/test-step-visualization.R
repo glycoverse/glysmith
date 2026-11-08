@@ -96,7 +96,7 @@ test_that("step_sig_boxplot works with step_dea_ttest", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_ttest(),
+    step_dea_ttest(filter_p_adj_cutoff = 1),
     step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
@@ -112,7 +112,7 @@ test_that("step_sig_boxplot works with step_dea_wilcox", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_wilcox(),
+    step_dea_wilcox(filter_p_adj_cutoff = 1),
     step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
@@ -156,7 +156,7 @@ test_that("step_sig_boxplot works with step_dea_kruskal", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_kruskal(),
+    step_dea_kruskal(filter_p_adj_cutoff = 1),
     step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))

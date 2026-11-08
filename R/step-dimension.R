@@ -548,6 +548,11 @@ step_plsda <- function(
     !!!plsda_args
   )
   tidy_res <- plsda_res$tidy_result
+  ctx <- ctx_add_data(
+    ctx,
+    paste0(id, "_id_column"),
+    .stats_id_column(plsda_res)
+  )
 
   ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), plsda_res$raw_result)
   ctx <- ctx_add_table(
@@ -635,12 +640,13 @@ step_plsda <- function(
   q2_cum <- model_df[["Q2(cum)"]][1]
 
   vip_tbl <- x$tables[[paste0(id, "_vip")]]
-  n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
+  n_vip_gt_1 <- sum(vip_tbl$vip > 1, na.rm = TRUE)
 
   top5 <- vip_tbl |>
     dplyr::arrange(dplyr::desc(.data$vip)) |>
     dplyr::slice_head(n = 5)
-  top5_vars <- top5$variable
+  id_col <- x$data[[paste0(id, "_id_column")]] %||% "variable"
+  top5_vars <- top5[[id_col]]
 
   lines <- c(
     paste0(
@@ -798,6 +804,11 @@ step_oplsda <- function(
     !!!oplsda_args
   )
   tidy_res <- oplsda_res$tidy_result
+  ctx <- ctx_add_data(
+    ctx,
+    paste0(id, "_id_column"),
+    .stats_id_column(oplsda_res)
+  )
 
   ctx <- ctx_add_data(ctx, paste0(id, "_raw_res"), oplsda_res$raw_result)
   ctx <- ctx_add_table(
@@ -885,12 +896,13 @@ step_oplsda <- function(
   q2_cum <- model_df[["Q2(cum)"]][1]
 
   vip_tbl <- x$tables[[paste0(id, "_vip")]]
-  n_vip_gt_1 <- sum(.data$vip > 1, na.rm = TRUE)
+  n_vip_gt_1 <- sum(vip_tbl$vip > 1, na.rm = TRUE)
 
   top5 <- vip_tbl |>
     dplyr::arrange(dplyr::desc(.data$vip)) |>
     dplyr::slice_head(n = 5)
-  top5_vars <- top5$variable
+  id_col <- x$data[[paste0(id, "_id_column")]] %||% "variable"
+  top5_vars <- top5[[id_col]]
 
   lines <- c(
     paste0(

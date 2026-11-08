@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* Analysis reports and top-variable selection support glystats dot-prefixed identifiers while preserving ordinary `variable` and `sample` annotations and compatibility with older results. (#32)
+
 * Metadata helpers preserve repeated sample and variable identifiers when converting SummarizedExperiment annotations to tibbles.
 
 * `step_oplsda()` now counts observed groups in custom character columns and ignores unused factor levels, instead of incorrectly skipping valid two-group analyses.

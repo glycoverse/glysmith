@@ -189,7 +189,7 @@ test_that("step_cox generates table with expected columns", {
 
   cox_table <- res$tables$cox
   expect_true(nrow(cox_table) > 0)
-  expect_true("variable" %in% colnames(cox_table))
+  expect_true(".variable" %in% colnames(cox_table))
   expect_true("coefficient" %in% colnames(cox_table))
   expect_true("hr" %in% colnames(cox_table))
   expect_true("p_adj" %in% colnames(cox_table))
