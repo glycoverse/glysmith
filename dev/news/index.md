@@ -2,6 +2,10 @@
 
 ## glysmith (development version)
 
+- [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md)
+  forwards `pro_scale` to glyclean, preserving raw-input defaults and
+  allowing independently log-transformed protein matrices. (#33)
+
 - Analysis reports and top-variable selection support glystats
   dot-prefixed identifiers while preserving ordinary `variable` and
   `sample` annotations and compatibility with older results. (#32)

@@ -11,7 +11,7 @@ This step requires `exp` (experiment data).
 ## Usage
 
 ``` r
-step_adjust_protein(pro_expr_path = NULL, method = "ratio")
+step_adjust_protein(pro_expr_path = NULL, method = "ratio", pro_scale = "raw")
 ```
 
 ## Arguments
@@ -31,6 +31,16 @@ step_adjust_protein(pro_expr_path = NULL, method = "ratio")
 
   The method to use for protein adjustment. Either "ratio" or "reg".
   Default is "ratio".
+
+- pro_scale:
+
+  Representation of the protein matrix: `"raw"` (default), `"log"`
+  (natural logarithm), `"log2"`, or `"log10"`. This is independent of
+  the experiment scale. Supply the scale actually stored in the file; no
+  scale is inferred. Ordinary logarithms are supported, not log(x + 1).
+  The adjusted experiment retains its original scale. `"logx"` and
+  unknown scales are rejected because they cannot be decoded
+  unambiguously.
 
 ## Value
 

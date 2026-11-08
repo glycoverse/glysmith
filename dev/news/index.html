@@ -38,7 +38,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glysmith-development-version">glysmith (development version)<a class="anchor" aria-label="anchor" href="#glysmith-development-version"></a></h2>
-<ul><li><p>Analysis reports and top-variable selection support glystats dot-prefixed identifiers while preserving ordinary <code>variable</code> and <code>sample</code> annotations and compatibility with older results. (#32)</p></li>
+<ul><li><p><code><a href="../reference/step_adjust_protein.html">step_adjust_protein()</a></code> forwards <code>pro_scale</code> to glyclean, preserving raw-input defaults and allowing independently log-transformed protein matrices. (#33)</p></li>
+<li><p>Analysis reports and top-variable selection support glystats dot-prefixed identifiers while preserving ordinary <code>variable</code> and <code>sample</code> annotations and compatibility with older results. (#32)</p></li>
 <li><p>Metadata helpers preserve repeated sample and variable identifiers when converting SummarizedExperiment annotations to tibbles.</p></li>
 <li><p><code><a href="../reference/step_oplsda.html">step_oplsda()</a></code> now counts observed groups in custom character columns and ignores unused factor levels, instead of incorrectly skipping valid two-group analyses.</p></li>
 <li><p><code>step_plot_qc(when = NULL)</code> now creates the documented generic QC step instead of failing while selecting its label.</p></li>
