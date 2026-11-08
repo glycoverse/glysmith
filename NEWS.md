@@ -1,6 +1,6 @@
 # glysmith (development version)
 
-* `step_adjust_protein()` forwards `pro_scale` to glyclean, preserving raw-input defaults and allowing independently log-transformed protein matrices.
+* `step_adjust_protein()` forwards `pro_scale` to glyclean, preserving raw-input defaults and allowing independently log-transformed protein matrices. (#33)
 
 * Analysis reports and top-variable selection support glystats dot-prefixed identifiers while preserving ordinary `variable` and `sample` annotations and compatibility with older results. (#32)
 
