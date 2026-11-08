@@ -620,3 +620,12 @@
     tibble::tibble(value = as.vector(t(expr_mat)))
   )
 }
+
+# Resolve identity from the result schema, never from annotation column names.
+.stats_id_column <- function(res, axis = "variable") {
+  columns <- res$identifiers$columns
+  if (is.null(columns)) {
+    return(axis)
+  }
+  unname(columns[[axis]])
+}
