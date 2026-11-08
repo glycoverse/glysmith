@@ -72,7 +72,7 @@ test_that("step_infer_structure records inference results before filtering", {
 
   expect_true("inferred_structures" %in% names(res$tables))
   expect_equal(nrow(res$tables$inferred_structures), 3)
-  expect_equal(res$tables$inferred_structures$variable, c("V1", "V2", "V3"))
+  expect_equal(res$tables$inferred_structures$.variable, c("V1", "V2", "V3"))
   expect_equal(res$tables$inferred_structures$matched, c(TRUE, TRUE, FALSE))
 })
 

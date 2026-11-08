@@ -109,7 +109,14 @@ step_infer_structure <- function(
     db = db_to_use,
     return_best = TRUE
   )
-  inference_tbl <- var_info |>
+  inference_info <- var_info
+  names(inference_info) <- make.unique(c(".variable", names(inference_info)))[
+    -1
+  ]
+  inference_tbl <- tibble::tibble(
+    .variable = rownames(exp),
+    !!!inference_info
+  ) |>
     dplyr::mutate(
       glycan_structure = inferred_structures,
       matched = !is.na(.data$glycan_structure)

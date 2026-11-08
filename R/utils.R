@@ -465,19 +465,13 @@
 #'
 #' @param exp A glyco `SummarizedExperiment` object.
 #'
-#' @returns A tibble with a `sample` identifier column.
+#' @returns Sample annotations, without treating SE annotation columns as IDs.
 #' @noRd
 .get_sample_info <- function(exp) {
   if (inherits(exp, "glyexp_experiment")) {
     return(exp$sample_info)
   }
-  info <- SummarizedExperiment::colData(exp)
-  if ("sample" %in% colnames(info)) {
-    return(tibble::as_tibble(info))
-  }
-  sample_info <- tibble::as_tibble(info, rownames = "sample")
-  sample_info[["sample"]] <- colnames(exp) %||% sample_info[["sample"]]
-  sample_info
+  tibble::as_tibble(SummarizedExperiment::colData(exp))
 }
 
 #' Replace sample information
@@ -492,8 +486,7 @@
     exp$sample_info <- sample_info
     return(exp)
   }
-  samples <- sample_info[["sample"]] %||% colnames(exp)
-  sample_info <- dplyr::select(sample_info, -dplyr::any_of("sample"))
+  samples <- colnames(exp)
   SummarizedExperiment::colData(exp) <- S4Vectors::DataFrame(
     sample_info,
     row.names = samples,
@@ -506,19 +499,13 @@
 #'
 #' @inheritParams .get_sample_info
 #'
-#' @returns A tibble with a `variable` identifier column.
+#' @returns Variable annotations, without treating SE annotation columns as IDs.
 #' @noRd
 .get_var_info <- function(exp) {
   if (inherits(exp, "glyexp_experiment")) {
     return(exp$var_info)
   }
-  info <- SummarizedExperiment::rowData(exp)
-  if ("variable" %in% colnames(info)) {
-    return(tibble::as_tibble(info))
-  }
-  var_info <- tibble::as_tibble(info, rownames = "variable")
-  var_info[["variable"]] <- rownames(exp) %||% var_info[["variable"]]
-  var_info
+  tibble::as_tibble(SummarizedExperiment::rowData(exp))
 }
 
 #' Replace variable information
@@ -533,8 +520,7 @@
     exp$var_info <- var_info
     return(exp)
   }
-  variables <- var_info[["variable"]] %||% rownames(exp)
-  var_info <- dplyr::select(var_info, -dplyr::any_of("variable"))
+  variables <- rownames(exp)
   SummarizedExperiment::rowData(exp) <- S4Vectors::DataFrame(
     var_info,
     row.names = variables,
@@ -613,11 +599,24 @@
   sample_index <- rep(seq_len(ncol(exp)), times = nrow(exp))
   variable_index <- rep(seq_len(nrow(exp)), each = ncol(exp))
 
-  # Metadata rows are aligned with the assay, even when identifiers repeat.
-  dplyr::bind_cols(
-    sample_info[sample_index, , drop = FALSE],
-    var_info[variable_index, , drop = FALSE],
-    tibble::tibble(value = as.vector(t(expr_mat)))
+  # Reserve axis/output names before repairing annotation collisions.
+  annotation_names <- make.unique(c(
+    ".sample",
+    ".variable",
+    "value",
+    names(sample_info),
+    names(var_info)
+  ))[-seq_len(3)]
+  names(sample_info) <- utils::head(annotation_names, ncol(sample_info))
+  names(var_info) <- utils::tail(annotation_names, ncol(var_info))
+  samples <- colnames(exp) %||% rep(NA_character_, ncol(exp))
+  variables <- rownames(exp) %||% rep(NA_character_, nrow(exp))
+  tibble::tibble(
+    .sample = samples[sample_index],
+    !!!sample_info[sample_index, , drop = FALSE],
+    .variable = variables[variable_index],
+    !!!var_info[variable_index, , drop = FALSE],
+    value = as.vector(t(expr_mat))
   )
 }
 
