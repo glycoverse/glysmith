@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">glysmith</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.12.4.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.13.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,17 +38,35 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glysmith-development-version">glysmith (development version)<a class="anchor" aria-label="anchor" href="#glysmith-development-version"></a></h2>
-<ul><li><p>SE metadata round trips and analysis pipelines preserve axis names and ordinary <code>sample</code>/<code>variable</code> annotations. Structure-report tables now expose axis IDs as <code>.sample</code>/<code>.variable</code>, repairing conflicting annotation names without dropping their values. (#34)</p></li>
-<li><p><code><a href="../reference/step_adjust_protein.html">step_adjust_protein()</a></code> forwards <code>pro_scale</code> to glyclean, preserving raw-input defaults and allowing independently log-transformed protein matrices. (#33)</p></li>
-<li><p>Analysis reports and top-variable selection support glystats dot-prefixed identifiers while preserving ordinary <code>variable</code> and <code>sample</code> annotations and compatibility with older results. (#32)</p></li>
-<li><p>Metadata helpers preserve repeated sample and variable identifiers when converting SummarizedExperiment annotations to tibbles.</p></li>
-<li><p><code><a href="../reference/step_oplsda.html">step_oplsda()</a></code> now counts observed groups in custom character columns and ignores unused factor levels, instead of incorrectly skipping valid two-group analyses.</p></li>
-<li><p><code>step_plot_qc(when = NULL)</code> now creates the documented generic QC step instead of failing while selecting its label.</p></li>
-<li><p>Quiet output during result export now restores an existing message sink, including after errors or nested quiet operations.</p></li>
-<li><p><code><a href="../reference/cast_exp.html">cast_plot()</a></code> now returns the plot itself when it is stored with export dimensions, preserving its documented return type and allowing further ggplot2 customization.</p></li>
-<li><p>Steps inside <code><a href="../reference/br.html">br()</a></code> now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.</p></li>
-<li><p><code><a href="../reference/quench_result.html">quench_result()</a></code> now treats an empty overwrite answer as cancellation, matching its <code>[y/N]</code> prompt and preserving existing directories unless overwrite is explicitly confirmed.</p></li>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.13.0" id="glysmith-0130">glysmith 0.13.0<a class="anchor" aria-label="anchor" href="#glysmith-0130"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-13-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-13-0"></a></h3>
+<ul><li>Structure-report tables use <code>.sample</code> and <code>.variable</code> for axis identifiers; update code that reads the former undotted identifier columns. Ordinary <code>sample</code> and <code>variable</code> annotations remain available, and conflicting annotation names are repaired without dropping values. (#34)</li>
 </ul></div>
+<div class="section level3">
+<h3 id="new-features-0-13-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-13-0"></a></h3>
+<ul><li>
+<code><a href="../reference/step_adjust_protein.html">step_adjust_protein()</a></code> gains <code>pro_scale</code> for independently log-transformed protein matrices while retaining the raw-input default. (#33)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-0-13-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-0-13-0"></a></h3>
+<ul><li>Analysis reports and top-variable selection support dot-prefixed glystats identifiers while preserving ordinary <code>variable</code> and <code>sample</code> annotations and compatibility with older results. (#32)</li>
+<li>Analysis pipelines and metadata conversions preserve SE axis names, ordinary annotations, and repeated annotation identifiers. (#34)</li>
+<li>Quiet result export restores an existing message sink after errors and nested quiet operations.</li>
+<li>
+<code><a href="../reference/br.html">br()</a></code> preserves step dependencies and repeatability so dependency checks and repeated branch steps work correctly.</li>
+<li>
+<code><a href="../reference/cast_exp.html">cast_plot()</a></code> returns the plot itself when export dimensions are stored alongside it, allowing further ggplot2 customization.</li>
+<li>
+<code><a href="../reference/quench_result.html">quench_result()</a></code> treats an empty overwrite answer as cancellation and preserves existing directories unless overwrite is explicitly confirmed.</li>
+<li>
+<code><a href="../reference/step_oplsda.html">step_oplsda()</a></code> counts observed groups in character columns and ignores unused factor levels, allowing valid two-group analyses.</li>
+<li>
+<code>step_plot_qc(when = NULL)</code> creates the documented generic QC step instead of failing during label selection.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.12.4" id="glysmith-0124">glysmith 0.12.4<a class="anchor" aria-label="anchor" href="#glysmith-0124"></a></h2>
 <ul><li>Package checks now support glyexp 0.19.0 by explicitly specifying the experiment type when constructing legacy test fixtures. (#31)</li>
