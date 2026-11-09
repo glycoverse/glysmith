@@ -24,9 +24,9 @@ step_plot_qc(
 - when:
 
   Character string indicating when this QC step is run. Use `"pre"` for
-  pre-preprocessing QC, `"post"` for post-preprocessing QC, or any other
-  value for generic QC. This is appended to the step ID. Default is
-  `"post"`.
+  pre-preprocessing QC, `"post"` for post-preprocessing QC, or
+  `"generic"` (also `NULL`) for generic QC. This is appended to the step
+  ID. Default is `"post"`.
 
 - batch_col:
 

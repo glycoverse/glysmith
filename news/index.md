@@ -1,5 +1,45 @@
 # Changelog
 
+## glysmith 0.13.0
+
+### Breaking changes
+
+- Structure-report tables use `.sample` and `.variable` for axis
+  identifiers; update code that reads the former undotted identifier
+  columns. Ordinary `sample` and `variable` annotations remain
+  available, and conflicting annotation names are repaired without
+  dropping values. (#34)
+
+### New features
+
+- [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/reference/step_adjust_protein.md)
+  gains `pro_scale` for independently log-transformed protein matrices
+  while retaining the raw-input default. (#33)
+
+### Minor improvements and bug fixes
+
+- Analysis reports and top-variable selection support dot-prefixed
+  glystats identifiers while preserving ordinary `variable` and `sample`
+  annotations and compatibility with older results. (#32)
+- Analysis pipelines and metadata conversions preserve SE axis names,
+  ordinary annotations, and repeated annotation identifiers. (#34)
+- Quiet result export restores an existing message sink after errors and
+  nested quiet operations.
+- [`br()`](https://glycoverse.github.io/glysmith/reference/br.md)
+  preserves step dependencies and repeatability so dependency checks and
+  repeated branch steps work correctly.
+- [`cast_plot()`](https://glycoverse.github.io/glysmith/reference/cast_exp.md)
+  returns the plot itself when export dimensions are stored alongside
+  it, allowing further ggplot2 customization.
+- [`quench_result()`](https://glycoverse.github.io/glysmith/reference/quench_result.md)
+  treats an empty overwrite answer as cancellation and preserves
+  existing directories unless overwrite is explicitly confirmed.
+- [`step_oplsda()`](https://glycoverse.github.io/glysmith/reference/step_oplsda.md)
+  counts observed groups in character columns and ignores unused factor
+  levels, allowing valid two-group analyses.
+- `step_plot_qc(when = NULL)` creates the documented generic QC step
+  instead of failing during label selection.
+
 ## glysmith 0.12.4
 
 - Package checks now support glyexp 0.19.0 by explicitly specifying the
