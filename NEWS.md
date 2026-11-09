@@ -1,24 +1,23 @@
-# glysmith (development version)
+# glysmith 0.13.0
 
-* SE metadata round trips and analysis pipelines preserve axis names and ordinary `sample`/`variable` annotations. Structure-report tables now expose axis IDs as `.sample`/`.variable`, repairing conflicting annotation names without dropping their values. (#34)
+## Breaking changes
 
-* `step_adjust_protein()` forwards `pro_scale` to glyclean, preserving raw-input defaults and allowing independently log-transformed protein matrices. (#33)
+* Structure-report tables use `.sample` and `.variable` for axis identifiers; update code that reads the former undotted identifier columns. Ordinary `sample` and `variable` annotations remain available, and conflicting annotation names are repaired without dropping values. (#34)
 
-* Analysis reports and top-variable selection support glystats dot-prefixed identifiers while preserving ordinary `variable` and `sample` annotations and compatibility with older results. (#32)
+## New features
 
-* Metadata helpers preserve repeated sample and variable identifiers when converting SummarizedExperiment annotations to tibbles.
+* `step_adjust_protein()` gains `pro_scale` for independently log-transformed protein matrices while retaining the raw-input default. (#33)
 
-* `step_oplsda()` now counts observed groups in custom character columns and ignores unused factor levels, instead of incorrectly skipping valid two-group analyses.
+## Minor improvements and bug fixes
 
-* `step_plot_qc(when = NULL)` now creates the documented generic QC step instead of failing while selecting its label.
-
-* Quiet output during result export now restores an existing message sink, including after errors or nested quiet operations.
-
-* `cast_plot()` now returns the plot itself when it is stored with export dimensions, preserving its documented return type and allowing further ggplot2 customization.
-
-* Steps inside `br()` now retain their package dependencies and repeatability, so dependency checks detect missing packages and repeatable steps remain valid inside branches.
-
-* `quench_result()` now treats an empty overwrite answer as cancellation, matching its `[y/N]` prompt and preserving existing directories unless overwrite is explicitly confirmed.
+* Analysis reports and top-variable selection support dot-prefixed glystats identifiers while preserving ordinary `variable` and `sample` annotations and compatibility with older results. (#32)
+* Analysis pipelines and metadata conversions preserve SE axis names, ordinary annotations, and repeated annotation identifiers. (#34)
+* Quiet result export restores an existing message sink after errors and nested quiet operations.
+* `br()` preserves step dependencies and repeatability so dependency checks and repeated branch steps work correctly.
+* `cast_plot()` returns the plot itself when export dimensions are stored alongside it, allowing further ggplot2 customization.
+* `quench_result()` treats an empty overwrite answer as cancellation and preserves existing directories unless overwrite is explicitly confirmed.
+* `step_oplsda()` counts observed groups in character columns and ignores unused factor levels, allowing valid two-group analyses.
+* `step_plot_qc(when = NULL)` creates the documented generic QC step instead of failing during label selection.
 
 # glysmith 0.12.4
 
