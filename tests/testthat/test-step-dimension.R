@@ -208,3 +208,31 @@ test_that("step_oplsda works with custom parameters", {
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("oplsda_samples" %in% names(res$tables))
 })
+
+
+test_that("OPLS-DA accepts two observed groups in a custom character column", {
+  exp <- make_pca_exp()
+  SummarizedExperiment::colData(exp)$cohort <- rep(c("A", "B"), each = 3)
+  ctx <- glysmith:::new_ctx(exp, group_col = "cohort")
+
+  result <- glysmith:::.condition_oplsda(ctx, on = "exp")
+
+  expect_true(result$check)
+  expect_null(result$reason)
+})
+
+test_that("OPLS-DA group checks ignore unused factor levels", {
+  exp <- make_pca_exp()
+  SummarizedExperiment::colData(exp)$group <- factor(
+    rep(c("A", "B"), each = 3),
+    levels = c("A", "B", "unused")
+  )
+  ctx <- glysmith:::new_ctx(exp, group_col = "group")
+
+  expect_true(glysmith:::.condition_oplsda(ctx, on = "exp")$check)
+
+  ctx$data$exp <- exp[, 1:3]
+  result <- glysmith:::.condition_oplsda(ctx, on = "exp")
+  expect_false(result$check)
+  expect_match(result$reason, "found 1 groups")
+})

@@ -62,3 +62,31 @@ test_that("branch_to_steps rejects nested branches", {
     "Nested branches are not supported"
   )
 })
+
+
+test_that("branch wrapping preserves package and repeatability metadata", {
+  original <- step(
+    "custom",
+    "Custom step",
+    function(ctx) ctx,
+    packages = c("glystats", "glyvis"),
+    repeatable = TRUE,
+    retry = 2L
+  )
+
+  wrapped <- glysmith:::.branch_wrap_step(original, "analysis")
+
+  expect_identical(wrapped$packages, original$packages)
+  expect_identical(wrapped$repeatable, original$repeatable)
+  expect_identical(wrapped$retry, original$retry)
+  expect_no_error(blueprint(br("analysis", original, original)))
+})
+
+test_that("non-repeatable steps remain non-repeatable inside branches", {
+  original <- step("custom", "Custom step", function(ctx) ctx)
+
+  expect_error(
+    blueprint(br("analysis", original, original)),
+    "duplicated steps"
+  )
+})

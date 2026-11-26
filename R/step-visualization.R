@@ -361,11 +361,12 @@ step_sig_boxplot <- function(
     dea_res <- ctx_get_data(ctx, dea_key)
     tidy_res <- .get_sig_boxplot_tidy_result(dea_res)
 
+    id_col <- .stats_id_column(dea_res)
     top_vars <- tidy_res |>
       dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
-      dplyr::distinct(.data$variable, .keep_all = TRUE) |>
+      dplyr::distinct(.data[[id_col]], .keep_all = TRUE) |>
       dplyr::slice_head(n = min(n_top, 25)) |>
-      dplyr::pull(.data$variable)
+      dplyr::pull(dplyr::all_of(id_col))
 
     exp <- .filter_variables(exp, top_vars)
     n_vars <- length(top_vars)

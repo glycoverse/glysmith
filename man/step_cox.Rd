@@ -65,7 +65,7 @@ Tables generated (with suffixes):
 \itemize{
 \item \code{cox}: A table containing Cox regression results with columns:
 \itemize{
-\item \code{variable}: Variable name
+\item \code{.variable} (or \code{variable} for older results): Variable identifier
 \item \code{coefficient}: Regression coefficient (log hazard ratio)
 \item \code{std.error}: Standard error of the coefficient
 \item \code{statistic}: Wald test statistic

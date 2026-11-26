@@ -37,7 +37,7 @@ test_that("forge_analysis keeps experiment backward compatibility", {
 
   exp <- glyexp::real_experiment2
   if (!inherits(exp, "glyexp_experiment")) {
-    exp <- suppressWarnings(glyexp::from_se(exp))
+    exp <- suppressWarnings(glyexp::from_se(exp, exp_type = "glycomics"))
   }
   suppressMessages(result <- glysmith::forge_analysis(exp))
   expect_s3_class(result$exp, "glyexp_experiment")

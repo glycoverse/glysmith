@@ -35,9 +35,9 @@ quench_result <- function(
   if (fs::dir_exists(dir)) {
     ans <- .ask_overwrite_dir()
     ans <- tolower(trimws(ans))
-    if (ans == "n") {
+    if (ans == "n" || ans == "") {
       cli::cli_abort("Operation cancelled. Result not saved.")
-    } else if (ans == "y" || ans == "") {
+    } else if (ans == "y") {
       fs::dir_delete(dir)
     } else {
       cli::cli_abort("Invalid input. Operation cancelled. Result not saved.")
@@ -189,15 +189,14 @@ quench_result <- function(
   tmp <- tempfile("glysmith-quiet-")
   con <- file(tmp, open = "wt")
   out0 <- sink.number()
-  msg0 <- sink.number(type = "message")
+  msg0 <- getConnection(sink.number(type = "message"))
   sink(con)
   sink(con, type = "message")
   on.exit(
     {
       # Restore sinks created in this helper only.
-      while (sink.number(type = "message") > msg0) {
-        sink(type = "message")
-      }
+      # Message sinks have no stack: restore the original connection directly.
+      sink(msg0, type = "message")
       while (sink.number() > out0) {
         sink()
       }
@@ -213,9 +212,7 @@ quench_result <- function(
       eval(expr, envir = parent.frame()),
       error = function(e) {
         # Restore sinks before re-throwing error
-        while (sink.number(type = "message") > msg0) {
-          sink(type = "message")
-        }
+        sink(msg0, type = "message")
         while (sink.number() > out0) {
           sink()
         }

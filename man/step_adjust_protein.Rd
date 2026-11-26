@@ -4,7 +4,7 @@
 \alias{step_adjust_protein}
 \title{Step: Adjust Protein Abundance}
 \usage{
-step_adjust_protein(pro_expr_path = NULL, method = "ratio")
+step_adjust_protein(pro_expr_path = NULL, method = "ratio", pro_scale = "raw")
 }
 \arguments{
 \item{pro_expr_path}{Path to the protein expression matrix file.
@@ -17,6 +17,13 @@ Can be:
 
 \item{method}{The method to use for protein adjustment.
 Either "ratio" or "reg". Default is "ratio".}
+
+\item{pro_scale}{Representation of the protein matrix: \code{"raw"} (default),
+\code{"log"} (natural logarithm), \code{"log2"}, or \code{"log10"}. This is independent
+of the experiment scale. Supply the scale actually stored in the file;
+no scale is inferred. Ordinary logarithms are supported, not log(x + 1).
+The adjusted experiment retains its original scale. \code{"logx"} and unknown
+scales are rejected because they cannot be decoded unambiguously.}
 }
 \value{
 A \code{glysmith_step} object.

@@ -27,7 +27,7 @@
 #'
 #' @param when Character string indicating when this QC step is run.
 #'   Use `"pre"` for pre-preprocessing QC, `"post"` for post-preprocessing QC,
-#'   or any other value for generic QC. This is appended to the step ID.
+#'   or `"generic"` (also `NULL`) for generic QC. This is appended to the step ID.
 #'   Default is `"post"`.
 #' @param batch_col Column name for batch information (for `glyclean::plot_batch_pca()`).
 #' @param rep_col Column name for replicate information (for `glyclean::plot_rep_scatter()`).
@@ -49,6 +49,7 @@ step_plot_qc <- function(
 ) {
   checkmate::assert_choice(when, c("pre", "post", "generic"), null.ok = TRUE)
   signature <- rlang::expr_deparse(match.call())
+  when <- when %||% "generic"
 
   # Build step ID based on when parameter
   if (identical(when, "post")) {
@@ -563,6 +564,12 @@ step_subset_groups <- function(groups = NULL) {
 #'   Can be:
 #'   - A CSV/TSV file with the first column as protein accessions and remaining columns as sample names.
 #'   - An RDS file with a matrix or data.frame with row names as protein accessions and columns as sample names.
+#' @param pro_scale Representation of the protein matrix: `"raw"` (default),
+#'   `"log"` (natural logarithm), `"log2"`, or `"log10"`. This is independent
+#'   of the experiment scale. Supply the scale actually stored in the file;
+#'   no scale is inferred. Ordinary logarithms are supported, not log(x + 1).
+#'   The adjusted experiment retains its original scale. `"logx"` and unknown
+#'   scales are rejected because they cannot be decoded unambiguously.
 #' @inheritParams glyclean::adjust_protein
 #'
 #' @return A `glysmith_step` object.
@@ -576,7 +583,11 @@ step_subset_groups <- function(groups = NULL) {
 #'
 #' @seealso [glyclean::adjust_protein()]
 #' @export
-step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
+step_adjust_protein <- function(
+  pro_expr_path = NULL,
+  method = "ratio",
+  pro_scale = "raw"
+) {
   if (!is.null(pro_expr_path)) {
     checkmate::assert_file_exists(
       pro_expr_path,
@@ -585,6 +596,7 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
     )
   }
   checkmate::assert_choice(method, c("ratio", "reg"))
+  checkmate::assert_choice(pro_scale, c("raw", "log", "log2", "log10"))
   signature <- rlang::expr_deparse(match.call())
 
   step(
@@ -594,7 +606,12 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
       .condition_adjust_protein(ctx, pro_expr_path = pro_expr_path)
     },
     run = function(ctx) {
-      .run_adjust_protein(ctx, pro_expr_path = pro_expr_path, method = method)
+      .run_adjust_protein(
+        ctx,
+        pro_expr_path = pro_expr_path,
+        method = method,
+        pro_scale = pro_scale
+      )
     },
     report = function(x) {
       .report_adjust_protein(x)
@@ -636,10 +653,15 @@ step_adjust_protein <- function(pro_expr_path = NULL, method = "ratio") {
 #'
 #' @returns Updated analysis context.
 #' @noRd
-.run_adjust_protein <- function(ctx, pro_expr_path, method) {
+.run_adjust_protein <- function(ctx, pro_expr_path, method, pro_scale = "raw") {
   exp <- ctx_get_data(ctx, "exp")
   pro_expr_mat <- .read_pro_expr_mat(pro_expr_path)
-  adj_exp <- glyclean::adjust_protein(exp, pro_expr_mat, method = method)
+  adj_exp <- glyclean::adjust_protein(
+    exp,
+    pro_expr_mat,
+    method = method,
+    pro_scale = pro_scale
+  )
   ctx <- ctx_add_data(ctx, "exp", adj_exp)
   ctx_add_data(ctx, "unadj_exp", exp)
 }

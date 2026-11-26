@@ -109,7 +109,14 @@ step_infer_structure <- function(
     db = db_to_use,
     return_best = TRUE
   )
-  inference_tbl <- var_info |>
+  inference_info <- var_info
+  names(inference_info) <- make.unique(c(".variable", names(inference_info)))[
+    -1
+  ]
+  inference_tbl <- tibble::tibble(
+    .variable = rownames(exp),
+    !!!inference_info
+  ) |>
     dplyr::mutate(
       glycan_structure = inferred_structures,
       matched = !is.na(.data$glycan_structure)
@@ -589,7 +596,7 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
 
   top_vars <- roc_res$tidy_result$auc |>
     dplyr::slice_max(.data$auc, n = 10, with_ties = FALSE) |>
-    dplyr::pull("variable")
+    dplyr::pull(.stats_id_column(roc_res))
 
   sub_exp <- .filter_variables(exp, top_vars)
 

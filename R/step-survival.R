@@ -28,7 +28,7 @@
 #'
 #' Tables generated (with suffixes):
 #' - `cox`: A table containing Cox regression results with columns:
-#'   - `variable`: Variable name
+#'   - `.variable` (or `variable` for older results): Variable identifier
 #'   - `coefficient`: Regression coefficient (log hazard ratio)
 #'   - `std.error`: Standard error of the coefficient
 #'   - `statistic`: Wald test statistic
@@ -123,6 +123,7 @@ step_cox <- function(
     !!!cox_args
   )
   tidy_result <- glystats::get_tidy_result(cox_res)
+  ctx <- ctx_add_data(ctx, paste0(id, "_id_column"), .stats_id_column(cox_res))
   ctx <- ctx_add_table(
     ctx,
     id,
@@ -152,7 +153,8 @@ step_cox <- function(
   top_row <- cox_tbl |>
     dplyr::arrange(.data$p_adj) |>
     dplyr::slice_head(n = 1)
-  top_var <- top_row$variable
+  id_col <- x$data[[paste0(id, "_id_column")]] %||% "variable"
+  top_var <- top_row[[id_col]]
   top_hr <- top_row$hr
   top_p_adj <- top_row$p_adj
 
