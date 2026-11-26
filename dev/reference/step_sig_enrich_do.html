@@ -103,6 +103,14 @@ One of "all" (all genes in OrgDb), "detected" (detected variables in <code>exp</
 </ul><p>Tables generated:</p><ul><li><p><code>do_enrich</code>: A table containing the Disease Ontology enrichment results.</p></li>
 </ul></div>
     <div class="section level2">
+    <h2 id="protein-selection">Protein selection<a class="anchor" aria-label="anchor" href="#protein-selection"></a></h2>
+
+
+<p>Enrichment selects proteins by adjusted p-value and abundance fold change.
+The step skips DEA results fitted on <code>"logx"</code> coordinates, including
+output from <code><a href="step_coda.html">step_coda()</a></code>, because abundance fold changes are undefined.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glyfun/reference/enrich_ora_do.html" class="external-link">glyfun::enrich_ora_do()</a></code></p></div>
     </div>

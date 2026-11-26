@@ -130,6 +130,8 @@ Open `report.html` from your analysis directory in your browser.
   : Save GlySmith Result
 - [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md)
   : Step: Adjust Protein Abundance
+- [`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md)
+  : Compositional data transformation
 - [`step_correlation()`](https://glycoverse.github.io/glysmith/dev/reference/step_correlation.md)
   : Step: Correlation Analysis
 - [`step_cox()`](https://glycoverse.github.io/glysmith/dev/reference/step_cox.md)

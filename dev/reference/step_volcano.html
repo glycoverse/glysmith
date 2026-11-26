@@ -5,13 +5,17 @@ step_dea_limma() (multi-group comparison is also supported)
 step_dea_ttest()
 step_dea_wilcox()
 
-"><meta property="og:description" content="Create a volcano plot from DEA results using glyvis::plot_volcano().
+
+The step skips results fitted on &quot;logx&quot; coordinates, including
+step_coda() output, because the x-axis requires abundance fold changes."><meta property="og:description" content="Create a volcano plot from DEA results using glyvis::plot_volcano().
 This step requires one of the DEA steps to be run:
 step_dea_limma() (multi-group comparison is also supported)
 step_dea_ttest()
 step_dea_wilcox()
 
-"><meta property="og:image" content="https://glycoverse.github.io/glysmith/logo.png"><meta name="robots" content="noindex"></head><body>
+
+The step skips results fitted on &quot;logx&quot; coordinates, including
+step_coda() output, because the x-axis requires abundance fold changes."><meta property="og:image" content="https://glycoverse.github.io/glysmith/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -54,7 +58,9 @@ step_dea_wilcox()
 <p>This step requires one of the DEA steps to be run:</p><ul><li><p><code><a href="step_dea_limma.html">step_dea_limma()</a></code> (multi-group comparison is also supported)</p></li>
 <li><p><code><a href="step_dea_ttest.html">step_dea_ttest()</a></code></p></li>
 <li><p><code><a href="step_dea_wilcox.html">step_dea_wilcox()</a></code></p></li>
-</ul></div>
+</ul><p>The step skips results fitted on <code>"logx"</code> coordinates, including
+<code><a href="step_coda.html">step_coda()</a></code> output, because the x-axis requires abundance fold changes.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
@@ -94,7 +100,7 @@ Can also be "p_val" (raw p-values without multiple testing correction).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other arguments passed to <code><a href="https://rdrr.io/pkg/EnhancedVolcano/man/EnhancedVolcano.html" class="external-link">EnhancedVolcano::EnhancedVolcano()</a></code>.</p></dd>
+<dd><p>Additional named plotting options passed to <code><a href="https://glycoverse.github.io/glyvis/reference/plot_volcano.html" class="external-link">glyvis::plot_volcano()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

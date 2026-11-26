@@ -68,6 +68,14 @@ Tables generated:
 - `do_enrich`: A table containing the Disease Ontology enrichment
   results.
 
+## Protein selection
+
+Enrichment selects proteins by adjusted p-value and abundance fold
+change. The step skips DEA results fitted on `"logx"` coordinates,
+including output from
+[`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md),
+because abundance fold changes are undefined.
+
 ## See also
 
 [`glyfun::enrich_ora_do()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_do.html)

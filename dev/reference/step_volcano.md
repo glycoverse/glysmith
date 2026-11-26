@@ -12,6 +12,10 @@ This step requires one of the DEA steps to be run:
 
 - [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.md)
 
+The step skips results fitted on `"logx"` coordinates, including
+[`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md)
+output, because the x-axis requires abundance fold changes.
+
 ## Usage
 
 ``` r
@@ -50,8 +54,8 @@ step_volcano(
 
 - ...:
 
-  Other arguments passed to
-  [`EnhancedVolcano::EnhancedVolcano()`](https://rdrr.io/pkg/EnhancedVolcano/man/EnhancedVolcano.html).
+  Additional named plotting options passed to
+  [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html).
 
 ## Value
 

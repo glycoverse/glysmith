@@ -2,6 +2,13 @@
 
 ## glysmith (development version)
 
+- New
+  [`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md)
+  transforms an experiment or quantified motifs for statistical analysis
+  on log-ratio coordinates. It uses
+  [`glyclean::auto_coda()`](https://glycoverse.github.io/glyclean/reference/auto_coda.html)
+  by default and supports explicit CLR and ALR methods. (#37)
+
 ## glysmith 0.13.0
 
 ### Breaking changes
