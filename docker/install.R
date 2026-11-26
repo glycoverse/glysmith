@@ -4,11 +4,16 @@ stopifnot(getRversion() >= "4.6.0", getRversion() < "4.7.0")
 reference <- Sys.getenv("GLYSMITH_REF", "glysmith")
 stopifnot(nzchar(reference))
 
-# The base image supplies pak, the Glycoverse repository, and the core packages.
-# Include glysmith's Suggests so its analysis steps can run without installation.
+# Refresh the repository index even when BuildKit reuses pak's download cache.
+pak::meta_update()
+core <- scan("/opt/glycoverse/packages.txt", what = character(), quiet = TRUE)
+pak::pkg_install(core, lib = .Library.site, upgrade = TRUE, ask = FALSE)
+
+# Include glysmith's Suggests so its analysis steps can run offline.
 pak::pkg_install(
   reference,
   lib = .Library.site,
+  upgrade = TRUE,
   dependencies = TRUE,
   ask = FALSE
 )
@@ -20,7 +25,7 @@ dependencies <- tools::package_dependencies(
   which = c("Depends", "Imports", "LinkingTo", "Suggests"),
   recursive = FALSE
 )[["glysmith"]]
-packages <- sort(unique(c("glysmith", "glyread", dependencies)))
+packages <- sort(unique(c("glysmith", core, dependencies)))
 missing <- packages[
   !vapply(packages, requireNamespace, logical(1), quietly = TRUE)
 ]

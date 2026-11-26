@@ -36,11 +36,11 @@ concurrency:
 
 env:
   IMAGE: ghcr.io/glycoverse/glysmith
+  HUB_IMAGE: docker.io/fubin1999/glysmith
 
 jobs:
   prepare:
     runs-on: ubuntu-24.04
-    if: github.event_name != 'release' || !github.event.release.prerelease
     outputs:
       package-ref: ${{ steps.config.outputs.package-ref }}
       publish: ${{ steps.config.outputs.publish }}
@@ -48,12 +48,11 @@ jobs:
       - name: Select the package source and publishing mode
         id: config
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
           PACKAGE_REF: ${{ inputs.package_ref || 'glysmith' }}
           PUBLISH: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.publish) }}
         run: |
           if [ "$GITHUB_EVENT_NAME" = release ]; then
-            PACKAGE_REF="glycoverse/glysmith@$RELEASE_TAG"
+            PACKAGE_REF="$GITHUB_REPOSITORY@$GITHUB_SHA"
           fi
           echo "package-ref=$PACKAGE_REF" >> "$GITHUB_OUTPUT"
           echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
@@ -70,6 +69,8 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
+    env:
+      BUILD_TAG: build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.arch }}
     timeout-minutes: 120
     permissions:
       contents: read
@@ -83,29 +84,38 @@ jobs:
           context: '.'
           platforms: linux/${{ matrix.arch }}
           load: true
-          tags: ${{ env.IMAGE }}:build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.arch }}
+          tags: ${{ env.IMAGE }}:${{ env.BUILD_TAG }}
           build-args: GLYSMITH_REF=${{ needs.prepare.outputs.package-ref }}
           cache-from: type=gha,scope=glysmith-${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=glysmith-${{ matrix.arch }}
-          # Refresh package repository metadata on every build.
+          # Re-run the package installer even if the Dockerfile is unchanged.
           no-cache-filters: glysmith
       - name: Test the runtime without network access
         run: |
           docker run --rm --network none \
-            "$IMAGE:build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.arch }}" \
+            "$IMAGE:$BUILD_TAG" \
             Rscript /opt/glysmith/smoke-test.R
-      - name: Collect the installed versions
+      - name: Collect the installed versions and check the release tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           mkdir -p build
           for file in version.txt package-versions.tsv build-session.txt; do
             docker run --rm --network none \
-              "$IMAGE:build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.arch }}" \
+              "$IMAGE:$BUILD_TAG" \
               cat "/opt/glysmith/$file" > "build/$file"
           done
+          version=$(cat build/version.txt)
+          if [[ -n "$RELEASE_TAG" && "$version" != "${RELEASE_TAG#v}" ]]; then
+            echo "::error::Release $RELEASE_TAG contains glysmith $version."
+            exit 1
+          fi
+          echo "$IMAGE:$BUILD_TAG" > build/image-ref.txt
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: packages-${{ matrix.arch }}
           path: build/
+          overwrite: true
       - name: Log in to GHCR
         if: needs.prepare.outputs.publish == 'true'
         uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
@@ -115,13 +125,16 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push the tested architecture
         if: needs.prepare.outputs.publish == 'true'
-        run: docker push "$IMAGE:build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${{ matrix.arch }}"
+        run: docker push "$IMAGE:$BUILD_TAG"
 
   publish:
     name: Publish multi-platform tags
     needs: [prepare, build]
     if: needs.prepare.outputs.publish == 'true'
     runs-on: ubuntu-24.04
+    concurrency:
+      group: docker-publish-tags
+      queue: max
     permissions:
       contents: read
       packages: write
@@ -137,15 +150,39 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish only after both platforms pass with the same glysmith version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
           cmp build/packages-amd64/version.txt build/packages-arm64/version.txt
           version=$(cat build/packages-amd64/version.txt)
-          [[ "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]
+          [[ "$version" =~ ^[0-9]+([.-][0-9]+)+$ ]]
+          tags=("$version" "build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}")
+          latest=$(gh repo view "$GITHUB_REPOSITORY" --json latestRelease --jq '.latestRelease.tagName // ""')
+          if [[ "$PRERELEASE" != true && "$version" == "${latest#v}" ]]; then
+            tags+=(latest r4.6.2)
+          fi
+          printf '%s\n' "${tags[@]}" > tags.txt
+          args=()
+          for tag in "${tags[@]}"; do
+            args+=(--tag "$IMAGE:$tag")
+          done
           docker buildx imagetools create \
-            --tag "$IMAGE:latest" \
-            --tag "$IMAGE:$version" \
-            --tag "$IMAGE:r4.6.2" \
-            --tag "$IMAGE:build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
-            "$IMAGE:build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-amd64" \
-            "$IMAGE:build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-arm64"
-          docker buildx imagetools inspect "$IMAGE:latest"
+            "${args[@]}" --metadata-file index.json \
+            "$(cat build/packages-amd64/image-ref.txt)" \
+            "$(cat build/packages-arm64/image-ref.txt)"
+          docker buildx imagetools inspect "$IMAGE:$version"
+      - name: Log in to Docker Hub for the release
+        if: github.event_name == 'release'
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          username: fubin1999
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Copy the tested release to Docker Hub
+        if: github.event_name == 'release'
+        run: |
+          digest=$(jq -er '.["containerimage.descriptor"].digest' index.json)
+          while read -r tag; do
+            skopeo copy --all --preserve-digests --retry-times 3 \
+              "docker://$IMAGE@$digest" "docker://$HUB_IMAGE:$tag"
+          done < tags.txt
