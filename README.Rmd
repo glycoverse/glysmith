@@ -74,29 +74,30 @@ are also applicable here: [Installation of glycoverse](https://github.com/glycov
 
 ### Docker
 
-Use the [Docker image](https://github.com/glycoverse/glysmith/pkgs/container/glysmith) for a ready-to-use
-R environment with glysmith, its optional analysis dependencies, the core
-Glycoverse packages, and Pandoc for HTML reports. Linux `amd64` and `arm64`
-(including Apple Silicon) are supported.
+The image includes glysmith, its optional analysis dependencies, the core
+Glycoverse packages, and Pandoc for HTML reports. It supports Linux `amd64`
+and `arm64` (including Apple Silicon) and is available on
+[Docker Hub](https://hub.docker.com/r/fubin1999/glysmith) and
+[GitHub Container Registry](https://github.com/glycoverse/glysmith/pkgs/container/glysmith).
 
 ```sh
-docker pull ghcr.io/glycoverse/glysmith:latest
+docker pull fubin1999/glysmith:latest
 docker run --rm -it \
   --mount "type=bind,source=$(pwd),target=/workspace" \
-  ghcr.io/glycoverse/glysmith:latest
+  fubin1999/glysmith:latest
 ```
 
-The current directory is mounted at `/workspace`. To run a local analysis script
-and save its outputs there:
+The current directory is mounted at `/workspace`. Run a local analysis script
+and save its outputs there with the following command.
 
 ```sh
 docker run --rm \
   --mount "type=bind,source=$(pwd),target=/workspace" \
-  ghcr.io/glycoverse/glysmith:latest Rscript analysis.R
+  fubin1999/glysmith:latest Rscript analysis.R
 ```
 
 Use `polish_report(result, "report.html", open = FALSE)` inside the container,
-then open the report on your host. See the [Docker guide](docker/README.md) for
+then open the report on your host. See the [Docker guide](https://github.com/glycoverse/glysmith/blob/main/docker/README.md) for
 Linux file permissions, versioned tags, verification, and local builds.
 
 ## Example

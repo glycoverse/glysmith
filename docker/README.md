@@ -5,13 +5,17 @@ the core Glycoverse packages (including `glyread`), and Pandoc for HTML reports.
 It extends the [Glycoverse R 4.6.2 image](https://hub.docker.com/r/fubin1999/glycoverse),
 pinned by digest, and provides R and Rscript on Linux `amd64` and `arm64`.
 
+Pull the image from [Docker Hub](https://hub.docker.com/r/fubin1999/glysmith)
+as `fubin1999/glysmith`, or from [GitHub Container Registry](https://github.com/glycoverse/glysmith/pkgs/container/glysmith)
+as `ghcr.io/glycoverse/glysmith`.
+
 ## Run an analysis
 
 ```sh
-docker pull ghcr.io/glycoverse/glysmith:latest
+docker pull fubin1999/glysmith:latest
 docker run --rm -it \
   --mount "type=bind,source=$(pwd),target=/workspace" \
-  ghcr.io/glycoverse/glysmith:latest
+  fubin1999/glysmith:latest
 ```
 
 Your current directory is available at `/workspace`, which is also R's working
@@ -20,7 +24,7 @@ directory. To run a script saved there:
 ```sh
 docker run --rm \
   --mount "type=bind,source=$(pwd),target=/workspace" \
-  ghcr.io/glycoverse/glysmith:latest Rscript analysis.R
+  fubin1999/glysmith:latest Rscript analysis.R
 ```
 
 On Linux, add `--user "$(id -u):$(id -g)"` to write bind-mounted files with your
@@ -89,10 +93,25 @@ Both platforms must pass the offline smoke test and report the same glysmith
 version before the shared tags are updated. Installed package manifests are
 saved as workflow artifacts.
 
-Publishing uses the workflow's temporary `GITHUB_TOKEN` with `packages: write`;
-no personal access token is needed. After the first publication, set the
-package's visibility to public in GitHub to allow pulls without signing in.
-Forks must change the image name to their own namespace.
+GHCR publishing uses the workflow's temporary `GITHUB_TOKEN` with
+`packages: write`. Forks must set their own image name and make the package public
+in GitHub to allow anonymous pulls.
+
+Docker Hub is mirrored separately. From a machine signed in to the Docker Hub
+repository, use [regctl](https://regclient.org/cli/regctl/image/copy/) to copy
+the tested multi-platform image by digest and publish its tags. This example
+uses the build tag and versions from the first public release.
+
+```sh
+build=build-45768609144-1
+source_image=ghcr.io/glycoverse/glysmith
+hub_image=docker.io/fubin1999/glysmith
+digest=$(regctl image digest "$source_image:$build")
+regctl image copy "$source_image@$digest" "$hub_image:$build"
+for tag in 0.13.0 r4.6.2 latest; do
+  regctl image copy "$hub_image@$digest" "$hub_image:$tag"
+done
+```
 
 Build files are MIT licensed. Bundled R packages and system software retain
 their respective licenses.
