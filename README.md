@@ -31,53 +31,17 @@ function call.
 
 ## Installation
 
-The glysmith package is not a core glycoverse package. You need to
-install it individually even if you have installed the meta-package
-[glycoverse](https://github.com/glycoverse/glycoverse).
+### Docker (recommended)
 
-You can install the latest release of glysmith from
-[r-universe](https://glycoverse.r-universe.dev/glysmith)
-(**recommended**):
-
-``` r
-# install.packages("pak")
-pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
-pak::pkg_install("glysmith")
-```
-
-Or from [GitHub](https://github.com/glycoverse/glysmith):
-
-``` r
-pak::pkg_install("glycoverse/glysmith@*release")
-```
-
-Or install the development version (NOT recommended):
-
-``` r
-pak::pkg_install("glycoverse/glysmith")
-```
-
-`glysmith` is a high-level package, depending on quite a lot mature
-packages. After installing `glysmith`, you also need to install
-additional dependencies to use this package:
-
-``` r
-glysmith::check_glysmith_deps()
-```
-
-**Note:** Tips and troubleshooting for the meta-package
-[glycoverse](https://github.com/glycoverse/glycoverse) are also
-applicable here: [Installation of
-glycoverse](https://github.com/glycoverse/glycoverse#installation).
-
-### Docker
-
-The image includes glysmith, its optional analysis dependencies, the
-core Glycoverse packages, and Pandoc for HTML reports. It supports Linux
-`amd64` and `arm64` (including Apple Silicon) and is available on
-[Docker Hub](https://hub.docker.com/r/fubin1999/glysmith) and [GitHub
-Container
+The Docker image includes R, glysmith, its optional analysis
+dependencies, the core Glycoverse packages, and Pandoc for HTML reports.
+It supports Linux `amd64` and `arm64` (including Apple Silicon) and is
+available on [Docker Hub](https://hub.docker.com/r/fubin1999/glysmith)
+and [GitHub Container
 Registry](https://github.com/glycoverse/glysmith/pkgs/container/glysmith).
+
+Run these commands from your analysis directory to start an interactive
+R session.
 
 ``` sh
 docker pull fubin1999/glysmith:latest
@@ -86,8 +50,10 @@ docker run --rm -it \
   fubin1999/glysmith:latest
 ```
 
-The current directory is mounted at `/workspace`. Run a local analysis
-script and save its outputs there with the following command.
+At the R prompt, run `library(glysmith)`. Your files are available in
+`/workspace`. To run a local script called `analysis.R` and save its
+outputs in the same directory, run the following command from your
+terminal.
 
 ``` sh
 docker run --rm \
@@ -95,11 +61,45 @@ docker run --rm \
   fubin1999/glysmith:latest Rscript analysis.R
 ```
 
-Use `polish_report(result, "report.html", open = FALSE)` inside the
-container, then open the report on your host. See the [Docker
-guide](https://github.com/glycoverse/glysmith/blob/main/docker/README.md)
-for Linux file permissions, versioned tags, verification, and local
-builds.
+For Linux file permissions, versioned tags, verification, and local
+builds, see the [Docker
+guide](https://github.com/glycoverse/glysmith/blob/main/docker/README.md).
+
+### Install in R
+
+To use glysmith in an existing R environment, install it separately from
+the [glycoverse meta-package](https://github.com/glycoverse/glycoverse).
+Install the latest release from
+[r-universe](https://glycoverse.r-universe.dev/glysmith) with `pak`.
+
+``` r
+# install.packages("pak")
+pak::repo_add(glycoverse = "https://glycoverse.r-universe.dev")
+pak::pkg_install("glysmith")
+```
+
+The latest release is also available from
+[GitHub](https://github.com/glycoverse/glysmith).
+
+``` r
+pak::pkg_install("glycoverse/glysmith@*release")
+```
+
+To try unreleased changes, install the development version.
+
+``` r
+pak::pkg_install("glycoverse/glysmith")
+```
+
+After installation, check the packages required by the default analysis
+blueprint.
+
+``` r
+glysmith::check_glysmith_deps()
+```
+
+For troubleshooting, see the [glycoverse installation
+guide](https://github.com/glycoverse/glycoverse#installation).
 
 ## Example
 
@@ -116,7 +116,7 @@ result <- forge_analysis(exp)
 quench_result(result, "path/to/save")
 
 # One line of code to generate a report
-polish_report(result, "report.html")
+polish_report(result, "report.html", open = FALSE)
 ```
 
 After running the above `quench_result` line, you will get an organized
@@ -124,10 +124,8 @@ result folder:
 
 ![](man/figures/result-folder.png)
 
-And after running the above `polish_report` line, you will get a report
-in HTML format and automatically open it in your default browser:
+Open `report.html` from your analysis directory in your browser.
 
 ![](man/figures/report.png)
 
-*Note: Here we set `use_ai` to `TRUE` to enable LLM-assisted report
-generation.*
+*The report shown above was generated with `use_ai = TRUE`.*
