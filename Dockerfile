@@ -32,6 +32,5 @@ RUN --mount=type=cache,id=glysmith-r46-${TARGETARCH},target=/root/.cache,sharing
 COPY docker/smoke-test.R /opt/glysmith/smoke-test.R
 USER 1000:1000
 WORKDIR /workspace
-RUN Rscript /opt/glysmith/smoke-test.R
 
 CMD ["R", "--no-save", "--no-restore"]

@@ -17,6 +17,13 @@ abundance <- matrix(
 abundance[1:10, 5:8] <- abundance[1:10, 5:8] + 3
 experiment <- glyexp::GlycomicSE(
   abundance,
+  rowData = S4Vectors::DataFrame(
+    glycan_composition = rep(
+      glyrepr::glycan_composition(c(Hex = 5, HexNAc = 2)),
+      nrow(abundance)
+    ),
+    row.names = rownames(abundance)
+  ),
   colData = S4Vectors::DataFrame(
     group = factor(rep(c("A", "B"), each = 4)),
     row.names = colnames(abundance)
@@ -28,7 +35,7 @@ result <- forge_analysis(experiment, blueprint = bp)
 stopifnot(
   inherits(result, "glysmith_result"),
   all(names(bp) %in% result$meta$steps),
-  nrow(result$tables$pca_samples) == 8L,
+  length(unique(result$tables$pca_samples[[".sample"]])) == ncol(abundance),
   nrow(result$tables$dea) > 0L,
   "pca_scores" %in% names(result$plots)
 )
