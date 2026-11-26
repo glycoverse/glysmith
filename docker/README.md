@@ -37,10 +37,9 @@ Analyses using external annotation services still need network access.
 
 ## Tags and installed versions
 
-- `latest`: most recently published build of the released package.
-- `0.13.0` (for example): build of that glysmith version.
-- `r4.6.2`: most recently published build using R 4.6.2.
-- `build-<run-id>-<attempt>`: a particular CI publication.
+- `0.13.0` contains glysmith 0.13.0 from the GitHub release tagged `v0.13.0`.
+- `latest` and `r4.6.2` track the release marked **Latest** on GitHub.
+- `build-<run-id>-<attempt>` identifies a particular CI publication.
 
 Rebuilds can update dependency packages even when the glysmith version is
 unchanged. Use an image digest to reproduce a specific environment:
@@ -80,38 +79,26 @@ docker build --build-arg GLYSMITH_REF=glycoverse/glysmith@v0.13.0 \
   --build-arg NCPUS=4 --tag glysmith:0.13.0 .
 ```
 
-The Dockerfile installs the selected remote package; local R source edits are
-not included. To refresh the release and its dependencies, use `--no-cache`.
-The build uses [`pak`](https://pak.r-lib.org/reference/pkg_install.html) to resolve
-CRAN, Bioconductor, and Glycoverse dependencies and install system requirements.
+The Dockerfile installs the selected remote package. To refresh dependencies in
+a local build, use `docker build --no-cache-filter glysmith --tag glysmith:local .`.
+The installer refreshes the package index and upgrades the core packages from
+the Glycoverse r-universe along with glysmith's required and optional dependencies.
 
-The **Docker** GitHub Actions workflow builds and tests both architectures on
-native runners. Pull requests build and test only. Changes to Docker files on
-`main`, published stable releases, and manual runs on `main` with **publish**
-enabled also publish to GitHub Container Registry (GHCR). Release builds select the exact GitHub tag.
-Both platforms must pass the offline smoke test and report the same glysmith
-version before the shared tags are updated. Installed package manifests are
-saved as workflow artifacts.
+Publishing a GitHub release triggers the **Docker** workflow. It installs
+glysmith from the tagged commit and checks the installed version against the
+release tag, allowing a leading `v`. Both Linux architectures must pass the
+offline smoke test. The workflow then publishes the version tag to GHCR and
+copies the same multi-platform image to Docker Hub by digest. Pre-releases
+also get a version tag. Only the current GitHub **Latest** release updates
+the moving tags. Package manifests are available in the workflow artifacts.
 
-GHCR publishing uses the workflow's temporary `GITHUB_TOKEN` with
-`packages: write`. Forks must set their own image name and make the package public
-in GitHub to allow anonymous pulls.
+Pull requests that change Docker files build and test both architectures.
+Changes to Docker files on `main` and manual runs on `main` with **publish**
+enabled also publish to GHCR.
 
-Docker Hub is mirrored separately. From a machine signed in to the Docker Hub
-repository, use [regctl](https://regclient.org/cli/regctl/image/copy/) to copy
-the tested multi-platform image by digest and publish its tags. This example
-uses the build tag and versions from the first public release.
-
-```sh
-build=build-45768609144-1
-source_image=ghcr.io/glycoverse/glysmith
-hub_image=docker.io/fubin1999/glysmith
-digest=$(regctl image digest "$source_image:$build")
-regctl image copy "$source_image@$digest" "$hub_image:$build"
-for tag in 0.13.0 r4.6.2 latest; do
-  regctl image copy "$hub_image@$digest" "$hub_image:$tag"
-done
-```
+GHCR uses the workflow's `GITHUB_TOKEN` with `packages: write`. For Docker Hub,
+set the repository Actions secret `DOCKERHUB_TOKEN` to a Docker Hub access token
+for `fubin1999` with write access to `fubin1999/glysmith`.
 
 Build files are MIT licensed. Bundled R packages and system software retain
 their respective licenses.
