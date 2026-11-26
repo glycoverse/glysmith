@@ -12,15 +12,20 @@ step_preprocess(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  rep_col = NULL
+  rep_col = NULL,
+  group_col = "group",
+  standardize_variable = TRUE,
+  seed = 123
 )
 }
 \arguments{
 \item{batch_col}{Column name for batch information (for QC plots and batch effect handling).}
 
-\item{normalize_to_try}{Normalization methods to try during auto_clean.}
+\item{normalize_to_try}{Legacy argument for versions of \code{auto_clean()} that
+accept candidate methods. Use \code{\link[=step_normalize]{step_normalize()}} to select a method.}
 
-\item{impute_to_try}{Imputation methods to try during auto_clean.}
+\item{impute_to_try}{Legacy argument for versions of \code{auto_clean()} that
+accept candidate methods. Use \code{\link[=step_impute]{step_impute()}} to select a method.}
 
 \item{remove_preset}{Preset for data removal: "discovery", "biomarker", or NULL.}
 
@@ -31,6 +36,16 @@ step_preprocess(
 \item{batch_confounding_threshold}{Threshold for batch confounding detection.}
 
 \item{rep_col}{Column name for replicate information (for QC plots).}
+
+\item{group_col}{The column name in sample_info for groups. Default is "group".
+Can be NULL when no group information is available.}
+
+\item{standardize_variable}{Whether to call \code{\link[glyexp:standardize_variable]{glyexp::standardize_variable()}}
+after aggregation. Set to \code{FALSE} to skip network calls for faster testing.
+Default is \code{TRUE}.}
+
+\item{seed}{Non-negative integer seed for random number generation. Default is
+\code{123}. The caller's random state is restored, including on errors.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -49,18 +64,16 @@ Data required:
 
 Data generated:
 \itemize{
-\item \code{raw_exp}: The raw experiment (previous \code{exp}, saved for reference)
+\item \code{raw_exp}: The input to the first preprocessing step
 }
 
-This step is special in that it silently overwrites the \code{exp} data with the preprocessed experiment.
-This ensures that no matter if preprocessing is performed or not,
-the "active" experiment is always under the key \code{exp}.
-The previous \code{exp} is saved as \code{raw_exp} for reference.
+Subsequent steps read the processed experiment from \code{exp}.
 }
 \examples{
 step_preprocess()
 step_preprocess(remove_preset = "discovery")
 }
 \seealso{
-\code{\link[glyclean:auto_clean]{glyclean::auto_clean()}}
+\code{\link[glyclean:auto_clean]{glyclean::auto_clean()}}, \code{\link[=step_remove]{step_remove()}}, \code{\link[=step_normalize]{step_normalize()}},
+\code{\link[=step_impute]{step_impute()}}, \code{\link[=step_aggregate]{step_aggregate()}}, \code{\link[=step_correct_batch_effect]{step_correct_batch_effect()}}
 }

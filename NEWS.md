@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* New `step_remove()`, `step_normalize()`, `step_impute()`, and related preprocessing steps let you select glyclean methods and their order in a blueprint. You can also build, retrieve, and replay a glyclean pipeline.
+* `step_plot_qc()` gains a `method` argument to select one QC plot and pass its plotting options at any preprocessing stage.
 * New `step_coda()` transforms an experiment or quantified motifs for statistical analysis on log-ratio coordinates. It uses `glyclean::auto_coda()` by default and supports explicit CLR and ALR methods. (#37)
 
 # glysmith 0.13.0

@@ -61,6 +61,16 @@ Here's the full lineup of available step functions:
 | `step_ident_overview()` | Summarize the experiment (identification overview) | No | GP/G |
 | `step_plot_qc()` | Generate quality control plots | No | GP/G |
 | `step_preprocess()` | Preprocess the experiment (normalization, imputation, etc.) | No | GP/G |
+| `step_zero_to_na()` | Convert zeros to missing measurements | No | GP/G |
+| `step_remove()` | Filter features by missingness, abundance, or variation | No | GP/G |
+| `step_normalize()` | Normalize sample abundances | No | GP/G |
+| `step_impute()` | Impute missing abundances | No | GP/G |
+| `step_aggregate()` | Combine measurements at a glycan, glycoform, or glycopeptide level | Depends on level | GP/G |
+| `step_detect_batch_effect()` | Save a table of batch effect p-values by feature | No | GP/G |
+| `step_correct_batch_effect()` | Correct batch effects automatically or with ComBat or limma | No | GP/G |
+| `step_transform_log()` | Store abundances on a logarithmic scale | No | GP/G |
+| `step_add_site_seq()` | Annotate the sequence around each glycosylation site | No | GP |
+| `step_build_pipeline()`, `step_get_pipeline()`, `step_apply_pipeline()` | Build, extract, or replay a glyclean pipeline | Depends on operations | GP/G |
 | `step_coda()` | Transform abundances to log-ratio coordinates for compositional data analysis | No | GP/G |
 | `step_subset_groups()` | Subset the experiment to specific groups | No | GP/G |
 | `step_adjust_protein()` | Adjust glycoform quantification by protein abundance | No | GP |
@@ -99,6 +109,36 @@ Here's the full lineup of available step functions:
 | `step_cox()` | Cox proportional hazards model | No | GP/G |
 
 *GP: glycoproteomics, G: glycomics*
+
+## Choose individual preprocessing operations
+
+Use `step_preprocess()` for glyclean's full automatic workflow. To control
+the method or order, put the individual operations directly in the blueprint.
+For example, when zeros encode missing measurements, you can filter by
+missingness within each group, impute the retained features, and normalize
+each sample to its total abundance.
+
+```{r}
+bp <- blueprint(
+  step_zero_to_na(),
+  step_remove("rare", prop = 0.5, by = "group"),
+  step_impute("min_prob", seed = 42),
+  step_normalize("total_area"),
+  step_plot_qc(when = "post", method = "rle", by = "group"),
+  step_get_pipeline()
+)
+```
+
+Each cleaning step reads the current `exp`. The first saves its input in
+`raw_exp`, and later steps use the output of the preceding step. Use
+`method = "auto"` for automatic selection within a single operation, such
+as imputation. For an explicit method, supply the arguments of the matching
+glyclean function. For example, `step_impute("fw_knn", k = 3)` calls
+`glyclean::impute_fw_knn()` with three neighbors.
+
+With this blueprint, `cast_data(result, "pipeline")` returns the glyclean
+operations recorded during processing. You can use that object in
+`step_apply_pipeline()` to replay them on a compatible input.
 
 ## Step dependencies
 

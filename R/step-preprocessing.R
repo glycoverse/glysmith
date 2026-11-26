@@ -10,7 +10,7 @@
 #' Data required:
 #' - `exp`: The experiment to plot QC for
 #'
-#' Plots generated:
+#' The default panel (`method = NULL`) generates the following plots.
 #' - `qc_missing_heatmap`: Missing value heatmap
 #' - `qc_missing_samples_bar`: Missing value bar plot on samples
 #' - `qc_missing_variables_bar`: Missing value bar plot on variables
@@ -33,11 +33,18 @@
 #' @param rep_col Column name for replicate information (for `glyclean::plot_rep_scatter()`).
 #' @param plot_width Width of plots in inches. Default is 7.
 #' @param plot_height Height of plots in inches. Default is 5.
+#' @param method A single QC plot to generate at any stage. Choose
+#'   `"missing_heatmap"`, `"missing_bar"`, `"tic_bar"`, `"rank_abundance"`,
+#'   `"int_boxplot"`, `"rle"`, `"cv_dent"`, `"batch_pca"` or `"rep_scatter"`.
+#' @param ... Arguments for the selected glyclean plot, such as `on = "variable"`
+#'   for `"missing_bar"`, `by` for `"rle"`, or `n_pairs` and `seed` for
+#'   `"rep_scatter"`. An individual plot uses its glyclean defaults.
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_plot_qc(when = "pre")
 #' step_plot_qc(when = "post")
+#' step_plot_qc(when = "post", method = "missing_bar", on = "variable")
 #' @seealso [glyclean::plot_missing_heatmap()], [glyclean::plot_tic_bar()], and other glyclean plotting functions.
 #' @export
 step_plot_qc <- function(
@@ -45,211 +52,178 @@ step_plot_qc <- function(
   batch_col = "batch",
   rep_col = NULL,
   plot_width = 7,
-  plot_height = 5
+  plot_height = 5,
+  method = NULL,
+  ...
 ) {
   checkmate::assert_choice(when, c("pre", "post", "generic"), null.ok = TRUE)
-  signature <- rlang::expr_deparse(match.call())
   when <- when %||% "generic"
-
-  # Build step ID based on when parameter
-  if (identical(when, "post")) {
-    step_id <- "plot_qc_post"
-  } else if (identical(when, "pre")) {
-    step_id <- "plot_qc_pre"
-  } else {
-    step_id <- "plot_qc_generic"
-  }
-
-  # Generate label based on when parameter
+  plots <- NULL
+  args <- rlang::list2(...)
   label <- switch(
     when,
-    "pre" = "QC (pre-preprocessing)",
-    "post" = "QC (post-preprocessing)",
-    "generic" = "QC"
+    pre = "QC (pre-preprocessing)",
+    post = "QC (post-preprocessing)",
+    generic = "QC"
   )
+  id <- paste0("plot_qc_", when)
+  if (!is.null(method)) {
+    method <- rlang::arg_match(method, names(.qc_plot_descriptions))
+    if (method == "batch_pca") {
+      args$batch_col <- batch_col
+    }
+    if (method == "rep_scatter") {
+      args$rep_col <- rep_col
+    }
+    plots <- rlang::set_names(list(args), method)
+    id <- paste0(id, "_", .qc_plot_name(method, args))
+    label <- paste(label, method)
+  } else if (length(args)) {
+    cli::cli_abort(
+      "Select a QC {.arg method} to supply plot-specific arguments."
+    )
+  }
 
   step(
-    id = step_id,
+    id = id,
     label = label,
     repeatable = TRUE,
     run = function(ctx) {
       .run_plot_qc(
         ctx,
-        when = when,
-        batch_col = batch_col,
-        rep_col = rep_col,
-        plot_width = plot_width,
-        plot_height = plot_height
+        when,
+        batch_col,
+        rep_col,
+        plot_width,
+        plot_height,
+        plots
       )
     },
     require = "exp",
-    packages = "glyclean",
-    signature = signature
+    packages = c(
+      "glyclean",
+      switch(
+        method %||% "",
+        missing_heatmap = c("pheatmap", "ggplotify"),
+        batch_pca = "factoextra",
+        rep_scatter = "patchwork"
+      )
+    ),
+    signature = rlang::expr_deparse(match.call())
   )
 }
 
-#' Run QC plotting
-#'
-#' @param ctx Analysis context.
-#' @inheritParams step_plot_qc
-#'
-#' @returns Updated analysis context.
-#' @noRd
 .run_plot_qc <- function(
   ctx,
   when,
   batch_col,
   rep_col,
   plot_width,
-  plot_height
+  plot_height,
+  plots = NULL
 ) {
   exp <- ctx_get_data(ctx, "exp")
-  .run_qc_plots(
-    ctx,
-    exp,
-    when,
-    batch_col,
-    rep_col,
-    plot_width,
-    plot_height
-  )
+  plan <- plots %||% .default_qc_plots(exp, when, batch_col, rep_col)
+  for (i in seq_along(plan)) {
+    method <- names(plan)[i]
+    args <- plan[[i]]
+    name <- .qc_plot_name(method, args)
+    plot_id <- paste0(if (when == "pre") "qc_pre_" else "qc_", name)
+    plot <- tryCatch(
+      rlang::exec(
+        getExportedValue("glyclean", paste0("plot_", method)),
+        exp = exp,
+        !!!args
+      ),
+      error = function(e) {
+        if (!is.null(plots)) {
+          stop(e)
+        }
+        cli::cli_warn(
+          "Failed to generate plot {plot_id}: {conditionMessage(e)}"
+        )
+        NULL
+      }
+    )
+    if (!is.null(plot)) {
+      desc <- switch(
+        name,
+        missing_samples_bar = "Missing value bar plot on samples.",
+        missing_variables_bar = "Missing value bar plot on variables.",
+        .qc_plot_descriptions[[method]]
+      )
+      if (when == "pre") {
+        desc <- paste0("Preprocess QC (pre): ", desc)
+      }
+      ctx <- ctx_add_plot(
+        ctx,
+        plot_id,
+        plot,
+        desc,
+        width = plot_width,
+        height = plot_height
+      )
+    }
+  }
+  ctx
 }
 
-#' Internal helper to run QC plots
-#'
-#' @param ctx Context object.
-#' @param exp Experiment object.
-#' @param when When the QC is being run: "pre", "post", or "generic".
-#' @param batch_col Column name for batch information.
-#' @param rep_col Column name for replicate information.
-#' @param plot_width Width of plots in inches.
-#' @param plot_height Height of plots in inches.
-#'
-#' @returns Updated context with plots added.
-#' @noRd
-.run_qc_plots <- function(
-  ctx,
-  exp,
-  when,
-  batch_col,
-  rep_col,
-  plot_width,
-  plot_height
-) {
-  # Define plots that only run in pre stage
-  pre_only_plots <- list(
-    list(
-      id = "qc_missing_heatmap",
-      fun = function() glyclean::plot_missing_heatmap(exp),
-      desc = "Missing value heatmap."
-    ),
-    list(
-      id = "qc_missing_samples_bar",
-      fun = function() glyclean::plot_missing_bar(exp, on = "sample"),
-      desc = "Missing value bar plot on samples."
-    ),
-    list(
-      id = "qc_missing_variables_bar",
-      fun = function() glyclean::plot_missing_bar(exp, on = "variable"),
-      desc = "Missing value bar plot on variables."
+.qc_plot_descriptions <- c(
+  missing_heatmap = "Missing value heatmap.",
+  missing_bar = "Missing value proportions.",
+  tic_bar = "Total intensity count (TIC) bar plot.",
+  rank_abundance = "Rank abundance plot.",
+  int_boxplot = "Log2 intensity boxplot.",
+  rle = "Relative Log Expression (RLE) plot.",
+  cv_dent = "Coefficient of Variation (CV) density plot.",
+  batch_pca = "PCA score plot colored by batch.",
+  rep_scatter = "Replicate scatter plots."
+)
+
+.qc_plot_name <- function(method, args) {
+  if (method == "missing_bar") {
+    on <- rlang::arg_match0(
+      args$on %||% "sample",
+      c("sample", "samples", "variable", "variables")
     )
-  )
-
-  # Define plots that run in all stages
-  common_plots <- list(
-    list(
-      id = "qc_tic_bar",
-      fun = function() glyclean::plot_tic_bar(exp),
-      desc = "Total intensity count (TIC) bar plot."
-    ),
-    list(
-      id = "qc_rank_abundance",
-      fun = function() glyclean::plot_rank_abundance(exp),
-      desc = "Rank abundance plot."
-    ),
-    list(
-      id = "qc_int_boxplot",
-      fun = function() glyclean::plot_int_boxplot(exp, by = "group"),
-      desc = "Log2 intensity boxplot."
-    ),
-    list(
-      id = "qc_rle",
-      fun = function() glyclean::plot_rle(exp, by = "group"),
-      desc = "Relative Log Expression (RLE) plot."
-    ),
-    list(
-      id = "qc_cv_dent",
-      fun = function() glyclean::plot_cv_dent(exp, by = "group"),
-      desc = "Coefficient of Variation (CV) density plot."
-    )
-  )
-
-  # Add batch PCA plot if batch_col is available
-  sample_info <- .get_sample_info(exp)
-  if (!is.null(batch_col) && batch_col %in% colnames(sample_info)) {
-    common_plots <- c(
-      common_plots,
-      list(list(
-        id = "qc_batch_pca",
-        fun = function() glyclean::plot_batch_pca(exp, batch_col = batch_col),
-        desc = "PCA score plot colored by batch."
-      ))
-    )
-  }
-
-  # Add replicate scatter plot if rep_col is available
-  if (!is.null(rep_col) && rep_col %in% colnames(sample_info)) {
-    common_plots <- c(
-      common_plots,
-      list(list(
-        id = "qc_rep_scatter",
-        fun = function() glyclean::plot_rep_scatter(exp, rep_col = rep_col),
-        desc = "Replicate scatter plots."
-      ))
-    )
-  }
-
-  # Combine plots based on when parameter
-  if (identical(when, "pre")) {
-    plots <- c(pre_only_plots, common_plots)
-  } else {
-    plots <- common_plots
-  }
-
-  # Transform plot IDs based on when parameter
-  id_transform <- function(id) {
-    if (identical(when, "pre")) {
-      return(sub("^qc_", "qc_pre_", id))
-    }
-    id
-  }
-
-  # Generate plots and add to context
-  for (p in plots) {
-    plot_id <- id_transform(p$id)
-    ctx <- tryCatch(
-      {
-        plot <- p$fun()
-        desc <- p$desc
-        if (identical(when, "pre")) {
-          desc <- paste0("Preprocess QC (pre): ", desc)
-        }
-        ctx_add_plot(
-          ctx,
-          plot_id,
-          plot,
-          desc,
-          width = plot_width,
-          height = plot_height
-        )
-      },
-      error = function(e) {
-        cli::cli_warn("Failed to generate plot {plot_id}: {e$message}")
-        ctx
+    return(
+      if (on %in% c("sample", "samples")) {
+        "missing_samples_bar"
+      } else {
+        "missing_variables_bar"
       }
     )
   }
-  ctx
+  method
+}
+
+.default_qc_plots <- function(exp, when, batch_col, rep_col) {
+  plots <- list()
+  if (when == "pre") {
+    plots <- list(
+      missing_heatmap = list(),
+      missing_bar = list(on = "sample"),
+      missing_bar = list(on = "variable")
+    )
+  }
+  plots <- c(
+    plots,
+    list(
+      tic_bar = list(),
+      rank_abundance = list(),
+      int_boxplot = list(by = "group"),
+      rle = list(by = "group"),
+      cv_dent = list(by = "group")
+    )
+  )
+  sample_cols <- colnames(.get_sample_info(exp))
+  if (!is.null(batch_col) && batch_col %in% sample_cols) {
+    plots$batch_pca <- list(batch_col = batch_col)
+  }
+  if (!is.null(rep_col) && rep_col %in% sample_cols) {
+    plots$rep_scatter <- list(rep_col = rep_col)
+  }
+  plots
 }
 
 #' Step: Preprocessing
@@ -265,27 +239,28 @@ step_plot_qc <- function(
 #' - `exp`: The experiment to preprocess
 #'
 #' Data generated:
-#' - `raw_exp`: The raw experiment (previous `exp`, saved for reference)
+#' - `raw_exp`: The input to the first preprocessing step
 #'
-#' This step is special in that it silently overwrites the `exp` data with the preprocessed experiment.
-#' This ensures that no matter if preprocessing is performed or not,
-#' the "active" experiment is always under the key `exp`.
-#' The previous `exp` is saved as `raw_exp` for reference.
+#' Subsequent steps read the processed experiment from `exp`.
 #'
 #' @param batch_col Column name for batch information (for QC plots and batch effect handling).
-#' @param normalize_to_try Normalization methods to try during auto_clean.
-#' @param impute_to_try Imputation methods to try during auto_clean.
+#' @param normalize_to_try Legacy argument for versions of `auto_clean()` that
+#'   accept candidate methods. Use [step_normalize()] to select a method.
+#' @param impute_to_try Legacy argument for versions of `auto_clean()` that
+#'   accept candidate methods. Use [step_impute()] to select a method.
 #' @param remove_preset Preset for data removal: "discovery", "biomarker", or NULL.
 #' @param batch_prop_threshold Threshold for batch proportion filtering.
 #' @param check_batch_confounding Whether to check for batch confounding.
 #' @param batch_confounding_threshold Threshold for batch confounding detection.
 #' @param rep_col Column name for replicate information (for QC plots).
+#' @inheritParams glyclean::auto_clean
 #'
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_preprocess()
 #' step_preprocess(remove_preset = "discovery")
-#' @seealso [glyclean::auto_clean()]
+#' @seealso [glyclean::auto_clean()], [step_remove()], [step_normalize()],
+#'   [step_impute()], [step_aggregate()], [step_correct_batch_effect()]
 #' @export
 step_preprocess <- function(
   batch_col = "batch",
@@ -295,7 +270,10 @@ step_preprocess <- function(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  rep_col = NULL
+  rep_col = NULL,
+  group_col = "group",
+  standardize_variable = TRUE,
+  seed = 123
 ) {
   signature <- rlang::expr_deparse(match.call())
 
@@ -311,14 +289,17 @@ step_preprocess <- function(
         remove_preset = remove_preset,
         batch_prop_threshold = batch_prop_threshold,
         check_batch_confounding = check_batch_confounding,
-        batch_confounding_threshold = batch_confounding_threshold
+        batch_confounding_threshold = batch_confounding_threshold,
+        group_col = group_col,
+        standardize_variable = standardize_variable,
+        seed = seed
       )
     },
     report = function(x) {
       .report_preprocess(x)
     },
     require = "exp",
-    generate = "raw_exp",
+    initialize = "raw_exp",
     packages = "glyclean",
     signature = signature
   )
@@ -339,7 +320,10 @@ step_preprocess <- function(
   remove_preset,
   batch_prop_threshold,
   check_batch_confounding,
-  batch_confounding_threshold
+  batch_confounding_threshold,
+  group_col = "group",
+  standardize_variable = TRUE,
+  seed = 123
 ) {
   exp <- ctx_get_data(ctx, "exp")
   clean_args <- list(
@@ -347,7 +331,10 @@ step_preprocess <- function(
     remove_preset = remove_preset,
     batch_prop_threshold = batch_prop_threshold,
     check_batch_confounding = check_batch_confounding,
-    batch_confounding_threshold = batch_confounding_threshold
+    batch_confounding_threshold = batch_confounding_threshold,
+    group_col = group_col,
+    standardize_variable = standardize_variable,
+    seed = seed
   )
   supported_args <- names(formals(glyclean::auto_clean))
   if ("normalize_to_try" %in% supported_args) {
@@ -357,8 +344,7 @@ step_preprocess <- function(
     clean_args[["impute_to_try"]] <- impute_to_try
   }
   clean_exp <- rlang::exec(glyclean::auto_clean, exp, !!!clean_args)
-  ctx <- ctx_add_data(ctx, "exp", clean_exp)
-  ctx_add_data(ctx, "raw_exp", exp)
+  .store_preprocessed_exp(ctx, clean_exp)
 }
 
 #' Report preprocessing results

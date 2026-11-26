@@ -87,6 +87,7 @@ br <- function(name, ...) {
     report = report,
     require = require,
     generate = generate,
+    initialize = .branch_prefix_keys(step$initialize, prefix),
     packages = step$packages %||% character(0),
     condition = condition,
     repeatable = step$repeatable %||% FALSE,
