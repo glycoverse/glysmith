@@ -76,34 +76,25 @@
 <div class="section level3">
 <h3 id="docker-recommended">Docker (recommended)<a class="anchor" aria-label="anchor" href="#docker-recommended"></a>
 </h3>
-<p>The Docker image includes R, glysmith, its optional analysis dependencies, the core Glycoverse packages, and Pandoc for HTML reports. It supports Linux <code>amd64</code> and <code>arm64</code> (including Apple Silicon) and is available on <a href="https://hub.docker.com/r/fubin1999/glysmith" class="external-link">Docker Hub</a> and <a href="https://github.com/glycoverse/glysmith/pkgs/container/glysmith" class="external-link">GitHub Container Registry</a>.</p>
-<p>Run these commands from your analysis directory to start an interactive R session.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">docker</span> pull fubin1999/glysmith:latest</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="dt">\</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">--mount</span> <span class="st">"type=bind,source=</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">,target=/workspace"</span> <span class="dt">\</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  fubin1999/glysmith:latest</span></code></pre></div>
-<p>At the R prompt, run <code><a href="https://glycoverse.github.io/glysmith/">library(glysmith)</a></code>. Your files are available in <code>/workspace</code>. To run a local script called <code>analysis.R</code> and save its outputs in the same directory, run the following command from your terminal.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="dt">\</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">--mount</span> <span class="st">"type=bind,source=</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">,target=/workspace"</span> <span class="dt">\</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  fubin1999/glysmith:latest Rscript analysis.R</span></code></pre></div>
+<p>glysmith needs a lot of dependencies, so the best way to use it is through <a href="https://www.docker.com/products/cli/" class="external-link">Docker</a>.</p>
+<p>The Docker image includes R, glysmith, its optional analysis dependencies, the core Glycoverse packages, and Pandoc for HTML reports. It is available on both <a href="https://hub.docker.com/r/fubin1999/glysmith" class="external-link">Docker Hub</a> and <a href="https://github.com/glycoverse/glysmith/pkgs/container/glysmith" class="external-link">GitHub Container Registry</a>.</p>
+<p>Run these commands from your analysis directory to start an interactive R session. Remember to replace <code>/workspace</code> with your own analysis directory.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-it</span> <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">--mount</span> <span class="st">"type=bind,source=</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">,target=/workspace"</span> <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  fubin1999/glysmith:latest</span></code></pre></div>
+<p>At the R prompt, run <code><a href="https://glycoverse.github.io/glysmith/">library(glysmith)</a></code>, then start using glysmith interactively. The result files will be saved to <code>/workspace</code> or your analysis directory.</p>
 <p>For Linux file permissions, versioned tags, verification, and local builds, see the <a href="https://github.com/glycoverse/glysmith/blob/main/docker/README.md" class="external-link">Docker guide</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="install-in-r">Install in R<a class="anchor" aria-label="anchor" href="#install-in-r"></a>
 </h3>
-<p>To use glysmith in an existing R environment, install it separately from the <a href="https://github.com/glycoverse/glycoverse" class="external-link">glycoverse meta-package</a>. Install the latest release from <a href="https://glycoverse.r-universe.dev/glysmith" class="external-link">r-universe</a> with <code>pak</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>You can also use glysmith in an existing R environment, by installing it as a normal R package. Install the latest release from <a href="https://glycoverse.r-universe.dev/glysmith" class="external-link">r-universe</a> with <code>pak</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/repo_add.html" class="external-link">repo_add</a></span><span class="op">(</span>glycoverse <span class="op">=</span> <span class="st">"https://glycoverse.r-universe.dev"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"glysmith"</span><span class="op">)</span></span></code></pre></div>
-<p>The latest release is also available from <a href="https://github.com/glycoverse/glysmith" class="external-link">GitHub</a>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"glycoverse/glysmith@*release"</span><span class="op">)</span></span></code></pre></div>
-<p>To try unreleased changes, install the development version.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"glycoverse/glysmith"</span><span class="op">)</span></span></code></pre></div>
 <p>After installation, check the packages required by the default analysis blueprint.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">glysmith</span><span class="fu">::</span><span class="fu"><a href="reference/check_glysmith_deps.html">check_glysmith_deps</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>For troubleshooting, see the <a href="https://github.com/glycoverse/glycoverse#installation" class="external-link">glycoverse installation guide</a>.</p>
 </div>
@@ -111,7 +102,7 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">glyread</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glycoverse.github.io/glysmith/">glysmith</a></span><span class="op">)</span></span>
 <span></span>
