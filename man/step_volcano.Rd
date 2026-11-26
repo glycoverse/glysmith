@@ -25,7 +25,7 @@ Can also be "p_val" (raw p-values without multiple testing correction).}
 
 \item{plot_height}{Height of the plot in inches. Default is 6.}
 
-\item{...}{Other arguments passed to \code{\link[EnhancedVolcano:EnhancedVolcano]{EnhancedVolcano::EnhancedVolcano()}}.}
+\item{...}{Additional named plotting options passed to \code{\link[glyvis:plot_volcano]{glyvis::plot_volcano()}}.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -39,6 +39,9 @@ This step requires one of the DEA steps to be run:
 \item \code{\link[=step_dea_ttest]{step_dea_ttest()}}
 \item \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}
 }
+
+The step skips results fitted on \code{"logx"} coordinates, including
+\code{\link[=step_coda]{step_coda()}} output, because the x-axis requires abundance fold changes.
 }
 \details{
 Data required:

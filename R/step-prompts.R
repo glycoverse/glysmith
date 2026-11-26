@@ -9,6 +9,7 @@
 .step_ai_prompts <- function() {
   c(
     step_adjust_protein = "Include this step only if the user explicitly asks for protein adjustment. If protein adjustment is needed and the `pro_expr_path` is not provided, ask for it and explain how to prepare the file: - CSV/TSV: first column is protein accessions; remaining columns are sample names. - RDS: a matrix/data.frame with row names as protein accessions and columns as sample names. You MUST provide a detailed explanation of how to prepare the file. Without the file, the step is invalid. Set `pro_scale` to the representation actually stored in the protein matrix (raw, log, log2, or log10), independently of the experiment scale. The default is raw; if the user says the file is transformed but does not identify the scale, ask rather than guess.",
+    step_coda = "Use for compositional or log-ratio analysis. Run abundance QC, protein adjustment, trait derivation and motif quantification before transforming the main experiment. For compositional analysis of quantified motifs, transform the motif experiment and select the same target in the statistical steps. Use significance-based filtering for transformed data and omit volcano plots and fold-change-based enrichment for those results.",
     step_correlation = "Include this step to explore relationships between variables or samples. Be careful to use when sample size or variable number is large (> 50). Before using this step for large data, ask the user if they want to proceed.",
     step_cox = "Include this step when users want to identify variables associated with survival outcomes. This step requires survival data (time and event columns) in the sample information. Always ask for the column names for survival data, unless explicitly provided.",
     step_dea_anova = "Use this step to perform DEA by default for multi-group glycomics data.",
@@ -39,6 +40,6 @@
     step_subset_groups = "Use this step when the experiment has more than 2 groups but the user wants a specific two-group comparison. Ask the user which two groups to compare, and place this step before DEA and enrichment steps. Use the order of the user-provided groups to set factor levels.",
     step_tsne = "Include this step only when the user explicitly asks for t-SNE.",
     step_umap = "Include this step only when the user explicitly asks for UMAP.",
-    step_volcano = "Always include this step by default if DEA is performed, and the DEA method is not ANOVA or Kruskal-Wallis."
+    step_volcano = "Include this step by default for limma, t-test or Wilcoxon DEA results with abundance fold changes. CoDA results use log-ratio coordinates."
   )
 }

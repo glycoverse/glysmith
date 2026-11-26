@@ -91,6 +91,7 @@ br <- function(name, ...) {
     condition = condition,
     repeatable = step$repeatable %||% FALSE,
     retry = step$retry %||% 0L,
+    stop_on_error = isTRUE(step$stop_on_error),
     signature = paste0("br(\"", branch, "\", ", step$signature, ")")
   )
 

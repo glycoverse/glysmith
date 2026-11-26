@@ -1,5 +1,7 @@
 # glysmith (development version)
 
+* New `step_coda()` transforms an experiment or quantified motifs for statistical analysis on log-ratio coordinates. It uses `glyclean::auto_coda()` by default and supports explicit CLR and ALR methods.
+
 # glysmith 0.13.0
 
 ## Breaking changes

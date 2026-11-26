@@ -17,6 +17,11 @@
 #' Tables generated:
 #' - `go_enrich`: A table containing the GO enrichment results.
 #'
+#' @section Protein selection:
+#' Enrichment selects proteins by adjusted p-value and abundance fold change.
+#' The step skips DEA results fitted on `"logx"` coordinates, including
+#' output from [step_coda()], because abundance fold changes are undefined.
+#'
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -68,6 +73,7 @@ step_sig_enrich_go <- function(
 #' Tables generated:
 #' - `kegg_enrich`: A table containing the KEGG enrichment results.
 #'
+#' @inheritSection step_sig_enrich_go Protein selection
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -120,6 +126,7 @@ step_sig_enrich_kegg <- function(
 #' Tables generated:
 #' - `reactome_enrich`: A table containing the Reactome enrichment results.
 #'
+#' @inheritSection step_sig_enrich_go Protein selection
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -172,6 +179,7 @@ step_sig_enrich_reactome <- function(
 #' Tables generated:
 #' - `ncg_enrich`: A table containing the NCG enrichment results.
 #'
+#' @inheritSection step_sig_enrich_go Protein selection
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -224,6 +232,7 @@ step_sig_enrich_ncg <- function(
 #' Tables generated:
 #' - `wp_enrich`: A table containing the WikiPathways enrichment results.
 #'
+#' @inheritSection step_sig_enrich_go Protein selection
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -276,6 +285,7 @@ step_sig_enrich_wp <- function(
 #' Tables generated:
 #' - `do_enrich`: A table containing the Disease Ontology enrichment results.
 #'
+#' @inheritSection step_sig_enrich_go Protein selection
 #' @param universe The universe (background) to use for enrichment analysis.
 #'   One of "all" (all genes in OrgDb), "detected" (detected variables in `exp`).
 #' @param plot_type Plot type for enrichment results ("dotplot", "barplot", etc.).
@@ -382,6 +392,12 @@ step_sig_enrich <- function(
 #' @returns A list with `check` and `reason`.
 #' @noRd
 .condition_sig_enrich <- function(ctx) {
+  if (.dea_uses_logx(ctx$data$dea_res)) {
+    return(list(
+      check = FALSE,
+      reason = "protein enrichment selects hits by abundance fold change, which is undefined on the logx scale"
+    ))
+  }
   exp <- ctx_get_data(ctx, "exp")
   check1 <- .get_exp_type(exp) == "glycoproteomics"
   reason1 <- "input is not a glycoproteomics experiment"

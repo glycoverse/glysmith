@@ -25,6 +25,12 @@
   "glycan_structure" %in% colnames(.get_var_info(exp))
 }
 
+# Fold-change consumers must use the scale of the fitted result. The active
+# experiment may have been transformed since the model was fitted.
+.dea_uses_logx <- function(res) {
+  identical(res$preprocessing$input_scale %||% res$meta_data$scale, "logx")
+}
+
 #' Resolve properties from 'on' parameter
 #'
 #' @param on Name of the experiment data.

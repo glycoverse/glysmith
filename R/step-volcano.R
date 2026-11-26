@@ -8,6 +8,9 @@
 #' - [step_dea_ttest()]
 #' - [step_dea_wilcox()]
 #'
+#' The step skips results fitted on `"logx"` coordinates, including
+#' [step_coda()] output, because the x-axis requires abundance fold changes.
+#'
 #' @details
 #' Data required:
 #' - `dea_res`: The DEA results from `glystats::gly_limma()`
@@ -17,6 +20,7 @@
 #'
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 6.
+#' @param ... Additional named plotting options passed to [glyvis::plot_volcano()].
 #' @inheritParams glyvis::plot_volcano
 #'
 #' @return A `glysmith_step` object.
@@ -64,7 +68,13 @@ step_volcano <- function(
 #' @returns A list with `check` and `reason`.
 #' @noRd
 .condition_volcano <- function(ctx) {
-  dea_res <- ctx_get_data(ctx, "dea_res")
+  dea_res <- ctx$data$dea_res
+  if (.dea_uses_logx(dea_res)) {
+    return(list(
+      check = FALSE,
+      reason = "volcano plots require abundance fold changes, which are undefined on the logx scale"
+    ))
+  }
   check <- !inherits(dea_res, "glystats_anova_res") &&
     !inherits(dea_res, "glystats_kruskal_res")
   reason <- "volcano plot is not supported for ANOVA or Kruskal-Wallis DEA results."
