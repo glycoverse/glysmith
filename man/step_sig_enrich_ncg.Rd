@@ -48,6 +48,13 @@ Tables generated:
 \item \code{ncg_enrich}: A table containing the NCG enrichment results.
 }
 }
+\section{Protein selection}{
+
+Enrichment selects proteins by adjusted p-value and abundance fold change.
+The step skips DEA results fitted on \code{"logx"} coordinates, including
+output from \code{\link[=step_coda]{step_coda()}}, because abundance fold changes are undefined.
+}
+
 \examples{
 step_sig_enrich_ncg()
 step_sig_enrich_ncg(plot_type = "barplot")

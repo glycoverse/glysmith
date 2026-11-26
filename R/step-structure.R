@@ -196,9 +196,7 @@ step_derive_traits <- function(
   step(
     id = "derive_traits",
     label = "Derived trait calculation",
-    condition = function(ctx) {
-      .condition_derive_traits(ctx)
-    },
+    condition = .condition_trait_motif_input,
     run = function(ctx) {
       .run_derive_traits(
         ctx,
@@ -217,17 +215,28 @@ step_derive_traits <- function(
   )
 }
 
-#' Check whether derived trait calculation should run
+#' Check the common input requirements for trait and motif quantification
 #'
 #' @param ctx Analysis context.
 #'
 #' @returns A list with `check` and `reason`.
 #' @noRd
-.condition_derive_traits <- function(ctx) {
-  check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
+.condition_trait_motif_input <- function(ctx) {
+  exp <- ctx_get_data(ctx, "exp")
+  if (identical(glyexp::get_scale(.as_glyco_se(exp)), "logx")) {
+    return(list(
+      check = FALSE,
+      reason = "trait and motif quantification requires linear abundances. Run it before step_coda()"
+    ))
+  }
+  check <- .has_glycan_structure(exp)
   reason <- "glycan structures are not available in the experiment"
   list(check = check, reason = reason)
 }
+
+# Serialized blueprints created before the shared condition call these names.
+.condition_derive_traits <- .condition_trait_motif_input
+.condition_quantify_dynamic_motifs <- .condition_trait_motif_input
 
 #' Run derived trait calculation
 #'
@@ -317,9 +326,7 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
   step(
     id = "quantify_dynamic_motifs",
     label = "Dynamic motif quantification",
-    condition = function(ctx) {
-      .condition_quantify_dynamic_motifs(ctx)
-    },
+    condition = .condition_trait_motif_input,
     run = function(ctx) {
       .run_quantify_dynamic_motifs(ctx, max_size = max_size, method = method)
     },
@@ -331,18 +338,6 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
     packages = c("glydet", "glymotif"),
     signature = signature
   )
-}
-
-#' Check whether dynamic motif quantification should run
-#'
-#' @param ctx Analysis context.
-#'
-#' @returns A list with `check` and `reason`.
-#' @noRd
-.condition_quantify_dynamic_motifs <- function(ctx) {
-  check <- .has_glycan_structure(ctx_get_data(ctx, "exp"))
-  reason <- "glycan structures are not available in the experiment"
-  list(check = check, reason = reason)
 }
 
 #' Run dynamic motif quantification
@@ -445,14 +440,11 @@ step_quantify_branch_motifs <- function(method = "relative") {
 #' @returns A list with `check` and `reason`.
 #' @noRd
 .condition_quantify_branch_motifs <- function(ctx) {
-  exp <- ctx_get_data(ctx, "exp")
-  if (!.has_glycan_structure(exp)) {
-    return(list(
-      check = FALSE,
-      reason = "glycan structures are not available in the experiment"
-    ))
+  input <- .condition_trait_motif_input(ctx)
+  if (!input$check) {
+    return(input)
   }
-  type <- .get_glycan_type(exp)
+  type <- .get_glycan_type(ctx_get_data(ctx, "exp"))
   if (type != "N") {
     return(list(
       check = FALSE,

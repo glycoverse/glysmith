@@ -9,6 +9,7 @@ all_steps <- function() {
     step_preprocess(),
     step_subset_groups(),
     step_adjust_protein(),
+    step_coda(),
     step_correlation(),
     step_pca(),
     step_tsne(),

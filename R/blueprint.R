@@ -546,6 +546,11 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
 
     if (!quiet) {
       cli::cli_progress_done(id = step_id, result = "failed")
+    }
+    if (isTRUE(step$stop_on_error)) {
+      cli::cli_abort("{.code {step$signature}} failed.", parent = e)
+    }
+    if (!quiet) {
       cli::cli_alert_warning("`{step$signature}` failed. Error: {e$message}")
     }
     ctx$meta$logs[[step$id]] <- list(error = e$message)

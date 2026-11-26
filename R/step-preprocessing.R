@@ -381,6 +381,96 @@ step_preprocess <- function(
   paste0("<AI>", text, "</AI>")
 }
 
+#' Compositional data transformation
+#'
+#' Transform the selected experiment to centered log-ratio (CLR) or additive
+#' log-ratio (ALR) coordinates. By default, [glyclean::auto_coda()] chooses
+#' the transformation.
+#'
+#' @details
+#' Place this step after abundance preprocessing and before statistical
+#' analysis. The input must contain finite, positive abundances on the raw
+#' scale or finite values on a known log scale. A transformation error stops
+#' the blueprint so subsequent tests cannot accidentally use the input scale.
+#'
+#' The step replaces `on` with the transformed experiment and saves its
+#' previous value in `pre_coda_<on>` (by default, `pre_coda_exp`). Subsequent
+#' steps targeting the same experiment use its log2-ratio coordinates
+#' directly. A successful ALR omits the reference feature from those tests.
+#' Use [glyclean::get_pipeline()] on the output to see which transform ran.
+#'
+#' Differential tests return p-values on these coordinates. For example,
+#' limma's `estimate` is the contrast in log2-ratio units. Abundance
+#' `log2fc` is undefined, so significant features are selected by p-value
+#' ([glystats::filter_sig_vars()] ignores an explicit fold-change cutoff
+#' with a warning). Volcano plots and fold-change-based protein enrichment
+#' are skipped. Run abundance QC, trait derivation, and motif
+#' quantification before transforming the main experiment.
+#'
+#' @inheritParams glyclean::auto_coda
+#' @param method Use `"auto"` (default) for [glyclean::auto_coda()], `"clr"`
+#'   for [glyclean::transform_clr()], or `"alr"` for [glyclean::transform_alr()].
+#'   Automatic selection uses site-wise CLR for glycoproteomics. For other
+#'   experiments, it uses CLR for up to 50 features and attempts ALR above 50.
+#'   The ALR method falls back to CLR if no suitable reference is available.
+#'   Glycoproteomics supports `"auto"` and `"clr"`.
+#' @param on Name of the experiment in the blueprint. Defaults to `"exp"`.
+#'   For example, use `"dynamic_motif_exp"` or `"branch_motif_exp"` after
+#'   quantifying motifs, then use the same `on` in the statistical step.
+#' @returns A `glysmith_step` object.
+#' @examples
+#' blueprint(step_coda(by = "group", gamma = 0), step_pca(), step_dea_limma())
+#' step_coda(method = "clr", gamma = 0)
+#' blueprint(
+#'   step_quantify_branch_motifs(),
+#'   step_coda(on = "branch_motif_exp"),
+#'   step_dea_limma(on = "branch_motif_exp")
+#' )
+#' @export
+step_coda <- function(
+  method = "auto",
+  by = NULL,
+  gamma = 0.1,
+  group_scales = NULL,
+  seed = 123,
+  on = "exp"
+) {
+  signature <- rlang::expr_deparse(match.call())
+  method <- rlang::arg_match(method, c("auto", "clr", "alr"))
+  on_meta <- .resolve_on(on)
+  backup <- paste0("pre_coda_", on)
+  args <- list(by = by, gamma = gamma, group_scales = group_scales, seed = seed)
+
+  step(
+    id = paste0("coda", on_meta$id_suffix),
+    label = paste0("Compositional data transformation", on_meta$label_suffix),
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, on)
+      transform <- switch(
+        method,
+        auto = glyclean::auto_coda,
+        clr = glyclean::transform_clr,
+        alr = glyclean::transform_alr
+      )
+      transformed <- rlang::exec(transform, exp, !!!args)
+      ctx <- ctx_add_data(ctx, backup, exp)
+      ctx_add_data(ctx, on, transformed)
+    },
+    report = function(x) {
+      paste0(
+        "The `",
+        on,
+        "` experiment was transformed to log2-ratio coordinates."
+      )
+    },
+    require = on,
+    generate = backup,
+    packages = "glyclean",
+    stop_on_error = TRUE,
+    signature = signature
+  )
+}
+
 #' Step: Subset Groups
 #'
 #' @description

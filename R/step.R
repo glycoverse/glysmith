@@ -19,6 +19,8 @@
 #'   If TRUE, duplicate step IDs are allowed. Default is FALSE.
 #' @param retry Number of retry attempts on failure. Default is 0.
 #' @param signature The original call signature for display in messages.
+#' @param stop_on_error Whether to abort the blueprint if this step fails
+#'   after its retries. Use for transformations that downstream steps need.
 #'
 #' @returns A `glysmith_step` object.
 #' @noRd
@@ -34,7 +36,8 @@ step <- function(
   condition = NULL,
   repeatable = FALSE,
   retry = 0L,
-  signature = NULL
+  signature = NULL,
+  stop_on_error = FALSE
 ) {
   checkmate::assert_character(packages, any.missing = FALSE)
 
@@ -50,6 +53,7 @@ step <- function(
       condition = condition,
       repeatable = repeatable,
       retry = retry,
+      stop_on_error = stop_on_error,
       signature = signature %||% paste0("step_", id, "()")
     ),
     class = "glysmith_step"
