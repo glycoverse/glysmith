@@ -72,6 +72,33 @@ glysmith::check_glysmith_deps()
 **Note:** Tips and troubleshooting for the meta-package [glycoverse](https://github.com/glycoverse/glycoverse)
 are also applicable here: [Installation of glycoverse](https://github.com/glycoverse/glycoverse#installation).
 
+### Docker
+
+Use the [Docker image](https://github.com/glycoverse/glysmith/pkgs/container/glysmith) for a ready-to-use
+R environment with glysmith, its optional analysis dependencies, the core
+Glycoverse packages, and Pandoc for HTML reports. Linux `amd64` and `arm64`
+(including Apple Silicon) are supported.
+
+```sh
+docker pull ghcr.io/glycoverse/glysmith:latest
+docker run --rm -it \
+  --mount "type=bind,source=$(pwd),target=/workspace" \
+  ghcr.io/glycoverse/glysmith:latest
+```
+
+The current directory is mounted at `/workspace`. To run a local analysis script
+and save its outputs there:
+
+```sh
+docker run --rm \
+  --mount "type=bind,source=$(pwd),target=/workspace" \
+  ghcr.io/glycoverse/glysmith:latest Rscript analysis.R
+```
+
+Use `polish_report(result, "report.html", open = FALSE)` inside the container,
+then open the report on your host. See the [Docker guide](docker/README.md) for
+Linux file permissions, versioned tags, verification, and local builds.
+
 ## Example
 
 ```r
