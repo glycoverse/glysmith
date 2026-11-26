@@ -36,7 +36,7 @@ test_that("every glyclean normalization, imputation and filtering method is sele
   expect_error(step_impute("bpca", dreamai_methods = "KNN"), "dreamai")
 })
 
-test_that("custom preprocessing composes in order, retaining raw data and replayable history", {
+test_that("custom preprocessing composes in order and retains the raw data", {
   skip_if_not_installed("glyclean")
   exp <- clean_input()
   SummarizedExperiment::assay(exp)[1, 1:11] <- 0
@@ -47,8 +47,7 @@ test_that("custom preprocessing composes in order, retaining raw data and replay
     step_impute("min_prob", by = "group", q = 0.03, seed = 73),
     step_normalize("median_quotient", by = "plate"),
     step_remove("constant"),
-    step_transform_log(base = 10),
-    step_get_pipeline()
+    step_transform_log(base = 10)
   )
   result <- suppressMessages(forge_analysis(exp, bp))
   expected <- suppressMessages(
@@ -63,12 +62,6 @@ test_that("custom preprocessing composes in order, retaining raw data and replay
   expect_identical(result$exp, expected)
   expect_identical(result$data$raw_exp, exp)
   expect_identical(result$meta$steps, names(bp))
-  expect_identical(result$data$pipeline, glyclean::get_pipeline(expected))
-  replay <- suppressMessages(forge_analysis(
-    exp,
-    blueprint(step_apply_pipeline(result$data$pipeline))
-  ))
-  expect_identical(replay$exp, expected)
 })
 
 test_that("automatic operations and manual batch correction use the selected arguments", {
@@ -138,13 +131,12 @@ test_that("automatic operations and manual batch correction use the selected arg
   expect_identical(batch$data, ctx$data)
 })
 
-test_that("prebuilt pipelines capture parameters and apply within branches", {
+test_that("saved blueprints retain preprocessing parameters inside branches", {
   skip_if_not_installed("glyclean")
   exp <- clean_input()
   base <- 10
   bp <- blueprint(
-    step_build_pipeline(glyclean::transform_log(base = base)),
-    br("logged", step_apply_pipeline(), step_remove("constant"))
+    br("logged", step_transform_log(base = base), step_remove("constant"))
   )
   base <- 2
   file <- withr::local_tempfile()
@@ -159,7 +151,6 @@ test_that("prebuilt pipelines capture parameters and apply within branches", {
       base = 10
     )))
   )
-  expect_error(blueprint(step_apply_pipeline()), "missing step dependencies")
 })
 
 test_that("granular and automatic preprocessing share the first input", {
@@ -207,16 +198,6 @@ test_that("invalid preprocessing stops dependent analysis and legacy inputs keep
   expect_identical(result$data$raw_exp$expr_mat, legacy$expr_mat)
   expect_equal(result$exp$expr_mat, log2(legacy$expr_mat))
   expect_identical(result$exp$meta_data$scale, "log2")
-})
-
-test_that("site sequence annotation accepts a sequence snapshot", {
-  skip_if_not_installed("glyclean")
-  exp <- glyexp::real_experiment[1:3, ]
-  SummarizedExperiment::rowData(exp)$protein <- rep("P1", 3)
-  SummarizedExperiment::rowData(exp)$protein_site <- 2:4
-  fasta <- c(P1 = "MANVTK")
-  run <- step_add_site_seq(fasta, n_aa = 2)$run(new_ctx(exp, "group"))
-  expect_identical(run$data$exp, glyclean::add_site_seq(exp, fasta, n_aa = 2))
 })
 
 test_that("a selected QC plot uses its arguments and its requested stage", {

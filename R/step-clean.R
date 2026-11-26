@@ -246,24 +246,6 @@ step_transform_log <- function(base = 2) {
   .clean_step("transform_log", "Log-transform abundances", list(base = base))
 }
 
-#' Annotate the sequence surrounding each glycosylation site
-#'
-#' Apply [glyclean::add_site_seq()] to a glycoproteomics experiment and
-#' store the flanking sequence in the `site_sequence` feature annotation.
-#'
-#' @inheritParams glyclean::add_site_seq
-#' @returns A `glysmith_step` object.
-#' @examples
-#' step_add_site_seq(fasta = c(P12345 = "MANVTK"), n_aa = 2)
-#' @export
-step_add_site_seq <- function(fasta = NULL, n_aa = 7, taxid = 9606) {
-  .clean_step(
-    "add_site_seq",
-    "Annotate glycosylation site sequences",
-    list(fasta = fasta, n_aa = n_aa, taxid = taxid)
-  )
-}
-
 .glyclean_method <- function(family, method) {
   if (method == "auto") paste0("auto_", family) else paste0(family, "_", method)
 }
@@ -275,7 +257,6 @@ step_add_site_seq <- function(fasta = NULL, n_aa = 7, taxid = 9606) {
   label,
   args = list(),
   id = operation,
-  data_args = character(),
   packages = character(),
   call = rlang::caller_call()
 ) {
@@ -294,10 +275,10 @@ step_add_site_seq <- function(fasta = NULL, n_aa = 7, taxid = 9606) {
         list(ctx_get_data(ctx, "exp")),
         names(formals(fun))[1L]
       )
-      result <- rlang::exec(fun, !!!input, !!!args, !!!ctx$data[data_args])
+      result <- rlang::exec(fun, !!!input, !!!args)
       .store_preprocessed_exp(ctx, result)
     },
-    require = c("exp", data_args),
+    require = "exp",
     initialize = "raw_exp",
     packages = c("glyclean", packages),
     repeatable = TRUE,
