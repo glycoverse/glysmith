@@ -25,6 +25,34 @@ test_that("step_heatmap works on sig_exp", {
   expect_true("heatmap_sig" %in% names(res$plots))
 })
 
+# ----- step_plot_glycosite_profile -----
+test_that("step_plot_glycosite_profile counts distinct glycans and sites", {
+  skip_if_not_installed("glyvis", "0.9.0")
+  exp <- glyexp::real_experiment[1:5, ]
+  info <- SummarizedExperiment::rowData(exp)
+  info$protein <- c("A", "A", "A", "A", "B")
+  info$protein_site <- c(10L, 10L, 10L, 20L, 10L)
+  info$glycan_id <- c("g1", "g1", "g2", "g1", "g2")
+  SummarizedExperiment::rowData(exp) <- info
+  bp <- blueprint(step_plot_glycosite_profile(glycan_col = "glycan_id"))
+
+  result <- forge_analysis_se(exp, bp)
+
+  expect_named(result$plots, c("glycans_per_site", "sites_per_protein"))
+  glycans <- cast_plot(result, "glycans_per_site")
+  sites <- cast_plot(result, "sites_per_protein")
+  expect_s3_class(glycans, "ggplot")
+  expect_s3_class(sites, "ggplot")
+  expect_equal(glycans$data$count, c(2, 1, rep(0, 6)))
+  expect_equal(sites$data$count, c(1, 1, rep(0, 6)))
+})
+
+test_that("step_plot_glycosite_profile skips glycomics", {
+  bp <- blueprint(step_plot_glycosite_profile())
+  result <- forge_analysis_se(glyexp::real_experiment2, bp)
+  expect_length(result$plots, 0)
+})
+
 # ----- step_logo -----
 test_that("step_logo is skipped for glycomics experiments", {
   skip_if_not_installed("ggseqlogo")

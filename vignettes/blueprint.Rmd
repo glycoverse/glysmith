@@ -82,6 +82,7 @@ Here's the full lineup of available step functions:
 | `step_volcano()` | Create volcano plot from DEA results | No | GP/G |
 | `step_heatmap()` | Create heatmap plot | No | GP/G |
 | `step_logo()` | Create logo plot for glycosylation sites | No | GP |
+| `step_plot_glycosite_profile()` | Plot distinct glycans per site and glycosylation sites per protein | No | GP |
 | `step_sig_boxplot()` | Boxplots for significant variables from DEA | No | GP/G |
 | **Dimension Reduction** | | | |
 | `step_pca()` | Principal Component Analysis | No | GP/G |

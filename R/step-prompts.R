@@ -32,6 +32,7 @@
     step_logo = "Include this step if the user explicitly asks for logo plot. If used, ask user if a FASTA file is provided. Tell the user that if not, protein sequences will be fetched from UniProt automatically.",
     step_oplsda = "Include this step when users explicitly ask for OPLS-DA. This step only works with binary classification (exactly 2 groups). If multiple groups are found, ask if `step_subset_groups()` should be run first.",
     step_pca = "Include this step if needed.",
+    step_plot_glycosite_profile = "Use for glycoproteomics when the user asks about glycan diversity per site or the number of glycosylation sites per protein.",
     step_plot_qc = "By default, include this step after preprocessing. Provide when to specify the QC stage. Set method for a single requested QC plot.",
     step_plsda = "Include this step when users explicitly ask for PLS-DA.",
     step_preprocess = "Use this step by default for automatic preprocessing. If the user specifies a custom preprocessing sequence, use the individual steps in the requested order and omit step_preprocess(). Omit preprocessing when the data is already processed or the user excludes it. Ask for the column name for batch information if not provided. Do not ask for quality-control sample names. For biomarker analysis, use the biomarker removal preset.",

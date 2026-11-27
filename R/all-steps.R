@@ -25,6 +25,7 @@ all_steps <- function() {
     step_oplsda(),
     step_plsda(),
     step_heatmap(),
+    step_plot_glycosite_profile(),
     step_logo(),
     step_sig_boxplot(),
     step_dea_limma(),
