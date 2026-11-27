@@ -279,6 +279,7 @@ step_preprocess <- function(
 
   step(
     id = "preprocess",
+    connected = .exp_port("exp"),
     label = "Preprocessing",
     run = function(ctx) {
       .run_preprocess(

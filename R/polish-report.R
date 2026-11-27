@@ -135,6 +135,8 @@ polish_report <- function(
   }
 
   step_map <- x$blueprint
+  connected <- inherits(step_map, "glysmith_connected_blueprint")
+  if (connected) step_map <- purrr::map(.compile_connected_blueprint(step_map)$nodes, "step")
   ids <- steps_executed
 
   if (isTRUE(use_ai)) {
@@ -151,7 +153,9 @@ polish_report <- function(
       return(list(id = id, label = id, content = NULL))
     }
     content <- NULL
-    if (is.function(s$report)) {
+    if (connected) {
+      content <- x$meta$reports[[id]]
+    } else if (is.function(s$report)) {
       content <- tryCatch(
         s$report(x),
         error = function(e) {
@@ -178,7 +182,7 @@ polish_report <- function(
       content <- stringr::str_remove_all(content, "<AI>[\\s\\S]*?</AI>")
     }
 
-    list(id = s$id, label = s$label, content = content)
+    list(id = id, label = s$label, content = content)
   })
 }
 

@@ -4,10 +4,13 @@
 \alias{blueprint}
 \title{Create a Blueprint}
 \usage{
-blueprint(...)
+blueprint(..., .mode = c("legacy", "connected"))
 }
 \arguments{
-\item{...}{One or more step objects.}
+\item{...}{One or more step objects. In connected mode, also branches, forks,
+or connected sub-blueprints.}
+
+\item{.mode}{Use "connected" to opt in to typed step connections.}
 }
 \value{
 A blueprint object.

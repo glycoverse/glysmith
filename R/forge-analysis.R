@@ -31,7 +31,9 @@ forge_analysis <- function(
   blueprint = blueprint_default(),
   group_col = "group"
 ) {
-  check_glysmith_deps(blueprint = blueprint, action = "error")
+  if (!inherits(blueprint, "glysmith_connected_blueprint")) {
+    check_glysmith_deps(blueprint = blueprint, action = "error")
+  }
   .assert_data_container(exp)
   checkmate::assert_string(group_col)
   legacy <- inherits(exp, "glyexp_experiment")

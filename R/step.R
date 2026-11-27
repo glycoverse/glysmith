@@ -39,7 +39,8 @@ step <- function(
   retry = 0L,
   signature = NULL,
   stop_on_error = FALSE,
-  initialize = character(0)
+  initialize = character(0),
+  connected = NULL
 ) {
   checkmate::assert_character(packages, any.missing = FALSE)
 
@@ -52,6 +53,7 @@ step <- function(
       require = require,
       generate = union(generate, initialize),
       initialize = initialize,
+      connected = connected,
       packages = packages,
       condition = condition,
       repeatable = repeatable,

@@ -625,6 +625,12 @@ step_dea_kruskal <- function(
 
   step(
     id = paste0(meta$prefix, "_", method),
+    connected = list(
+      accepts = c("exp", "filtered_exp"),
+      produces = if (method %in% c("anova", "kruskal")) "omnibus" else "contrast",
+      key = paste0(meta$prefix, "_res"),
+      run = function(ctx) .fit_dea(ctx, ctx_get_data(ctx, on), method, meta, dea_args)
+    ),
     label = paste0(meta$label, " analysis (", method, ")"),
     run = function(ctx) {
       .run_dea(
@@ -663,6 +669,23 @@ step_dea_kruskal <- function(
     exp <- glyclean::remove_constant(exp)
   }
 
+  ctx <- .fit_dea(ctx, exp, method, meta, dea_args)
+  dea_res <- ctx_get_data(ctx, paste0(meta$prefix, "_res"))
+  sig_exp <- rlang::exec(
+    glystats::filter_sig_vars,
+    exp,
+    res = dea_res,
+    !!!filter_args
+  )
+  ctx_add_data(
+    ctx,
+    paste0("sig_", meta$require),
+    sig_exp,
+    glue::glue("Experiment with only significant {meta$name}s.")
+  )
+}
+
+.fit_dea <- function(ctx, exp, method, meta, dea_args) {
   dea_res <- switch(
     method,
     "limma" = rlang::exec(glystats::gly_limma, exp, !!!dea_args),
@@ -705,19 +728,7 @@ step_dea_kruskal <- function(
       )
     )
   }
-
-  sig_exp <- rlang::exec(
-    glystats::filter_sig_vars,
-    exp,
-    res = dea_res,
-    !!!filter_args
-  )
-  ctx_add_data(
-    ctx,
-    paste0("sig_", meta$require),
-    sig_exp,
-    glue::glue("Experiment with only significant {meta$name}s.")
-  )
+  ctx
 }
 
 #' Report differential expression analysis results

@@ -3,7 +3,9 @@
 #' A blueprint is a list of steps that are executed in order.
 #' Type `step_` and TAB in RStudio to see all available steps.
 #'
-#' @param ... One or more step objects.
+#' @param ... One or more step objects. In connected mode, also branches, forks,
+#'   or connected sub-blueprints.
+#' @param .mode Use "connected" to opt in to typed step connections.
 #'
 #' @returns A blueprint object.
 #' @examples
@@ -13,8 +15,12 @@
 #'   step_dea_limma(),  # this comma is ok
 #' )
 #' @export
-blueprint <- function(...) {
+blueprint <- function(..., .mode = c("legacy", "connected")) {
+  .mode <- match.arg(.mode)
   steps <- as.list(rlang::list2(...))
+  if (.mode == "connected") {
+    return(.new_connected_blueprint(steps))
+  }
   steps <- .expand_branches(steps)
   names(steps) <- purrr::map_chr(steps, "id")
   bp <- new_blueprint(steps)
@@ -442,6 +448,9 @@ print.glysmith_blueprint <- function(x, ...) {
 #' @returns Updated context.
 #' @noRd
 run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
+  if (inherits(blueprint, "glysmith_connected_blueprint")) {
+    return(.run_connected_blueprint(blueprint, ctx, quiet))
+  }
   ctx <- .run_blueprint_ensure_ctx(ctx)
 
   for (step in blueprint) {

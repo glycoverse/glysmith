@@ -195,6 +195,7 @@ step_derive_traits <- function(
   signature <- rlang::expr_deparse(match.call())
   step(
     id = "derive_traits",
+    connected = .exp_port("trait_exp"),
     label = "Derived trait calculation",
     condition = .condition_trait_motif_input,
     run = function(ctx) {

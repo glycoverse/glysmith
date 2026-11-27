@@ -40,6 +40,7 @@ step_volcano <- function(
   signature <- rlang::expr_deparse(match.call())
   step(
     id = "volcano",
+    connected = .fit_port(accepts = "contrast"),
     label = "Volcano plot",
     condition = function(ctx) {
       .condition_volcano(ctx)

@@ -99,6 +99,9 @@ collect_blueprint_packages <- function(blueprint) {
     ))
   }
 
+  if (inherits(blueprint, "glysmith_connected_blueprint")) {
+    blueprint <- purrr::map(.compile_connected_blueprint(blueprint)$nodes, "step")
+  }
   blueprint |>
     purrr::map("packages", .default = character(0)) |>
     unlist(use.names = FALSE) |>

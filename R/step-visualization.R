@@ -53,6 +53,7 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 
   step(
     id = paste0("heatmap", on_meta$id_suffix),
+    connected = .exp_port(),
     label = label,
     run = function(ctx) {
       .run_heatmap(
@@ -363,6 +364,7 @@ step_sig_boxplot <- function(
 
   step(
     id = paste0("sig_boxplot", on_meta$id_suffix),
+    connected = list(accepts = "filtered_exp"),
     label = label,
     run = function(ctx) {
       .run_sig_boxplot(

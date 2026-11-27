@@ -66,6 +66,7 @@ step_pca <- function(
   id <- paste0("pca", on_meta$id_suffix)
   step(
     id = id,
+    connected = .exp_port(),
     label = paste0("Principal component analysis", on_meta$label_suffix),
     run = function(ctx) {
       .run_pca(
