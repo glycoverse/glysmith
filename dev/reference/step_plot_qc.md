@@ -15,7 +15,9 @@ step_plot_qc(
   batch_col = "batch",
   rep_col = NULL,
   plot_width = 7,
-  plot_height = 5
+  plot_height = 5,
+  method = NULL,
+  ...
 )
 ```
 
@@ -46,6 +48,18 @@ step_plot_qc(
 
   Height of plots in inches. Default is 5.
 
+- method:
+
+  A single QC plot to generate at any stage. Choose `"missing_heatmap"`,
+  `"missing_bar"`, `"tic_bar"`, `"rank_abundance"`, `"int_boxplot"`,
+  `"rle"`, `"cv_dent"`, `"batch_pca"` or `"rep_scatter"`.
+
+- ...:
+
+  Arguments for the selected glyclean plot, such as `on = "variable"`
+  for `"missing_bar"`, `by` for `"rle"`, or `n_pairs` and `seed` for
+  `"rep_scatter"`. An individual plot uses its glyclean defaults.
+
 ## Value
 
 A `glysmith_step` object.
@@ -56,7 +70,7 @@ Data required:
 
 - `exp`: The experiment to plot QC for
 
-Plots generated:
+The default panel (`method = NULL`) generates the following plots.
 
 - `qc_missing_heatmap`: Missing value heatmap
 
@@ -96,4 +110,7 @@ step_plot_qc(when = "pre")
 #> <step "step_plot_qc(when = \"pre\")"> QC (pre-preprocessing)
 step_plot_qc(when = "post")
 #> <step "step_plot_qc(when = \"post\")"> QC (post-preprocessing)
+step_plot_qc(when = "post", method = "missing_bar", on = "variable")
+#> <step "step_plot_qc(when = \"post\", method = \"missing_bar\", on =
+#> \"variable\")"> QC (post-preprocessing) missing_bar
 ```

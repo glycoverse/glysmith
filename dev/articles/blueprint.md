@@ -75,6 +75,14 @@ Here’s the full lineup of available step functions:
 | [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md) | Summarize the experiment (identification overview) | No | GP/G |
 | [`step_plot_qc()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.md) | Generate quality control plots | No | GP/G |
 | [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md) | Preprocess the experiment (normalization, imputation, etc.) | No | GP/G |
+| [`step_zero_to_na()`](https://glycoverse.github.io/glysmith/dev/reference/step_zero_to_na.md) | Convert zeros to missing measurements | No | GP/G |
+| [`step_remove()`](https://glycoverse.github.io/glysmith/dev/reference/step_remove.md) | Filter features by missingness, abundance, or variation | No | GP/G |
+| [`step_normalize()`](https://glycoverse.github.io/glysmith/dev/reference/step_normalize.md) | Normalize sample abundances | No | GP/G |
+| [`step_impute()`](https://glycoverse.github.io/glysmith/dev/reference/step_impute.md) | Impute missing abundances | No | GP/G |
+| [`step_aggregate()`](https://glycoverse.github.io/glysmith/dev/reference/step_aggregate.md) | Combine measurements at a glycan, glycoform, or glycopeptide level | Depends on level | GP/G |
+| [`step_detect_batch_effect()`](https://glycoverse.github.io/glysmith/dev/reference/step_detect_batch_effect.md) | Save a table of batch effect p-values by feature | No | GP/G |
+| [`step_correct_batch_effect()`](https://glycoverse.github.io/glysmith/dev/reference/step_correct_batch_effect.md) | Correct batch effects automatically or with ComBat or limma | No | GP/G |
+| [`step_transform_log()`](https://glycoverse.github.io/glysmith/dev/reference/step_transform_log.md) | Store abundances on a logarithmic scale | No | GP/G |
 | [`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md) | Transform abundances to log-ratio coordinates for compositional data analysis | No | GP/G |
 | [`step_subset_groups()`](https://glycoverse.github.io/glysmith/dev/reference/step_subset_groups.md) | Subset the experiment to specific groups | No | GP/G |
 | [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md) | Adjust glycoform quantification by protein abundance | No | GP |
@@ -113,6 +121,36 @@ Here’s the full lineup of available step functions:
 | [`step_cox()`](https://glycoverse.github.io/glysmith/dev/reference/step_cox.md) | Cox proportional hazards model | No | GP/G |
 
 *GP: glycoproteomics, G: glycomics*
+
+## Choose individual preprocessing operations
+
+Use
+[`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)
+for glyclean’s full automatic workflow. To control the method or order,
+put the individual operations directly in the blueprint. For example,
+when zeros encode missing measurements, you can filter by missingness
+within each group, impute the retained features, and normalize each
+sample to its total abundance.
+
+``` r
+
+bp <- blueprint(
+  step_zero_to_na(),
+  step_remove("rare", prop = 0.5, by = "group"),
+  step_impute("min_prob", seed = 42),
+  step_normalize("total_area"),
+  step_plot_qc(when = "post", method = "rle", by = "group")
+)
+```
+
+Each cleaning step reads the current `exp`. The first saves its input in
+`raw_exp`, and later steps use the output of the preceding step. Use
+`method = "auto"` for automatic selection within a single operation,
+such as imputation. For an explicit method, supply the arguments of the
+matching glyclean function. For example, `step_impute("fw_knn", k = 3)`
+calls
+[`glyclean::impute_fw_knn()`](https://glycoverse.github.io/glyclean/reference/impute_fw_knn.html)
+with three neighbors.
 
 ## Step dependencies
 

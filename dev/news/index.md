@@ -3,6 +3,15 @@
 ## glysmith (development version)
 
 - New
+  [`step_remove()`](https://glycoverse.github.io/glysmith/dev/reference/step_remove.md),
+  [`step_normalize()`](https://glycoverse.github.io/glysmith/dev/reference/step_normalize.md),
+  [`step_impute()`](https://glycoverse.github.io/glysmith/dev/reference/step_impute.md),
+  and related preprocessing steps let you select glyclean methods and
+  their order in a blueprint. (#38)
+- [`step_plot_qc()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.md)
+  gains a `method` argument to select one QC plot and pass its plotting
+  options at any preprocessing stage. (#38)
+- New
   [`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md)
   transforms an experiment or quantified motifs for statistical analysis
   on log-ratio coordinates. It uses

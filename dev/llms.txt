@@ -130,8 +130,12 @@ Open `report.html` from your analysis directory in your browser.
   : Save GlySmith Result
 - [`step_adjust_protein()`](https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.md)
   : Step: Adjust Protein Abundance
+- [`step_aggregate()`](https://glycoverse.github.io/glysmith/dev/reference/step_aggregate.md)
+  : Aggregate abundances by glycan or glycopeptide identifier
 - [`step_coda()`](https://glycoverse.github.io/glysmith/dev/reference/step_coda.md)
   : Compositional data transformation
+- [`step_correct_batch_effect()`](https://glycoverse.github.io/glysmith/dev/reference/step_correct_batch_effect.md)
+  : Correct batch effects
 - [`step_correlation()`](https://glycoverse.github.io/glysmith/dev/reference/step_correlation.md)
   : Step: Correlation Analysis
 - [`step_cox()`](https://glycoverse.github.io/glysmith/dev/reference/step_cox.md)
@@ -149,14 +153,20 @@ Open `report.html` from your analysis directory in your browser.
   : Step: Differential Expression Analysis (DEA) using Wilcoxon test
 - [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md)
   : Step: Derived Trait Calculation
+- [`step_detect_batch_effect()`](https://glycoverse.github.io/glysmith/dev/reference/step_detect_batch_effect.md)
+  : Test for batch effects in each feature
 - [`step_heatmap()`](https://glycoverse.github.io/glysmith/dev/reference/step_heatmap.md)
   : Step: Heatmap
 - [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md)
   : Step: Identification Overview
+- [`step_impute()`](https://glycoverse.github.io/glysmith/dev/reference/step_impute.md)
+  : Impute missing abundances
 - [`step_infer_structure()`](https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.md)
   : Step: Infer Glycan Structures
 - [`step_logo()`](https://glycoverse.github.io/glysmith/dev/reference/step_logo.md)
   : Step: Logo Plot
+- [`step_normalize()`](https://glycoverse.github.io/glysmith/dev/reference/step_normalize.md)
+  : Normalize sample abundances
 - [`step_oplsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.md)
   : Step: Orthogonal Partial Least Squares Discriminant Analysis
   (OPLS-DA)
@@ -172,6 +182,8 @@ Open `report.html` from your analysis directory in your browser.
   : Step: Quantify Branch Motifs
 - [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.md)
   : Step: Quantify Dynamic Motifs
+- [`step_remove()`](https://glycoverse.github.io/glysmith/dev/reference/step_remove.md)
+  : Filter features by abundance or missingness
 - [`step_roc()`](https://glycoverse.github.io/glysmith/dev/reference/step_roc.md)
   : Step: ROC Analysis
 - [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md)
@@ -192,12 +204,16 @@ Open `report.html` from your analysis directory in your browser.
   Variables
 - [`step_subset_groups()`](https://glycoverse.github.io/glysmith/dev/reference/step_subset_groups.md)
   : Step: Subset Groups
+- [`step_transform_log()`](https://glycoverse.github.io/glysmith/dev/reference/step_transform_log.md)
+  : Log-transform abundances
 - [`step_tsne()`](https://glycoverse.github.io/glysmith/dev/reference/step_tsne.md)
   : Step: t-SNE
 - [`step_umap()`](https://glycoverse.github.io/glysmith/dev/reference/step_umap.md)
   : Step: UMAP
 - [`step_volcano()`](https://glycoverse.github.io/glysmith/dev/reference/step_volcano.md)
   : Step: Volcano Plot
+- [`step_zero_to_na()`](https://glycoverse.github.io/glysmith/dev/reference/step_zero_to_na.md)
+  : Convert zero abundances to missing values
 - [`write_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/write_blueprint.md)
   [`read_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/write_blueprint.md)
   : Save or Load a Blueprint

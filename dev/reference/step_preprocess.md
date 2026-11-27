@@ -17,7 +17,10 @@ step_preprocess(
   batch_prop_threshold = 0.3,
   check_batch_confounding = TRUE,
   batch_confounding_threshold = 0.4,
-  rep_col = NULL
+  rep_col = NULL,
+  group_col = "group",
+  standardize_variable = TRUE,
+  seed = 123
 )
 ```
 
@@ -30,11 +33,17 @@ step_preprocess(
 
 - normalize_to_try:
 
-  Normalization methods to try during auto_clean.
+  Legacy argument for versions of `auto_clean()` that accept candidate
+  methods. Use
+  [`step_normalize()`](https://glycoverse.github.io/glysmith/dev/reference/step_normalize.md)
+  to select a method.
 
 - impute_to_try:
 
-  Imputation methods to try during auto_clean.
+  Legacy argument for versions of `auto_clean()` that accept candidate
+  methods. Use
+  [`step_impute()`](https://glycoverse.github.io/glysmith/dev/reference/step_impute.md)
+  to select a method.
 
 - remove_preset:
 
@@ -56,6 +65,23 @@ step_preprocess(
 
   Column name for replicate information (for QC plots).
 
+- group_col:
+
+  The column name in sample_info for groups. Default is "group". Can be
+  NULL when no group information is available.
+
+- standardize_variable:
+
+  Whether to call
+  [`glyexp::standardize_variable()`](https://glycoverse.github.io/glyexp/reference/standardize_variable.html)
+  after aggregation. Set to `FALSE` to skip network calls for faster
+  testing. Default is `TRUE`.
+
+- seed:
+
+  Non-negative integer seed for random number generation. Default is
+  `123`. The caller's random state is restored, including on errors.
+
 ## Value
 
 A `glysmith_step` object.
@@ -68,17 +94,18 @@ Data required:
 
 Data generated:
 
-- `raw_exp`: The raw experiment (previous `exp`, saved for reference)
+- `raw_exp`: The input to the first preprocessing step
 
-This step is special in that it silently overwrites the `exp` data with
-the preprocessed experiment. This ensures that no matter if
-preprocessing is performed or not, the "active" experiment is always
-under the key `exp`. The previous `exp` is saved as `raw_exp` for
-reference.
+Subsequent steps read the processed experiment from `exp`.
 
 ## See also
 
-[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html)
+[`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html),
+[`step_remove()`](https://glycoverse.github.io/glysmith/dev/reference/step_remove.md),
+[`step_normalize()`](https://glycoverse.github.io/glysmith/dev/reference/step_normalize.md),
+[`step_impute()`](https://glycoverse.github.io/glysmith/dev/reference/step_impute.md),
+[`step_aggregate()`](https://glycoverse.github.io/glysmith/dev/reference/step_aggregate.md),
+[`step_correct_batch_effect()`](https://glycoverse.github.io/glysmith/dev/reference/step_correct_batch_effect.md)
 
 ## Examples
 

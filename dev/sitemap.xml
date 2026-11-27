@@ -24,7 +24,9 @@
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/polish_report.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/quench_result.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_adjust_protein.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_aggregate.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_coda.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_correct_batch_effect.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_correlation.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_cox.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.html</loc></url>
@@ -33,10 +35,13 @@
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_dea_ttest.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_detect_batch_effect.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_heatmap.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_impute.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_infer_structure.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_logo.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_normalize.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_oplsda.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_pca.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.html</loc></url>
@@ -44,6 +49,7 @@
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_quantify_branch_motifs.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_remove.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_roc.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_do.html</loc></url>
@@ -53,9 +59,11 @@
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_reactome.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_sig_enrich_wp.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_subset_groups.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_transform_log.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_tsne.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_umap.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_volcano.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_zero_to_na.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/write_blueprint.html</loc></url>
 </urlset>
 

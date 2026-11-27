@@ -57,7 +57,10 @@ This step can be omitted if the experiment is already preprocessed.</p>
 <span>  batch_prop_threshold <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  check_batch_confounding <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  batch_confounding_threshold <span class="op">=</span> <span class="fl">0.4</span>,</span>
-<span>  rep_col <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  rep_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group_col <span class="op">=</span> <span class="st">"group"</span>,</span>
+<span>  standardize_variable <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">123</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,11 +73,13 @@ This step can be omitted if the experiment is already preprocessed.</p>
 
 
 <dt id="arg-normalize-to-try">normalize_to_try<a class="anchor" aria-label="anchor" href="#arg-normalize-to-try"></a></dt>
-<dd><p>Normalization methods to try during auto_clean.</p></dd>
+<dd><p>Legacy argument for versions of <code>auto_clean()</code> that
+accept candidate methods. Use <code><a href="step_normalize.html">step_normalize()</a></code> to select a method.</p></dd>
 
 
 <dt id="arg-impute-to-try">impute_to_try<a class="anchor" aria-label="anchor" href="#arg-impute-to-try"></a></dt>
-<dd><p>Imputation methods to try during auto_clean.</p></dd>
+<dd><p>Legacy argument for versions of <code>auto_clean()</code> that
+accept candidate methods. Use <code><a href="step_impute.html">step_impute()</a></code> to select a method.</p></dd>
 
 
 <dt id="arg-remove-preset">remove_preset<a class="anchor" aria-label="anchor" href="#arg-remove-preset"></a></dt>
@@ -96,6 +101,22 @@ This step can be omitted if the experiment is already preprocessed.</p>
 <dt id="arg-rep-col">rep_col<a class="anchor" aria-label="anchor" href="#arg-rep-col"></a></dt>
 <dd><p>Column name for replicate information (for QC plots).</p></dd>
 
+
+<dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
+<dd><p>The column name in sample_info for groups. Default is "group".
+Can be NULL when no group information is available.</p></dd>
+
+
+<dt id="arg-standardize-variable">standardize_variable<a class="anchor" aria-label="anchor" href="#arg-standardize-variable"></a></dt>
+<dd><p>Whether to call <code><a href="https://glycoverse.github.io/glyexp/reference/standardize_variable.html" class="external-link">glyexp::standardize_variable()</a></code>
+after aggregation. Set to <code>FALSE</code> to skip network calls for faster testing.
+Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>Non-negative integer seed for random number generation. Default is
+<code>123</code>. The caller's random state is restored, including on errors.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -104,15 +125,13 @@ This step can be omitted if the experiment is already preprocessed.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Data required:</p><ul><li><p><code>exp</code>: The experiment to preprocess</p></li>
-</ul><p>Data generated:</p><ul><li><p><code>raw_exp</code>: The raw experiment (previous <code>exp</code>, saved for reference)</p></li>
-</ul><p>This step is special in that it silently overwrites the <code>exp</code> data with the preprocessed experiment.
-This ensures that no matter if preprocessing is performed or not,
-the "active" experiment is always under the key <code>exp</code>.
-The previous <code>exp</code> is saved as <code>raw_exp</code> for reference.</p>
+</ul><p>Data generated:</p><ul><li><p><code>raw_exp</code>: The input to the first preprocessing step</p></li>
+</ul><p>Subsequent steps read the processed experiment from <code>exp</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glyclean/reference/auto_clean.html" class="external-link">glyclean::auto_clean()</a></code>, <code><a href="step_remove.html">step_remove()</a></code>, <code><a href="step_normalize.html">step_normalize()</a></code>,
+<code><a href="step_impute.html">step_impute()</a></code>, <code><a href="step_aggregate.html">step_aggregate()</a></code>, <code><a href="step_correct_batch_effect.html">step_correct_batch_effect()</a></code></p></div>
     </div>
 
     <div class="section level2">

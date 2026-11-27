@@ -54,7 +54,9 @@ This step can be used before AND after <code><a href="step_preprocess.html">step
 <span>  batch_col <span class="op">=</span> <span class="st">"batch"</span>,</span>
 <span>  rep_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_width <span class="op">=</span> <span class="fl">7</span>,</span>
-<span>  plot_height <span class="op">=</span> <span class="fl">5</span></span>
+<span>  plot_height <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  method <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -84,6 +86,18 @@ Default is <code>"post"</code>.</p></dd>
 <dt id="arg-plot-height">plot_height<a class="anchor" aria-label="anchor" href="#arg-plot-height"></a></dt>
 <dd><p>Height of plots in inches. Default is 5.</p></dd>
 
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>A single QC plot to generate at any stage. Choose
+<code>"missing_heatmap"</code>, <code>"missing_bar"</code>, <code>"tic_bar"</code>, <code>"rank_abundance"</code>,
+<code>"int_boxplot"</code>, <code>"rle"</code>, <code>"cv_dent"</code>, <code>"batch_pca"</code> or <code>"rep_scatter"</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments for the selected glyclean plot, such as <code>on = "variable"</code>
+for <code>"missing_bar"</code>, <code>by</code> for <code>"rle"</code>, or <code>n_pairs</code> and <code>seed</code> for
+<code>"rep_scatter"</code>. An individual plot uses its glyclean defaults.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -92,7 +106,7 @@ Default is <code>"post"</code>.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Data required:</p><ul><li><p><code>exp</code>: The experiment to plot QC for</p></li>
-</ul><p>Plots generated:</p><ul><li><p><code>qc_missing_heatmap</code>: Missing value heatmap</p></li>
+</ul><p>The default panel (<code>method = NULL</code>) generates the following plots.</p><ul><li><p><code>qc_missing_heatmap</code>: Missing value heatmap</p></li>
 <li><p><code>qc_missing_samples_bar</code>: Missing value bar plot on samples</p></li>
 <li><p><code>qc_missing_variables_bar</code>: Missing value bar plot on variables</p></li>
 <li><p><code>qc_tic_bar</code>: Total intensity count bar plot</p></li>
@@ -116,6 +130,9 @@ When <code>when = "post"</code> or <code>NULL</code>, plots use the standard <co
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_plot_qc(when = \"pre\")"</span>&gt; <span style="font-style: italic;">QC (pre-preprocessing)</span></span>
 <span class="r-in"><span><span class="fu">step_plot_qc</span><span class="op">(</span>when <span class="op">=</span> <span class="st">"post"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_plot_qc(when = \"post\")"</span>&gt; <span style="font-style: italic;">QC (post-preprocessing)</span></span>
+<span class="r-in"><span><span class="fu">step_plot_qc</span><span class="op">(</span>when <span class="op">=</span> <span class="st">"post"</span>, method <span class="op">=</span> <span class="st">"missing_bar"</span>, on <span class="op">=</span> <span class="st">"variable"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_plot_qc(when = \"post\", method = \"missing_bar\", on =</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">\"variable\")"</span>&gt; <span style="font-style: italic;">QC (post-preprocessing) missing_bar</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

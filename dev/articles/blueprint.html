@@ -152,6 +152,57 @@ etc.)</td>
 <td align="center">GP/G</td>
 </tr>
 <tr class="odd">
+<td align="left"><code><a href="../reference/step_zero_to_na.html">step_zero_to_na()</a></code></td>
+<td align="left">Convert zeros to missing measurements</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/step_remove.html">step_remove()</a></code></td>
+<td align="left">Filter features by missingness, abundance, or
+variation</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/step_normalize.html">step_normalize()</a></code></td>
+<td align="left">Normalize sample abundances</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/step_impute.html">step_impute()</a></code></td>
+<td align="left">Impute missing abundances</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/step_aggregate.html">step_aggregate()</a></code></td>
+<td align="left">Combine measurements at a glycan, glycoform, or
+glycopeptide level</td>
+<td align="center">Depends on level</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/step_detect_batch_effect.html">step_detect_batch_effect()</a></code></td>
+<td align="left">Save a table of batch effect p-values by feature</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/step_correct_batch_effect.html">step_correct_batch_effect()</a></code></td>
+<td align="left">Correct batch effects automatically or with ComBat or
+limma</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/step_transform_log.html">step_transform_log()</a></code></td>
+<td align="left">Store abundances on a logarithmic scale</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_coda.html">step_coda()</a></code></td>
 <td align="left">Transform abundances to log-ratio coordinates for
 compositional data analysis</td>
@@ -378,12 +429,37 @@ variables</td>
 <p><em>GP: glycoproteomics, G: glycomics</em></p>
 </div>
 <div class="section level2">
+<h2 id="choose-individual-preprocessing-operations">Choose individual preprocessing operations<a class="anchor" aria-label="anchor" href="#choose-individual-preprocessing-operations"></a>
+</h2>
+<p>Use <code><a href="../reference/step_preprocess.html">step_preprocess()</a></code> for glyclean’s full automatic
+workflow. To control the method or order, put the individual operations
+directly in the blueprint. For example, when zeros encode missing
+measurements, you can filter by missingness within each group, impute
+the retained features, and normalize each sample to its total
+abundance.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/step_zero_to_na.html">step_zero_to_na</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/step_remove.html">step_remove</a></span><span class="op">(</span><span class="st">"rare"</span>, prop <span class="op">=</span> <span class="fl">0.5</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/step_impute.html">step_impute</a></span><span class="op">(</span><span class="st">"min_prob"</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/step_normalize.html">step_normalize</a></span><span class="op">(</span><span class="st">"total_area"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/step_plot_qc.html">step_plot_qc</a></span><span class="op">(</span>when <span class="op">=</span> <span class="st">"post"</span>, method <span class="op">=</span> <span class="st">"rle"</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Each cleaning step reads the current <code>exp</code>. The first
+saves its input in <code>raw_exp</code>, and later steps use the output
+of the preceding step. Use <code>method = "auto"</code> for automatic
+selection within a single operation, such as imputation. For an explicit
+method, supply the arguments of the matching glyclean function. For
+example, <code>step_impute("fw_knn", k = 3)</code> calls
+<code><a href="https://glycoverse.github.io/glyclean/reference/impute_fw_knn.html" class="external-link">glyclean::impute_fw_knn()</a></code> with three neighbors.</p>
+</div>
+<div class="section level2">
 <h2 id="step-dependencies">Step dependencies<a class="anchor" aria-label="anchor" href="#step-dependencies"></a>
 </h2>
 <p>Some steps need data that other steps produce. For instance,
 <code><a href="../reference/step_volcano.html">step_volcano()</a></code> needs results from a DEA step like
 <code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>. So this blueprint won’t work:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span>  <span class="co"># this will error</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
 <span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Volcano plot</span></span>
@@ -394,7 +470,7 @@ tells you it “requires one of the DEA steps to be run:
 <code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>, <code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code>,
 <code><a href="../reference/step_dea_wilcox.html">step_dea_wilcox()</a></code>”. So as long as you run one of these DEA
 steps before <code><a href="../reference/step_volcano.html">step_volcano()</a></code>, you’re good to go:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
 <span>  <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># DEA with t-test</span></span>
@@ -404,7 +480,7 @@ steps before <code><a href="../reference/step_volcano.html">step_volcano()</a></
 other — all intermediate data gets stored along the way, so the
 blueprint is valid as long as the required data exists somewhere
 upstream:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
 <span>  <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># DEA with t-test (generates data required by `step_volcano()`)</span></span>
@@ -421,7 +497,7 @@ their dependencies. For example, <code><a href="../reference/step_heatmap.html">
 (after preprocessing, if you did that). But you can point it at other
 data like “sig_exp” instead — just remember you’ll need to run a DEA
 step first:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,             <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
 <span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,              <span class="co"># DEA with limma</span></span>
@@ -432,7 +508,7 @@ field called exactly “sig_exp”. This is how data flows in
 <code>glysmith</code>: each step stores its results in a shared context
 object, where downstream steps can grab what they need.</p>
 <p>Let’s see another example:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Data required: `exp`</span></span>
 <span>  <span class="co"># Data generated: `exp` (overwrite)</span></span>
@@ -459,7 +535,7 @@ then use the log-ratio coordinates directly. The default
 <code><a href="https://glycoverse.github.io/glyclean/reference/auto_coda.html" class="external-link">glyclean::auto_coda()</a></code>. Use <code>method = "clr"</code> or
 <code>method = "alr"</code> to call the corresponding transformation
 directly.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="../reference/step_coda.html">step_coda</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span>,</span>
@@ -475,7 +551,7 @@ both <code><a href="../reference/step_coda.html">step_coda()</a></code> and the 
 <p>To build valid blueprints, you’ll need to know what each step needs
 and what it produces. Let’s look at a more complex example to cement
 this. Try tracing through the dataflow yourself:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_ident_overview.html">step_ident_overview</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -503,7 +579,7 @@ this. Try tracing through the dataflow yourself:</p>
 <p>As we mentioned, steps can’t overwrite data from earlier steps. But
 what if you want to compare different DEA methods? You might try
 something like this:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -524,7 +600,7 @@ allowed.</li>
 <p>To pull this off, use <strong>branches</strong>. So far our
 blueprints have been linear — steps run one after another. To branch
 out, just wrap related steps in <code><a href="../reference/br.html">br()</a></code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="../reference/br.html">br</a></span><span class="op">(</span><span class="st">"limma"</span>, <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
