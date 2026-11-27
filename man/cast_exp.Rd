@@ -22,9 +22,10 @@ cast_data(x, name = NULL)
 }
 \value{
 \itemize{
-\item \code{cast_exp()}: a processed \code{\link[glyexp:GlycomicSE]{glyexp::GlycomicSE()}} or
-\code{\link[glyexp:GlycoproteomicSE]{glyexp::GlycoproteomicSE()}} object for new-container inputs. Legacy
-inputs retain their container class.
+\item \code{cast_exp()}: the last experiment on the main route, or the input
+experiment if that route produces no experiment. Trait and motif steps
+can return a derived SummarizedExperiment. Returns NULL if the producer
+of the main-route experiment failed, was skipped or was blocked.
 \item \code{cast_plot()}: a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}.
 \item \code{cast_table()}: a \code{\link[tibble:tibble]{tibble::tibble()}}.
 \item \code{cast_data()}: can be any R object.
@@ -40,7 +41,7 @@ exp <- real_experiment2
 result <- forge_analysis(exp)
 cast_exp(result)
 cast_table(result)
-cast_table(result, "summary")
+cast_table(result, "node_1__summary")
 }
 
 }

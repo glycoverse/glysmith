@@ -9,8 +9,7 @@ step_coda(
   by = NULL,
   gamma = 0.1,
   group_scales = NULL,
-  seed = 123,
-  on = "exp"
+  seed = 123
 )
 }
 \arguments{
@@ -35,45 +34,17 @@ scales and any derived two-group ratio must be finite and strictly positive.}
 
 \item{seed}{Non-negative integer seed for random number generation. Default is
 \code{123}. The caller's random state is restored, including on errors.}
-
-\item{on}{Name of the experiment in the blueprint. Defaults to \code{"exp"}.
-For example, use \code{"dynamic_motif_exp"} or \code{"branch_motif_exp"} after
-quantifying motifs, then use the same \code{on} in the statistical step.}
 }
 \value{
 A \code{glysmith_step} object.
 }
 \description{
-Transform the selected experiment to centered log-ratio (CLR) or additive
-log-ratio (ALR) coordinates. By default, \code{\link[glyclean:auto_coda]{glyclean::auto_coda()}} chooses
-the transformation.
-}
-\details{
-Place this step after abundance preprocessing and before statistical
-analysis. The input must contain finite, positive abundances on the raw
-scale or finite values on a known log scale. A transformation error stops
-the blueprint so subsequent tests cannot accidentally use the input scale.
-
-The step replaces \code{on} with the transformed experiment and saves its
-previous value in \verb{pre_coda_<on>} (by default, \code{pre_coda_exp}). Subsequent
-steps targeting the same experiment use its log2-ratio coordinates
-directly. A successful ALR omits the reference feature from those tests.
-Use \code{\link[glyclean:glyclean_pipeline]{glyclean::get_pipeline()}} on the output to see which transform ran.
-
-Differential tests return p-values on these coordinates. For example,
-limma's \code{estimate} is the contrast in log2-ratio units. Abundance
-\code{log2fc} is undefined, so significant features are selected by p-value
-(\code{\link[glystats:filter_sig_vars]{glystats::filter_sig_vars()}} ignores an explicit fold-change cutoff
-with a warning). Volcano plots and fold-change-based protein enrichment
-are skipped. Run abundance QC, trait derivation, and motif
-quantification before transforming the main experiment.
+Analyze the experiment supplied by the upstream step.
 }
 \examples{
-blueprint(step_coda(by = "group", gamma = 0), step_pca(), step_dea_limma())
+blueprint(step_coda(by = "group", gamma = 0), fork(step_pca(), step_dea_limma()))
 step_coda(method = "clr", gamma = 0)
 blueprint(
-  step_quantify_branch_motifs(),
-  step_coda(on = "branch_motif_exp"),
-  step_dea_limma(on = "branch_motif_exp")
+  step_quantify_branch_motifs(), step_coda(), step_dea_limma()
 )
 }

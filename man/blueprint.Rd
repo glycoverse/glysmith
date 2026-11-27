@@ -2,34 +2,22 @@
 % Please edit documentation in R/blueprint.R
 \name{blueprint}
 \alias{blueprint}
-\title{Create a Blueprint}
+\title{Compose a tree of analytical steps}
 \usage{
-blueprint(..., .mode = c("legacy", "connected"))
+blueprint(...)
 }
 \arguments{
-\item{...}{One or more step objects. In connected mode, also branches, forks,
-or connected sub-blueprints.}
-
-\item{.mode}{Use "connected" to opt in to typed step connections.}
+\item{...}{Steps, side branches, forks or reusable blueprints.}
 }
 \value{
-A blueprint object.
+A validated blueprint. Printing it shows each producer and consumer.
 }
 \description{
-A blueprint is a list of steps that are executed in order.
-Type \code{step_} and TAB in RStudio to see all available steps.
-}
-\details{
-In connected mode a transformation emits an experiment and a differential
-analysis emits a fit. \code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} selects rows of the fitted
-experiment. Use \code{\link[=fork]{fork()}} for sibling consumers or \code{\link[=br]{br()}} for a side route.
-Terminal steps and forks end their route. Use \code{print()} to inspect the
-producer of each step. See \code{vignette("blueprint")} for a complete example.
+A step receives its predecessor's experiment or fitted result. A terminal
+step emits only reporting artifacts. Use \code{\link[=fork]{fork()}} for siblings and \code{\link[=br]{br()}}
+for a side route that leaves the current connection available.
+See \code{vignette("blueprint")} for a complete analysis.
 }
 \examples{
-blueprint(
-  step_preprocess(),
-  step_pca(),
-  step_dea_limma(),  # this comma is ok
-)
+blueprint(step_preprocess(), fork(step_pca(), step_dea_limma()))
 }

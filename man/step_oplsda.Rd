@@ -5,7 +5,6 @@
 \title{Step: Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA)}
 \usage{
 step_oplsda(
-  on = "exp",
   pred_i = 1,
   ortho_i = NA,
   scale = TRUE,
@@ -15,11 +14,6 @@ step_oplsda(
 )
 }
 \arguments{
-\item{on}{Name of the experiment to run OPLS-DA on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp",
-"branch_motif_exp", "sig_branch_motif_exp".}
-
 \item{pred_i}{Number of predictive components to include. Default is 1.}
 
 \item{ortho_i}{Number of orthogonal components to include. Default is NA (automatic).}
@@ -39,45 +33,7 @@ A \code{glysmith_step} object.
 Perform OPLS-DA using \code{glystats::gly_oplsda()} and plot it with \code{glyvis::plot_oplsda()}.
 OPLS-DA separates variation into predictive (related to group) and orthogonal (unrelated) components.
 This step only works with binary classification (exactly 2 groups).
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-}
-\details{
-Data required:
-\itemize{
-\item \code{exp} (if \code{on = "exp"}): The experiment to run OPLS-DA on
-\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run OPLS-DA on
-\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to run OPLS-DA on
-\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to run OPLS-DA on
-}
-
-Tables generated (with suffixes):
-\itemize{
-\item \code{oplsda_samples}: A table containing the OPLS-DA scores for each sample
-\item \code{oplsda_variables}: A table containing the OPLS-DA loadings for each variable
-\item \code{oplsda_variance}: A table containing the explained variance for each component
-\item \code{oplsda_vip}: A table containing the Variable Importance in Projection (VIP) scores
-\item \code{oplsda_perm_test}: A table containing permutation test results
-}
-
-Plots generated (with suffixes):
-\itemize{
-\item \code{oplsda_scores}: An OPLS-DA score plot colored by group
-\item \code{oplsda_loadings}: An OPLS-DA loading plot
-\item \code{oplsda_variance}: An OPLS-DA variance (scree) plot
-\item \code{oplsda_vip}: An OPLS-DA VIP score plot
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_oplsda()

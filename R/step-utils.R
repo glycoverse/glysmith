@@ -1,20 +1,3 @@
-#' Get supported experiment targets for step `on` arguments
-#'
-#' @returns A character vector of supported context data names.
-#' @noRd
-.on_choices <- function() {
-  c(
-    "exp",
-    "sig_exp",
-    "trait_exp",
-    "sig_trait_exp",
-    "dynamic_motif_exp",
-    "sig_dynamic_motif_exp",
-    "branch_motif_exp",
-    "sig_branch_motif_exp"
-  )
-}
-
 #' Check whether an experiment has glycan structures
 #'
 #' @param exp A glyco `SummarizedExperiment` object.
@@ -31,35 +14,10 @@
   identical(res$preprocessing$input_scale %||% res$meta_data$scale, "logx")
 }
 
-#' Resolve properties from 'on' parameter
-#'
-#' @param on Name of the experiment data.
-#' @returns A list with suffixes and prefixes.
-#' @noRd
-.resolve_on <- function(on) {
-  checkmate::assert_choice(on, .on_choices())
-  list(
-    id_suffix = switch(
-      on,
-      exp = "",
-      sig_exp = "_sig",
-      trait_exp = "_trait",
-      sig_trait_exp = "_sig_trait",
-      dynamic_motif_exp = "_dynamic_motif",
-      sig_dynamic_motif_exp = "_sig_dynamic_motif",
-      branch_motif_exp = "_branch_motif",
-      sig_branch_motif_exp = "_sig_branch_motif"
-    ),
-    label_suffix = switch(
-      on,
-      exp = "",
-      sig_exp = " of significant variables",
-      trait_exp = " of traits",
-      sig_trait_exp = " of significant traits",
-      dynamic_motif_exp = " of dynamic motifs",
-      sig_dynamic_motif_exp = " of significant dynamic motifs",
-      branch_motif_exp = " of branch motifs",
-      sig_branch_motif_exp = " of significant branch motifs"
+.check_step_dots <- function(call) {
+  if ("on" %in% names(call)) {
+    cli::cli_abort(
+      "Unknown step argument `on`. Connect the input with blueprint(), br() or fork()."
     )
-  )
+  }
 }

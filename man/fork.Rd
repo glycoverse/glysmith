@@ -10,9 +10,9 @@ fork(...)
 \item{...}{Two or more routes. Argument names can label routes.}
 }
 \value{
-A fork specification to use in a connected blueprint.
+A fork specification to use in a blueprint.
 }
 \description{
 Each argument is a sibling route that receives the same input. Pass a step
-for a one-step route or a connected blueprint for an ordered route.
+for a one-step route or a blueprint for an ordered route.
 }

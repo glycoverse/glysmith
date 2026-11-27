@@ -56,7 +56,6 @@ step_volcano <- function(
         ...
       )
     },
-    require = "dea_res",
     packages = c("glystats", "glyvis", "EnhancedVolcano"),
     signature = signature
   )

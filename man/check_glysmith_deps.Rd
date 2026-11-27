@@ -36,8 +36,7 @@ check_glysmith_deps()
 
 # Check dependencies required by a custom blueprint
 bp <- blueprint(
-  step_ident_overview(),
-  step_pca()
+  fork(step_ident_overview(), step_pca())
 )
 check_glysmith_deps(bp)
 }

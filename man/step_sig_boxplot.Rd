@@ -5,7 +5,6 @@
 \title{Step: Significant Variables Boxplot}
 \usage{
 step_sig_boxplot(
-  on = "sig_exp",
   n_top = 25,
   panel_width = 1.5,
   panel_height = 1.2,
@@ -17,10 +16,6 @@ step_sig_boxplot(
 )
 }
 \arguments{
-\item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of "sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
-Default is "sig_exp".}
-
 \item{n_top}{Number of top significant variables to plot.
 Must be between 1 and 25 (inclusive).
 Default is 25.}
@@ -47,43 +42,11 @@ Create boxplots for the most significant variables from DEA analysis using
 \code{glyvis::plot_boxplot()}. The function selects the top \code{n_top} variables with
 the lowest adjusted p-values from the DEA results and plots their expression
 values grouped by sample groups.
-
-This step depends on the \code{on} parameter (default: \code{sig_exp}).
-\itemize{
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-
-The number of variables is limited to a maximum of 25, as enforced by
-\code{glyvis::plot_boxplot()}.
-}
-\details{
-Data required:
-\itemize{
-\item Depends on \code{on} parameter:
-\itemize{
-\item \code{sig_exp} (default): Significant experiment from DEA
-\item \code{sig_trait_exp}: Significant trait experiment from DTA
-\item \code{sig_dynamic_motif_exp}: Significant dynamic motif experiment from DMA
-\item \code{sig_branch_motif_exp}: Significant branch motif experiment from DMA
-}
-}
-
-Plots generated:
-\itemize{
-\item \code{sig_boxplot}: A boxplot of significant variables (if \code{on = "sig_exp"})
-\item \code{sig_trait_boxplot}: A boxplot of significant traits (if \code{on = "sig_trait_exp"})
-\item \code{sig_dynamic_motif_boxplot}: A boxplot of significant dynamic motifs (if \code{on = "sig_dynamic_motif_exp"})
-\item \code{sig_branch_motif_boxplot}: A boxplot of significant branch motifs (if \code{on = "sig_branch_motif_exp"})
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_sig_boxplot()
 step_sig_boxplot(n_top = 12)
-step_sig_boxplot(on = "sig_trait_exp")
 }
 \seealso{
 \code{\link[glyvis:plot_boxplot]{glyvis::plot_boxplot()}}

@@ -18,5 +18,5 @@ Connect this terminal step to \code{\link[=step_dea_anova]{step_dea_anova()}} or
 The dot chart shows the negative log10 p-value for each variable.
 }
 \examples{
-blueprint(step_dea_anova(), step_plot_main_test(), .mode = "connected")
+blueprint(step_dea_anova(), step_plot_main_test())
 }

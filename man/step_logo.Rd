@@ -4,19 +4,9 @@
 \alias{step_logo}
 \title{Step: Logo Plot}
 \usage{
-step_logo(
-  on = "exp",
-  n_aa = 5L,
-  fasta = NULL,
-  plot_width = 5,
-  plot_height = 3,
-  ...
-)
+step_logo(n_aa = 5L, fasta = NULL, plot_width = 5, plot_height = 3, ...)
 }
 \arguments{
-\item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of "exp", "sig_exp". Default is "exp".}
-
 \item{n_aa}{The number of amino acids to the left and right of the glycosylation site.
 For example, if \code{n_aa = 5}, the resulting sequence will contain 11 amino acids.}
 
@@ -29,7 +19,7 @@ is \code{NULL}, UniProt.ws is used to fetch protein sequences automatically.}
 
 \item{plot_height}{Height of the plot in inches. Default is 3.}
 
-\item{...}{Additional arguments passed to \code{\link[ggseqlogo:ggseqlogo]{ggseqlogo::ggseqlogo()}}.}
+\item{...}{Must be empty. Supply plotting controls by their full argument names.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -38,30 +28,11 @@ A \code{glysmith_step} object.
 Create a logo plot for glycosylation sites using \code{glyvis::plot_logo()}.
 The logo plot visualizes the amino acid sequence patterns around glycosylation sites.
 This step is only applicable for glycoproteomics experiments.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (experiment data).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-}
-}
-\details{
-Data required:
-\itemize{
-\item Depends on \code{on} parameter (default: \code{exp})
-}
-
-Plots generated:
-\itemize{
-\item \code{logo}: A logo plot (if \code{on = "exp"})
-\item \code{sig_logo}: A logo plot (if \code{on = "sig_exp"})
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_logo()
 step_logo(fasta = "proteins.fasta")
-step_logo(on = "sig_exp")
 }
 \seealso{
 \code{\link[glyvis:plot_logo]{glyvis::plot_logo()}}

@@ -25,8 +25,8 @@ A \code{glysmith_step} object.
 }
 \description{
 Use \code{\link[glyclean:auto_normalize]{glyclean::auto_normalize()}} or select a \verb{normalize_*} function by
-its suffix. The step updates the active experiment (\code{exp}). The first
-cleaning step saves its input in \code{raw_exp}.
+its suffix. The step updates the active experiment (\code{exp}). Each
+cleaning step saves its input with its node ID and the suffix \verb{__raw_exp}.
 }
 \examples{
 blueprint(step_normalize("median_quotient", by = "group"), step_pca())

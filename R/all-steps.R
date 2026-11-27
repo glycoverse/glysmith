@@ -35,6 +35,8 @@ all_steps <- function() {
     step_dea_kruskal(),
     step_cox(),
     step_volcano(),
+    step_filter_sig_vars(),
+    step_plot_main_test(),
     step_sig_enrich_go(),
     step_sig_enrich_kegg(),
     step_sig_enrich_reactome(),

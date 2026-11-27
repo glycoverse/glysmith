@@ -5,7 +5,6 @@
 \title{Step: Principal Component Analysis (PCA)}
 \usage{
 step_pca(
-  on = "exp",
   center = TRUE,
   scale = TRUE,
   loadings = FALSE,
@@ -16,11 +15,6 @@ step_pca(
 )
 }
 \arguments{
-\item{on}{Name of the experiment to run PCA on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp",
-"branch_motif_exp", "sig_branch_motif_exp".}
-
 \item{center}{A logical indicating whether to center the data. Default is TRUE.}
 
 \item{scale}{A logical indicating whether to scale the data. Default is TRUE.}
@@ -44,42 +38,7 @@ A \code{glysmith_step} object.
 Run PCA using \code{glystats::gly_pca()} and plot it with \code{glyvis::plot_pca()}.
 Loading plot for glycoproteomics data can be crowded with too many variables.
 Ignore the resulting plot if it is not informative.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-}
-\details{
-Data required:
-\itemize{
-\item \code{exp} (if \code{on = "exp"}): The experiment to run PCA on
-\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run PCA on
-\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to run PCA on
-\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to run PCA on
-}
-
-Tables generated (with suffixes):
-\itemize{
-\item \code{pca_samples}: A table containing the PCA scores for each sample
-\item \code{pca_variables}: A table containing the PCA loadings for each variable
-\item \code{pca_eigenvalues}: A table containing the PCA eigenvalues
-}
-
-Plots generated (with suffixes):
-\itemize{
-\item \code{pca_scores}: A PCA score plot colored by group (always generated)
-\item \code{pca_loadings}: A PCA loading plot (if \code{loadings = TRUE})
-\item \code{pca_screeplot}: A PCA screeplot (if \code{screeplot = TRUE})
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_pca()

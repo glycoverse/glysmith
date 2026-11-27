@@ -9,19 +9,12 @@
 #'   The string can contain additional information surrounded by "<AI>" and "</AI>" tags,
 #'   which will be fed to AI for polishing.
 #'   If AI polishing is turned off, the content in "<AI>" and "</AI>" tags will be removed.
-#' @param require Character vector of required `ctx$data` keys.
-#' @param generate Character vector of generated `ctx$data` keys.
-#' @param initialize Generated keys that the step only writes when absent.
 #' @param packages Character vector of R packages required to run the step.
 #' @param condition Optional function(ctx) returning a list of `check` and `reason`.
 #'   - `check` is TRUE/FALSE to decide execution.
 #'   - `reason` is a human-readable string to explain why `check` is FALSE.
-#' @param repeatable Whether this step can appear multiple times in a blueprint.
-#'   If TRUE, duplicate step IDs are allowed. Default is FALSE.
 #' @param retry Number of retry attempts on failure. Default is 0.
 #' @param signature The original call signature for display in messages.
-#' @param stop_on_error Whether to abort the blueprint if this step fails
-#'   after its retries. Use for transformations that downstream steps need.
 #'
 #' @returns A `glysmith_step` object.
 #' @noRd
@@ -30,17 +23,11 @@ step <- function(
   label,
   run,
   report = NULL,
-  outputs = list(),
-  require = character(0),
-  generate = character(0),
   packages = character(0),
   condition = NULL,
-  repeatable = FALSE,
   retry = 0L,
   signature = NULL,
-  stop_on_error = FALSE,
-  initialize = character(0),
-  connected = NULL
+  connected = .exp_port()
 ) {
   checkmate::assert_character(packages, any.missing = FALSE)
 
@@ -50,15 +37,10 @@ step <- function(
       label = label,
       run = run,
       report = report,
-      require = require,
-      generate = union(generate, initialize),
-      initialize = initialize,
       connected = connected,
       packages = packages,
       condition = condition,
-      repeatable = repeatable,
       retry = retry,
-      stop_on_error = stop_on_error,
       signature = signature %||% paste0("step_", id, "()")
     ),
     class = "glysmith_step"

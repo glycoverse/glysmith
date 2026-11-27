@@ -1,10 +1,10 @@
 #' Fan out from the current blueprint output
 #'
 #' Each argument is a sibling route that receives the same input. Pass a step
-#' for a one-step route or a connected blueprint for an ordered route.
+#' for a one-step route or a blueprint for an ordered route.
 #'
 #' @param ... Two or more routes. Argument names can label routes.
-#' @returns A fork specification to use in a connected blueprint.
+#' @returns A fork specification to use in a blueprint.
 #' @export
 fork <- function(...) {
   routes <- rlang::list2(...)
@@ -13,7 +13,7 @@ fork <- function(...) {
       !all(vapply(routes, .connected_route, logical(1)))
   ) {
     stop(
-      "fork() needs at least two step or connected blueprint routes.",
+      "fork() needs at least two sibling routes.",
       call. = FALSE
     )
   }
@@ -23,7 +23,7 @@ fork <- function(...) {
 .connected_route <- function(x) {
   inherits(
     x,
-    c("glysmith_step", "glysmith_connected_blueprint", "glysmith_fork")
+    c("glysmith_step", "glysmith_blueprint", "glysmith_fork")
   )
 }
 
@@ -31,33 +31,10 @@ fork <- function(...) {
   inherits(x, "glysmith_branch")
 }
 
-.new_connected_blueprint <- function(items) {
-  if (
-    !length(items) ||
-      !all(vapply(
-        items,
-        function(x) {
-          .connected_route(x) || .connected_branch(x)
-        },
-        logical(1)
-      ))
-  ) {
-    stop(
-      "A connected blueprint needs at least one valid step, branch, or fork.",
-      call. = FALSE
-    )
-  }
-  bp <- structure(
-    items,
-    class = c("glysmith_connected_blueprint", "glysmith_blueprint")
-  )
-  .compile_connected_blueprint(bp)
-  bp
-}
-
 # An unbound sub-blueprint may start at any compatible outlet. All routes
 # leaving its inlet must accept the same type. forge_analysis binds it to exp.
-.compile_connected_blueprint <- function(blueprint, input_type = NULL) {
+.compile_blueprint <- function(blueprint, input_type = NULL) {
+  .assert_blueprint(blueprint)
   nodes <- list()
   inlet <- input_type %||% c("exp", "filtered_exp", "contrast", "omnibus")
   walk <- function(items, parent, type, labels, main_exp) {
@@ -76,10 +53,11 @@ fork <- function(...) {
         type <- character()
       } else if (.connected_branch(item)) {
         if (!length(item$steps)) {
-          cli::cli_abort("A connected branch cannot be empty.")
+          cli::cli_abort("A side branch cannot be empty.")
         }
         walk(item$steps, parent, type, c(labels, item$name), main_exp)
-      } else if (inherits(item, "glysmith_connected_blueprint")) {
+      } else if (inherits(item, "glysmith_blueprint")) {
+        .assert_blueprint(item)
         tail <- walk(item, parent, type, labels, main_exp)
         parent <- tail$parent
         type <- tail$type
@@ -91,22 +69,6 @@ fork <- function(...) {
           )
         }
         contract <- item$connected
-        target <- intersect(item$require, .on_choices())
-        default_target <- if (identical(contract$accepts, "filtered_exp")) {
-          "sig_exp"
-        } else {
-          "exp"
-        }
-        if (length(setdiff(target, default_target))) {
-          cli::cli_abort(
-            "Omit the legacy on target in {item$signature}. Its input comes from {parent}."
-          )
-        }
-        if (isTRUE(contract$legacy_filter)) {
-          cli::cli_abort(
-            "Set cutoffs and comparisons in step_filter_sig_vars() after {item$signature}."
-          )
-        }
         available <- if (parent == "root") inlet else type
         accepted <- intersect(available, contract$accepts)
         if (!length(accepted)) {
@@ -118,7 +80,6 @@ fork <- function(...) {
           inlet <<- accepted
         }
         id <- paste0("node_", length(nodes) + 1L)
-        item$packages <- contract$packages %||% item$packages
         nodes[[id]] <<- list(
           id = id,
           parent = parent,
@@ -138,10 +99,10 @@ fork <- function(...) {
 }
 
 #' @export
-print.glysmith_connected_blueprint <- function(x, ...) {
-  plan <- .compile_connected_blueprint(x)
+print.glysmith_blueprint <- function(x, ...) {
+  plan <- .compile_blueprint(x)
   cat(
-    "Connected blueprint (root accepts ",
+    "Blueprint (root accepts ",
     paste(plan$accepts, collapse = " or "),
     ")\n",
     sep = ""
@@ -174,26 +135,21 @@ print.glysmith_connected_blueprint <- function(x, ...) {
 .fit_port <- function(
   produces = NULL,
   key = NULL,
-  accepts = c("contrast", "omnibus"),
-  only = FALSE
+  accepts = c("contrast", "omnibus")
 ) {
-  list(accepts = accepts, produces = produces, key = key, only = only)
+  list(accepts = accepts, produces = produces, key = key)
 }
 
 .connected_node <- function(node, wire, group_col) {
   step <- node$step
   port <- step$connected
   ctx <- new_ctx(wire$exp, group_col)
-  ctx$connected <- TRUE
   if (!is.null(wire$fit)) {
     ctx$data$dea_res <- wire$fit
   }
-  if (identical(port$accepts, "filtered_exp")) {
-    ctx$data$sig_exp <- wire$exp
-  }
-  missing <- step$packages[
-    !vapply(step$packages, rlang::is_installed, logical(1))
-  ]
+  ctx$filter_args <- wire$filter_args
+  specs <- .dependency_specs(step$packages)
+  missing <- specs[!vapply(specs, rlang::is_installed, logical(1))]
   if (length(missing)) {
     cli::cli_abort("Missing step dependencies: {missing}.")
   }
@@ -206,9 +162,6 @@ print.glysmith_connected_blueprint <- function(x, ...) {
   if (!is.null(step$condition)) {
     cond <- step$condition(ctx)
     if (!cond$check) return(list(status = "skipped", reason = cond$reason))
-  }
-  if (!is.null(port$run)) {
-    step$run <- port$run
   }
   for (i in seq_len(1L + step$retry)) {
     attempt <- .run_blueprint_run_once(step, ctx)
@@ -226,7 +179,11 @@ print.glysmith_connected_blueprint <- function(x, ...) {
     output <- switch(
       port$produces,
       contrast = ,
-      omnibus = list(exp = wire$exp, fit = value),
+      omnibus = list(
+        exp = wire$exp,
+        fit = value,
+        filter_args = port$filter_args
+      ),
       filtered_exp = list(exp = value, fit = wire$fit),
       exp = list(exp = value)
     )
@@ -251,8 +208,8 @@ print.glysmith_connected_blueprint <- function(x, ...) {
   )
 }
 
-.run_connected_blueprint <- function(blueprint, ctx, quiet) {
-  plan <- .compile_connected_blueprint(blueprint, "exp")
+run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
+  plan <- .compile_blueprint(blueprint, "exp")
   ctx$data$root <- ctx$data$exp
   wires <- list(root = list(exp = ctx$data$root))
   for (node in plan$nodes) {
@@ -273,6 +230,7 @@ print.glysmith_connected_blueprint <- function(x, ...) {
     }
     ctx$meta$nodes[[id]] <- list(
       step = node$step$signature,
+      label = node$step$label,
       parent = node$parent,
       route = node$route,
       status = res$status,
