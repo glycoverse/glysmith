@@ -30,15 +30,20 @@ experiment <- glyexp::GlycomicSE(
   ),
   metadata = list(glycan_type = "N", scale = "log2")
 )
-bp <- blueprint(fork(step_ident_overview(), step_pca(), step_dea_limma()))
+bp <- blueprint_default(preprocess = FALSE, traits = FALSE, enrich = FALSE)
 result <- forge_analysis(experiment, blueprint = bp)
+# The image can target a release or a development commit. Check the exported
+# analysis content without depending on a package version's internal node IDs.
+tables <- cast_table(result)
+scores <- grep("pca_samples$", tables, value = TRUE)
+dea <- grep("dea$", tables, value = TRUE)
 stopifnot(
   inherits(result, "glysmith_result"),
-  identical(result$meta$steps, paste0("node_", 1:3)),
-  length(unique(result$tables$node_2__pca_samples[[".sample"]])) ==
-    ncol(abundance),
-  nrow(result$tables$node_3__dea) > 0L,
-  "node_2__pca_scores" %in% names(result$plots)
+  length(scores) == 1L,
+  length(dea) == 1L,
+  length(unique(cast_table(result, scores)[[".sample"]])) == ncol(abundance),
+  nrow(cast_table(result, dea)) == nrow(abundance),
+  any(endsWith(cast_plot(result), "pca_scores"))
 )
 
 # Export and render as the runtime user; CI also runs this without networking.

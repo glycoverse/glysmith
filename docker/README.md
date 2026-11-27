@@ -92,7 +92,7 @@ copies the same multi-platform image to Docker Hub by digest. Pre-releases
 also get a version tag. Only the current GitHub **Latest** release updates
 the moving tags. Package manifests are available in the workflow artifacts.
 
-Pull requests that change Docker files build and test both architectures.
+Pull requests that change Docker files build and test their proposed package on both architectures.
 Changes to Docker files on `main` and manual runs on `main` with **publish**
 enabled also publish to GHCR.
 
