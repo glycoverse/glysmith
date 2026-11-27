@@ -94,6 +94,66 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
   )
 }
 
+#' Step: Plot the glycosite profile
+#'
+#' Plot two count distributions for the current glycoproteomics experiment
+#' (`exp`), pooling annotations across samples. Glycomics inputs skip this step.
+#'
+#' @details
+#' - `glycans_per_site` counts sites by the number of distinct glycans observed
+#'   at each protein and site position, using [glyvis::plot_glycans_per_site()].
+#' - `sites_per_protein` counts proteins by the number of distinct glycosylation
+#'   sites observed on each protein, using [glyvis::plot_sites_per_protein()].
+#'
+#' @inheritParams glyvis::plot_glycans_per_site
+#' @param plot_width,plot_height Export width and height of each plot in inches.
+#' @return A `glysmith_step` object.
+#' @examples
+#' bp <- blueprint(step_plot_glycosite_profile())
+#' if (requireNamespace("glyvis", quietly = TRUE)) {
+#'   result <- forge_analysis(glyexp::real_experiment, bp)
+#'   cast_plot(result, "glycans_per_site")
+#'   cast_plot(result, "sites_per_protein")
+#' }
+#' @export
+step_plot_glycosite_profile <- function(
+  glycan_col = NULL,
+  plot_width = 4,
+  plot_height = 4
+) {
+  step(
+    id = "plot_glycosite_profile",
+    label = "Glycosite profile",
+    require = "exp",
+    packages = "glyvis",
+    condition = function(ctx) {
+      list(
+        check = inherits(ctx_get_data(ctx, "exp"), "GlycoproteomicSE"),
+        reason = "glycosite profiles require a glycoproteomics experiment"
+      )
+    },
+    run = function(ctx) {
+      exp <- ctx_get_data(ctx, "exp")
+      ctx |>
+        ctx_add_plot(
+          "glycans_per_site",
+          glyvis::plot_glycans_per_site(exp, glycan_col = glycan_col),
+          "Number of sites carrying each observed number of distinct glycans.",
+          width = plot_width,
+          height = plot_height
+        ) |>
+        ctx_add_plot(
+          "sites_per_protein",
+          glyvis::plot_sites_per_protein(exp),
+          "Number of proteins carrying each observed number of glycosylation sites.",
+          width = plot_width,
+          height = plot_height
+        )
+    },
+    signature = rlang::expr_deparse(match.call())
+  )
+}
+
 #' Step: Logo Plot
 #'
 #' @description
