@@ -353,6 +353,9 @@ validate_blueprint <- function(blueprint) {
 
     for (key in generate) {
       if (key %in% names(generated_map)) {
+        if (key %in% s$initialize) {
+          next
+        }
         previous_step_sig <- generated_map[[key]]
         msg <- paste0(
           "{.code ",

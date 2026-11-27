@@ -11,6 +11,7 @@
 #'   If AI polishing is turned off, the content in "<AI>" and "</AI>" tags will be removed.
 #' @param require Character vector of required `ctx$data` keys.
 #' @param generate Character vector of generated `ctx$data` keys.
+#' @param initialize Generated keys that the step only writes when absent.
 #' @param packages Character vector of R packages required to run the step.
 #' @param condition Optional function(ctx) returning a list of `check` and `reason`.
 #'   - `check` is TRUE/FALSE to decide execution.
@@ -37,7 +38,8 @@ step <- function(
   repeatable = FALSE,
   retry = 0L,
   signature = NULL,
-  stop_on_error = FALSE
+  stop_on_error = FALSE,
+  initialize = character(0)
 ) {
   checkmate::assert_character(packages, any.missing = FALSE)
 
@@ -48,7 +50,8 @@ step <- function(
       run = run,
       report = report,
       require = require,
-      generate = generate,
+      generate = union(generate, initialize),
+      initialize = initialize,
       packages = packages,
       condition = condition,
       repeatable = repeatable,

@@ -9,7 +9,9 @@ step_plot_qc(
   batch_col = "batch",
   rep_col = NULL,
   plot_width = 7,
-  plot_height = 5
+  plot_height = 5,
+  method = NULL,
+  ...
 )
 }
 \arguments{
@@ -25,6 +27,14 @@ Default is \code{"post"}.}
 \item{plot_width}{Width of plots in inches. Default is 7.}
 
 \item{plot_height}{Height of plots in inches. Default is 5.}
+
+\item{method}{A single QC plot to generate at any stage. Choose
+\code{"missing_heatmap"}, \code{"missing_bar"}, \code{"tic_bar"}, \code{"rank_abundance"},
+\code{"int_boxplot"}, \code{"rle"}, \code{"cv_dent"}, \code{"batch_pca"} or \code{"rep_scatter"}.}
+
+\item{...}{Arguments for the selected glyclean plot, such as \code{on = "variable"}
+for \code{"missing_bar"}, \code{by} for \code{"rle"}, or \code{n_pairs} and \code{seed} for
+\code{"rep_scatter"}. An individual plot uses its glyclean defaults.}
 }
 \value{
 A \code{glysmith_step} object.
@@ -41,7 +51,7 @@ Data required:
 \item \code{exp}: The experiment to plot QC for
 }
 
-Plots generated:
+The default panel (\code{method = NULL}) generates the following plots.
 \itemize{
 \item \code{qc_missing_heatmap}: Missing value heatmap
 \item \code{qc_missing_samples_bar}: Missing value bar plot on samples
@@ -61,6 +71,7 @@ When \code{when = "post"} or \code{NULL}, plots use the standard \code{qc_} pref
 \examples{
 step_plot_qc(when = "pre")
 step_plot_qc(when = "post")
+step_plot_qc(when = "post", method = "missing_bar", on = "variable")
 }
 \seealso{
 \code{\link[glyclean:plot_missing_heatmap]{glyclean::plot_missing_heatmap()}}, \code{\link[glyclean:plot_tic_bar]{glyclean::plot_tic_bar()}}, and other glyclean plotting functions.
