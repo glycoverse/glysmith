@@ -2,6 +2,10 @@ connected <- function(...) blueprint(..., .mode = "connected")
 
 test_that("construction checks every link, including independent sub-blueprints", {
   selected <- connected(step_filter_sig_vars(), step_heatmap())
+  expect_identical(
+    collect_blueprint_packages(connected(step_dea_anova())),
+    "glystats"
+  )
   expect_error(connected(step_derive_traits(), selected), "requires")
   expect_error(connected(step_pca(), step_heatmap()), "terminal")
   expect_error(

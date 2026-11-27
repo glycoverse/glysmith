@@ -118,6 +118,7 @@ fork <- function(...) {
           inlet <<- accepted
         }
         id <- paste0("node_", length(nodes) + 1L)
+        item$packages <- contract$packages %||% item$packages
         nodes[[id]] <<- list(
           id = id,
           parent = parent,

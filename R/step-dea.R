@@ -627,6 +627,7 @@ step_dea_kruskal <- function(
     id = paste0(meta$prefix, "_", method),
     connected = list(
       accepts = c("exp", "filtered_exp"),
+      packages = "glystats",
       legacy_filter = !identical(filter_args$p_adj_cutoff, 0.05) ||
         !is.null(filter_args$p_val_cutoff) ||
         !is.null(filter_args$fc_cutoff) ||
