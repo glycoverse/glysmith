@@ -69,6 +69,8 @@
   (OPLS-DA)
 - [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md)
   : Step: Principal Component Analysis (PCA)
+- [`step_plot_glycosite_profile()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_glycosite_profile.md)
+  : Step: Plot the glycosite profile
 - [`step_plot_qc()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_qc.md)
   : Step: Plot QC
 - [`step_plsda()`](https://glycoverse.github.io/glysmith/dev/reference/step_plsda.md)

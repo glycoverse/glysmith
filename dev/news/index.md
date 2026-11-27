@@ -3,6 +3,10 @@
 ## glysmith (development version)
 
 - New
+  [`step_plot_glycosite_profile()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_glycosite_profile.md)
+  plots the distributions of distinct glycans per site and glycosylation
+  sites per protein in one blueprint step. (#39)
+- New
   [`step_remove()`](https://glycoverse.github.io/glysmith/dev/reference/step_remove.md),
   [`step_normalize()`](https://glycoverse.github.io/glysmith/dev/reference/step_normalize.md),
   [`step_impute()`](https://glycoverse.github.io/glysmith/dev/reference/step_impute.md),

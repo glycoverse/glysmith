@@ -96,6 +96,7 @@ Here’s the full lineup of available step functions:
 | [`step_volcano()`](https://glycoverse.github.io/glysmith/dev/reference/step_volcano.md) | Create volcano plot from DEA results | No | GP/G |
 | [`step_heatmap()`](https://glycoverse.github.io/glysmith/dev/reference/step_heatmap.md) | Create heatmap plot | No | GP/G |
 | [`step_logo()`](https://glycoverse.github.io/glysmith/dev/reference/step_logo.md) | Create logo plot for glycosylation sites | No | GP |
+| [`step_plot_glycosite_profile()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_glycosite_profile.md) | Plot distinct glycans per site and glycosylation sites per protein | No | GP |
 | [`step_sig_boxplot()`](https://glycoverse.github.io/glysmith/dev/reference/step_sig_boxplot.md) | Boxplots for significant variables from DEA | No | GP/G |
 | **Dimension Reduction** |  |  |  |
 | [`step_pca()`](https://glycoverse.github.io/glysmith/dev/reference/step_pca.md) | Principal Component Analysis | No | GP/G |
