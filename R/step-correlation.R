@@ -73,6 +73,7 @@ step_correlation <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = paste0("Correlation analysis", on_meta$label_suffix),
     run = function(ctx) {
       .run_correlation(

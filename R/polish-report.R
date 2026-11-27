@@ -136,7 +136,9 @@ polish_report <- function(
 
   step_map <- x$blueprint
   connected <- inherits(step_map, "glysmith_connected_blueprint")
-  if (connected) step_map <- purrr::map(.compile_connected_blueprint(step_map)$nodes, "step")
+  if (connected) {
+    step_map <- purrr::map(.compile_connected_blueprint(step_map)$nodes, "step")
+  }
   ids <- steps_executed
 
   if (isTRUE(use_ai)) {

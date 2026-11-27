@@ -61,8 +61,7 @@ fork <- function(...) {
   nodes <- list()
   inlet <- input_type %||% c("exp", "filtered_exp", "contrast", "omnibus")
   walk <- function(items, parent, type, labels, main_exp) {
-    for (i in seq_along(items)) {
-      item <- items[[i]]
+    for (item in items) {
       if (!length(type)) {
         cli::cli_abort(
           "No output follows a terminal step or fork at this position."
@@ -92,17 +91,20 @@ fork <- function(...) {
           )
         }
         contract <- item$connected
-        if (
-          length(item$require) == 1L &&
-            item$require %in% .on_choices() &&
-            !item$require %in%
-              c(
-                "exp",
-                if (identical(contract$accepts, "filtered_exp")) "sig_exp"
-              )
-        ) {
+        target <- intersect(item$require, .on_choices())
+        default_target <- if (identical(contract$accepts, "filtered_exp")) {
+          "sig_exp"
+        } else {
+          "exp"
+        }
+        if (length(setdiff(target, default_target))) {
           cli::cli_abort(
             "Omit the legacy on target in {item$signature}. Its input comes from {parent}."
+          )
+        }
+        if (isTRUE(contract$legacy_filter)) {
+          cli::cli_abort(
+            "Set cutoffs and comparisons in step_filter_sig_vars() after {item$signature}."
           )
         }
         available <- if (parent == "root") inlet else type
@@ -171,20 +173,22 @@ print.glysmith_connected_blueprint <- function(x, ...) {
 .fit_port <- function(
   produces = NULL,
   key = NULL,
-  accepts = c("contrast", "omnibus")
+  accepts = c("contrast", "omnibus"),
+  only = FALSE
 ) {
-  list(accepts = accepts, produces = produces, key = key)
+  list(accepts = accepts, produces = produces, key = key, only = only)
 }
 
 .connected_node <- function(node, wire, group_col) {
   step <- node$step
   port <- step$connected
   ctx <- new_ctx(wire$exp, group_col)
+  ctx$connected <- TRUE
   if (!is.null(wire$fit)) {
     ctx$data$dea_res <- wire$fit
   }
-  if (length(step$require) == 1L && step$require != "dea_res") {
-    ctx$data[[step$require]] <- wire$exp
+  if (identical(port$accepts, "filtered_exp")) {
+    ctx$data$sig_exp <- wire$exp
   }
   missing <- step$packages[
     !vapply(step$packages, rlang::is_installed, logical(1))
@@ -248,7 +252,8 @@ print.glysmith_connected_blueprint <- function(x, ...) {
 
 .run_connected_blueprint <- function(blueprint, ctx, quiet) {
   plan <- .compile_connected_blueprint(blueprint, "exp")
-  wires <- list(root = list(exp = ctx$data$exp))
+  ctx$data$root <- ctx$data$exp
+  wires <- list(root = list(exp = ctx$data$root))
   for (node in plan$nodes) {
     id <- node$id
     upstream <- wires[[node$parent]]

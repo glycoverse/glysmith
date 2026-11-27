@@ -360,6 +360,7 @@ step_sig_enrich <- function(
 
   step(
     id = step_id,
+    connected = .fit_port(),
     label = label,
     condition = function(ctx) {
       .condition_sig_enrich(ctx)

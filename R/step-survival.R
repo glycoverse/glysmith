@@ -68,6 +68,7 @@ step_cox <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = paste0("Cox proportional hazards model", on_meta$label_suffix),
     run = function(ctx) {
       .run_cox(

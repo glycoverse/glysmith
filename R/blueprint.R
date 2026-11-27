@@ -7,6 +7,12 @@
 #'   or connected sub-blueprints.
 #' @param .mode Use "connected" to opt in to typed step connections.
 #'
+#' @details
+#' In connected mode a transformation emits an experiment and a differential
+#' analysis emits a fit. [step_filter_sig_vars()] selects rows of the fitted
+#' experiment. Use [fork()] for sibling consumers or [br()] for a side route.
+#' Terminal steps and forks end their route. Use `print()` to inspect the
+#' producer of each step. See `vignette("blueprint")` for a complete example.
 #' @returns A blueprint object.
 #' @examples
 #' blueprint(

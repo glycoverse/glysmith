@@ -627,9 +627,20 @@ step_dea_kruskal <- function(
     id = paste0(meta$prefix, "_", method),
     connected = list(
       accepts = c("exp", "filtered_exp"),
-      produces = if (method %in% c("anova", "kruskal")) "omnibus" else "contrast",
+      legacy_filter = !identical(filter_args$p_adj_cutoff, 0.05) ||
+        !is.null(filter_args$p_val_cutoff) ||
+        !is.null(filter_args$fc_cutoff) ||
+        !is.null(filter_args$comparison) ||
+        !identical(filter_args$on %||% "main_test", "main_test"),
+      produces = if (method %in% c("anova", "kruskal")) {
+        "omnibus"
+      } else {
+        "contrast"
+      },
       key = paste0(meta$prefix, "_res"),
-      run = function(ctx) .fit_dea(ctx, ctx_get_data(ctx, on), method, meta, dea_args)
+      run = function(ctx) {
+        .fit_dea(ctx, ctx_get_data(ctx, on), method, meta, dea_args)
+      }
     ),
     label = paste0(meta$label, " analysis (", method, ")"),
     run = function(ctx) {

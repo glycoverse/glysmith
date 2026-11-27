@@ -42,6 +42,7 @@ step_infer_structure <- function(
 
   step(
     id = "infer_structure",
+    connected = .exp_port("exp"),
     label = "Glycan structure inference",
     condition = .condition_infer_structure,
     run = function(ctx) {
@@ -326,6 +327,7 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
 
   step(
     id = "quantify_dynamic_motifs",
+    connected = .exp_port("dynamic_motif_exp"),
     label = "Dynamic motif quantification",
     condition = .condition_trait_motif_input,
     run = function(ctx) {
@@ -417,6 +419,7 @@ step_quantify_branch_motifs <- function(method = "relative") {
 
   step(
     id = "quantify_branch_motifs",
+    connected = .exp_port("branch_motif_exp"),
     label = "Branch motif quantification",
     condition = function(ctx) {
       .condition_quantify_branch_motifs(ctx)
@@ -533,6 +536,7 @@ step_roc <- function(pos_class = NULL, plot_width = 5, plot_height = 5) {
 
   step(
     id = "roc",
+    connected = .exp_port(),
     label = "ROC analysis",
     condition = function(ctx) {
       .condition_roc(ctx)

@@ -124,6 +124,7 @@ step_plot_glycosite_profile <- function(
 ) {
   step(
     id = "plot_glycosite_profile",
+    connected = .exp_port(),
     label = "Glycosite profile",
     require = "exp",
     packages = "glyvis",
@@ -205,6 +206,7 @@ step_logo <- function(
 
   step(
     id = paste0("logo", on_meta$id_suffix),
+    connected = .exp_port(),
     label = label,
     condition = function(ctx) {
       .condition_logo(ctx, on = on)
@@ -424,6 +426,14 @@ step_sig_boxplot <- function(
     tidy_res <- .get_sig_boxplot_tidy_result(dea_res)
 
     id_col <- .stats_id_column(dea_res)
+    if (isTRUE(ctx$connected)) {
+      if (isTRUE(dea_res$identifiers$variable$generated)) {
+        cli::cli_abort(
+          "Ranking a filtered boxplot requires unique fitted variable names."
+        )
+      }
+      tidy_res <- dplyr::filter(tidy_res, .data[[id_col]] %in% rownames(exp))
+    }
     top_vars <- tidy_res |>
       dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
       dplyr::distinct(.data[[id_col]], .keep_all = TRUE) |>

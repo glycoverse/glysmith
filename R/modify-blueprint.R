@@ -46,6 +46,11 @@ modify_blueprint <- function(
   base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   checkmate::assert_class(bp, "glysmith_blueprint")
+  if (inherits(bp, "glysmith_connected_blueprint")) {
+    cli::cli_abort(
+      "modify_blueprint() currently generates legacy blueprints. Edit this connected blueprint with blueprint() and fork()."
+    )
+  }
   checkmate::assert_string(description)
   checkmate::assert_character(qa_history, null.ok = TRUE)
   if (!is.null(exp)) {

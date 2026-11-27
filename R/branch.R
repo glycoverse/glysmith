@@ -1,7 +1,9 @@
 #' Create a Branch in a Blueprint
 #'
 #' Use `br()` to group steps that should run as an isolated branch with
-#' namespaced outputs prefixed by `<name>__`.
+#' namespaced outputs prefixed by `<name>__`. In connected mode a branch
+#' receives the current output and leaves the outer connection in place.
+#' The name labels the route and node IDs identify its outputs.
 #'
 #' @param name Branch name used as a prefix for outputs.
 #' @param ... One or more step objects.
@@ -29,13 +31,25 @@ br <- function(name, ...) {
 .expand_branches <- function(steps) {
   out <- list()
   for (item in steps) {
+    if (inherits(item, c("glysmith_fork", "glysmith_connected_blueprint"))) {
+      cli::cli_abort(
+        'Use .mode = "connected" for forks and connected sub-blueprints.'
+      )
+    }
     if (inherits(item, "glysmith_branch")) {
       out <- append(out, .branch_to_steps(item))
     } else {
+      .check_legacy_step(item)
       out <- append(out, list(item))
     }
   }
   out
+}
+
+.check_legacy_step <- function(step) {
+  if (inherits(step, "glysmith_step") && isTRUE(step$connected$only)) {
+    cli::cli_abort('Use .mode = "connected" for {step$signature}.')
+  }
 }
 
 .branch_to_steps <- function(branch) {
@@ -52,6 +66,7 @@ br <- function(name, ...) {
     if (!inherits(step, "glysmith_step")) {
       cli::cli_abort("Invalid step object.")
     }
+    .check_legacy_step(step)
     .branch_wrap_step(step, name)
   })
 }

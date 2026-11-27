@@ -28,7 +28,7 @@ step_filter_sig_vars <- function(
     label = "Filter significant variables",
     require = c("exp", "dea_res"),
     packages = "glystats",
-    connected = .fit_port("filtered_exp", "selected"),
+    connected = .fit_port("filtered_exp", "selected", only = TRUE),
     run = function(ctx) {
       selected <- rlang::exec(
         glystats::filter_sig_vars,
@@ -67,7 +67,7 @@ step_plot_main_test <- function(...) {
     label = "Main test dot chart",
     require = "dea_res",
     packages = "glyvis",
-    connected = .fit_port(accepts = "omnibus"),
+    connected = .fit_port(accepts = "omnibus", only = TRUE),
     run = function(ctx) {
       p <- rlang::exec(glyvis::autoplot, ctx$data$dea_res, !!!args)
       ctx_add_plot(ctx, "main_test", p, "Main-test significance by variable.")

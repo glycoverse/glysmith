@@ -86,6 +86,7 @@ step_plot_qc <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = label,
     repeatable = TRUE,
     run = function(ctx) {
@@ -587,6 +588,7 @@ step_correct_batch_effect <- function(
 step_detect_batch_effect <- function(batch = "batch", group = NULL) {
   step(
     id = "detect_batch_effect",
+    connected = .exp_port(),
     label = "Detect batch effects",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
@@ -633,6 +635,7 @@ step_transform_log <- function(base = 2) {
   force(args)
   step(
     id = id,
+    connected = .exp_port("exp"),
     label = label,
     run = function(ctx) {
       if (!operation %in% getNamespaceExports("glyclean")) {
@@ -726,6 +729,7 @@ step_coda <- function(
 
   step(
     id = paste0("coda", on_meta$id_suffix),
+    connected = .exp_port("exp"),
     label = paste0("Compositional data transformation", on_meta$label_suffix),
     run = function(ctx) {
       exp <- ctx_get_data(ctx, on)
@@ -789,6 +793,7 @@ step_subset_groups <- function(groups = NULL) {
 
   step(
     id = "subset_groups",
+    connected = .exp_port("exp"),
     label = "Subset groups",
     condition = function(ctx) {
       .condition_subset_groups(ctx, groups = groups)
@@ -974,6 +979,7 @@ step_adjust_protein <- function(
 
   step(
     id = "adjust_protein",
+    connected = .exp_port("exp"),
     label = "Protein adjustment",
     condition = function(ctx) {
       .condition_adjust_protein(ctx, pro_expr_path = pro_expr_path)
@@ -1085,6 +1091,7 @@ step_ident_overview <- function(count_struct = NULL) {
   signature <- rlang::expr_deparse(match.call())
   step(
     id = "ident_overview",
+    connected = .exp_port(),
     label = "Identification overview",
     run = function(ctx) {
       .run_ident_overview(ctx, count_struct = count_struct)

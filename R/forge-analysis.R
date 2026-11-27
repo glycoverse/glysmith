@@ -8,14 +8,18 @@
 #'   Used for various analyses. Default is "group".
 #'
 #' @returns A `glysmith_result` object, with the following components:
-#'   - `exp`: the glyco data container after preprocessing.
+#'   - `exp`: the glyco data container after preprocessing. In connected
+#'     mode, the last main-route experiment, or NULL if its producer did not succeed.
+#'   - `data`: main outputs and auxiliary objects. In connected mode node IDs
+#'     identify main outputs and prefix auxiliary object, plot and table names.
 #'   - `plots`: a named list of ggplot objects.
 #'   - `tables`: a named list of tibbles.
 #'   - `meta`: a named list of metadata, containing:
 #'     - `explanation`: a named character vector or list of explanations for each plot and table,
 #'        with keys like `tables$summary` and `plots$pca`.
 #'     - `steps`: a character vector of the steps of the analysis.
-#'     - `log`: the messages and outputs from each step.
+#'     - `nodes`: in connected mode, each step's producer, route, status and reason.
+#'     - `logs`: the messages and outputs from each step.
 #'   - `blueprint`: the blueprint used for the analysis.
 #'
 #' @examples

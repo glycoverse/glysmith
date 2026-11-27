@@ -234,6 +234,7 @@ step_tsne <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = "t-SNE",
     run = function(ctx) {
       .run_tsne(
@@ -362,6 +363,7 @@ step_umap <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = "UMAP",
     run = function(ctx) {
       .run_umap(
@@ -495,6 +497,7 @@ step_plsda <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = paste0(
       "Partial least squares discriminant analysis",
       on_meta$label_suffix
@@ -745,6 +748,7 @@ step_oplsda <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = paste0(
       "Orthogonal partial least squares discriminant analysis",
       on_meta$label_suffix
