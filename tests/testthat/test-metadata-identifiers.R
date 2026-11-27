@@ -100,13 +100,16 @@ test_that("SE annotation round trips never rename axes or discard annotations", 
   expect_identical(data$variable, rep(c("same", "same", ""), each = 2))
 })
 
-test_that("empty blueprints preserve ordinary sample and variable annotations", {
+test_that("side routes preserve ordinary sample and variable annotations", {
   for (exp in test_glysmith_containers()[c("glycomic", "glycoproteomic")]) {
     exp <- exp[1:3, 1:4]
     SummarizedExperiment::colData(exp)$sample <- c("", "other", "other", NA)
     SummarizedExperiment::rowData(exp)$variable <- c("other", "other", "")
     before <- exp
-    result <- forge_analysis(exp, blueprint())
+    result <- forge_analysis(
+      exp,
+      blueprint(br("summary", step_ident_overview()))
+    )
     expect_identical(dimnames(result$exp), dimnames(before))
     expect_identical(
       SummarizedExperiment::assay(result$exp, withDimnames = FALSE),
@@ -120,7 +123,11 @@ test_that("empty blueprints preserve ordinary sample and variable annotations", 
       SummarizedExperiment::rowData(result$exp),
       SummarizedExperiment::rowData(before)
     )
-    result <- forge_analysis(exp, blueprint(), group_col = "sample")
+    result <- forge_analysis(
+      exp,
+      blueprint(br("summary", step_ident_overview())),
+      group_col = "sample"
+    )
     expect_identical(colnames(result$exp), colnames(before))
     expect_identical(
       SummarizedExperiment::colData(result$exp)$sample,

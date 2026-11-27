@@ -10,7 +10,7 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   prompt_received <- NULL
   mock_chat_fun <- function(prompt) {
     prompt_received <<- prompt
-    "{\"explanation\":\"Add heatmap.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_heatmap()\"]}"
+    "{\"explanation\":\"Add heatmap.\",\"steps\":[\"step_preprocess()\",\"fork(step_pca(), step_heatmap())\"]}"
   }
 
   local_mocked_bindings(
@@ -25,7 +25,7 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   expect_true(grepl("step_preprocess\\(\\)", prompt_received))
   expect_true(grepl("step_pca\\(\\)", prompt_received))
   expect_s3_class(bp_updated, "glysmith_blueprint")
-  expect_length(bp_updated, 3)
+  expect_length(.compile_blueprint(bp_updated)$nodes, 3)
 })
 
 test_that("modify_blueprint accepts new and legacy glyco containers", {
@@ -236,4 +236,24 @@ test_that("modify_blueprint handles single clarification question from LLM", {
   expect_s3_class(bp_updated, "glysmith_blueprint")
   expect_equal(call_count, 2)
   expect_true(grepl(pro_expr_path, prompt_received, fixed = TRUE))
+})
+
+test_that("the AI editor round trips named nested routes with their original connections", {
+  bp <- blueprint(
+    br("overview", step_ident_overview()),
+    fork(
+      traits = blueprint(
+        step_derive_traits(),
+        fork(step_pca(), step_dea_anova())
+      ),
+      abundance = step_dea_limma()
+    )
+  )
+  response <- jsonlite::toJSON(list(steps = .format_blueprint_for_prompt(bp)))
+  parsed <- .process_blueprint_response(response)
+  expect_true(parsed$valid)
+  expect_identical(
+    capture.output(print(parsed$blueprint)),
+    capture.output(print(bp))
+  )
 })

@@ -1,64 +1,28 @@
-test_that("retry=0 fails immediately", {
-  fail_step <- step(
-    id = "fail",
-    label = "Fail Step",
-    run = function(ctx) stop("Intentional failure"),
-    retry = 0L
-  )
-  bp <- new_blueprint(list(fail_step))
-  expect_no_error(
-    res <- run_blueprint(
-      bp,
-      list(meta = list(steps = character(0))),
+test_that("each node retries only its own failed attempts", {
+  for (n in 0:2) {
+    count <- 0L
+    s <- step(
+      "try",
+      "Try",
+      function(ctx) {
+        count <<- count + 1L
+        if (count < 3L) {
+          stop("retry me")
+        }
+        ctx
+      },
+      retry = n
+    )
+    x <- run_blueprint(
+      blueprint(s),
+      new_ctx(glyexp::real_experiment2, "group"),
       quiet = TRUE
     )
-  )
-  expect_true(!is.null(res$meta$logs$fail$error))
-  expect_match(res$meta$logs$fail$error, "Intentional failure")
-})
-
-test_that("retry=1 succeeds if it fails once then succeeds", {
-  count <- 0
-  succeed_on_retry <- step(
-    id = "retry_success",
-    label = "Retry Success Step",
-    run = function(ctx) {
-      count <<- count + 1
-      if (count == 1) {
-        stop("First failure")
-      }
-      ctx
-    },
-    retry = 1L
-  )
-  bp <- new_blueprint(list(succeed_on_retry))
-  expect_no_error(run_blueprint(
-    bp,
-    list(meta = list(steps = character(0))),
-    quiet = TRUE
-  ))
-  expect_equal(count, 2)
-})
-
-test_that("retry=1 fails if it fails twice", {
-  count2 <- 0
-  fail_on_retry <- step(
-    id = "retry_fail",
-    label = "Retry Fail Step",
-    run = function(ctx) {
-      count2 <<- count2 + 1
-      stop("Always failure")
-    },
-    retry = 1L
-  )
-  bp <- new_blueprint(list(fail_on_retry))
-  expect_no_error(
-    res <- run_blueprint(
-      bp,
-      list(meta = list(steps = character(0))),
-      quiet = TRUE
+    expect_equal(count, n + 1L)
+    expect_identical(
+      x$meta$nodes$node_1$status,
+      if (n == 2L) "success" else "failed"
     )
-  )
-  expect_match(res$meta$logs$retry_fail$error, "Always failure")
-  expect_equal(count2, 2)
+    if (n < 2L) expect_identical(x$meta$nodes$node_1$reason, "retry me")
+  }
 })

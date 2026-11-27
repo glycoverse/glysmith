@@ -30,14 +30,15 @@ experiment <- glyexp::GlycomicSE(
   ),
   metadata = list(glycan_type = "N", scale = "log2")
 )
-bp <- blueprint(step_ident_overview(), step_pca(), step_dea_limma())
+bp <- blueprint(fork(step_ident_overview(), step_pca(), step_dea_limma()))
 result <- forge_analysis(experiment, blueprint = bp)
 stopifnot(
   inherits(result, "glysmith_result"),
-  all(names(bp) %in% result$meta$steps),
-  length(unique(result$tables$pca_samples[[".sample"]])) == ncol(abundance),
-  nrow(result$tables$dea) > 0L,
-  "pca_scores" %in% names(result$plots)
+  identical(result$meta$steps, paste0("node_", 1:3)),
+  length(unique(result$tables$node_2__pca_samples[[".sample"]])) ==
+    ncol(abundance),
+  nrow(result$tables$node_3__dea) > 0L,
+  "node_2__pca_scores" %in% names(result$plots)
 )
 
 # Export and render as the runtime user; CI also runs this without networking.

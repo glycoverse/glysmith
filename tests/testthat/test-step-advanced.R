@@ -56,7 +56,7 @@ test_that("step_infer_structure adds structures and filters unmatched variables"
   expect_false(any(is.na(var_info$glycan_structure)))
   expect_equal(rownames(var_info), c("V1", "V2"))
   expect_equal(rownames(res$exp), c("V1", "V2"))
-  expect_true("uninferred_exp" %in% names(res$data))
+  expect_true("node_1__uninferred_exp" %in% names(res$data))
 })
 
 test_that("step_infer_structure records inference results before filtering", {
@@ -70,10 +70,16 @@ test_that("step_infer_structure records inference results before filtering", {
 
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  expect_true("inferred_structures" %in% names(res$tables))
-  expect_equal(nrow(res$tables$inferred_structures), 3)
-  expect_equal(res$tables$inferred_structures$.variable, c("V1", "V2", "V3"))
-  expect_equal(res$tables$inferred_structures$matched, c(TRUE, TRUE, FALSE))
+  expect_true("node_1__inferred_structures" %in% names(res$tables))
+  expect_equal(nrow(res$tables$node_1__inferred_structures), 3)
+  expect_equal(
+    res$tables$node_1__inferred_structures$.variable,
+    c("V1", "V2", "V3")
+  )
+  expect_equal(
+    res$tables$node_1__inferred_structures$matched,
+    c(TRUE, TRUE, FALSE)
+  )
 })
 
 test_that("step_infer_structure builds database from species, structure level, and glycan type", {
@@ -131,8 +137,8 @@ test_that("step_derive_traits generates trait_exp and tables", {
   )
   bp <- blueprint(step_derive_traits())
   suppressMessages(res <- forge_analysis_se(exp, bp))
-  expect_true("trait_exp" %in% names(res$data))
-  expect_true("derived_traits" %in% names(res$tables))
+  expect_true("node_1" %in% names(res$data))
+  expect_true("node_1__derived_traits" %in% names(res$tables))
 })
 
 # ----- step_quantify_dynamic_motifs -----
@@ -144,8 +150,8 @@ test_that("step_quantify_dynamic_motifs generates dynamic_motif_exp and tables",
   )
   bp <- blueprint(step_quantify_dynamic_motifs())
   suppressMessages(res <- forge_analysis_se(exp, bp))
-  expect_true("dynamic_motif_exp" %in% names(res$data))
-  expect_true("dynamic_motifs" %in% names(res$tables))
+  expect_true("node_1" %in% names(res$data))
+  expect_true("node_1__dynamic_motifs" %in% names(res$tables))
 })
 
 # ----- step_quantify_branch_motifs -----
@@ -157,8 +163,8 @@ test_that("step_quantify_branch_motifs generates branch_motif_exp and tables", {
   )
   bp <- blueprint(step_quantify_branch_motifs())
   suppressMessages(res <- forge_analysis_se(exp, bp))
-  expect_true("branch_motif_exp" %in% names(res$data))
-  expect_true("branch_motifs" %in% names(res$tables))
+  expect_true("node_1" %in% names(res$data))
+  expect_true("node_1__branch_motifs" %in% names(res$tables))
 })
 
 test_that("step_quantify_branch_motifs skips for non-N-glycans", {
@@ -175,7 +181,7 @@ test_that("step_quantify_branch_motifs skips for non-N-glycans", {
   # Step should be skipped (message about skipping)
   expect_message(
     forge_analysis_se(exp, bp),
-    "Skipping.*branch motif quantification only works with N-glycans"
+    "skipped.*branch motif quantification only works with N-glycans"
   )
 })
 
@@ -191,6 +197,6 @@ test_that("step_roc generates results", {
   bp <- blueprint(step_roc())
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  expect_true("roc_auc" %in% names(res$tables))
-  expect_true("roc_curves" %in% names(res$plots))
+  expect_true("node_1__roc_auc" %in% names(res$tables))
+  expect_true("node_1__roc_curves" %in% names(res$plots))
 })

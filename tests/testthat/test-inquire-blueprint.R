@@ -17,7 +17,7 @@ test_that("inquire_blueprint works with valid AI output", {
   suppressMessages(bp <- inquire_blueprint("dummy description"))
 
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(bp, 2)
+  expect_length(.compile_blueprint(bp)$nodes, 2)
   expect_equal(bp[[1]]$id, "preprocess")
   expect_equal(bp[[2]]$id, "pca")
 })
@@ -69,11 +69,12 @@ test_that("inquire_blueprint supports branches", {
   suppressMessages(bp <- inquire_blueprint("dummy description"))
 
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(bp, 3)
-  expect_named(bp, c("limma__dea_limma", "limma__volcano", "pca"))
-  expect_equal(bp[[1]]$branch, "limma")
-  expect_equal(bp[[2]]$branch, "limma")
-  expect_null(bp[[3]]$branch)
+  nodes <- .compile_blueprint(bp)$nodes
+  expect_identical(
+    vapply(nodes, "[[", "", "parent") |> unname(),
+    c("root", "node_1", "root")
+  )
+  expect_identical(nodes$node_1$route, "limma")
 })
 
 test_that("inquire_blueprint handles single step", {
@@ -82,7 +83,7 @@ test_that("inquire_blueprint handles single step", {
   local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) {
-    '{"explanation":"Run t-SNE.","steps":["step_tsne(on = \\"exp\\")"]}'
+    '{"explanation":"Run t-SNE.","steps":["step_tsne()"]}'
   }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
@@ -195,7 +196,7 @@ test_that("inquire_blueprint handles valid output immediately (mocked)", {
   call_count <- 0
   mock_chat_fun <- function(...) {
     call_count <<- call_count + 1
-    '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+    '{"explanation":"Overview then PCA.","steps":["fork(step_ident_overview(),step_pca())"]}'
   }
 
   local_mocked_bindings(
@@ -208,8 +209,11 @@ test_that("inquire_blueprint handles valid output immediately (mocked)", {
   suppressMessages(bp <- inquire_blueprint("test description", max_retries = 2))
 
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(bp, 2)
-  expect_named(bp, c("ident_overview", "pca"))
+  expect_length(.compile_blueprint(bp)$nodes, 2)
+  expect_equal(
+    unname(vapply(.compile_blueprint(bp)$nodes, function(n) n$step$id, "")),
+    c("ident_overview", "pca")
+  )
   expect_equal(call_count, 1)
 })
 
@@ -219,7 +223,7 @@ test_that("inquire_blueprint can use a non-DeepSeek provider", {
 
   captured <- list()
   mock_chat_fun <- function(...) {
-    '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+    '{"explanation":"Overview then PCA.","steps":["fork(step_ident_overview(),step_pca())"]}'
   }
 
   local_mocked_bindings(
@@ -243,7 +247,10 @@ test_that("inquire_blueprint can use a non-DeepSeek provider", {
   )
 
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_named(bp, c("ident_overview", "pca"))
+  expect_equal(
+    unname(vapply(.compile_blueprint(bp)$nodes, function(n) n$step$id, "")),
+    c("ident_overview", "pca")
+  )
   expect_equal(captured$model, "gpt-test")
   expect_equal(captured$key, "openai-key")
 })
@@ -254,7 +261,7 @@ test_that("inquire_blueprint uses package-level AI options", {
 
   captured <- list()
   mock_chat_fun <- function(...) {
-    '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+    '{"explanation":"Overview then PCA.","steps":["fork(step_ident_overview(),step_pca())"]}'
   }
 
   local_mocked_bindings(
@@ -275,7 +282,10 @@ test_that("inquire_blueprint uses package-level AI options", {
   suppressMessages(bp <- inquire_blueprint("test description"))
 
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_named(bp, c("ident_overview", "pca"))
+  expect_equal(
+    unname(vapply(.compile_blueprint(bp)$nodes, function(n) n$step$id, "")),
+    c("ident_overview", "pca")
+  )
   expect_equal(captured$model, "gpt-option")
   expect_equal(captured$key, "openai-key")
 })
@@ -303,7 +313,7 @@ test_that("inquire_blueprint retries on invalid output", {
         error_feedback_received <<- TRUE
       }
       return(
-        "{\"explanation\":\"Valid JSON\",\"steps\":[\"step_ident_overview()\",\"step_pca()\"]}"
+        "{\"explanation\":\"Valid JSON\",\"steps\":[\"fork(step_ident_overview(),step_pca())\"]}"
       )
     }
   }
@@ -318,7 +328,7 @@ test_that("inquire_blueprint retries on invalid output", {
   suppressMessages(bp <- inquire_blueprint("test description", max_retries = 2))
 
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(bp, 2)
+  expect_length(.compile_blueprint(bp)$nodes, 2)
   expect_equal(call_count, 2)
   expect_true(error_feedback_received)
 })
@@ -337,7 +347,7 @@ test_that("inquire_blueprint prints retry feedback only for invalid outputs", {
       "invalid_code",
       '{"question":"What is your main research objective?"}',
       '{"question":"Which groups do you want to compare?"}',
-      '{"explanation":"Overview then PCA.","steps":["step_ident_overview()","step_pca()"]}'
+      '{"explanation":"Overview then PCA.","steps":["fork(step_ident_overview(),step_pca())"]}'
     )
   }
 
@@ -398,8 +408,8 @@ test_that("inquire_blueprint reflects full error details back to LLM", {
 
   suppressMessages(inquire_blueprint("test description", max_retries = 1))
 
-  expect_true(grepl("missing data", prompt_received))
-  expect_true(grepl("dea_res", prompt_received))
+  expect_true(grepl("requires", prompt_received))
+  expect_true(grepl("contrast", prompt_received))
 })
 
 test_that("inquire_blueprint fails after max retries", {
@@ -564,7 +574,7 @@ test_that("inquire_blueprint includes step parameters in system prompt", {
 
   expect_true(length(block) > 0)
   expect_true(grepl("PARAMETER:", block))
-  expect_true(grepl("`on`", block))
+  expect_match(block, "INPUT:")
 })
 
 test_that("inquire_blueprint uses internal step prompts", {
@@ -818,7 +828,7 @@ test_that(".extract_json_output handles code fences with json lang", {
 
 test_that(".parse_step_expr handles backslash escapes", {
   # This should not error - the function handles escape sequences
-  expect_error(glysmith:::.parse_step_expr('step_heatmap(on = "sig_exp")'), NA)
+  expect_error(glysmith:::.parse_step_expr('step_heatmap()'), NA)
 })
 
 test_that(".normalize_windows_paths handles basic paths", {
@@ -877,7 +887,7 @@ test_that(".process_blueprint_response handles semicolon-separated steps", {
 
   suppressMessages(bp <- inquire_blueprint("dummy"))
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(bp, 2)
+  expect_length(.compile_blueprint(bp)$nodes, 2)
 })
 
 test_that(".process_blueprint_response handles semicolon at end", {
@@ -931,7 +941,7 @@ test_that(".process_blueprint_response handles step with quoted arguments", {
   local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) {
-    '```json\n{"explanation":"DEA then heatmap.","steps":["step_dea_limma()","step_heatmap(on = \\"sig_exp\\")"]}\n```'
+    '```json\n{"explanation":"DEA then heatmap.","steps":["step_dea_limma()","step_filter_sig_vars()","step_heatmap()"]}\n```'
   }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
@@ -942,7 +952,7 @@ test_that(".process_blueprint_response handles step with quoted arguments", {
 
   suppressMessages(bp <- inquire_blueprint("dummy"))
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(bp, 2)
+  expect_length(.compile_blueprint(bp)$nodes, 3)
 })
 
 test_that(".process_blueprint_response rejects non-array steps", {

@@ -56,36 +56,39 @@ test_that("PCA and DEA analyze CoDA coordinates and preserve native effects", {
   exp <- coda_input()
   bp <- blueprint(
     step_coda(gamma = 0),
-    step_pca(),
-    step_dea_limma(filter_fc_cutoff = 100),
-    step_volcano(),
-    step_heatmap(on = "sig_exp")
+    fork(
+      step_pca(),
+      blueprint(
+        step_dea_limma(filter_fc_cutoff = 100),
+        fork(step_volcano(), blueprint(step_filter_sig_vars(), step_heatmap()))
+      )
+    )
   )
   res <- suppressMessages(forge_analysis_se(exp, bp))
-  expect_identical(res$meta$steps, c("coda", "pca", "dea_limma", "heatmap_sig"))
-  expect_null(res$meta$logs$volcano)
+  expect_identical(res$meta$steps, paste0("node_", c(1, 2, 3, 5, 6)))
+  expect_identical(res$meta$nodes$node_4$status, "skipped")
 
   values <- log2(SummarizedExperiment::assay(exp))
   clr <- sweep(values, 2, colMeans(values))
   expect_equal(SummarizedExperiment::assay(res$exp), clr)
   pca <- glystats::gly_pca(res$exp, log_transform = FALSE)
   expect_equal(
-    res$tables$pca_samples,
+    res$tables$node_2__pca_samples,
     glystats::get_tidy_result(pca, "samples")
   )
 
-  fit <- res$data$dea_res
+  fit <- res$data$node_3
   expect_identical(fit$preprocessing$analysis_scale, "logx")
   expect_false(fit$preprocessing$log_transform)
   in_b <- SummarizedExperiment::colData(exp)$group == "B"
   effects <- rowMeans(clr[, in_b]) - rowMeans(clr[, !in_b])
-  tbl <- res$tables$dea
+  tbl <- res$tables$node_3__dea
   ids <- tbl[[.stats_id_column(fit)]]
   expect_equal(tbl$estimate, unname(effects[ids]))
   expect_true(all(is.na(tbl$log2fc)))
   expect_true(any(tbl$p_adj < 0.05))
-  expect_setequal(rownames(res$data$sig_exp), ids[tbl$p_adj < 0.05])
-  expect_identical(glyexp::get_scale(res$data$sig_exp), "logx")
+  expect_setequal(rownames(res$data$node_5), ids[tbl$p_adj < 0.05])
+  expect_identical(glyexp::get_scale(res$data$node_5), "logx")
 })
 
 test_that("ALR differential tests only use the retained coordinates", {
@@ -94,11 +97,11 @@ test_that("ALR differential tests only use the retained coordinates", {
   res <- suppressMessages(forge_analysis_se(exp, bp))
   expect_identical(rownames(res$exp), rownames(exp)[-1])
   expect_setequal(
-    res$tables$dea[[.stats_id_column(res$data$dea_res)]],
+    res$tables$node_2__dea[[.stats_id_column(res$data$node_2)]],
     rownames(res$exp)
   )
   expect_equal(
-    res$tables$dea,
+    res$tables$node_2__dea,
     glystats::get_tidy_result(suppressMessages(glystats::gly_ttest(res$exp)))
   )
 })
@@ -109,22 +112,23 @@ test_that("a motif branch transforms quantified motifs independently", {
     step_quantify_branch_motifs(),
     br(
       "motifs",
-      step_coda("clr", gamma = 0, on = "branch_motif_exp"),
-      step_dea_limma(on = "branch_motif_exp")
+      step_coda("clr", gamma = 0),
+      step_dea_limma()
     )
   )
   res <- suppressMessages(forge_analysis_se(exp, bp))
-  input <- res$data$branch_motif_exp
-  expect_identical(res$data$motifs__pre_coda_branch_motif_exp, input)
+  input <- res$data$node_1
+  expect_identical(res$data$node_2__pre_coda_exp, input)
   expect_equal(
-    res$data$motifs__branch_motif_exp,
+    res$data$node_2,
     glyclean::transform_clr(input, gamma = 0)
   )
   expect_identical(
-    res$data$motifs__branch_dma_res$preprocessing$analysis_scale,
+    res$data$node_3$preprocessing$analysis_scale,
     "logx"
   )
-  expect_identical(glyexp::get_scale(res$exp), "raw")
+  expect_identical(res$exp, input)
+  expect_identical(S4Vectors::metadata(res$exp)$scale, "raw")
 })
 
 test_that("site-wise CoDA runs downstream tests and skips fold-change consumers", {
@@ -160,9 +164,13 @@ test_that("a failed CoDA step stops downstream tests on the original scale", {
   exp <- coda_input()
   SummarizedExperiment::assay(exp)[1, 1] <- 0
   bp <- blueprint(step_coda(), step_dea_limma())
-  expect_error(suppressMessages(forge_analysis_se(exp, bp)), "Zero values")
+  x <- suppressMessages(forge_analysis_se(exp, bp))
+  expect_match(x$meta$nodes$node_1$reason, "Zero values")
+  expect_identical(x$meta$nodes$node_2$status, "blocked")
   bp <- blueprint(br("ratios", step_coda(), step_dea_limma()))
-  expect_error(suppressMessages(forge_analysis_se(exp, bp)), "Zero values")
+  x <- suppressMessages(forge_analysis_se(exp, bp))
+  expect_match(x$meta$nodes$node_1$reason, "Zero values")
+  expect_identical(x$meta$nodes$node_2$status, "blocked")
 })
 
 test_that("legacy CoDA input and output retain their container and scale", {
@@ -174,7 +182,7 @@ test_that("legacy CoDA input and output retain their container and scale", {
     blueprint(step_coda("clr", gamma = 0))
   ))
   expect_s3_class(res$exp, "glyexp_experiment")
-  expect_s3_class(res$data$pre_coda_exp, "glyexp_experiment")
+  expect_s3_class(res$data$node_1__pre_coda_exp, "glyexp_experiment")
   expect_identical(res$exp$meta_data$scale, "logx")
-  expect_equal(res$data$pre_coda_exp$expr_mat, exp$expr_mat)
+  expect_equal(res$data$node_1__pre_coda_exp$expr_mat, exp$expr_mat)
 })

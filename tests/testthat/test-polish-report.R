@@ -1,14 +1,4 @@
 test_polish_result <- function() {
-  bp <- structure(
-    list(
-      preprocess = list(
-        id = "preprocess",
-        label = "Preprocessing",
-        report = function(x) "Preprocess report."
-      )
-    ),
-    class = "glysmith_blueprint"
-  )
   structure(
     list(
       exp = list(),
@@ -16,10 +6,12 @@ test_polish_result <- function() {
       plots = list(),
       tables = list(),
       meta = list(
+        nodes = list(preprocess = list(label = "Preprocessing")),
+        reports = list(preprocess = "Preprocess report."),
         steps = "preprocess",
         explanation = list()
       ),
-      blueprint = bp
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -55,31 +47,7 @@ test_that("polish_report works with AI polish", {
     .ask_ai_multimodal = function(...) "AI plot description"
   )
   withr::local_envvar(c(DEEPSEEK_API_KEY = "test_api_key"))
-  bp <- structure(
-    list(
-      preprocess = list(
-        id = "preprocess",
-        label = "Preprocessing",
-        report = function(x) "Preprocess report."
-      ),
-      dea_limma = list(
-        id = "dea_limma",
-        label = "DEA analysis (limma)",
-        report = function(x) "DEA report."
-      ),
-      volcano = list(
-        id = "volcano",
-        label = "Volcano plot",
-        report = function(x) "Volcano report."
-      ),
-      heatmap = list(
-        id = "heatmap",
-        label = "Heatmap",
-        report = function(x) "Heatmap report."
-      )
-    ),
-    class = "glysmith_blueprint"
-  )
+
   result <- structure(
     list(
       exp = list(),
@@ -90,13 +58,25 @@ test_that("polish_report works with AI polish", {
       ),
       tables = list(),
       meta = list(
+        nodes = list(
+          preprocess = list(label = "Preprocessing"),
+          dea_limma = list(label = "DEA analysis (limma)"),
+          volcano = list(label = "Volcano plot"),
+          heatmap = list(label = "Heatmap")
+        ),
+        reports = list(
+          preprocess = "Preprocess report.",
+          dea_limma = "DEA report.",
+          volcano = "Volcano report.",
+          heatmap = "Heatmap report."
+        ),
         steps = c("preprocess", "dea_limma", "volcano", "heatmap"),
         explanation = list(
           "plots$volcano" = "Volcano plot.",
           "plots$heatmap" = "Heatmap plot."
         )
       ),
-      blueprint = bp
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -163,37 +143,27 @@ test_that("polish_report captures AI errors", {
 })
 
 test_that("polish_report omits empty step placeholders and humanizes plot titles", {
-  bp <- structure(
-    list(
-      volcano = list(
-        id = "volcano",
-        label = "Volcano plot",
-        report = function(x) ""
-      ),
-      heatmap_sig = list(
-        id = "heatmap_sig",
-        label = "Heatmap of significant variables",
-        report = function(x) ""
-      )
-    ),
-    class = "glysmith_blueprint"
-  )
   result <- structure(
     list(
       exp = list(),
       data = list(),
       plots = list(
         volcano_H_vs_M = ggplot2::ggplot(),
-        heatmap_sig = ggplot2::ggplot()
+        heatmap = ggplot2::ggplot()
       ),
       tables = list(),
       meta = list(
-        steps = c("volcano", "heatmap_sig"),
+        nodes = list(
+          volcano = list(label = "Volcano plot"),
+          heatmap = list(label = "Heatmap")
+        ),
+        reports = list(volcano = "", heatmap = ""),
+        steps = c("volcano", "heatmap"),
         explanation = list(
           "plots$volcano_H_vs_M" = "Volcano plot for the comparison of H_vs_M."
         )
       ),
-      blueprint = bp
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -209,7 +179,7 @@ test_that("polish_report omits empty step placeholders and humanizes plot titles
   expect_true(any(grepl("Volcano plot: H vs M", output_lines, fixed = TRUE)))
   expect_true(any(grepl("comparison of H vs M", output_lines, fixed = TRUE)))
   expect_true(any(grepl(
-    "Heatmap of significant variables",
+    "Heatmap",
     output_lines,
     fixed = TRUE
   )))
@@ -249,27 +219,10 @@ test_that("humanize helpers format plot labels and descriptions", {
     glysmith:::.humanize_plot_label("volcano_H_vs_M"),
     "Volcano plot: H vs M"
   )
-  expect_equal(
-    glysmith:::.humanize_plot_label("heatmap_sig_trait"),
-    "Heatmap of significant traits"
-  )
-  expect_equal(
-    glysmith:::.humanize_plot_label("pca_sig_scores"),
-    "PCA Scores (significant variables)"
-  )
-  expect_equal(
-    glysmith:::.humanize_plot_label("tsne_sig"),
-    "t-SNE (significant variables)"
-  )
-  expect_equal(
-    glysmith:::.humanize_plot_label("umap_trait"),
-    "UMAP (traits)"
-  )
-
-  desc <- "Comparison of sig_exp_vs_trait_exp and dynamic_motif_exp"
-  expect_equal(
-    glysmith:::.humanize_plot_description(desc),
-    "Comparison of significant variables vs traits and dynamic motifs"
+  expect_identical(.humanize_plot_label("node_3__pca_scores"), "PCA Scores")
+  expect_identical(
+    .humanize_plot_description("Control_vs_case"),
+    "Control vs case"
   )
 })
 
@@ -327,29 +280,24 @@ test_that("assemble_report_sections assigns additional results", {
 })
 
 test_that("build_step_reports handles missing steps and report errors", {
-  bp <- structure(
-    list(
-      step1 = list(
-        id = "step1",
-        label = "Step 1",
-        report = function(x) "Report <AI>remove</AI> end"
-      ),
-      step2 = list(
-        id = "step2",
-        label = "Step 2",
-        report = function(x) stop("boom")
-      )
-    ),
-    class = "glysmith_blueprint"
-  )
   x <- structure(
     list(
       exp = list(),
       data = list(),
       plots = list(),
       tables = list(),
-      meta = list(steps = c("step1", "step2", "missing")),
-      blueprint = bp
+      meta = list(
+        nodes = list(
+          step1 = list(label = "Step 1"),
+          step2 = list(label = "Step 2")
+        ),
+        reports = list(
+          step1 = "Report <AI>remove</AI> end",
+          step2 = "Report generation failed: boom"
+        ),
+        steps = c("step1", "step2", "missing")
+      ),
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -368,24 +316,18 @@ test_that("build_step_reports handles missing steps and report errors", {
 })
 
 test_that("build_step_reports uses AI polishing when enabled", {
-  bp <- structure(
-    list(
-      step1 = list(
-        id = "step1",
-        label = "Step 1",
-        report = function(x) "raw text"
-      )
-    ),
-    class = "glysmith_blueprint"
-  )
   x <- structure(
     list(
       exp = list(),
       data = list(),
       plots = list(),
       tables = list(),
-      meta = list(steps = "step1"),
-      blueprint = bp
+      meta = list(
+        nodes = list(step1 = list(label = "Step 1")),
+        reports = list(step1 = "raw text"),
+        steps = "step1"
+      ),
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -414,7 +356,7 @@ test_that("build_plot_entries uses AI descriptions", {
       meta = list(
         explanation = c("plots$volcano_A_vs_B" = "Volcano plot A_vs_B")
       ),
-      blueprint = structure(list(), class = "glysmith_blueprint")
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -454,7 +396,7 @@ test_that("build_report_sections passes AI provider configuration downstream", {
       plots = list(),
       tables = list(),
       meta = list(),
-      blueprint = structure(list(), class = "glysmith_blueprint")
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -529,7 +471,7 @@ test_that("build_report_sections uses package-level AI options", {
       plots = list(),
       tables = list(),
       meta = list(),
-      blueprint = structure(list(), class = "glysmith_blueprint")
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -595,7 +537,7 @@ test_that("polish_report aborts when overwrite declined", {
       plots = list(),
       tables = list(),
       meta = list(),
-      blueprint = structure(list(), class = "glysmith_blueprint")
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -622,7 +564,7 @@ test_that("polish_report overwrites output when confirmed", {
       plots = list(),
       tables = list(),
       meta = list(),
-      blueprint = structure(list(), class = "glysmith_blueprint")
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -655,7 +597,7 @@ test_that("polish_report rejects invalid overwrite input", {
       plots = list(),
       tables = list(),
       meta = list(),
-      blueprint = structure(list(), class = "glysmith_blueprint")
+      blueprint = blueprint(step_pca())
     ),
     class = "glysmith_result"
   )
@@ -708,82 +650,6 @@ test_that(".polish_text returns original text on AI error", {
 })
 
 # Tests for .humanize_on_label
-test_that(".humanize_on_label maps experiment types correctly", {
-  expect_equal(
-    glysmith:::.humanize_on_label("sig_exp"),
-    "significant variables"
-  )
-  expect_equal(glysmith:::.humanize_on_label("trait_exp"), "traits")
-  expect_equal(
-    glysmith:::.humanize_on_label("sig_trait_exp"),
-    "significant traits"
-  )
-  expect_equal(
-    glysmith:::.humanize_on_label("dynamic_motif_exp"),
-    "dynamic motifs"
-  )
-  expect_equal(
-    glysmith:::.humanize_on_label("sig_dynamic_motif_exp"),
-    "significant dynamic motifs"
-  )
-  expect_equal(
-    glysmith:::.humanize_on_label("branch_motif_exp"),
-    "branch motifs"
-  )
-  expect_equal(
-    glysmith:::.humanize_on_label("sig_branch_motif_exp"),
-    "significant branch motifs"
-  )
-  expect_equal(glysmith:::.humanize_on_label("exp"), "variables")
-})
-
-# Tests for .on_suffix_labels
-test_that(".on_suffix_labels returns expected labels", {
-  labels <- glysmith:::.on_suffix_labels()
-  expect_equal(labels[["sig"]], "significant variables")
-  expect_equal(labels[["trait"]], "traits")
-  expect_equal(labels[["sig_trait"]], "significant traits")
-  expect_equal(labels[["dynamic_motif"]], "dynamic motifs")
-  expect_equal(labels[["sig_dynamic_motif"]], "significant dynamic motifs")
-  expect_equal(labels[["branch_motif"]], "branch motifs")
-  expect_equal(labels[["sig_branch_motif"]], "significant branch motifs")
-})
-
-# Tests for .extract_on_suffix
-test_that(".extract_on_suffix extracts suffix and rest correctly", {
-  result <- glysmith:::.extract_on_suffix(c("sig", "exp"))
-  expect_equal(result$suffix, "sig")
-  expect_equal(result$rest, "exp")
-
-  result <- glysmith:::.extract_on_suffix(c("sig_trait", "exp"))
-  expect_equal(result$suffix, "sig_trait")
-  expect_equal(result$rest, "exp")
-
-  result <- glysmith:::.extract_on_suffix(c("scores"))
-  expect_null(result$suffix)
-  expect_equal(result$rest, "scores")
-
-  result <- glysmith:::.extract_on_suffix(character(0))
-  expect_null(result$suffix)
-  expect_equal(result$rest, character(0))
-
-  # Test 3-part suffixes (sig_dynamic_motif, sig_branch_motif)
-  # When processing "pca_sig_dynamic_motif_exp", parts[-1] = c("sig", "dynamic", "motif", "exp")
-  result <- glysmith:::.extract_on_suffix(c("sig", "dynamic", "motif", "exp"))
-  expect_equal(result$suffix, "sig_dynamic_motif")
-  expect_equal(result$rest, "exp")
-
-  result <- glysmith:::.extract_on_suffix(c("sig", "branch", "motif", "exp"))
-  expect_equal(result$suffix, "sig_branch_motif")
-  expect_equal(result$rest, "exp")
-
-  # Test 3-part suffix without trailing exp
-  result <- glysmith:::.extract_on_suffix(c("sig", "dynamic", "motif"))
-  expect_equal(result$suffix, "sig_dynamic_motif")
-  expect_equal(result$rest, character(0))
-})
-
-# Tests for .fix_plot_abbrev
 test_that(".fix_plot_abbrev fixes common abbreviations", {
   expect_equal(glysmith:::.fix_plot_abbrev("Pca Plot"), "PCA Plot")
   expect_equal(glysmith:::.fix_plot_abbrev("Umap Analysis"), "UMAP Analysis")

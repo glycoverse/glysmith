@@ -5,7 +5,7 @@ minimal_quench_result <- function() {
     plots = list(),
     tables = list(),
     meta = list(),
-    blueprint = structure(list(), class = "glysmith_blueprint")
+    blueprint = blueprint(step_pca())
   )
 }
 
@@ -27,10 +27,7 @@ test_that("quench_result writes README.md based on meta", {
     ),
     steps = c("preprocessing", "pca")
   )
-  blueprint <- new_blueprint(list(
-    step_preprocess(),
-    step_pca()
-  ))
+  blueprint <- blueprint(step_preprocess(), step_pca())
   data <- list()
 
   x <- glysmith_result(
@@ -153,7 +150,7 @@ test_that("quench_result does not create stray Rplots.pdf", {
     tables = list(),
     meta = list(),
     data = list(),
-    blueprint = new_blueprint(list(step_pca()))
+    blueprint = blueprint(step_pca())
   )
 
   withr::local_dir(withr::local_tempdir())
@@ -173,7 +170,7 @@ test_that("write_result_readme falls back when explanations are empty", {
       explanation = c("plots$plot_a" = "", "tables$tab_b" = NA_character_),
       steps = NULL
     ),
-    blueprint = structure(list(), class = "glysmith_blueprint")
+    blueprint = blueprint(step_pca())
   )
   out_dir <- withr::local_tempdir()
   glysmith:::.write_result_readme(

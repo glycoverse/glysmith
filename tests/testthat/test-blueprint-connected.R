@@ -1,26 +1,24 @@
-connected <- function(...) blueprint(..., .mode = "connected")
-
 test_that("construction checks every link, including independent sub-blueprints", {
-  selected <- connected(step_filter_sig_vars(), step_heatmap())
+  selected <- blueprint(step_filter_sig_vars(), step_heatmap())
   expect_identical(
-    collect_blueprint_packages(connected(step_dea_anova())),
+    collect_blueprint_packages(blueprint(step_dea_anova())),
     "glystats"
   )
-  expect_error(connected(step_derive_traits(), selected), "requires")
-  expect_error(connected(step_pca(), step_heatmap()), "terminal")
+  expect_error(blueprint(step_derive_traits(), selected), "requires")
+  expect_error(blueprint(step_pca(), step_heatmap()), "terminal")
   expect_error(
-    connected(fork(step_pca(), step_heatmap()), step_heatmap()),
+    blueprint(fork(step_pca(), step_heatmap()), step_heatmap()),
     "fork"
   )
-  expect_error(connected(step_dea_anova(), step_volcano()), "requires")
-  expect_error(connected(step_dea_ttest(), step_plot_main_test()), "requires")
-  expect_error(connected(fork(step_pca(), step_filter_sig_vars())), "requires")
-  expect_error(connected(step_heatmap(on = "trait_exp")), "legacy on")
-  bp <- connected(
+  expect_error(blueprint(step_dea_anova(), step_volcano()), "requires")
+  expect_error(blueprint(step_dea_ttest(), step_plot_main_test()), "requires")
+  expect_error(blueprint(fork(step_pca(), step_filter_sig_vars())), "requires")
+  expect_error(blueprint(step_heatmap(on = "trait_exp")), "argument")
+  bp <- blueprint(
     step_derive_traits(),
     fork(
       scores = step_pca(),
-      tests = connected(step_dea_anova(), fork(step_plot_main_test(), selected))
+      tests = blueprint(step_dea_anova(), fork(step_plot_main_test(), selected))
     )
   )
   expect_output(print(bp), "node_3 -> node_4.*step_plot_main_test.*tests")
@@ -34,16 +32,16 @@ test_that("construction checks every link, including independent sub-blueprints"
 })
 
 test_that("real traits feed PCA and one omnibus fit with independent consumers", {
-  bp <- connected(
+  bp <- blueprint(
     step_preprocess(),
     step_derive_traits(),
     fork(
       step_pca(),
-      connected(
+      blueprint(
         step_dea_anova(),
         fork(
           step_plot_main_test(),
-          connected(step_filter_sig_vars(), step_heatmap())
+          blueprint(step_filter_sig_vars(), step_heatmap())
         )
       )
     )
@@ -100,15 +98,15 @@ test_that("a shared transformation runs once and thresholds reuse the exact fit"
     prep_calls <<- prep_calls + 1L
     run(ctx)
   }
-  tests <- connected(
+  tests <- blueprint(
     step_dea_anova(),
     fork(step_filter_sig_vars(0), step_filter_sig_vars(0.05))
   )
-  bp <- connected(
+  bp <- blueprint(
     prep,
     fork(
       full = tests,
-      subset = connected(step_subset_groups(c("A", "B")), tests)
+      subset = blueprint(step_subset_groups(c("A", "B")), tests)
     )
   )
   skip_if_glysmith_deps_not_installed(bp)
@@ -128,8 +126,8 @@ test_that("a shared transformation runs once and thresholds reuse the exact fit"
 })
 
 test_that("skips and failures block only descendants and preserve their cause", {
-  tests <- connected(step_dea_anova(), step_filter_sig_vars(0), step_heatmap())
-  bp <- connected(
+  tests <- blueprint(step_dea_anova(), step_filter_sig_vars(0), step_heatmap())
+  bp <- blueprint(
     br("ok", tests),
     br("skipped", step_subset_groups(), tests),
     br("failed", step_subset_groups("unknown"), tests),
@@ -163,11 +161,11 @@ test_that("skips and failures block only descendants and preserve their cause", 
 })
 
 test_that("volcano eligibility follows the fit on its own branch", {
-  tests <- connected(step_dea_limma(), step_volcano())
-  bp <- connected(
+  tests <- blueprint(step_dea_limma(), step_volcano())
+  bp <- blueprint(
     step_subset_groups(c("A", "B")),
     fork(
-      connected(step_coda("clr", gamma = 0), tests),
+      blueprint(step_coda("clr", gamma = 0), tests),
       tests
     )
   )
@@ -187,9 +185,9 @@ test_that("each catalogued step declares its connected input", {
 })
 
 test_that("a failed fit never supplies an older fit to its filters", {
-  bp <- connected(fork(
-    connected(step_dea_anova(), step_filter_sig_vars()),
-    connected(step_dea_ttest(), step_filter_sig_vars())
+  bp <- blueprint(fork(
+    blueprint(step_dea_anova(), step_filter_sig_vars()),
+    blueprint(step_dea_ttest(), step_filter_sig_vars())
   ))
   skip_if_glysmith_deps_not_installed(bp)
   x <- suppressMessages(forge_analysis(connected_fixture(), bp))
@@ -200,13 +198,39 @@ test_that("a failed fit never supplies an older fit to its filters", {
   expect_null(x$data$node_4)
 })
 
-test_that("mode-specific arguments guide callers to the correct input", {
-  expect_error(
-    connected(step_dea_anova(filter_p_adj_cutoff = 0.1)),
-    "step_filter_sig_vars"
+test_that("filter defaults from an omnibus fit can be overridden per consumer", {
+  bp <- blueprint(
+    step_dea_anova(filter_on = "main_test", filter_p_adj_cutoff = 0),
+    fork(step_filter_sig_vars(), step_filter_sig_vars(0.05))
   )
-  expect_error(
-    blueprint(step_dea_anova(), br("select", step_filter_sig_vars())),
-    "connected"
+  skip_if_glysmith_deps_not_installed(bp)
+  x <- forge_analysis(connected_fixture(), bp)
+  expect_identical(nrow(x$data$node_2), 0L)
+  expect_identical(nrow(x$data$node_3), 2L)
+})
+
+test_that("a filter can override its fit's post-hoc comparison with the main test", {
+  bp <- blueprint(
+    step_dea_anova(filter_on = "post_hoc_test", filter_comparison = "A_vs_B"),
+    fork(
+      step_filter_sig_vars(),
+      step_filter_sig_vars(on = "main_test", comparison = NULL)
+    )
+  )
+  skip_if_glysmith_deps_not_installed(bp)
+  x <- forge_analysis(connected_fixture(), bp)
+  expect_true(all(vapply(x$meta$nodes, "[[", "", "status") == "success"))
+  expect_equal(
+    x$data$node_2,
+    glystats::filter_sig_vars(
+      x$data$root,
+      x$data$node_1,
+      on = "post_hoc_test",
+      comparison = "A_vs_B"
+    )
+  )
+  expect_equal(
+    x$data$node_3,
+    glystats::filter_sig_vars(x$data$root, x$data$node_1)
   )
 })
