@@ -19,6 +19,13 @@ A blueprint object.
 A blueprint is a list of steps that are executed in order.
 Type \code{step_} and TAB in RStudio to see all available steps.
 }
+\details{
+In connected mode a transformation emits an experiment and a differential
+analysis emits a fit. \code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} selects rows of the fitted
+experiment. Use \code{\link[=fork]{fork()}} for sibling consumers or \code{\link[=br]{br()}} for a side route.
+Terminal steps and forks end their route. Use \code{print()} to inspect the
+producer of each step. See \code{vignette("blueprint")} for a complete example.
+}
 \examples{
 blueprint(
   step_preprocess(),

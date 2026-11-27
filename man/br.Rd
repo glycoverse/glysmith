@@ -16,7 +16,9 @@ A branch object used inside \code{\link[=blueprint]{blueprint()}}.
 }
 \description{
 Use \code{br()} to group steps that should run as an isolated branch with
-namespaced outputs prefixed by \verb{<name>__}.
+namespaced outputs prefixed by \verb{<name>__}. In connected mode a branch
+receives the current output and leaves the outer connection in place.
+The name labels the route and node IDs identify its outputs.
 }
 \examples{
 blueprint(

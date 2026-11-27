@@ -32,6 +32,76 @@ you might want to try having an LLM generate one for you with `inquire_blueprint
 Check out [this vignette](https://glycoverse.github.io/glysmith/articles/ai.html)
 for the details.
 
+## Connect steps by their outputs
+
+Use `.mode = "connected"` to pass each step the output of its immediate
+upstream step. In this example preprocessing runs once. PCA and ANOVA both
+receive the derived traits. The two ANOVA consumers share the same fit.
+
+```{r}
+route <- function(...) blueprint(..., .mode = "connected")
+
+inspect_fit <- route(
+  step_dea_anova(),
+  fork(
+    significance = step_plot_main_test(),
+    selected = route(step_filter_sig_vars(), step_heatmap())
+  )
+)
+
+traits <- route(step_derive_traits(), fork(step_pca(), inspect_fit))
+bp <- route(step_preprocess(), fork(abundances = inspect_fit, traits = traits))
+print(bp)
+```
+
+`fork()` ends its route. Each argument is a sibling and can itself contain
+another fork. To continue the main route after running a side analysis,
+use `br("name", ...)`. For example, `route(br("scores", step_pca()),
+step_dea_limma())` connects both steps to the inlet. Omit legacy `on`
+targets in connected blueprints.
+
+| Step | Input | Main output |
+|:-----|:------|:------------|
+| Preprocessing, group subsetting, structure inference, traits, motifs | Experiment | Transformed experiment |
+| Limma, t-test, Wilcoxon | Experiment | Contrast fit |
+| ANOVA, Kruskal–Wallis | Experiment | Omnibus fit |
+| `step_filter_sig_vars()` | Either fit | Filtered experiment |
+| `step_plot_main_test()` | Omnibus fit | Terminal dot chart from glyvis 0.9.0 |
+| `step_volcano()` | Contrast fit with abundance fold changes | Terminal plot |
+| Enrichment | Fit and its bound experiment | Terminal analysis |
+| `step_sig_boxplot()` | Filtered experiment from `step_filter_sig_vars()` | Terminal plot |
+| QC, PCA and other dimension reduction, heatmap, ROC, correlation, Cox and other summaries | Experiment (including filtered) | Terminal analysis |
+
+Connected DEA steps fit the experiment on their incoming wire. Put cutoffs on
+`step_filter_sig_vars()`; the DEA constructors' `filter_*` arguments belong to
+legacy blueprints. To compare thresholds, use
+`route(step_dea_anova(), fork(step_filter_sig_vars(0.01), step_filter_sig_vars(0.05)))`.
+Each filter uses the exact experiment that produced the fit. A filter that
+selects zero variables succeeds and returns a zero-row experiment.
+Downstream analyses skip an empty input. A skipped or failed step blocks
+its descendants, and independent branches continue.
+
+```{r, eval = FALSE}
+result <- forge_analysis(glyexp::real_experiment2, bp)
+result$meta$nodes        # step, producer, route, status and reason
+cast_data(result)        # node outputs and auxiliary objects
+cast_plot(result)        # e.g. node_3__main_test
+cast_table(result)
+quench_result(result, "connected-results")
+polish_report(result, "connected-report.html", open = FALSE)
+```
+
+Use the printed node ID to retrieve its main output, e.g.
+`cast_data(result, "node_2")`. Plot, table and auxiliary object names start
+with the producing node ID and two underscores. The prepared input is available as
+`cast_data(result, "root")`. For each fit, its parent ID retrieves the experiment
+used to fit the model. `cast_exp()` returns the last
+experiment on the main route, or the input if that route only fits or plots.
+If its producer failed or was skipped, the main experiment is `NULL`.
+Significant-variable boxplots with more than 25 retained rows require unique fitted variable names for ranking.
+Legacy blueprints, including `blueprint_default()`, use the named data
+dependencies described below.
+
 ## Step functions
 
 `glysmith` comes with various step functions (anything starting with `step_`),
