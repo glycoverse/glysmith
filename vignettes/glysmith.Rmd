@@ -133,7 +133,7 @@ You can inspect it via `blueprint_default()`.
 blueprint_default()
 ```
 
-A blueprint is a list of steps executed sequentially.
+A blueprint connects steps through their main outputs. Use `fork()` when several analyses share one input.
 You can use `blueprint()` with `step_` functions to create your own custom blueprint.
 For instance, if you'd just like to perform differential expression analysis and plot the volcano plot, you could do:
 
