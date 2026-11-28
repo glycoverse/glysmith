@@ -175,6 +175,7 @@ Here's the full lineup of available step functions:
 | **Advanced Analysis** | | | |
 | `step_infer_structure()` | Infer glycan structures from glycan compositions | No | GP/G |
 | `step_derive_traits()` | Calculate glycan derived traits | **Yes** | GP/G |
+| `step_quantify_motifs()` | Quantify a custom set of glycan motifs | **Yes** | GP/G |
 | `step_quantify_dynamic_motifs()` | Quantify dynamic glycan motifs | **Yes** | GP/G |
 | `step_quantify_branch_motifs()` | Quantify N-glycan branch motifs | **Yes** | GP/G |
 | `step_roc()` | ROC analysis for biomarker discovery | No | GP/G |

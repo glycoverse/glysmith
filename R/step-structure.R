@@ -288,6 +288,241 @@ step_derive_traits <- function(
   paste0(msg, "\n\n", "Trait definitions:\n\n", definition_parts)
 }
 
+#' Step: Quantify Motifs
+#'
+#' @description
+#' Quantify a custom set of glycan motifs using `glydet::quantify_motifs()`.
+#' Supports known motif names from the GlycoMotif database, glycan structure
+#' strings (optionally named), `glyrepr_structure` vectors, or motif
+#' specifications from `glymotif`. Works with any glycan type.
+#'
+#' This step requires `exp` (experiment data).
+#'
+#' @details
+#' Data required:
+#' - `exp`: The experiment to quantify motifs for
+#'
+#' Data generated:
+#' - `motif_exp`: The experiment with quantified motifs
+#'
+#' Tables generated:
+#' - `motifs`: A table containing the quantified motifs.
+#'
+#' @param motifs Custom motif set passed to [glydet::quantify_motifs()]. Can be
+#'   a character vector of known motif names or glycan structure strings
+#'   (optionally named), a `glyrepr_structure` object, or a motif specification
+#'   from `glymotif::dynamic_motifs()`, `glymotif::branch_motifs()`, or
+#'   `glymotif::db_motifs()`. If `NULL`, this step will be skipped.
+#' @param method Method for motif quantification (`"relative"` or `"absolute"`).
+#'   Default is `"relative"`.
+#' @param alignments Optional character vector specifying the alignment method
+#'   for each motif. Values can be `"terminal"`, `"substructure"`, `"core"`,
+#'   `"whole"`, or `"exact"`. Default is `NULL`, which uses `"substructure"`
+#'   (or the database motif alignments when applicable).
+#' @param ignore_linkages Logical; if `TRUE`, glycosidic linkages are ignored
+#'   when matching motifs. Default is `FALSE`.
+#'
+#' @return A `glysmith_step` object.
+#' @examples
+#' step_quantify_motifs(
+#'   motifs = c(
+#'     Lx = "Hex(??-?)[dHex(??-?)]HexNAc(??-",
+#'     sLx = "NeuAc(??-?)Hex(??-?)[dHex(??-?)]HexNAc(??-"
+#'   )
+#' )
+#' step_quantify_motifs(motifs = c("Lewis x", "Sialyl Lewis x"))
+#' @seealso [glydet::quantify_motifs()], [glymotif::have_motifs()]
+#' @export
+step_quantify_motifs <- function(
+  motifs = NULL,
+  method = "relative",
+  alignments = NULL,
+  ignore_linkages = FALSE
+) {
+  if (!is.null(motifs)) {
+    if (is.character(motifs)) {
+      checkmate::assert_character(
+        motifs,
+        min.chars = 1,
+        any.missing = FALSE,
+        min.len = 1
+      )
+    } else if (inherits(motifs, "glyrepr_structure")) {
+      if (length(motifs) == 0L || any(is.na(motifs))) {
+        cli::cli_abort(
+          "{.arg motifs} must be a non-empty {.cls glyrepr_structure} vector without missing values."
+        )
+      }
+    } else if (
+      !inherits(
+        motifs,
+        c("dynamic_motifs_spec", "branch_motifs_spec", "db_motifs_spec")
+      )
+    ) {
+      cli::cli_abort(
+        "{.arg motifs} must be a character vector, a {.cls glyrepr_structure} object, a motif specification, or {.code NULL}."
+      )
+    }
+  }
+  signature <- rlang::expr_deparse(match.call())
+
+  .step_quantify_motifs(
+    id = "quantify_motifs",
+    label = "Motif quantification",
+    exp_key = "motif_exp",
+    table_key = "motifs",
+    table_desc = "Motif quantification results.",
+    report_prefix = "Motif quantification was performed. ",
+    motifs = motifs,
+    method = method,
+    alignments = alignments,
+    ignore_linkages = ignore_linkages,
+    condition = function(ctx) {
+      .condition_quantify_motifs(ctx, motifs = motifs)
+    },
+    signature = signature
+  )
+}
+
+#' Build a motif quantification step
+#'
+#' @param id Step id.
+#' @param label Step label.
+#' @param exp_key Context data key for the quantified experiment.
+#' @param table_key Context table key for the quantified motif table.
+#' @param table_desc Description for the quantified motif table.
+#' @param report_prefix Prefix text for the step report.
+#' @param motifs Motif specification, vector, or zero-argument factory function.
+#' @param method Method for motif quantification (`"relative"` or `"absolute"`).
+#' @param alignments Optional alignment method vector.
+#' @param ignore_linkages Logical; whether to ignore linkages.
+#' @param condition Condition function for the step.
+#' @param signature Step call signature.
+#'
+#' @returns A `glysmith_step` object.
+#' @noRd
+.step_quantify_motifs <- function(
+  id,
+  label,
+  exp_key,
+  table_key,
+  table_desc,
+  report_prefix,
+  motifs,
+  method = "relative",
+  alignments = NULL,
+  ignore_linkages = FALSE,
+  condition = .condition_trait_motif_input,
+  signature = NULL
+) {
+  checkmate::assert_choice(method, c("relative", "absolute"))
+  if (!is.null(alignments)) {
+    checkmate::assert_character(alignments, any.missing = FALSE, min.len = 1)
+    checkmate::assert_subset(
+      alignments,
+      c("terminal", "substructure", "core", "whole", "exact")
+    )
+  }
+  checkmate::assert_flag(ignore_linkages)
+
+  step(
+    id = id,
+    connected = .exp_port(exp_key),
+    label = label,
+    condition = condition,
+    run = function(ctx) {
+      .run_quantify_motifs(
+        ctx,
+        motifs = motifs,
+        method = method,
+        alignments = alignments,
+        ignore_linkages = ignore_linkages,
+        exp_key = exp_key,
+        table_key = table_key,
+        table_desc = table_desc
+      )
+    },
+    report = function(x) {
+      .report_quantify_motifs(
+        x,
+        table_key = table_key,
+        prefix = report_prefix
+      )
+    },
+    packages = c("glydet", "glymotif"),
+    signature = signature
+  )
+}
+
+#' Check whether custom motif quantification should run
+#'
+#' @param ctx Analysis context.
+#' @inheritParams step_quantify_motifs
+#'
+#' @returns A list with `check` and `reason`.
+#' @noRd
+.condition_quantify_motifs <- function(ctx, motifs) {
+  if (is.null(motifs)) {
+    return(list(check = FALSE, reason = "motifs are not provided"))
+  }
+  .condition_trait_motif_input(ctx)
+}
+
+#' Run motif quantification
+#'
+#' @param ctx Analysis context.
+#' @inheritParams .step_quantify_motifs
+#'
+#' @returns Updated analysis context.
+#' @noRd
+.run_quantify_motifs <- function(
+  ctx,
+  motifs,
+  method,
+  alignments,
+  ignore_linkages,
+  exp_key,
+  table_key,
+  table_desc
+) {
+  exp <- ctx_get_data(ctx, "exp")
+  motifs <- if (is.function(motifs)) motifs() else motifs
+  motif_exp <- glydet::quantify_motifs(
+    exp,
+    motifs = motifs,
+    method = method,
+    alignments = alignments,
+    ignore_linkages = ignore_linkages
+  )
+
+  ctx <- ctx_add_data(ctx, exp_key, motif_exp)
+  ctx_add_table(
+    ctx,
+    table_key,
+    .as_data_tibble(motif_exp),
+    table_desc
+  )
+}
+
+#' Report motif quantification results
+#'
+#' @param x Analysis context after running motif quantification.
+#' @param table_key Context table key for the quantified motif table.
+#' @param prefix Prefix text for the report summary.
+#'
+#' @returns A summary string for the report.
+#' @noRd
+.report_quantify_motifs <- function(x, table_key, prefix) {
+  tbl <- x$tables[[table_key]]
+  n_motifs <- length(unique(tbl$trait))
+  paste0(
+    prefix,
+    "Number of quantified motifs: ",
+    n_motifs,
+    "."
+  )
+}
+
 #' Step: Quantify Dynamic Motifs
 #'
 #' @description
@@ -316,66 +551,19 @@ step_derive_traits <- function(
 #' @seealso [glydet::quantify_motifs()], [glymotif::dynamic_motifs()]
 #' @export
 step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
+  checkmate::assert_count(max_size, positive = TRUE)
   signature <- rlang::expr_deparse(match.call())
 
-  step(
+  .step_quantify_motifs(
     id = "quantify_dynamic_motifs",
-    connected = .exp_port("dynamic_motif_exp"),
     label = "Dynamic motif quantification",
-    condition = .condition_trait_motif_input,
-    run = function(ctx) {
-      .run_quantify_dynamic_motifs(ctx, max_size = max_size, method = method)
-    },
-    report = function(x) {
-      .report_quantify_dynamic_motifs(x)
-    },
-    packages = c("glydet", "glymotif"),
-    signature = signature
-  )
-}
-
-#' Run dynamic motif quantification
-#'
-#' @param ctx Analysis context.
-#' @inheritParams step_quantify_dynamic_motifs
-#'
-#' @returns Updated analysis context.
-#' @noRd
-.run_quantify_dynamic_motifs <- function(ctx, max_size, method) {
-  exp <- ctx_get_data(ctx, "exp")
-  motifs <- glymotif::dynamic_motifs(max_size = max_size)
-
-  dynamic_motif_exp <- glydet::quantify_motifs(
-    exp,
-    motifs = motifs,
+    exp_key = "dynamic_motif_exp",
+    table_key = "dynamic_motifs",
+    table_desc = "Dynamic motif quantification results.",
+    report_prefix = "Dynamic motif quantification was performed. All motifs were extracted. ",
+    motifs = function() glymotif::dynamic_motifs(max_size = max_size),
     method = method,
-    ignore_linkages = FALSE
-  )
-
-  ctx <- ctx_add_data(ctx, "dynamic_motif_exp", dynamic_motif_exp)
-  ctx_add_table(
-    ctx,
-    "dynamic_motifs",
-    .as_data_tibble(dynamic_motif_exp),
-    "Dynamic motif quantification results."
-  )
-}
-
-#' Report dynamic motif quantification results
-#'
-#' @param x Analysis context after running dynamic motif quantification.
-#'
-#' @returns A summary string for the report.
-#' @noRd
-.report_quantify_dynamic_motifs <- function(x) {
-  tbl <- x$tables[["dynamic_motifs"]]
-  n_motifs <- length(unique(tbl$trait))
-  paste0(
-    "Dynamic motif quantification was performed. ",
-    "All motifs were extracted. ",
-    "Number of quantified motifs: ",
-    n_motifs,
-    "."
+    signature = signature
   )
 }
 
@@ -408,20 +596,16 @@ step_quantify_dynamic_motifs <- function(max_size = 3, method = "relative") {
 step_quantify_branch_motifs <- function(method = "relative") {
   signature <- rlang::expr_deparse(match.call())
 
-  step(
+  .step_quantify_motifs(
     id = "quantify_branch_motifs",
-    connected = .exp_port("branch_motif_exp"),
     label = "Branch motif quantification",
-    condition = function(ctx) {
-      .condition_quantify_branch_motifs(ctx)
-    },
-    run = function(ctx) {
-      .run_quantify_branch_motifs(ctx, method = method)
-    },
-    report = function(x) {
-      .report_quantify_branch_motifs(x)
-    },
-    packages = c("glydet", "glymotif"),
+    exp_key = "branch_motif_exp",
+    table_key = "branch_motifs",
+    table_desc = "Branch motif quantification results.",
+    report_prefix = "Branch motif quantification was performed. Branching motifs for N-glycans were extracted. ",
+    motifs = function() glymotif::branch_motifs(),
+    method = method,
+    condition = .condition_quantify_branch_motifs,
     signature = signature
   )
 }
@@ -445,51 +629,6 @@ step_quantify_branch_motifs <- function(method = "relative") {
     ))
   }
   list(check = TRUE, reason = NULL)
-}
-
-#' Run branch motif quantification
-#'
-#' @param ctx Analysis context.
-#' @inheritParams step_quantify_branch_motifs
-#'
-#' @returns Updated analysis context.
-#' @noRd
-.run_quantify_branch_motifs <- function(ctx, method) {
-  exp <- ctx_get_data(ctx, "exp")
-  motifs <- glymotif::branch_motifs()
-
-  branch_motif_exp <- glydet::quantify_motifs(
-    exp,
-    motifs = motifs,
-    method = method,
-    ignore_linkages = FALSE
-  )
-
-  ctx <- ctx_add_data(ctx, "branch_motif_exp", branch_motif_exp)
-  ctx_add_table(
-    ctx,
-    "branch_motifs",
-    .as_data_tibble(branch_motif_exp),
-    "Branch motif quantification results."
-  )
-}
-
-#' Report branch motif quantification results
-#'
-#' @param x Analysis context after running branch motif quantification.
-#'
-#' @returns A summary string for the report.
-#' @noRd
-.report_quantify_branch_motifs <- function(x) {
-  tbl <- x$tables[["branch_motifs"]]
-  n_motifs <- length(unique(tbl$trait))
-  paste0(
-    "Branch motif quantification was performed. ",
-    "Branching motifs for N-glycans were extracted. ",
-    "Number of quantified motifs: ",
-    n_motifs,
-    "."
-  )
 }
 
 #' Step: ROC Analysis
