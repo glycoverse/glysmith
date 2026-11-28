@@ -134,7 +134,7 @@ polish_report <- function(
     steps_executed <- x$meta$steps
   }
 
-  step_map <- x$blueprint
+  step_map <- x$meta$nodes
   ids <- steps_executed
 
   if (isTRUE(use_ai)) {
@@ -150,20 +150,7 @@ polish_report <- function(
     if (is.null(s)) {
       return(list(id = id, label = id, content = NULL))
     }
-    content <- NULL
-    if (is.function(s$report)) {
-      content <- tryCatch(
-        s$report(x),
-        error = function(e) {
-          paste0(
-            "Report generation failed for step `",
-            id,
-            "`: ",
-            conditionMessage(e)
-          )
-        }
-      )
-    }
+    content <- x$meta$reports[[id]]
 
     # Apply AI polishing if enabled and content is not empty
     if (isTRUE(use_ai)) {
@@ -178,7 +165,7 @@ polish_report <- function(
       content <- stringr::str_remove_all(content, "<AI>[\\s\\S]*?</AI>")
     }
 
-    list(id = s$id, label = s$label, content = content)
+    list(id = id, label = s$label, content = content)
   })
 }
 
@@ -353,7 +340,7 @@ polish_report <- function(
   }
 
   id <- stringr::str_trim(id)
-  on_labels <- .on_suffix_labels()
+  id <- sub("^node_[0-9]+__", "", id)
 
   if (id == "volcano") {
     return("Volcano plot")
@@ -364,52 +351,6 @@ polish_report <- function(
     contrast <- stringr::str_replace_all(contrast, "_", " ")
     contrast <- stringr::str_squish(contrast)
     return(paste0("Volcano plot: ", contrast))
-  }
-
-  if (stringr::str_starts(id, "heatmap")) {
-    parts <- stringr::str_split_1(id, "_")
-    suffix <- .extract_on_suffix(parts[-1])$suffix
-    if (!is.null(suffix)) {
-      return(paste("Heatmap of", on_labels[[suffix]]))
-    }
-    return("Heatmap")
-  }
-
-  if (stringr::str_starts(id, "pca")) {
-    parts <- stringr::str_split_1(id, "_")
-    info <- .extract_on_suffix(parts[-1])
-    suffix <- info$suffix
-    rest <- info$rest
-    label <- "PCA"
-    if (length(rest) > 0) {
-      label <- paste(label, stringr::str_to_title(paste(rest, collapse = " ")))
-    }
-    if (!is.null(suffix)) {
-      label <- paste0(label, " (", on_labels[[suffix]], ")")
-    }
-    return(.fix_plot_abbrev(label))
-  }
-
-  if (stringr::str_starts(id, "tsne")) {
-    parts <- stringr::str_split_1(id, "_")
-    info <- .extract_on_suffix(parts[-1])
-    suffix <- info$suffix
-    label <- "t-SNE"
-    if (!is.null(suffix)) {
-      label <- paste0(label, " (", on_labels[[suffix]], ")")
-    }
-    return(label)
-  }
-
-  if (stringr::str_starts(id, "umap")) {
-    parts <- stringr::str_split_1(id, "_")
-    info <- .extract_on_suffix(parts[-1])
-    suffix <- info$suffix
-    label <- "UMAP"
-    if (!is.null(suffix)) {
-      label <- paste0(label, " (", on_labels[[suffix]], ")")
-    }
-    return(label)
   }
 
   label <- stringr::str_replace_all(id, "_", " ")
@@ -447,11 +388,6 @@ polish_report <- function(
 
   desc <- description
   desc <- stringr::str_replace_all(desc, "_vs_", " vs ")
-  desc <- stringr::str_replace_all(
-    desc,
-    "\\b(sig_trait_exp|sig_dynamic_motif_exp|sig_branch_motif_exp|sig_exp|trait_exp|dynamic_motif_exp|branch_motif_exp|exp)\\b",
-    function(x) .humanize_on_label(x)
-  )
   desc <- stringr::str_replace_all(desc, "_", " ")
   desc <- stringr::str_squish(desc)
   desc <- .fix_plot_abbrev(desc)
@@ -554,67 +490,6 @@ polish_report <- function(
   }
 
   content
-}
-
-.humanize_on_label <- function(on) {
-  on <- stringr::str_to_lower(on)
-  purrr::map_chr(on, function(x) {
-    switch(
-      x,
-      sig_exp = "significant variables",
-      trait_exp = "traits",
-      sig_trait_exp = "significant traits",
-      dynamic_motif_exp = "dynamic motifs",
-      sig_dynamic_motif_exp = "significant dynamic motifs",
-      branch_motif_exp = "branch motifs",
-      sig_branch_motif_exp = "significant branch motifs",
-      exp = "variables",
-      x
-    )
-  })
-}
-
-.on_suffix_labels <- function() {
-  c(
-    sig = "significant variables",
-    trait = "traits",
-    sig_trait = "significant traits",
-    dynamic_motif = "dynamic motifs",
-    sig_dynamic_motif = "significant dynamic motifs",
-    branch_motif = "branch motifs",
-    sig_branch_motif = "significant branch motifs"
-  )
-}
-
-.extract_on_suffix <- function(parts) {
-  if (length(parts) == 0) {
-    return(list(suffix = NULL, rest = character(0)))
-  }
-
-  labels <- .on_suffix_labels()
-
-  # Check for 3-part candidates first (e.g., "sig_dynamic_motif", "sig_branch_motif")
-  if (length(parts) >= 3) {
-    candidate <- paste(parts[1:3], collapse = "_")
-    if (candidate %in% names(labels)) {
-      return(list(suffix = candidate, rest = parts[-c(1, 2, 3)]))
-    }
-  }
-
-  # Check for 2-part candidates (e.g., "dynamic_motif", "branch_motif", "sig_trait")
-  if (length(parts) >= 2) {
-    candidate <- paste(parts[1:2], collapse = "_")
-    if (candidate %in% names(labels)) {
-      return(list(suffix = candidate, rest = parts[-c(1, 2)]))
-    }
-  }
-
-  # Check for 1-part candidates (e.g., "exp", "trait")
-  if (parts[1] %in% names(labels)) {
-    return(list(suffix = parts[1], rest = parts[-1]))
-  }
-
-  list(suffix = NULL, rest = parts)
 }
 
 #' Organize report sections with AI.

@@ -86,8 +86,8 @@ step_plot_qc <- function(
 
   step(
     id = id,
+    connected = .exp_port(),
     label = label,
-    repeatable = TRUE,
     run = function(ctx) {
       .run_plot_qc(
         ctx,
@@ -99,7 +99,6 @@ step_plot_qc <- function(
         plots
       )
     },
-    require = "exp",
     packages = c(
       "glyclean",
       switch(
@@ -239,7 +238,7 @@ step_plot_qc <- function(
 #' - `exp`: The experiment to preprocess
 #'
 #' Data generated:
-#' - `raw_exp`: The input to the first preprocessing step
+#' - `raw_exp`: The input to this preprocessing step
 #'
 #' Subsequent steps read the processed experiment from `exp`.
 #'
@@ -279,6 +278,7 @@ step_preprocess <- function(
 
   step(
     id = "preprocess",
+    connected = .exp_port("exp"),
     label = "Preprocessing",
     run = function(ctx) {
       .run_preprocess(
@@ -298,8 +298,6 @@ step_preprocess <- function(
     report = function(x) {
       .report_preprocess(x)
     },
-    require = "exp",
-    initialize = "raw_exp",
     packages = "glyclean",
     signature = signature
   )
@@ -370,8 +368,8 @@ step_preprocess <- function(
 #' Normalize sample abundances
 #'
 #' Use [glyclean::auto_normalize()] or select a `normalize_*` function by
-#' its suffix. The step updates the active experiment (`exp`). The first
-#' cleaning step saves its input in `raw_exp`.
+#' its suffix. The step updates the active experiment (`exp`). Each
+#' cleaning step saves its input with its node ID and the suffix `__raw_exp`.
 #'
 #' @param method Use `"auto"` to choose by experiment type, or select
 #'   `"median"`, `"median_abs"`, `"median_quotient"`, `"total_area"`,
@@ -382,7 +380,7 @@ step_preprocess <- function(
 #'   within groups, and [glyclean::normalize_rlrmacyc()] accepts `n_iter`.
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_normalize("median_quotient", by = "group"), step_pca())
+#' blueprint(step_normalize("median_quotient", by = "group") %=>% step_pca())
 #' @export
 step_normalize <- function(
   method = c(
@@ -480,7 +478,7 @@ step_impute <- function(
 #'   `strict`. [glyclean::auto_remove()] takes `preset` and `group_col`.
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_remove("rare", prop = 0.4), step_remove("constant"))
+#' blueprint(step_remove("rare", prop = 0.4) %=>% step_remove("constant"))
 #' @export
 step_remove <- function(
   method = c("auto", "rare", "constant", "low_var", "low_cv", "low_expr"),
@@ -501,7 +499,7 @@ step_remove <- function(
 #'
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_zero_to_na(), step_remove("rare"), step_impute("min_prob"))
+#' blueprint(step_zero_to_na() %=>% step_remove("rare") %=>% step_impute("min_prob"))
 #' @export
 step_zero_to_na <- function() {
   .clean_step("zero_to_na", "Convert zeros to missing values")
@@ -586,6 +584,7 @@ step_correct_batch_effect <- function(
 step_detect_batch_effect <- function(batch = "batch", group = NULL) {
   step(
     id = "detect_batch_effect",
+    connected = .exp_port(),
     label = "Detect batch effects",
     run = function(ctx) {
       exp <- ctx_get_data(ctx, "exp")
@@ -594,7 +593,6 @@ step_detect_batch_effect <- function(batch = "batch", group = NULL) {
       tbl <- tibble::tibble(.variable = ids, p_value = unname(p))
       ctx_add_table(ctx, "batch_effect", tbl, "Batch effect ANOVA by feature.")
     },
-    require = "exp",
     packages = "glyclean",
     signature = rlang::expr_deparse(match.call())
   )
@@ -632,6 +630,7 @@ step_transform_log <- function(base = 2) {
   force(args)
   step(
     id = id,
+    connected = .exp_port("exp"),
     label = label,
     run = function(ctx) {
       if (!operation %in% getNamespaceExports("glyclean")) {
@@ -647,11 +646,7 @@ step_transform_log <- function(base = 2) {
       result <- rlang::exec(fun, !!!input, !!!args)
       .store_preprocessed_exp(ctx, result)
     },
-    require = "exp",
-    initialize = "raw_exp",
     packages = c("glyclean", packages),
-    repeatable = TRUE,
-    stop_on_error = TRUE,
     signature = rlang::expr_deparse(call)
   )
 }
@@ -665,29 +660,7 @@ step_transform_log <- function(base = 2) {
 
 #' Compositional data transformation
 #'
-#' Transform the selected experiment to centered log-ratio (CLR) or additive
-#' log-ratio (ALR) coordinates. By default, [glyclean::auto_coda()] chooses
-#' the transformation.
-#'
-#' @details
-#' Place this step after abundance preprocessing and before statistical
-#' analysis. The input must contain finite, positive abundances on the raw
-#' scale or finite values on a known log scale. A transformation error stops
-#' the blueprint so subsequent tests cannot accidentally use the input scale.
-#'
-#' The step replaces `on` with the transformed experiment and saves its
-#' previous value in `pre_coda_<on>` (by default, `pre_coda_exp`). Subsequent
-#' steps targeting the same experiment use its log2-ratio coordinates
-#' directly. A successful ALR omits the reference feature from those tests.
-#' Use [glyclean::get_pipeline()] on the output to see which transform ran.
-#'
-#' Differential tests return p-values on these coordinates. For example,
-#' limma's `estimate` is the contrast in log2-ratio units. Abundance
-#' `log2fc` is undefined, so significant features are selected by p-value
-#' ([glystats::filter_sig_vars()] ignores an explicit fold-change cutoff
-#' with a warning). Volcano plots and fold-change-based protein enrichment
-#' are skipped. Run abundance QC, trait derivation, and motif
-#' quantification before transforming the main experiment.
+#' Analyze the experiment supplied by the upstream step.
 #'
 #' @inheritParams glyclean::auto_coda
 #' @param method Use `"auto"` (default) for [glyclean::auto_coda()], `"clr"`
@@ -696,17 +669,12 @@ step_transform_log <- function(base = 2) {
 #'   experiments, it uses CLR for up to 50 features and attempts ALR above 50.
 #'   The ALR method falls back to CLR if no suitable reference is available.
 #'   Glycoproteomics supports `"auto"` and `"clr"`.
-#' @param on Name of the experiment in the blueprint. Defaults to `"exp"`.
-#'   For example, use `"dynamic_motif_exp"` or `"branch_motif_exp"` after
-#'   quantifying motifs, then use the same `on` in the statistical step.
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_coda(by = "group", gamma = 0), step_pca(), step_dea_limma())
+#' blueprint(step_coda(by = "group", gamma = 0) %=>% fork(step_pca(), step_dea_limma()))
 #' step_coda(method = "clr", gamma = 0)
 #' blueprint(
-#'   step_quantify_branch_motifs(),
-#'   step_coda(on = "branch_motif_exp"),
-#'   step_dea_limma(on = "branch_motif_exp")
+#'   step_quantify_branch_motifs() %=>% step_coda() %=>% step_dea_limma()
 #' )
 #' @export
 step_coda <- function(
@@ -714,20 +682,19 @@ step_coda <- function(
   by = NULL,
   gamma = 0.1,
   group_scales = NULL,
-  seed = 123,
-  on = "exp"
+  seed = 123
 ) {
   signature <- rlang::expr_deparse(match.call())
   method <- rlang::arg_match(method, c("auto", "clr", "alr"))
-  on_meta <- .resolve_on(on)
-  backup <- paste0("pre_coda_", on)
+  backup <- "pre_coda_exp"
   args <- list(by = by, gamma = gamma, group_scales = group_scales, seed = seed)
 
   step(
-    id = paste0("coda", on_meta$id_suffix),
-    label = paste0("Compositional data transformation", on_meta$label_suffix),
+    id = "coda",
+    connected = .exp_port("exp"),
+    label = "Compositional data transformation",
     run = function(ctx) {
-      exp <- ctx_get_data(ctx, on)
+      exp <- ctx$data$exp
       transform <- switch(
         method,
         auto = glyclean::auto_coda,
@@ -736,19 +703,16 @@ step_coda <- function(
       )
       transformed <- rlang::exec(transform, exp, !!!args)
       ctx <- ctx_add_data(ctx, backup, exp)
-      ctx_add_data(ctx, on, transformed)
+      ctx_add_data(ctx, "exp", transformed)
     },
     report = function(x) {
       paste0(
         "The `",
-        on,
+        "the input experiment",
         "` experiment was transformed to log2-ratio coordinates."
       )
     },
-    require = on,
-    generate = backup,
     packages = "glyclean",
-    stop_on_error = TRUE,
     signature = signature
   )
 }
@@ -788,6 +752,7 @@ step_subset_groups <- function(groups = NULL) {
 
   step(
     id = "subset_groups",
+    connected = .exp_port("exp"),
     label = "Subset groups",
     condition = function(ctx) {
       .condition_subset_groups(ctx, groups = groups)
@@ -795,8 +760,6 @@ step_subset_groups <- function(groups = NULL) {
     run = function(ctx) {
       .run_subset_groups(ctx, groups = groups)
     },
-    require = "exp",
-    generate = "full_exp",
     signature = signature
   )
 }
@@ -973,6 +936,7 @@ step_adjust_protein <- function(
 
   step(
     id = "adjust_protein",
+    connected = .exp_port("exp"),
     label = "Protein adjustment",
     condition = function(ctx) {
       .condition_adjust_protein(ctx, pro_expr_path = pro_expr_path)
@@ -988,8 +952,6 @@ step_adjust_protein <- function(
     report = function(x) {
       .report_adjust_protein(x)
     },
-    require = "exp",
-    generate = "unadj_exp",
     packages = "glyclean",
     signature = signature
   )
@@ -1084,6 +1046,7 @@ step_ident_overview <- function(count_struct = NULL) {
   signature <- rlang::expr_deparse(match.call())
   step(
     id = "ident_overview",
+    connected = .exp_port(),
     label = "Identification overview",
     run = function(ctx) {
       .run_ident_overview(ctx, count_struct = count_struct)
@@ -1091,7 +1054,6 @@ step_ident_overview <- function(count_struct = NULL) {
     report = function(x) {
       .report_ident_overview(x)
     },
-    require = "exp",
     signature = signature
   )
 }

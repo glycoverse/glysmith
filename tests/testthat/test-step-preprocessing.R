@@ -8,7 +8,7 @@ test_that("step_preprocess overwrites exp and writes raw_exp", {
   bp <- blueprint(step_preprocess())
   suppressMessages(res <- forge_analysis_se(exp, bp))
   new_exp <- res$data$exp
-  raw_exp <- res$data$raw_exp
+  raw_exp <- res$data$node_1__raw_exp
   expect_equal(
     sum(SummarizedExperiment::assay(raw_exp), na.rm = TRUE),
     old_sum
@@ -115,15 +115,15 @@ test_that("step_plot_qc generates plots with correct prefixes", {
   # Test pre-QC with qc_pre_ prefix (includes missing value plots)
   bp_pre <- blueprint(step_plot_qc(when = "pre"))
   suppressMessages(res_pre <- forge_analysis_se(exp, bp_pre))
-  expect_true("qc_pre_missing_heatmap" %in% names(res_pre$plots))
-  expect_false("qc_missing_heatmap" %in% names(res_pre$plots))
-  expect_true("qc_pre_tic_bar" %in% names(res_pre$plots)) # common plot with pre_ prefix
+  expect_true("node_1__qc_pre_missing_heatmap" %in% names(res_pre$plots))
+  expect_false("node_1__qc_missing_heatmap" %in% names(res_pre$plots))
+  expect_true("node_1__qc_pre_tic_bar" %in% names(res_pre$plots)) # common plot with pre_ prefix
 
   # Test post-QC with standard qc_ prefix (missing value plots are pre-only)
   bp_post <- blueprint(step_plot_qc(when = "post"))
   suppressMessages(res_post <- forge_analysis_se(exp, bp_post))
-  expect_true("qc_tic_bar" %in% names(res_post$plots)) # common plot uses standard prefix
-  expect_false("qc_pre_tic_bar" %in% names(res_post$plots))
+  expect_true("node_1__qc_tic_bar" %in% names(res_post$plots)) # common plot uses standard prefix
+  expect_false("node_1__qc_pre_tic_bar" %in% names(res_post$plots))
 })
 
 test_that("step_plot_qc can appear twice in a blueprint", {
@@ -132,22 +132,23 @@ test_that("step_plot_qc can appear twice in a blueprint", {
   exp <- as_test_glyco_se(exp)
 
   bp <- blueprint(
-    step_plot_qc(when = "pre"),
-    step_preprocess(),
-    step_plot_qc(when = "post")
+    br("before", step_plot_qc(when = "pre")) %=>%
+      step_preprocess() %=>%
+      step_plot_qc(when = "post")
   )
-  expect_equal(length(bp), 3)
-  expect_equal(names(bp)[1], "plot_qc_pre")
-  expect_equal(names(bp)[3], "plot_qc_post")
+  nodes <- .compile_blueprint(bp)$nodes
+  expect_length(nodes, 3)
+  expect_equal(nodes[[1]]$step$id, "plot_qc_pre")
+  expect_equal(nodes[[3]]$step$id, "plot_qc_post")
 
   suppressMessages(res <- forge_analysis_se(exp, bp))
   # Pre-QC has pre_ prefix for all plots including common ones
-  expect_true("qc_pre_missing_heatmap" %in% names(res$plots))
-  expect_true("qc_pre_tic_bar" %in% names(res$plots))
+  expect_true("node_1__qc_pre_missing_heatmap" %in% names(res$plots))
+  expect_true("node_1__qc_pre_tic_bar" %in% names(res$plots))
   # Post-QC has standard prefix for common plots (missing plots are pre-only)
-  expect_true("qc_tic_bar" %in% names(res$plots))
+  expect_true("node_3__qc_tic_bar" %in% names(res$plots))
   # Both pre and post QC plots exist
-  expect_true("qc_pre_tic_bar" %in% names(res$plots))
+  expect_true("node_1__qc_pre_tic_bar" %in% names(res$plots))
 })
 
 # ----- step_subset_groups -----
@@ -165,8 +166,8 @@ test_that("step_subset_groups filters exp and keeps full_exp", {
   groups <- unique(as.character(sample_info$group))
   expect_setequal(groups, c("H", "C"))
   expect_equal(levels(sample_info$group), c("H", "C"))
-  expect_true("full_exp" %in% names(res$data))
-  full_sample_info <- SummarizedExperiment::colData(res$data$full_exp)
+  expect_true("node_1__full_exp" %in% names(res$data))
+  full_sample_info <- SummarizedExperiment::colData(res$data$node_1__full_exp)
   expect_gt(
     length(unique(as.character(full_sample_info$group))),
     length(groups)
@@ -180,7 +181,7 @@ test_that("step_ident_overview generates summary", {
   exp <- as_test_glyco_se(exp)
   bp <- blueprint(step_ident_overview())
   suppressMessages(res <- forge_analysis_se(exp, bp))
-  expect_true("summary" %in% names(res$tables))
+  expect_true("node_1__summary" %in% names(res$tables))
 })
 
 # ----- step_adjust_protein -----
@@ -234,12 +235,15 @@ test_that("step_adjust_protein adjusts exp from csv/tsv/rds", {
 
   purrr::walk(c(csv_path, tsv_path, rds_path), function(path) {
     res <- run_adjust(path)
-    expect_true("unadj_exp" %in% names(res$data))
+    expect_true("node_1__unadj_exp" %in% names(res$data))
     expect_true("exp" %in% names(res$data))
     expect_false(
       isTRUE(all.equal(
         sum(SummarizedExperiment::assay(res$data$exp), na.rm = TRUE),
-        sum(SummarizedExperiment::assay(res$data$unadj_exp), na.rm = TRUE)
+        sum(
+          SummarizedExperiment::assay(res$data$node_1__unadj_exp),
+          na.rm = TRUE
+        )
       ))
     )
   })
@@ -252,6 +256,6 @@ test_that("step_plot_qc accepts NULL as the generic QC stage", {
   expect_s3_class(qc, "glysmith_step")
   expect_identical(qc$id, "plot_qc_generic")
   expect_identical(qc$label, "QC")
-  expect_true(qc$repeatable)
+  expect_no_error(blueprint(fork(qc, qc)))
   expect_no_error(blueprint(qc))
 })

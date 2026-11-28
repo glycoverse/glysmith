@@ -4,14 +4,9 @@
 \alias{step_heatmap}
 \title{Step: Heatmap}
 \usage{
-step_heatmap(on = "exp", plot_width = 7, plot_height = 7, ...)
+step_heatmap(plot_width = 7, plot_height = 7, ...)
 }
 \arguments{
-\item{on}{Name of the experiment data in \code{ctx$data} to plot.
-One of "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
-Default is "exp".}
-
 \item{plot_width}{Width of the plot in inches. Default is 7.}
 
 \item{plot_height}{Height of the plot in inches. Default is 7.}
@@ -24,42 +19,10 @@ A \code{glysmith_step} object.
 \description{
 Create a heatmap plot using \code{glyvis::plot_heatmap()}.
 The heatmap visualizes expression values across samples.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-}
-\details{
-Data required:
-\itemize{
-\item Depends on \code{on} parameter (default: \code{exp})
-}
-
-Plots generated:
-\itemize{
-\item \code{heatmap}: A heatmap plot (if \code{on = "exp"})
-\item \code{sig_heatmap}: A heatmap plot (if \code{on = "sig_exp"})
-\item \code{trait_heatmap}: A heatmap plot (if \code{on = "trait_exp"})
-\item \code{sig_trait_heatmap}: A heatmap plot (if \code{on = "sig_trait_exp"})
-\item \code{dynamic_motif_heatmap}: A heatmap plot (if \code{on = "dynamic_motif_exp"})
-\item \code{sig_dynamic_motif_heatmap}: A heatmap plot (if \code{on = "sig_dynamic_motif_exp"})
-\item \code{branch_motif_heatmap}: A heatmap plot (if \code{on = "branch_motif_exp"})
-\item \code{sig_branch_motif_heatmap}: A heatmap plot (if \code{on = "sig_branch_motif_exp"})
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_heatmap()
-step_heatmap(on = "sig_exp")
-step_heatmap(on = "trait_exp")
 }
 \seealso{
 \code{\link[glyvis:plot_heatmap]{glyvis::plot_heatmap()}}

@@ -3,14 +3,14 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   local_mock_glycan_fact()
 
   bp <- blueprint(
-    step_preprocess(),
-    step_pca()
+    step_preprocess() %=>%
+      step_pca()
   )
 
   prompt_received <- NULL
   mock_chat_fun <- function(prompt) {
     prompt_received <<- prompt
-    "{\"explanation\":\"Add heatmap.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_heatmap()\"]}"
+    "{\"explanation\":\"Add heatmap.\",\"steps\":[\"step_preprocess() %=>% fork(step_pca(), step_heatmap())\"]}"
   }
 
   local_mocked_bindings(
@@ -25,7 +25,7 @@ test_that("modify_blueprint includes current blueprint in prompt", {
   expect_true(grepl("step_preprocess\\(\\)", prompt_received))
   expect_true(grepl("step_pca\\(\\)", prompt_received))
   expect_s3_class(bp_updated, "glysmith_blueprint")
-  expect_length(bp_updated, 3)
+  expect_length(.compile_blueprint(bp_updated)$nodes, 3)
 })
 
 test_that("modify_blueprint accepts new and legacy glyco containers", {
@@ -37,7 +37,7 @@ test_that("modify_blueprint accepts new and legacy glyco containers", {
     prompts <<- c(prompts, prompt)
     paste0(
       '{"explanation":"Add PCA.",',
-      '"steps":["step_preprocess()","step_pca()"]}'
+      '"steps":["step_preprocess() %=>% step_pca()"]}'
     )
   }
   local_mocked_bindings(
@@ -67,7 +67,7 @@ test_that("modify_blueprint can use a non-DeepSeek provider", {
   captured <- list()
   mock_chat_fun <- function(prompt) {
     captured$prompt <<- prompt
-    "{\"explanation\":\"Add PCA.\",\"steps\":[\"step_preprocess()\",\"step_pca()\"]}"
+    "{\"explanation\":\"Add PCA.\",\"steps\":[\"step_preprocess() %=>% step_pca()\"]}"
   }
 
   local_mocked_bindings(
@@ -116,7 +116,7 @@ test_that("modify_blueprint retries on invalid output", {
     ) {
       error_feedback_received <<- TRUE
     }
-    "{\"explanation\":\"Valid JSON\",\"steps\":[\"step_preprocess()\",\"step_pca()\"]}"
+    "{\"explanation\":\"Valid JSON\",\"steps\":[\"step_preprocess() %=>% step_pca()\"]}"
   }
 
   local_mocked_bindings(
@@ -147,7 +147,7 @@ test_that("modify_blueprint prints retry feedback only for invalid outputs", {
       "invalid_code",
       '{"question":"What is your main research objective?"}',
       '{"question":"Which groups do you want to compare?"}',
-      '{"explanation":"Add PCA.","steps":["step_preprocess()","step_pca()"]}'
+      '{"explanation":"Add PCA.","steps":["step_preprocess() %=>% step_pca()"]}'
     )
   }
 
@@ -208,7 +208,7 @@ test_that("modify_blueprint handles single clarification question from LLM", {
     }
     # Second call should include the clarification
     expect_true(grepl(pro_expr_path, prompt, fixed = TRUE))
-    '{"explanation":"Add protein adjustment step.","steps":["step_preprocess()","step_adjust_protein()"]}'
+    '{"explanation":"Add protein adjustment step.","steps":["step_preprocess() %=>% step_adjust_protein()"]}'
   }
 
   local_mocked_bindings(
@@ -236,4 +236,24 @@ test_that("modify_blueprint handles single clarification question from LLM", {
   expect_s3_class(bp_updated, "glysmith_blueprint")
   expect_equal(call_count, 2)
   expect_true(grepl(pro_expr_path, prompt_received, fixed = TRUE))
+})
+
+test_that("the AI editor round trips named nested routes with their original connections", {
+  bp <- blueprint(
+    br("overview", step_ident_overview()) %=>%
+      fork(
+        traits = blueprint(
+          step_derive_traits() %=>%
+            fork(step_pca(), step_dea_anova())
+        ),
+        abundance = step_dea_limma()
+      )
+  )
+  response <- jsonlite::toJSON(list(steps = .format_blueprint_for_prompt(bp)))
+  parsed <- .process_blueprint_response(response)
+  expect_true(parsed$valid)
+  expect_identical(
+    capture.output(print(parsed$blueprint)),
+    capture.output(print(bp))
+  )
 })

@@ -2,24 +2,35 @@
 % Please edit documentation in R/blueprint.R
 \name{blueprint}
 \alias{blueprint}
-\title{Create a Blueprint}
+\alias{\%=>\%}
+\title{Compose a tree of analytical steps}
 \usage{
 blueprint(...)
+
+lhs \%=>\% rhs
 }
 \arguments{
-\item{...}{One or more step objects.}
+\item{...}{One or more routes, optionally named. A trailing comma is allowed.}
+
+\item{lhs, rhs}{Steps, routes, forks, side branches or reusable blueprints.}
 }
 \value{
-A blueprint object.
+\code{blueprint()} returns a validated blueprint. Printing it draws each
+step beneath its producer and shows its result ID. \verb{\%=>\%} returns an
+ordered route for use in a blueprint. Neither constructor runs the analysis.
 }
 \description{
-A blueprint is a list of steps that are executed in order.
-Type \code{step_} and TAB in RStudio to see all available steps.
+Connect a producer to its consumer with \verb{\%=>\%}. Routes separated by
+commas in \code{blueprint()} start independently from the original experiment.
+Use \code{\link[=fork]{fork()}} to share an intermediate output and \code{\link[=br]{br()}} for a side route
+that leaves the outer connection available. See \code{vignette("blueprint")}.
 }
 \examples{
 blueprint(
-  step_preprocess(),
-  step_pca(),
-  step_dea_limma(),  # this comma is ok
+  step_preprocess() \%=>\% step_dea_limma() \%=>\% fork(
+    step_volcano(),
+    step_filter_sig_vars() \%=>\% step_heatmap()
+  )
 )
+blueprint(scores = step_pca(), differential = step_dea_limma())
 }

@@ -7,13 +7,6 @@ test_that("step_cox creates a valid step", {
   expect_equal(step_obj$label, "Cox proportional hazards model")
 })
 
-test_that("step_cox with on parameter creates proper id and label", {
-  step_obj <- step_cox(on = "sig_exp")
-  expect_equal(step_obj$id, "cox_sig")
-  # Label format uses "of" instead of parentheses
-  expect_true(grepl("significant variables", step_obj$label))
-  expect_true(grepl("Cox", step_obj$label))
-})
 
 test_that("step_cox with custom time and event columns works", {
   step_obj <- step_cox(time_col = "survival_time", event_col = "death")
@@ -131,8 +124,8 @@ test_that("step_cox report function works with results", {
   bp <- blueprint(step_cox())
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  step <- res$blueprint$cox
-  suppressMessages(report_output <- step$report(res))
+  step <- bp[[1]]
+  report_output <- res$meta$reports$node_1
   expect_type(report_output, "character")
   expect_true(nchar(report_output) > 0)
   expect_true(grepl("Cox", report_output))
@@ -160,7 +153,7 @@ test_that("step_cox report handles empty results", {
     class = "glysmith_result"
   )
 
-  step <- res$blueprint$cox
+  step <- bp[[1]]
   report_output <- step$report(res)
   expect_equal(report_output, "No Cox regression results available.")
 })
@@ -187,7 +180,7 @@ test_that("step_cox generates table with expected columns", {
   bp <- blueprint(step_cox())
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  cox_table <- res$tables$cox
+  cox_table <- res$tables$node_1__cox
   expect_true(nrow(cox_table) > 0)
   expect_true(".variable" %in% colnames(cox_table))
   expect_true("coefficient" %in% colnames(cox_table))
@@ -217,7 +210,7 @@ test_that("step_cox stores raw result", {
   bp <- blueprint(step_cox())
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
-  expect_true("cox_raw_res" %in% names(res$data))
+  expect_true("node_1__cox_raw_res" %in% names(res$data))
 })
 
 test_that("step_cox with bonferroni adjustment works", {

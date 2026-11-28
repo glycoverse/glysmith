@@ -2,10 +2,9 @@
 % Please edit documentation in R/step-dea.R
 \name{step_dea_kruskal}
 \alias{step_dea_kruskal}
-\title{Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test}
+\title{Differential analysis using the Kruskal-Wallis test}
 \usage{
 step_dea_kruskal(
-  on = "exp",
   p_adj_method = "BH",
   filter_p_adj_cutoff = 0.05,
   filter_p_val_cutoff = NULL,
@@ -16,75 +15,27 @@ step_dea_kruskal(
 )
 }
 \arguments{
-\item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
-Default is \code{"exp"} for differential expression analysis.
-Use \code{"trait_exp"} for differential trait analysis.
-Use \code{"dynamic_motif_exp"} for differential dynamic motif analysis.
-Use \code{"branch_motif_exp"} for differential branch motif analysis.}
-
 \item{p_adj_method}{A character string specifying the method to adjust p-values.
 See \code{p.adjust.methods} for available methods. Default is "BH".
 If NULL, no adjustment is performed.}
 
-\item{filter_p_adj_cutoff}{Adjusted p-value cutoff for filtering.}
+\item{filter_p_adj_cutoff, filter_p_val_cutoff, filter_fc_cutoff}{Default
+adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.}
 
-\item{filter_p_val_cutoff}{Raw p-value cutoff for filtering.}
+\item{filter_on}{Default test to select in a downstream filter, either
+\code{"main_test"} or \code{"post_hoc_test"}.}
 
-\item{filter_fc_cutoff}{Fold change cutoff for filtering.}
-
-\item{filter_on}{Filter on "main_test" or "post_hoc_test" for Kruskal-Wallis results.}
-
-\item{filter_comparison}{Comparison name for post-hoc filtering.}
+\item{filter_comparison}{Default comparison for the post-hoc filter.}
 
 \item{...}{Additional arguments passed to \code{\link[glystats:gly_kruskal]{glystats::gly_kruskal()}}.}
 }
 \value{
-A \code{glysmith_step} object.
+A step producing a fitted differential result.
 }
 \description{
-Run differential analysis using Kruskal-Wallis analysis via \code{glystats::gly_kruskal()},
-then filter the experiment to keep only the differentially expressed variables using \code{glystats::filter_sig_vars()}.
-By default, this runs DEA on the main experiment (\code{exp}), but can be configured
-to run on derived traits (\code{trait_exp}) or other experiment objects.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-}
-}
-\details{
-Data required:
-\itemize{
-\item Depends on \code{on} parameter (default: \code{exp})
-}
-
-Data generated:
-\itemize{
-\item \code{dea_res}: The DEA results (if \code{on = "exp"}, default)
-\item \code{dta_res}: The DTA results (if \code{on = "trait_exp"})
-\item \code{dynamic_dma_res}: The DMA results (if \code{on = "dynamic_motif_exp"})
-\item \code{branch_dma_res}: The DMA results (if \code{on = "branch_motif_exp"})
-\item \code{sig_exp}: The filtered experiment (if \code{on = "exp"}, default)
-\item \code{sig_trait_exp}: The filtered trait experiment (if \code{on = "trait_exp"})
-\item \code{sig_dynamic_motif_exp}: The filtered dynamic motif experiment (if \code{on = "dynamic_motif_exp"})
-\item \code{sig_branch_motif_exp}: The filtered branch motif experiment (if \code{on = "branch_motif_exp"})
-}
-
-Tables generated:
-\itemize{
-\item \code{dea_main_test}, \code{dea_post_hoc_test}: Tables containing the results (if \code{on = "exp"}, default)
-\item \code{dta_main_test}, \code{dta_post_hoc_test}: Tables containing the results (if \code{on = "trait_exp"})
-\item \code{dynamic_dma_main_test}, \code{dynamic_dma_post_hoc_test}: Tables containing the results (if \code{on = "dynamic_motif_exp"})
-\item \code{branch_dma_main_test}, \code{branch_dma_post_hoc_test}: Tables containing the results (if \code{on = "branch_motif_exp"})
-}
+Fit \code{\link[glystats:gly_kruskal]{glystats::gly_kruskal()}} to the incoming experiment. Connect
+\code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} to select variables or attach a compatible plot.
 }
 \examples{
-step_dea_kruskal()
-step_dea_kruskal(on = "trait_exp")  # Differential trait analysis
-}
-\seealso{
-\code{\link[glystats:gly_kruskal]{glystats::gly_kruskal()}}
+blueprint(step_dea_kruskal() \%=>\% step_filter_sig_vars())
 }

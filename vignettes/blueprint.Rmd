@@ -32,26 +32,99 @@ you might want to try having an LLM generate one for you with `inquire_blueprint
 Check out [this vignette](https://glycoverse.github.io/glysmith/articles/ai.html)
 for the details.
 
-## Step functions
+## Connect steps by their outputs
 
-`glysmith` comes with various step functions (anything starting with `step_`),
-each handling a specific analytical task.
-Chain them together with `blueprint()`:
+Use `%=>%` to pass the output of one step to the next. Each comma-separated
+argument to `blueprint()` starts a route on the original experiment.
+Glysmith reserves `%=>%` for blueprint composition. Ordinary R and magrittr data pipelines keep their own operators.
+The following routes each fit one model and give its result to two consumers.
+Use a two-group experiment for the t-test.
 
 ```{r}
-bp <- blueprint(
-  step_ident_overview(),  # Identification overview
-  step_preprocess(),      # Preprocess (normalization, imputation, etc.)
-  step_dea_limma(),       # DEA with limma
-  step_volcano(),         # Volcano plot
+dea_bp1 <- blueprint(
+  step_dea_limma() %=>% fork(
+    step_volcano(),
+    step_filter_sig_vars() %=>% step_heatmap()
+  )
 )
+dea_bp2 <- blueprint(
+  step_dea_ttest() %=>% fork(
+    step_volcano(),
+    step_filter_sig_vars() %=>% step_heatmap()
+  )
+)
+
+# Two independent entry routes run preprocessing twice.
+independent <- blueprint(
+  limma = step_preprocess() %=>% dea_bp1,
+  ttest = step_preprocess() %=>% dea_bp2,
+)
+
+# One preprocessing step supplies both saved analysis routes.
+shared <- blueprint(step_preprocess() %=>% fork(limma = dea_bp1, ttest = dea_bp2))
+print(shared)
 ```
 
-Now `bp` is ready to go — just pass it as the second argument to `forge_analysis()`:
+Each argument of `fork()` receives the current output. A fork can be nested or
+start at the inlet, and ends its route. A side route preserves that output for
+the next step. For example, `br("scores", step_pca()) %=>% step_dea_limma()`
+supplies the same experiment to PCA and limma.
 
-```r
-res <- forge_analysis(exp, bp)
+This blueprint derives traits once and fits ANOVA to both the abundance and
+trait experiments. PCA receives the same traits as the second ANOVA.
+
+```{r}
+inspect_fit <- blueprint(
+  step_dea_anova() %=>% fork(
+    strict = step_filter_sig_vars(0.01),
+    selected = step_filter_sig_vars() %=>% step_heatmap()
+  )
+)
+traits <- step_derive_traits() %=>% fork(step_pca(), inspect_fit)
+bp <- blueprint(step_preprocess() %=>% fork(abundances = inspect_fit, traits = traits))
+print(bp)
 ```
+
+| Step | Input | Main output |
+|:-----|:------|:------------|
+| Preprocessing, group subsetting, structure inference, traits, motifs | Experiment | Transformed experiment |
+| Limma, t-test, Wilcoxon | Experiment | Contrast fit |
+| ANOVA, Kruskal–Wallis | Experiment | Omnibus fit |
+| `step_filter_sig_vars()` | Either fit | Filtered experiment |
+| `step_volcano()` | Contrast fit with abundance fold changes | Terminal plot |
+| Enrichment | Fit and its bound experiment | Terminal analysis |
+| `step_sig_boxplot()` | Filtered experiment from `step_filter_sig_vars()` | Terminal plot |
+| QC, PCA and other dimension reduction, heatmap, ROC, correlation, Cox and other summaries | Experiment (including filtered) | Terminal analysis |
+
+DEA steps fit the experiment on their incoming wire. Set cutoffs on
+`step_filter_sig_vars()`. A fit's `filter_*` arguments supply defaults that each filter can override. To compare thresholds, use
+`blueprint(step_dea_anova() %=>% fork(step_filter_sig_vars(0.01), step_filter_sig_vars(0.05)))`.
+Each filter uses the exact experiment that produced the fit. A filter that
+selects zero variables succeeds and returns a zero-row experiment.
+Downstream analyses skip an empty input. A skipped or failed step blocks
+its descendants, and independent branches continue.
+
+```{r, eval = FALSE}
+result <- forge_analysis(glyexp::real_experiment2, bp)
+result$meta$nodes        # step, producer, route, status and reason
+cast_data(result)        # node outputs and auxiliary objects
+cast_plot(result)        # e.g. node_5__heatmap
+cast_table(result)
+glyvis::autoplot(cast_data(result, "node_2"))  # abundance ANOVA main test
+quench_result(result, "connected-results")
+polish_report(result, "connected-report.html", open = FALSE)
+```
+
+Use the printed node ID to retrieve its main output, e.g.
+`cast_data(result, "node_2")`. Plot, table and auxiliary object names start
+with the producing node ID and two underscores. The prepared input is available as
+`cast_data(result, "root")`. For each fit, its parent ID retrieves the experiment
+used to fit the model. `cast_exp()` returns the last
+experiment on the main route, or the input if that route only fits or plots.
+With multiple top-level routes, `cast_exp()` returns the original input. If the single main-route producer failed or was skipped, the main experiment is `NULL`.
+Significant-variable boxplots with more than 25 retained rows require unique fitted variable names for ranking.
+
+## Available steps
 
 Here's the full lineup of available step functions:
 
@@ -78,6 +151,7 @@ Here's the full lineup of available step functions:
 | `step_dea_anova()` | Differential expression analysis using ANOVA | No | GP/G |
 | `step_dea_wilcox()` | Differential expression analysis using Wilcoxon test | No | GP/G |
 | `step_dea_kruskal()` | Differential expression analysis using Kruskal-Wallis test | No | GP/G |
+| `step_filter_sig_vars()` | Filter the fitted experiment by significance | No | GP/G |
 | **Visualization** | | | |
 | `step_volcano()` | Create volcano plot from DEA results | No | GP/G |
 | `step_heatmap()` | Create heatmap plot | No | GP/G |
@@ -119,197 +193,16 @@ each sample to its total abundance.
 
 ```{r}
 bp <- blueprint(
-  step_zero_to_na(),
-  step_remove("rare", prop = 0.5, by = "group"),
-  step_impute("min_prob", seed = 42),
-  step_normalize("total_area"),
+  step_zero_to_na() %=>%
+  step_remove("rare", prop = 0.5, by = "group") %=>%
+  step_impute("min_prob", seed = 42) %=>%
+  step_normalize("total_area") %=>%
   step_plot_qc(when = "post", method = "rle", by = "group")
 )
 ```
 
-Each cleaning step reads the current `exp`. The first saves its input in
-`raw_exp`, and later steps use the output of the preceding step. Use
+Each cleaning step reads the experiment on its incoming connection. The root input and intermediate experiments are available through `cast_data()`. Use
 `method = "auto"` for automatic selection within a single operation, such
 as imputation. For an explicit method, supply the arguments of the matching
 glyclean function. For example, `step_impute("fw_knn", k = 3)` calls
 `glyclean::impute_fw_knn()` with three neighbors.
-
-## Step dependencies
-
-Some steps need data that other steps produce.
-For instance, `step_volcano()` needs results from a DEA step like `step_dea_limma()`.
-So this blueprint won't work:
-
-```r
-blueprint(  # this will error
-  step_preprocess(),      # Preprocess (normalization, imputation, etc.)
-  step_volcano(),         # Volcano plot
-)
-```
-
-The easiest way to figure out dependencies is to check the documentation for each step.
-For example, `?step_volcano()` tells you it
-"requires one of the DEA steps to be run:
-`step_dea_limma()`, `step_dea_ttest()`, `step_dea_wilcox()`".
-So as long as you run one of these DEA steps before `step_volcano()`, you're good to go:
-
-```{r}
-bp <- blueprint(
-  step_preprocess(),      # Preprocess (normalization, imputation, etc.)
-  step_dea_ttest(),       # DEA with t-test
-  step_volcano(),         # Volcano plot
-)
-```
-
-Steps and their dependencies don't need to be right next to each other — 
-all intermediate data gets stored along the way,
-so the blueprint is valid as long as the required data exists somewhere upstream:
-
-```{r}
-bp <- blueprint(
-  step_preprocess(),      # Preprocess (normalization, imputation, etc.)
-  step_dea_ttest(),       # DEA with t-test (generates data required by `step_volcano()`)
-  step_heatmap(),         # Heatmap
-  step_volcano(),         # Volcano plot (requires data generated by `step_dea_ttest()`)
-)
-```
-
-## The `on` parameter
-
-Many step functions have an `on` parameter that controls their dependencies.
-For example, `step_heatmap()` defaults to `on = "exp"`,
-which plots a heatmap from the experiment (after preprocessing, if you did that).
-But you can point it at other data like "sig_exp" instead — 
-just remember you'll need to run a DEA step first:
-
-```{r}
-bp <- blueprint(
-  step_preprocess(),             # Preprocess (normalization, imputation, etc.)
-  step_dea_limma(),              # DEA with limma
-  step_heatmap(on = "sig_exp"),  # Heatmap on significantly expressed variables
-)
-```
-
-Check `?step_dea_limma()` and you'll see it generates a field called exactly "sig_exp".
-This is how data flows in `glysmith`:
-each step stores its results in a shared context object,
-where downstream steps can grab what they need.
-
-Let's see another example:
-
-```{r}
-bp <- blueprint(
-  # Data required: `exp`
-  # Data generated: `exp` (overwrite)
-  step_preprocess(),
-
-  # Data required: `exp`
-  # Data generated: `trait_exp` (trait experiment)
-  step_derive_traits(),
-
-  # Data required: `trait_exp` (specified by `on`)
-  # Data generated: `sig_trait_exp` (significantly different trait experiment)
-  step_dea_limma(on = "trait_exp"),
-
-  # Data required: `sig_trait_exp`
-  step_heatmap(on = "sig_trait_exp"),
-)
-```
-
-Preprocessing steps can update the active experiment and keep their inputs.
-For example, `step_preprocess()` saves its input in `raw_exp`. To analyze
-relative changes in composition, add `step_coda()` after preprocessing and
-abundance QC. It saves the input in `pre_coda_exp`. PCA and differential
-analysis then use the log-ratio coordinates directly. The default
-`method = "auto"` delegates to `glyclean::auto_coda()`. Use `method = "clr"`
-or `method = "alr"` to call the corresponding transformation directly.
-
-```{r}
-bp <- blueprint(
-  step_preprocess(),
-  step_coda(by = "group"),
-  step_pca(),
-  step_dea_limma()
-)
-```
-
-For this analysis, limma reports the estimated change in log-ratio units in
-`estimate`. Select significant features by p-value. Volcano plots and
-fold-change-based enrichment require abundance fold changes and are skipped.
-For a motif analysis, quantify motifs on linear abundances first, then use
-the motif experiment as `on` in both `step_coda()` and the statistical step.
-
-To build valid blueprints, you'll need to know what each step needs and what it produces.
-Let's look at a more complex example to cement this.
-Try tracing through the dataflow yourself:
-
-```{r}
-bp <- blueprint(
-  step_ident_overview(),
-  step_preprocess(),
-  step_pca(),
-  
-  # DEA
-  step_dea_limma(),
-  step_volcano(),
-  step_heatmap(on = "sig_exp"),
-
-  # Derived trait analysis
-  step_derive_traits(),
-  step_dea_limma(on = "trait_exp"),
-  step_heatmap(on = "sig_trait_exp"),
-
-  # Branch motif analysis
-  step_quantify_branch_motifs(),
-  step_dea_limma(on = "branch_motif_exp"),
-  step_heatmap(on = "sig_branch_motif_exp")
-)
-```
-
-## Branches
-
-As we mentioned, steps can't overwrite data from earlier steps.
-But what if you want to compare different DEA methods?
-You might try something like this:
-
-```r
-blueprint(
-  step_preprocess(),
-  step_dea_limma(),
-  step_volcano(),
-  step_dea_ttest(),
-  step_volcano(),
-)
-```
-
-This won't fly for two reasons:
-
-1. `step_dea_ttest()` would overwrite the `sig_exp` from `step_dea_limma()`.
-2. `step_volcano()` shows up twice, which isn't allowed.
-
-These rules keep table and plot names unambiguous.
-
-To pull this off, use **branches**. So far our blueprints have been linear — steps run one after another.
-To branch out, just wrap related steps in `br()`:
-
-```{r}
-bp <- blueprint(
-  step_preprocess(),
-  br("limma", step_dea_limma(), step_volcano()),
-  br("t-test", step_dea_ttest(), step_volcano()),
-)
-```
-
-The first argument names the branch, and the rest are the steps to run inside it.
-Each branch gets its own isolated context,
-so the `step_volcano()` in the "limma" branch naturally picks up the `sig_exp` from the `step_dea_limma()` in that same branch.
-Branches can also access data from before the branch point — 
-so both branches here can use the preprocessed `exp` from `step_preprocess()`.
-
-## Summary
-
-In this vignette, we covered how to build custom blueprints,
-how the `on` parameter and step dependencies work, and how to use branches.
-
-All of this takes some practice, so if you'd rather not dive deep into the details,
-remember you can always [have AI generate blueprints](https://glycoverse.github.io/glysmith/articles/ai.html) for you.

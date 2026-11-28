@@ -9,8 +9,7 @@
 #' @details
 #' LLMs can be unstable. If you get an error, try again with another description.
 #' Make sure to examine the returned blueprint carefully to ensure it's what you want.
-#' You can also create parallel analysis branches with `br("name", step_..., step_...)`,
-#' which will namespace outputs with the branch prefix.
+#' Generated plans can include sibling routes with [fork()] and side routes with [br()].
 #' If the LLM needs required information to proceed, it may ask clarifying questions
 #' interactively and then retry with your answers.
 #' After a blueprint is generated, the description is printed and, in interactive
@@ -225,28 +224,12 @@ inquire_blueprint <- function(
       error = "Invalid JSON output. `steps` must be an array of strings."
     ))
   }
-  steps <- stringr::str_remove_all(steps, "`")
   steps <- stringr::str_trim(steps)
-  if (length(steps) == 1 && stringr::str_detect(steps, ";")) {
-    steps <- stringr::str_split_1(steps, ";")
-    steps <- stringr::str_trim(steps)
-  }
-  steps <- stringr::str_remove(steps, ";$")
-  steps <- steps[steps != ""]
 
-  if (length(steps) == 0) {
+  if (!length(steps) || anyNA(steps) || any(!nzchar(steps))) {
     return(list(
       valid = FALSE,
       error = "The output is empty. Please provide steps in the JSON `steps` array."
-    ))
-  }
-
-  is_step <- stringr::str_detect(steps, "^step_[a-z0-9_]+\\s*\\(.*\\)$")
-  is_branch <- stringr::str_detect(steps, "^br\\s*\\(.*\\)$")
-  if (!all(is_step | is_branch)) {
-    return(list(
-      valid = FALSE,
-      error = "Invalid format. Every entry must be a `step_...()` call or a `br(...)` branch."
     ))
   }
 
@@ -261,10 +244,17 @@ inquire_blueprint <- function(
       # Parse and evaluate
       step_objects <- purrr::map(steps, function(step_str) {
         expr <- .parse_step_expr(step_str)
-        eval(expr)
+        .build_ai_route(expr)
       })
 
-      bp <- do.call(blueprint, step_objects)
+      bp <- if (
+        length(step_objects) == 1L &&
+          inherits(step_objects[[1L]], "glysmith_blueprint")
+      ) {
+        step_objects[[1L]]
+      } else {
+        do.call(blueprint, step_objects)
+      }
 
       # If we get here, everything is valid
       list(valid = TRUE, blueprint = bp, explanation = explanation)
@@ -302,6 +292,72 @@ inquire_blueprint <- function(
     return(NULL)
   }
   json_text
+}
+
+.build_ai_route <- function(expr) {
+  # Let the constructors apply their usual rules for trailing and empty entries.
+  if (rlang::is_missing(expr)) {
+    return(rlang::missing_arg())
+  }
+  if (!is.call(expr) || !is.symbol(expr[[1L]])) {
+    cli::cli_abort(
+      "Invalid format. Expected a step, blueprint, fork or br call."
+    )
+  }
+  name <- as.character(expr[[1L]])
+  args <- as.list(expr)[-1L]
+  if (name == "(" && length(args) == 1L) {
+    return(.build_ai_route(args[[1L]]))
+  }
+  if (name %in% c("%=>%", "blueprint", "fork", "br")) {
+    if (name == "br") {
+      if (!length(args) || !is.character(args[[1L]])) {
+        cli::cli_abort("A side branch needs a literal name.")
+      }
+      values <- c(args[1L], lapply(args[-1L], .build_ai_route))
+    } else {
+      values <- lapply(args, .build_ai_route)
+    }
+    return(do.call(
+      get(name, envir = environment(blueprint), inherits = FALSE),
+      values
+    ))
+  }
+  if (
+    !startsWith(name, "step_") || !name %in% getNamespaceExports("glysmith")
+  ) {
+    cli::cli_abort("Invalid format. Unknown step: {name}.")
+  }
+  literal <- function(x) {
+    if (is.null(x) || is.atomic(x)) {
+      return(x)
+    }
+    if (
+      is.call(x) &&
+        is.symbol(x[[1L]]) &&
+        as.character(x[[1L]]) %in% c("c", "list", "-", "+")
+    ) {
+      return(do.call(
+        get(as.character(x[[1L]]), baseenv()),
+        lapply(as.list(x)[-1L], literal)
+      ))
+    }
+    cli::cli_abort("Use literal step arguments in generated blueprints.")
+  }
+  do.call(
+    name,
+    lapply(args, literal),
+    quote = FALSE,
+    envir = environment(blueprint)
+  )
+}
+
+.tree_prompt <- function() {
+  paste(
+    "Connect steps in one route with %=>%. Commas in blueprint() start independent routes on the original experiment. Use a %=>% fork(b, c %=>% d) to share the output of a.",
+    "Use br('label', route) for a single side route that leaves the outer connection in place. Forks and terminal plots end their route.",
+    "DEA produces a fit. Use step_filter_sig_vars() to obtain an experiment for a heatmap."
+  )
 }
 
 .parse_step_expr <- function(step_str) {
@@ -357,21 +413,14 @@ inquire_blueprint <- function(
     "You are a professional omics data scientist and glycobiologist.",
     "Your job is to create a blueprint for glycomics or glycoproteomics data analysis.",
     "\n",
-    "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
+    "A blueprint is a tree of analytical routes.",
     "A step is a function call with arguments.",
     "Use step arguments with caution: prefer default values unless they are necessary.",
-    "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
+    .tree_prompt(),
     "Each step includes a USAGE section that has the highest priority. Follow it even if other text differs.",
     "\n",
     "Available analytical steps include:",
     step_descriptions,
-    "\n",
-    "You can use `br()` to create branches in a blueprint.",
-    "For example, `step_preprocess();br('limma', step_dea_limma(), step_volcano());br('ttest', step_dea_ttest(), step_volcano())`.",
-    "Use branches for creating parallel analysis branches that represent alternative approaches (e.g., comparing two methods).",
-    "`br()` can also be used for grouping sequential steps or organizing the workflow.",
-    "For example, steps about motif analysis can be grouped into a branch called 'motif',",
-    "and steps about derived traits can be grouped into 'trait'.",
     "\n",
     "When in doubt, ASK! Clarifying questions lead to better analysis plans.",
     "You are ENCOURAGED to ask as many questions as possible to understand the user's request.",
@@ -406,14 +455,14 @@ inquire_blueprint <- function(
     "\n",
     "If you think all information is provided, return a JSON object with:",
     "- `explanation`: a BRIEF description (1-3 sentences).",
-    "- `steps`: an array of strings, each being a `step_...()` call or `br(...)` branch.",
+    "- `steps`: an array of independent entry routes. Within each string use %=>% for sequential steps.",
     "Do not include any extra text outside JSON.",
     "\n",
     "Example output 1:",
-    "{\"explanation\":\"Preprocess, then run PCA and DEA.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_dea_limma()\",\"step_heatmap(on = 'sig_exp')\"]}",
+    "{\"explanation\":\"Preprocess, then run PCA and DEA.\",\"steps\":[\"step_preprocess() %=>% fork(step_pca(), step_dea_limma() %=>% step_filter_sig_vars() %=>% step_heatmap())\"]}",
     "",
     "Example output 2 (Branching):",
-    "{\"explanation\":\"Compare two DEA methods after preprocessing.\",\"steps\":[\"step_preprocess()\",\"br('limma', step_dea_limma(), step_volcano())\",\"br('ttest', step_dea_ttest(), step_volcano())\"]}",
+    "{\"explanation\":\"Compare two DEA methods after preprocessing.\",\"steps\":[\"step_preprocess() %=>% br('limma', step_dea_limma() %=>% step_volcano()) %=>% br('ttest', step_dea_ttest() %=>% step_volcano())\"]}",
     "",
     "Example output 3 (Single question):",
     "{\"question\":\"What is your group column?\"}",
@@ -590,6 +639,12 @@ inquire_blueprint <- function(
       func_name,
       "`\n",
       if (nzchar(ai_text)) paste0("  - USAGE: ", ai_text, "\n") else "",
+      "  - INPUT: ",
+      paste(step_obj$connected$accepts, collapse = " or "),
+      "\n",
+      "  - OUTPUT: ",
+      step_obj$connected$produces %||% "terminal",
+      "\n",
       "  - FUNCTION: ",
       title,
       ". ",

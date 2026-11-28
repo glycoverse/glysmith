@@ -31,13 +31,13 @@ test_that("Cox reports use stored identity schema and preserve old contexts", {
     data = list(cox_id_column = ".variable")
   )
   expect_match(
-    .report_cox(ctx, "cox", "exp"),
+    .report_cox(ctx, "cox"),
     "Top associated variable: V1",
     fixed = TRUE
   )
   ctx$data <- list()
   expect_match(
-    .report_cox(ctx, "cox", "exp"),
+    .report_cox(ctx, "cox"),
     "Top associated variable: annotation",
     fixed = TRUE
   )

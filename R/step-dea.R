@@ -1,61 +1,16 @@
-#' Step: Differential Expression Analysis (DEA) using Limma
+#' Differential analysis using limma
 #'
-#' @description
-#' Run differential analysis using linear model-based analysis via `glystats::gly_limma()`,
-#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
-#' By default, this runs DEA on the main experiment (`exp`), but can be configured
-#' to run on derived traits (`trait_exp`) or other experiment objects.
-#' This step is the recommended DEA method for all experiments,
-#' for both two-group and multi-group experiments.
-#'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to run DEA on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run DEA on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run DEA on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run DEA on
-#'
-#' Data generated:
-#' - `dea_res`: The DEA (differential expression analysis) results (if `on = "exp"`, default)
-#' - `dta_res`: The DTA (differential trait analysis) results (if `on = "trait_exp"`)
-#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
-#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
-#'
-#' Tables generated:
-#' - `dea`: A table containing the DEA (differential expression analysis) result (if `on = "exp"`, default)
-#' - `dta`: A table containing the DTA (differential trait analysis) result (if `on = "trait_exp"`)
-#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to run analysis on.
-#'   Default is `"exp"` for differential expression analysis.
-#'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
-#'   Use `"branch_motif_exp"` for differential branch motif analysis.
+#' Fit [glystats::gly_limma()] to the incoming experiment. Connect
+#' [step_filter_sig_vars()] to select variables or attach a compatible plot.
 #' @inheritParams glystats::gly_limma
-#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
-#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
-#' @param filter_fc_cutoff Fold change cutoff for filtering.
-#'
-#' @return A `glysmith_step` object.
+#' @param filter_p_adj_cutoff,filter_p_val_cutoff,filter_fc_cutoff Default
+#'   adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.
+#' @param ... Additional arguments passed to [glystats::gly_limma()].
+#' @returns A step producing a fitted differential result.
 #' @examples
-#' step_dea_limma()
-#' step_dea_limma(on = "trait_exp")  # Differential trait analysis
-#' step_dea_limma(p_adj_method = "BH")
-#' @seealso [glystats::gly_limma()]
+#' blueprint(step_dea_limma() %=>% step_filter_sig_vars())
 #' @export
 step_dea_limma <- function(
-  on = "exp",
   p_adj_method = "BH",
   covariate_cols = NULL,
   subject_col = NULL,
@@ -66,6 +21,7 @@ step_dea_limma <- function(
   filter_fc_cutoff = NULL,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(
     p_adj_method = p_adj_method,
@@ -83,66 +39,25 @@ step_dea_limma <- function(
   .step_dea(
     method = "limma",
     label = "Differential expression analysis (limma)",
-    on = on,
     signature = signature,
     dea_args = dea_args,
     filter_args = filter_args
   )
 }
 
-#' Step: Differential Expression Analysis (DEA) using t-test
+#' Differential analysis using a t-test
 #'
-#' @description
-#' Run differential analysis using t-test via `glystats::gly_ttest()`,
-#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
-#' By default, this runs DEA on the main experiment (`exp`), but can be configured
-#' to run on derived traits (`trait_exp`) or other experiment objects.
-#' Only use this method for experiments with 2 groups.
-#'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter (default: `exp`)
-#'
-#' Data generated:
-#' - `dea_res`: The DEA results (if `on = "exp"`, default)
-#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
-#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
-#'
-#' Tables generated:
-#' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
-#' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to run analysis on.
-#'   Default is `"exp"` for differential expression analysis.
-#'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
-#'   Use `"branch_motif_exp"` for differential branch motif analysis.
+#' Fit [glystats::gly_ttest()] to the incoming experiment. Connect
+#' [step_filter_sig_vars()] to select variables or attach a compatible plot.
 #' @inheritParams glystats::gly_ttest
-#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
-#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
-#' @param filter_fc_cutoff Fold change cutoff for filtering.
-#'
-#' @return A `glysmith_step` object.
+#' @param filter_p_adj_cutoff,filter_p_val_cutoff,filter_fc_cutoff Default
+#'   adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.
+#' @param ... Additional arguments passed to [glystats::gly_ttest()].
+#' @returns A step producing a fitted differential result.
 #' @examples
-#' step_dea_ttest()
-#' step_dea_ttest(on = "trait_exp")  # Differential trait analysis
-#' @seealso [glystats::gly_ttest()]
+#' blueprint(step_dea_ttest() %=>% step_filter_sig_vars())
 #' @export
 step_dea_ttest <- function(
-  on = "exp",
   p_adj_method = "BH",
   ref_group = NULL,
   filter_p_adj_cutoff = 0.05,
@@ -150,6 +65,7 @@ step_dea_ttest <- function(
   filter_fc_cutoff = NULL,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(
     p_adj_method = p_adj_method,
@@ -164,67 +80,28 @@ step_dea_ttest <- function(
   .step_dea(
     method = "ttest",
     label = "Differential expression analysis (t-test)",
-    on = on,
     signature = signature,
     dea_args = dea_args,
     filter_args = filter_args
   )
 }
 
-#' Step: Differential Expression Analysis (DEA) using ANOVA
+#' Differential analysis using ANOVA
 #'
-#' @description
-#' Run differential analysis using ANOVA via `glystats::gly_anova()`,
-#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
-#' By default, this runs DEA on the main experiment (`exp`), but can be configured
-#' to run on derived traits (`trait_exp`) or other experiment objects.
-#'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter (default: `exp`)
-#'
-#' Data generated:
-#' - `dea_res`: The DEA results (if `on = "exp"`, default)
-#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
-#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
-#'
-#' Tables generated:
-#' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
-#' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
-#' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to run analysis on.
-#'   Default is `"exp"` for differential expression analysis.
-#'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
-#'   Use `"branch_motif_exp"` for differential branch motif analysis.
+#' Fit [glystats::gly_anova()] to the incoming experiment. Connect
+#' [step_filter_sig_vars()] to select variables or attach a compatible plot.
 #' @inheritParams glystats::gly_anova
-#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
-#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
-#' @param filter_fc_cutoff Fold change cutoff for filtering.
-#' @param filter_on Name of the test to filter on. Default is `"main_test"`. Can also be `"post_hoc_test"`.
-#' @param filter_comparison Name of the comparison to filter on.
-#'
-#' @return A `glysmith_step` object.
+#' @param filter_p_adj_cutoff,filter_p_val_cutoff,filter_fc_cutoff Default
+#'   adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.
+#' @param ... Additional arguments passed to [glystats::gly_anova()].
+#' @param filter_on Default test to select in a downstream filter, either
+#'   `"main_test"` or `"post_hoc_test"`.
+#' @param filter_comparison Default comparison for the post-hoc filter.
+#' @returns A step producing a fitted differential result.
 #' @examples
-#' step_dea_anova()
-#' step_dea_anova(on = "trait_exp")  # Differential trait analysis
-#' @seealso [glystats::gly_anova()]
+#' blueprint(step_dea_anova() %=>% step_filter_sig_vars())
 #' @export
 step_dea_anova <- function(
-  on = "exp",
   p_adj_method = "BH",
   filter_p_adj_cutoff = 0.05,
   filter_p_val_cutoff = NULL,
@@ -233,6 +110,7 @@ step_dea_anova <- function(
   filter_comparison = NULL,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(p_adj_method = p_adj_method, ...)
   filter_args <- list(
@@ -245,67 +123,25 @@ step_dea_anova <- function(
   .step_dea(
     method = "anova",
     label = "Differential expression analysis (ANOVA)",
-    on = on,
     signature = signature,
     dea_args = dea_args,
     filter_args = filter_args
   )
 }
 
-#' Step: Differential Expression Analysis (DEA) using Wilcoxon test
+#' Differential analysis using the Wilcoxon test
 #'
-#' @description
-#' Run differential analysis using Wilcoxon analysis via `glystats::gly_wilcox()`,
-#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
-#' By default, this runs DEA on the main experiment (`exp`), but can be configured
-#' to run on derived traits (`trait_exp`) or other experiment objects.
-#' Only use this method for experiments with 2 groups.
-#'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter (default: `exp`)
-#'
-#' Data generated:
-#' - `dea_res`: The DEA results (if `on = "exp"`, default)
-#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
-#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
-#'
-#' Tables generated:
-#' - `dea`: A table containing the DEA result (if `on = "exp"`, default)
-#' - `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-#' - `dynamic_dma`: A table containing the DMA result (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma`: A table containing the DMA result (if `on = "branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to run analysis on.
-#'   Default is `"exp"` for differential expression analysis.
-#'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
-#'   Use `"branch_motif_exp"` for differential branch motif analysis.
+#' Fit [glystats::gly_wilcox()] to the incoming experiment. Connect
+#' [step_filter_sig_vars()] to select variables or attach a compatible plot.
 #' @inheritParams glystats::gly_wilcox
-#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
-#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
-#' @param filter_fc_cutoff Fold change cutoff for filtering.
+#' @param filter_p_adj_cutoff,filter_p_val_cutoff,filter_fc_cutoff Default
+#'   adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.
 #' @param ... Additional arguments passed to [glystats::gly_wilcox()].
-#'
-#' @return A `glysmith_step` object.
+#' @returns A step producing a fitted differential result.
 #' @examples
-#' step_dea_wilcox()
-#' step_dea_wilcox(on = "trait_exp")  # Differential trait analysis
-#' @seealso [glystats::gly_wilcox()]
+#' blueprint(step_dea_wilcox() %=>% step_filter_sig_vars())
 #' @export
 step_dea_wilcox <- function(
-  on = "exp",
   p_adj_method = "BH",
   ref_group = NULL,
   filter_p_adj_cutoff = 0.05,
@@ -313,6 +149,7 @@ step_dea_wilcox <- function(
   filter_fc_cutoff = NULL,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(
     p_adj_method = p_adj_method,
@@ -327,68 +164,28 @@ step_dea_wilcox <- function(
   .step_dea(
     method = "wilcox",
     label = "Differential expression analysis (Wilcoxon)",
-    on = on,
     signature = signature,
     dea_args = dea_args,
     filter_args = filter_args
   )
 }
 
-#' Step: Differential Expression Analysis (DEA) using Kruskal-Wallis test
+#' Differential analysis using the Kruskal-Wallis test
 #'
-#' @description
-#' Run differential analysis using Kruskal-Wallis analysis via `glystats::gly_kruskal()`,
-#' then filter the experiment to keep only the differentially expressed variables using `glystats::filter_sig_vars()`.
-#' By default, this runs DEA on the main experiment (`exp`), but can be configured
-#' to run on derived traits (`trait_exp`) or other experiment objects.
-#'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter (default: `exp`)
-#'
-#' Data generated:
-#' - `dea_res`: The DEA results (if `on = "exp"`, default)
-#' - `dta_res`: The DTA results (if `on = "trait_exp"`)
-#' - `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-#' - `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-#' - `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-#' - `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if `on = "dynamic_motif_exp"`)
-#' - `sig_branch_motif_exp`: The filtered branch motif experiment (if `on = "branch_motif_exp"`)
-#'
-#' Tables generated:
-#' - `dea_main_test`, `dea_post_hoc_test`: Tables containing the results (if `on = "exp"`, default)
-#' - `dta_main_test`, `dta_post_hoc_test`: Tables containing the results (if `on = "trait_exp"`)
-#' - `dynamic_dma_main_test`, `dynamic_dma_post_hoc_test`: Tables containing the results (if `on = "dynamic_motif_exp"`)
-#' - `branch_dma_main_test`, `branch_dma_post_hoc_test`: Tables containing the results (if `on = "branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to run analysis on.
-#'   Default is `"exp"` for differential expression analysis.
-#'   Use `"trait_exp"` for differential trait analysis.
-#'   Use `"dynamic_motif_exp"` for differential dynamic motif analysis.
-#'   Use `"branch_motif_exp"` for differential branch motif analysis.
+#' Fit [glystats::gly_kruskal()] to the incoming experiment. Connect
+#' [step_filter_sig_vars()] to select variables or attach a compatible plot.
 #' @inheritParams glystats::gly_kruskal
-#' @param filter_p_adj_cutoff Adjusted p-value cutoff for filtering.
-#' @param filter_p_val_cutoff Raw p-value cutoff for filtering.
-#' @param filter_fc_cutoff Fold change cutoff for filtering.
-#' @param filter_on Filter on "main_test" or "post_hoc_test" for Kruskal-Wallis results.
-#' @param filter_comparison Comparison name for post-hoc filtering.
+#' @param filter_p_adj_cutoff,filter_p_val_cutoff,filter_fc_cutoff Default
+#'   adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.
 #' @param ... Additional arguments passed to [glystats::gly_kruskal()].
-#'
-#' @return A `glysmith_step` object.
+#' @param filter_on Default test to select in a downstream filter, either
+#'   `"main_test"` or `"post_hoc_test"`.
+#' @param filter_comparison Default comparison for the post-hoc filter.
+#' @returns A step producing a fitted differential result.
 #' @examples
-#' step_dea_kruskal()
-#' step_dea_kruskal(on = "trait_exp")  # Differential trait analysis
-#' @seealso [glystats::gly_kruskal()]
+#' blueprint(step_dea_kruskal() %=>% step_filter_sig_vars())
 #' @export
 step_dea_kruskal <- function(
-  on = "exp",
   p_adj_method = "BH",
   filter_p_adj_cutoff = 0.05,
   filter_p_val_cutoff = NULL,
@@ -397,6 +194,7 @@ step_dea_kruskal <- function(
   filter_comparison = NULL,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   dea_args <- rlang::list2(p_adj_method = p_adj_method, ...)
   filter_args <- list(
@@ -409,105 +207,12 @@ step_dea_kruskal <- function(
   .step_dea(
     method = "kruskal",
     label = "Differential expression analysis (Kruskal-Wallis)",
-    on = on,
     signature = signature,
     dea_args = dea_args,
     filter_args = filter_args
   )
 }
 
-#' Get metadata for DEA analysis based on the target experiment
-#'
-#' @param on Name of the experiment data in ctx$data to run DEA on.
-#' @returns A list with prefix, label, require, and name fields.
-#' @noRd
-.get_dea_meta <- function(on) {
-  mapping <- list(
-    exp = list(
-      prefix = "dea",
-      label = "Differential expression",
-      require = "exp",
-      name = "variable"
-    ),
-    sig_exp = list(
-      prefix = "dea",
-      label = "Differential expression",
-      require = "sig_exp",
-      name = "variable"
-    ),
-    trait_exp = list(
-      prefix = "dta",
-      label = "Differential trait",
-      require = "trait_exp",
-      name = "trait"
-    ),
-    sig_trait_exp = list(
-      prefix = "dta",
-      label = "Differential trait",
-      require = "sig_trait_exp",
-      name = "trait"
-    ),
-    dynamic_motif_exp = list(
-      prefix = "dynamic_dma",
-      label = "Differential dynamic motif",
-      require = "dynamic_motif_exp",
-      name = "motif"
-    ),
-    sig_dynamic_motif_exp = list(
-      prefix = "dynamic_dma",
-      label = "Differential dynamic motif",
-      require = "sig_dynamic_motif_exp",
-      name = "motif"
-    ),
-    branch_motif_exp = list(
-      prefix = "branch_dma",
-      label = "Differential branch motif",
-      require = "branch_motif_exp",
-      name = "motif"
-    ),
-    sig_branch_motif_exp = list(
-      prefix = "branch_dma",
-      label = "Differential branch motif",
-      require = "sig_branch_motif_exp",
-      name = "motif"
-    )
-  )
-
-  # Return the mapping or create a default one for unknown types
-  if (on %in% names(mapping)) {
-    mapping[[on]]
-  } else {
-    list(
-      prefix = paste0("d_", on),
-      label = paste("Differential", on),
-      require = on,
-      name = "variable"
-    )
-  }
-}
-
-#' Get the item name for DEA report based on analysis type
-#' @param exp Experiment object
-#' @param on Target experiment type (exp or trait_exp)
-#' @returns A character string for the item name (e.g., "items", "traits")
-#' @noRd
-.dea_get_item_name <- function(exp, on) {
-  if (on == "trait_exp") {
-    if (.get_exp_type(exp) == "glycomics") {
-      "traits"
-    } else {
-      "site-specific traits"
-    }
-  } else {
-    "items"
-  }
-}
-
-#' Count total significant variables in DEA results
-#' @param tbl A tibble with DEA results
-#' @param id_col Identity column selected from the result schema.
-#' @returns Number of unique significant variables
-#' @noRd
 .dea_count_sig_total <- function(tbl, id_col = "variable") {
   sig_vars <- tbl[[id_col]][!is.na(tbl$p_adj) & tbl$p_adj < 0.05]
   length(unique(sig_vars))
@@ -546,24 +251,23 @@ step_dea_kruskal <- function(
 #'
 #' @param x Step result containing tables and exp
 #' @param method DEA method (limma, ttest, wilcox, anova, kruskal)
-#' @param meta DEA metadata from .get_dea_meta()
-#' @param on Target experiment type (exp or trait_exp)
+#' @param label Analysis label.
 #' @returns A character string for the report
 #' @noRd
-.dea_report <- function(x, method, meta, on) {
+.dea_report <- function(x, method, label) {
   # Get the appropriate table
   if (method %in% c("anova", "kruskal")) {
-    tbl <- x$tables[[paste0(meta$prefix, "_main_test")]]
+    tbl <- x$tables$dea_main_test
   } else {
-    tbl <- x$tables[[meta$prefix]]
+    tbl <- x$tables$dea
   }
 
-  item_name <- .dea_get_item_name(x$exp, on)
-  id_col <- .stats_id_column(x$data[[paste0(meta$prefix, "_res")]])
+  item_name <- "variables"
+  id_col <- .stats_id_column(x$data$dea_res)
   sig_total <- .dea_count_sig_total(tbl, id_col)
   is_multigroup <- .dea_is_multigroup(tbl)
 
-  lines <- c(paste0(meta$label, " analysis was performed."))
+  lines <- c(paste0(label, " was performed."))
 
   if (sig_total == 0) {
     lines <- c(
@@ -600,69 +304,26 @@ step_dea_kruskal <- function(
   paste(lines, collapse = "\n")
 }
 
-#' Create a DEA step
-#'
-#' @param method DEA method.
-#' @param label Step label.
-#' @param on Name of the experiment data in `ctx$data`.
-#' @param signature Original call signature.
-#' @param dea_args Arguments passed to the glystats DEA function.
-#' @param filter_args Arguments passed to `glystats::filter_sig_vars()`.
-#'
-#' @returns A `glysmith_step` object.
-#' @noRd
-.step_dea <- function(
-  method,
-  label,
-  on = "exp",
-  signature = NULL,
-  dea_args,
-  filter_args
-) {
-  meta <- .get_dea_meta(on)
-  dea_args <- dea_args %||% list()
-  filter_args <- filter_args %||% list()
-
+.step_dea <- function(method, label, signature, dea_args, filter_args) {
+  port <- .exp_port("dea_res")
+  port$produces <- if (method %in% c("anova", "kruskal")) {
+    "omnibus"
+  } else {
+    "contrast"
+  }
+  port$filter_args <- filter_args
   step(
-    id = paste0(meta$prefix, "_", method),
-    label = paste0(meta$label, " analysis (", method, ")"),
-    run = function(ctx) {
-      .run_dea(
-        ctx,
-        method = method,
-        on = on,
-        meta = meta,
-        dea_args = dea_args,
-        filter_args = filter_args
-      )
-    },
-    report = function(x) {
-      .report_dea(x, method = method, meta = meta, on = on)
-    },
-    generate = c(paste0(meta$prefix, "_res"), paste0("sig_", meta$require)),
-    require = meta$require,
-    packages = c("glyclean", "glystats"),
+    id = paste0("dea_", method),
+    label = label,
+    connected = port,
+    run = function(ctx) .fit_dea(ctx, ctx$data$exp, method, dea_args),
+    report = function(x) .dea_report(x, method, label),
+    packages = "glystats",
     signature = signature
   )
 }
 
-#' Run differential expression analysis
-#'
-#' @param ctx Analysis context.
-#' @param method DEA method.
-#' @param on Name of the experiment data in `ctx$data`.
-#' @param meta DEA metadata from `.get_dea_meta()`.
-#' @param dea_args Arguments passed to the glystats DEA function.
-#' @param filter_args Arguments passed to `glystats::filter_sig_vars()`.
-#'
-#' @returns Updated analysis context.
-#' @noRd
-.run_dea <- function(ctx, method, on, meta, dea_args, filter_args) {
-  exp <- ctx_get_data(ctx, on)
-  if (on == "trait_exp") {
-    exp <- glyclean::remove_constant(exp)
-  }
-
+.fit_dea <- function(ctx, exp, method, dea_args) {
   dea_res <- switch(
     method,
     "limma" = rlang::exec(glystats::gly_limma, exp, !!!dea_args),
@@ -671,64 +332,39 @@ step_dea_kruskal <- function(
     "wilcox" = rlang::exec(glystats::gly_wilcox, exp, !!!dea_args),
     "kruskal" = rlang::exec(glystats::gly_kruskal, exp, !!!dea_args)
   )
-  ctx <- ctx_add_data(ctx, paste0(meta$prefix, "_res"), dea_res)
+  ctx <- ctx_add_data(ctx, "dea_res", dea_res)
 
   if (method %in% c("anova", "kruskal")) {
     ctx <- ctx_add_table(
       ctx,
-      paste0(meta$prefix, "_main_test"),
+      "dea_main_test",
       glystats::get_tidy_result(dea_res, "main_test"),
       paste0(
         "Main test results of ANOVA or Kruskal-Wallis test for ",
-        meta$label,
+        method,
         " analysis."
       )
     )
     ctx <- ctx_add_table(
       ctx,
-      paste0(meta$prefix, "_post_hoc_test"),
+      "dea_post_hoc_test",
       glystats::get_tidy_result(dea_res, "post_hoc_test"),
       paste0(
         "Post-hoc test results of ANOVA or Kruskal-Wallis test for ",
-        meta$label,
+        method,
         " analysis."
       )
     )
   } else {
     ctx <- ctx_add_table(
       ctx,
-      meta$prefix,
+      "dea",
       glystats::get_tidy_result(dea_res),
       paste0(
-        meta$label,
+        method,
         " analysis results of all comparisons for all variables."
       )
     )
   }
-
-  sig_exp <- rlang::exec(
-    glystats::filter_sig_vars,
-    exp,
-    res = dea_res,
-    !!!filter_args
-  )
-  ctx_add_data(
-    ctx,
-    paste0("sig_", meta$require),
-    sig_exp,
-    glue::glue("Experiment with only significant {meta$name}s.")
-  )
-}
-
-#' Report differential expression analysis results
-#'
-#' @param x Analysis context after running DEA.
-#' @param method DEA method.
-#' @param meta DEA metadata from `.get_dea_meta()`.
-#' @param on Name of the experiment data in `ctx$data`.
-#'
-#' @returns A summary string for the report.
-#' @noRd
-.report_dea <- function(x, method, meta, on) {
-  .dea_report(x, method, meta, on)
+  ctx
 }

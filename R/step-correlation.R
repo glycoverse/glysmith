@@ -1,42 +1,11 @@
 #' Step: Correlation Analysis
 #'
-#' @description
 #' Perform pairwise correlation analysis using `glystats::gly_cor()` and
 #' visualize the correlation matrix using `glyvis::plot_corrplot()`.
 #' This step calculates correlation coefficients and p-values for all pairs
 #' of variables or samples.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to run correlation analysis on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run correlation analysis on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run correlation analysis on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run correlation analysis on
-#'
-#' Tables generated (with suffixes):
-#' - `correlation`: A table containing pairwise correlation results with columns:
-#'   - `variable1`, `variable2` (or `sample1`, `sample2` if `on = "sample"`)
-#'   - `cor`: Correlation coefficient
-#'   - `p_val`: P-value from correlation test
-#'   - `p_adj`: Adjusted p-value (if p_adj_method is not NULL)
-#'
-#' Plots generated (with suffixes):
-#' - `correlation`: A correlation matrix heatmap
-#'
-#' @param on Name of the experiment to run correlation analysis on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 #' @param on_cor A character string specifying what to correlate.
 #'   Either "variable" (default) to correlate variables/features, or "sample" to correlate samples.
 #' @param method A character string indicating which correlation coefficient is to be computed.
@@ -51,12 +20,10 @@
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_correlation()
-#' step_correlation(on = "sig_exp")
 #' step_correlation(on_cor = "sample", method = "spearman")
 #' @seealso [glystats::gly_cor()], [glyvis::plot_corrplot()]
 #' @export
 step_correlation <- function(
-  on = "exp",
   on_cor = c("variable", "sample"),
   method = c("pearson", "spearman"),
   p_adj_method = "BH",
@@ -64,21 +31,21 @@ step_correlation <- function(
   plot_height = 7,
   ...
 ) {
+  .check_step_dots(sys.call())
   on_cor <- rlang::arg_match(on_cor)
   method <- rlang::arg_match(method)
   signature <- rlang::expr_deparse(match.call())
   cor_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("correlation", on_meta$id_suffix)
+  id <- "correlation"
 
   step(
     id = id,
-    label = paste0("Correlation analysis", on_meta$label_suffix),
+    connected = .exp_port(),
+    label = "Correlation analysis",
     run = function(ctx) {
       .run_correlation(
         ctx,
         id = id,
-        on = on,
         on_cor = on_cor,
         method = method,
         p_adj_method = p_adj_method,
@@ -87,14 +54,12 @@ step_correlation <- function(
         cor_args = cor_args
       )
     },
-    require = on,
     packages = c("glystats", "glyvis"),
     signature = signature,
     report = function(x) {
       .report_correlation(
         x,
         id = id,
-        on = on,
         on_cor = on_cor,
         method = method
       )
@@ -106,7 +71,6 @@ step_correlation <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param on_cor Whether to correlate variables or samples.
 #' @param method Correlation method.
 #' @param p_adj_method P-value adjustment method.
@@ -119,7 +83,6 @@ step_correlation <- function(
 .run_correlation <- function(
   ctx,
   id,
-  on,
   on_cor,
   method,
   p_adj_method,
@@ -127,7 +90,7 @@ step_correlation <- function(
   plot_height,
   cor_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   cor_res <- rlang::exec(
     glystats::gly_cor,
     exp,
@@ -142,7 +105,11 @@ step_correlation <- function(
     ctx,
     id,
     tidy_result,
-    paste0("Pairwise correlation results for ", on, " (", on_cor, "s).")
+    paste0(
+      "Pairwise correlation results for the input experiment (",
+      on_cor,
+      "s)."
+    )
   )
 
   p <- glyvis::plot_corrplot(cor_res)
@@ -150,7 +117,11 @@ step_correlation <- function(
     ctx,
     id,
     p,
-    paste0("Correlation matrix heatmap of ", on, " (", on_cor, "s)."),
+    paste0(
+      "Correlation matrix heatmap of the input experiment (",
+      on_cor,
+      "s)."
+    ),
     width = plot_width,
     height = plot_height
   )
@@ -160,13 +131,12 @@ step_correlation <- function(
 #'
 #' @param x Analysis context after running correlation analysis.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param on_cor Whether variables or samples were correlated.
 #' @param method Correlation method.
 #'
 #' @returns A summary string for the report.
 #' @noRd
-.report_correlation <- function(x, id, on, on_cor, method) {
+.report_correlation <- function(x, id, on_cor, method) {
   cor_tbl <- x$tables[[id]]
   if (is.null(cor_tbl) || nrow(cor_tbl) == 0) {
     return("No correlation results available.")
@@ -185,7 +155,7 @@ step_correlation <- function(
   lines <- c(
     paste0(
       "Correlation analysis was performed on ",
-      on,
+      "the input experiment",
       " (",
       on_cor,
       "s) using the ",

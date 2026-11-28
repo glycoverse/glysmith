@@ -42,12 +42,12 @@ test_that("custom preprocessing composes in order and retains the raw data", {
   SummarizedExperiment::assay(exp)[1, 1:11] <- 0
   SummarizedExperiment::assay(exp)[2, 2] <- NA_real_
   bp <- blueprint(
-    step_zero_to_na(),
-    step_remove("rare", prop = 0.5, by = "group"),
-    step_impute("min_prob", by = "group", q = 0.03, seed = 73),
-    step_normalize("median_quotient", by = "plate"),
-    step_remove("constant"),
-    step_transform_log(base = 10)
+    step_zero_to_na() %=>%
+      step_remove("rare", prop = 0.5, by = "group") %=>%
+      step_impute("min_prob", by = "group", q = 0.03, seed = 73) %=>%
+      step_normalize("median_quotient", by = "plate") %=>%
+      step_remove("constant") %=>%
+      step_transform_log(base = 10)
   )
   result <- suppressMessages(forge_analysis(exp, bp))
   expected <- suppressMessages(
@@ -60,8 +60,8 @@ test_that("custom preprocessing composes in order and retains the raw data", {
       glyclean::transform_log(base = 10)
   )
   expect_identical(result$exp, expected)
-  expect_identical(result$data$raw_exp, exp)
-  expect_identical(result$meta$steps, names(bp))
+  expect_identical(result$data$root, exp)
+  expect_identical(result$meta$steps, names(.compile_blueprint(bp)$nodes))
 })
 
 test_that("automatic operations and manual batch correction use the selected arguments", {
@@ -136,16 +136,16 @@ test_that("saved blueprints retain preprocessing parameters inside branches", {
   exp <- clean_input()
   base <- 10
   bp <- blueprint(
-    br("logged", step_transform_log(base = base), step_remove("constant"))
+    br("logged", step_transform_log(base = base) %=>% step_remove("constant"))
   )
   base <- 2
   file <- withr::local_tempfile()
   write_blueprint(bp, file)
   result <- suppressMessages(forge_analysis(exp, read_blueprint(file)))
   expect_identical(result$exp, exp)
-  expect_identical(result$data$logged__raw_exp, exp)
+  expect_identical(result$data$node_1__raw_exp, exp)
   expect_identical(
-    result$data$logged__exp,
+    result$data$node_2,
     suppressMessages(glyclean::remove_constant(glyclean::transform_log(
       exp,
       base = 10
@@ -159,13 +159,13 @@ test_that("granular and automatic preprocessing share the first input", {
   res <- suppressMessages(forge_analysis(
     exp,
     blueprint(
-      step_normalize("median"),
-      step_preprocess(standardize_variable = FALSE, seed = 19),
-      step_remove("constant"),
-      step_remove("constant")
+      step_normalize("median") %=>%
+        step_preprocess(standardize_variable = FALSE, seed = 19) %=>%
+        step_remove("constant") %=>%
+        step_remove("constant")
     )
   ))
-  expect_identical(res$data$raw_exp, exp)
+  expect_identical(res$data$root, exp)
   expect_identical(
     res$exp,
     suppressMessages(
@@ -183,10 +183,12 @@ test_that("invalid preprocessing stops dependent analysis and legacy inputs keep
   exp <- clean_input()
   invalid <- blueprint(br(
     "bad",
-    step_transform_log(base = 3),
-    step_normalize()
+    step_transform_log(base = 3) %=>%
+      step_normalize()
   ))
-  expect_error(suppressMessages(forge_analysis(exp, invalid)), "base")
+  failed <- suppressMessages(forge_analysis(exp, invalid))
+  expect_match(failed$meta$nodes$node_1$reason, "base")
+  expect_identical(failed$meta$nodes$node_2$status, "blocked")
   withr::local_options(list(lifecycle_verbosity = "quiet"))
   legacy <- glyexp::from_se(exp, exp_type = "glycomics")
   result <- suppressMessages(forge_analysis(
@@ -194,8 +196,8 @@ test_that("invalid preprocessing stops dependent analysis and legacy inputs keep
     blueprint(step_transform_log())
   ))
   expect_s3_class(result$exp, "glyexp_experiment")
-  expect_s3_class(result$data$raw_exp, "glyexp_experiment")
-  expect_identical(result$data$raw_exp$expr_mat, legacy$expr_mat)
+  expect_s3_class(result$data$root, "glyexp_experiment")
+  expect_identical(result$data$root$expr_mat, legacy$expr_mat)
   expect_equal(result$exp$expr_mat, log2(legacy$expr_mat))
   expect_identical(result$exp$meta_data$scale, "log2")
 })
@@ -211,23 +213,26 @@ test_that("a selected QC plot uses its arguments and its requested stage", {
   }
   exp <- clean_input()
   bp <- blueprint(
-    step_plot_qc("pre", method = "rle", by = "plate"),
-    step_plot_qc(
-      "post",
-      method = "missing_bar",
-      on = "variables",
-      plot_width = 9
-    )
+    br("pre", step_plot_qc("pre", method = "rle", by = "plate")) %=>%
+      step_plot_qc(
+        "post",
+        method = "missing_bar",
+        on = "variables",
+        plot_width = 9
+      )
   )
   result <- suppressMessages(forge_analysis(exp, bp))
-  expect_named(result$plots, c("qc_pre_rle", "qc_missing_variables_bar"))
-  expect_identical(result$plots$qc_missing_variables_bar$width, 9)
+  expect_named(
+    result$plots,
+    c("node_1__qc_pre_rle", "node_2__qc_missing_variables_bar")
+  )
+  expect_identical(result$plots$node_2__qc_missing_variables_bar$width, 9)
   expect_equal(
-    cast_plot(result, "qc_pre_rle")$data,
+    cast_plot(result, "node_1__qc_pre_rle")$data,
     glyclean::plot_rle(exp, by = "plate")$data
   )
   expect_equal(
-    cast_plot(result, "qc_missing_variables_bar")$data,
+    cast_plot(result, "node_2__qc_missing_variables_bar")$data,
     glyclean::plot_missing_bar(exp, on = "variables")$data
   )
   expect_error(step_plot_qc(method = "unknown"), class = "rlang_error")

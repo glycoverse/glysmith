@@ -1,38 +1,9 @@
 #' Step: Heatmap
 #'
-#' @description
 #' Create a heatmap plot using `glyvis::plot_heatmap()`.
 #' The heatmap visualizes expression values across samples.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter (default: `exp`)
-#'
-#' Plots generated:
-#' - `heatmap`: A heatmap plot (if `on = "exp"`)
-#' - `sig_heatmap`: A heatmap plot (if `on = "sig_exp"`)
-#' - `trait_heatmap`: A heatmap plot (if `on = "trait_exp"`)
-#' - `sig_trait_heatmap`: A heatmap plot (if `on = "sig_trait_exp"`)
-#' - `dynamic_motif_heatmap`: A heatmap plot (if `on = "dynamic_motif_exp"`)
-#' - `sig_dynamic_motif_heatmap`: A heatmap plot (if `on = "sig_dynamic_motif_exp"`)
-#' - `branch_motif_heatmap`: A heatmap plot (if `on = "branch_motif_exp"`)
-#' - `sig_branch_motif_heatmap`: A heatmap plot (if `on = "sig_branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to plot.
-#'   One of "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
-#'   Default is "exp".
 #' @param plot_width Width of the plot in inches. Default is 7.
 #' @param plot_height Height of the plot in inches. Default is 7.
 #' @param ... Additional arguments passed to [glyvis::plot_heatmap()].
@@ -40,31 +11,28 @@
 #' @return A `glysmith_step` object.
 #' @examples
 #' step_heatmap()
-#' step_heatmap(on = "sig_exp")
-#' step_heatmap(on = "trait_exp")
 #' @seealso [glyvis::plot_heatmap()]
 #' @export
-step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
+step_heatmap <- function(plot_width = 7, plot_height = 7, ...) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
 
-  on_meta <- .resolve_on(on)
-  plot_name <- paste0("heatmap", on_meta$id_suffix)
-  label <- paste0("Heatmap", on_meta$label_suffix)
+  plot_name <- "heatmap"
+  label <- "Heatmap"
 
   step(
-    id = paste0("heatmap", on_meta$id_suffix),
+    id = "heatmap",
+    connected = .exp_port(),
     label = label,
     run = function(ctx) {
       .run_heatmap(
         ctx,
-        on = on,
         plot_name = plot_name,
         plot_width = plot_width,
         plot_height = plot_height,
         ...
       )
     },
-    require = on,
     packages = c("glyvis", "pheatmap"),
     signature = signature
   )
@@ -73,7 +41,6 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' Run heatmap plotting
 #'
 #' @param ctx Analysis context.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param plot_name Plot identifier.
 #' @param plot_width Plot width in inches.
 #' @param plot_height Plot height in inches.
@@ -81,14 +48,14 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #'
 #' @returns Updated analysis context.
 #' @noRd
-.run_heatmap <- function(ctx, on, plot_name, plot_width, plot_height, ...) {
-  exp <- ctx_get_data(ctx, on)
+.run_heatmap <- function(ctx, plot_name, plot_width, plot_height, ...) {
+  exp <- ctx$data$exp
   p <- glyvis::plot_heatmap(exp, ...)
   ctx_add_plot(
     ctx,
     plot_name,
     p,
-    paste0("Heatmap of ", on, "."),
+    paste0("Heatmap of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -112,8 +79,8 @@ step_heatmap <- function(on = "exp", plot_width = 7, plot_height = 7, ...) {
 #' bp <- blueprint(step_plot_glycosite_profile())
 #' if (requireNamespace("glyvis", quietly = TRUE)) {
 #'   result <- forge_analysis(glyexp::real_experiment, bp)
-#'   cast_plot(result, "glycans_per_site")
-#'   cast_plot(result, "sites_per_protein")
+#'   cast_plot(result, "node_1__glycans_per_site")
+#'   cast_plot(result, "node_1__sites_per_protein")
 #' }
 #' @export
 step_plot_glycosite_profile <- function(
@@ -123,8 +90,8 @@ step_plot_glycosite_profile <- function(
 ) {
   step(
     id = "plot_glycosite_profile",
+    connected = .exp_port(),
     label = "Glycosite profile",
-    require = "exp",
     packages = "glyvis",
     condition = function(ctx) {
       list(
@@ -156,26 +123,11 @@ step_plot_glycosite_profile <- function(
 
 #' Step: Logo Plot
 #'
-#' @description
 #' Create a logo plot for glycosylation sites using `glyvis::plot_logo()`.
 #' The logo plot visualizes the amino acid sequence patterns around glycosylation sites.
 #' This step is only applicable for glycoproteomics experiments.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (experiment data).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter (default: `exp`)
-#'
-#' Plots generated:
-#' - `logo`: A logo plot (if `on = "exp"`)
-#' - `sig_logo`: A logo plot (if `on = "sig_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to plot.
-#'   One of "exp", "sig_exp". Default is "exp".
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 3.
 #' @inheritParams glyvis::plot_logo
@@ -184,34 +136,31 @@ step_plot_glycosite_profile <- function(
 #' @examples
 #' step_logo()
 #' step_logo(fasta = "proteins.fasta")
-#' step_logo(on = "sig_exp")
 #' @seealso [glyvis::plot_logo()]
 #' @export
 step_logo <- function(
-  on = "exp",
   n_aa = 5L,
   fasta = NULL,
   plot_width = 5,
   plot_height = 3,
   ...
 ) {
-  checkmate::assert_choice(on, c("exp", "sig_exp"))
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
 
-  on_meta <- .resolve_on(on)
-  plot_name <- paste0("logo", on_meta$id_suffix)
-  label <- paste0("Logo plot", on_meta$label_suffix)
+  plot_name <- "logo"
+  label <- "Logo plot"
 
   step(
-    id = paste0("logo", on_meta$id_suffix),
+    id = "logo",
+    connected = .exp_port(),
     label = label,
     condition = function(ctx) {
-      .condition_logo(ctx, on = on)
+      .condition_logo(ctx)
     },
     run = function(ctx) {
       .run_logo(
         ctx,
-        on = on,
         plot_name = plot_name,
         n_aa = n_aa,
         fasta = fasta,
@@ -220,7 +169,6 @@ step_logo <- function(
         ...
       )
     },
-    require = on,
     packages = c("glyvis", "ggseqlogo", "UniProt.ws"),
     signature = signature
   )
@@ -229,12 +177,11 @@ step_logo <- function(
 #' Check whether logo plotting should run
 #'
 #' @param ctx Analysis context.
-#' @param on Name of the experiment data in `ctx$data`.
 #'
 #' @returns A list with `check` and `reason`.
 #' @noRd
-.condition_logo <- function(ctx, on) {
-  exp <- ctx_get_data(ctx, on)
+.condition_logo <- function(ctx) {
+  exp <- ctx$data$exp
   if (.get_exp_type(exp) != "glycoproteomics") {
     return(list(
       check = FALSE,
@@ -247,7 +194,6 @@ step_logo <- function(
 #' Run logo plotting
 #'
 #' @param ctx Analysis context.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param plot_name Plot identifier.
 #' @inheritParams step_logo
 #'
@@ -255,7 +201,6 @@ step_logo <- function(
 #' @noRd
 .run_logo <- function(
   ctx,
-  on,
   plot_name,
   n_aa,
   fasta,
@@ -263,13 +208,13 @@ step_logo <- function(
   plot_height,
   ...
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   p <- glyvis::plot_logo(exp, n_aa = n_aa, fasta = fasta, ...)
   ctx_add_plot(
     ctx,
     plot_name,
     p,
-    paste0("Logo plot of glycosylation sites for ", on, "."),
+    paste0("Logo plot of glycosylation sites for the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -277,39 +222,12 @@ step_logo <- function(
 
 #' Step: Significant Variables Boxplot
 #'
-#' @description
 #' Create boxplots for the most significant variables from DEA analysis using
 #' `glyvis::plot_boxplot()`. The function selects the top `n_top` variables with
 #' the lowest adjusted p-values from the DEA results and plots their expression
 #' values grouped by sample groups.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `sig_exp`).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' The number of variables is limited to a maximum of 25, as enforced by
-#' `glyvis::plot_boxplot()`.
-#'
-#' @details
-#' Data required:
-#' - Depends on `on` parameter:
-#'   - `sig_exp` (default): Significant experiment from DEA
-#'   - `sig_trait_exp`: Significant trait experiment from DTA
-#'   - `sig_dynamic_motif_exp`: Significant dynamic motif experiment from DMA
-#'   - `sig_branch_motif_exp`: Significant branch motif experiment from DMA
-#'
-#' Plots generated:
-#' - `sig_boxplot`: A boxplot of significant variables (if `on = "sig_exp"`)
-#' - `sig_trait_boxplot`: A boxplot of significant traits (if `on = "sig_trait_exp"`)
-#' - `sig_dynamic_motif_boxplot`: A boxplot of significant dynamic motifs (if `on = "sig_dynamic_motif_exp"`)
-#' - `sig_branch_motif_boxplot`: A boxplot of significant branch motifs (if `on = "sig_branch_motif_exp"`)
-#'
-#' @param on Name of the experiment data in `ctx$data` to plot.
-#'   One of "sig_exp", "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
-#'   Default is "sig_exp".
 #' @param n_top Number of top significant variables to plot.
 #'   Must be between 1 and 25 (inclusive).
 #'   Default is 25.
@@ -325,11 +243,9 @@ step_logo <- function(
 #' @examples
 #' step_sig_boxplot()
 #' step_sig_boxplot(n_top = 12)
-#' step_sig_boxplot(on = "sig_trait_exp")
 #' @seealso [glyvis::plot_boxplot()]
 #' @export
 step_sig_boxplot <- function(
-  on = "sig_exp",
   n_top = 25,
   panel_width = 1.5,
   panel_height = 1.2,
@@ -339,15 +255,7 @@ step_sig_boxplot <- function(
   max_height = 12,
   ...
 ) {
-  checkmate::assert_choice(
-    on,
-    c(
-      "sig_exp",
-      "sig_trait_exp",
-      "sig_dynamic_motif_exp",
-      "sig_branch_motif_exp"
-    )
-  )
+  .check_step_dots(sys.call())
   checkmate::assert_int(n_top, lower = 1L, upper = 25L)
   checkmate::assert_number(panel_width, lower = 0.5)
   checkmate::assert_number(panel_height, lower = 0.5)
@@ -357,17 +265,16 @@ step_sig_boxplot <- function(
   checkmate::assert_number(max_height, lower = 1)
   signature <- rlang::expr_deparse(match.call())
 
-  on_meta <- .resolve_on(on)
-  plot_name <- paste0("sig_boxplot", on_meta$id_suffix)
-  label <- paste0("Significant variables boxplot", on_meta$label_suffix)
+  plot_name <- "sig_boxplot"
+  label <- "Significant variables boxplot"
 
   step(
-    id = paste0("sig_boxplot", on_meta$id_suffix),
+    id = "sig_boxplot",
+    connected = list(accepts = "filtered_exp"),
     label = label,
     run = function(ctx) {
       .run_sig_boxplot(
         ctx,
-        on = on,
         plot_name = plot_name,
         n_top = n_top,
         panel_width = panel_width,
@@ -379,7 +286,6 @@ step_sig_boxplot <- function(
         ...
       )
     },
-    require = on,
     packages = c("glystats", "glyvis"),
     signature = signature
   )
@@ -388,7 +294,6 @@ step_sig_boxplot <- function(
 #' Run significant-variable boxplotting
 #'
 #' @param ctx Analysis context.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param plot_name Plot identifier.
 #' @inheritParams step_sig_boxplot
 #'
@@ -396,7 +301,6 @@ step_sig_boxplot <- function(
 #' @noRd
 .run_sig_boxplot <- function(
   ctx,
-  on,
   plot_name,
   n_top,
   panel_width,
@@ -407,21 +311,20 @@ step_sig_boxplot <- function(
   max_height,
   ...
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   n_vars <- nrow(exp)
 
   if (nrow(exp) > 25) {
-    dea_key <- switch(
-      on,
-      sig_exp = "dea_res",
-      sig_trait_exp = "dta_res",
-      sig_dynamic_motif_exp = "dynamic_dma_res",
-      sig_branch_motif_exp = "branch_dma_res"
-    )
-    dea_res <- ctx_get_data(ctx, dea_key)
+    dea_res <- ctx$data$dea_res
     tidy_res <- .get_sig_boxplot_tidy_result(dea_res)
 
     id_col <- .stats_id_column(dea_res)
+    if (isTRUE(dea_res$identifiers$variable$generated)) {
+      cli::cli_abort(
+        "Ranking a filtered boxplot requires unique fitted variable names."
+      )
+    }
+    tidy_res <- dplyr::filter(tidy_res, .data[[id_col]] %in% rownames(exp))
     top_vars <- tidy_res |>
       dplyr::arrange(dplyr::across(dplyr::matches("p_adj"))) |>
       dplyr::distinct(.data[[id_col]], .keep_all = TRUE) |>
@@ -448,7 +351,7 @@ step_sig_boxplot <- function(
     ctx,
     plot_name,
     p,
-    paste0("Boxplot of significant variables from ", on, "."),
+    paste0("Boxplot of significant variables from the input experiment."),
     width = dims$width,
     height = dims$height
   )

@@ -23,8 +23,7 @@
 #'
 #' # Check dependencies required by a custom blueprint
 #' bp <- blueprint(
-#'   step_ident_overview(),
-#'   step_pca()
+#'   fork(step_ident_overview(), step_pca())
 #' )
 #' check_glysmith_deps(bp)
 #' }
@@ -41,16 +40,18 @@ check_glysmith_deps <- function(
   action <- rlang::arg_match(action)
 
   pkgs <- collect_blueprint_packages(blueprint)
-  missing <- pkgs[!purrr::map_lgl(pkgs, rlang::is_installed)]
+  specs <- .dependency_specs(pkgs)
+  unavailable <- !vapply(specs, rlang::is_installed, logical(1))
+  missing <- pkgs[unavailable]
 
   switch(
     action,
     ask = {
       if (length(missing) > 0) {
         if (any(is_glycoverse_package(missing))) {
-          with_glycoverse_repos(rlang::check_installed(pkgs))
+          with_glycoverse_repos(rlang::check_installed(specs))
         } else {
-          rlang::check_installed(pkgs)
+          rlang::check_installed(specs)
         }
       } else {
         cli::cli_alert_success(
@@ -62,7 +63,7 @@ check_glysmith_deps <- function(
     error = {
       if (length(missing) > 0) {
         cli::cli_abort(c(
-          "The following packages required by the blueprint are not installed: {.pkg {missing}}",
+          "The following packages required by the blueprint are not installed at the required version: {specs[unavailable]}",
           format_dependency_install_hint(missing)
         ))
       }
@@ -71,7 +72,7 @@ check_glysmith_deps <- function(
     note = {
       if (length(missing) > 0) {
         cli::cli_alert_warning(
-          "Missing packages required by the blueprint: {.pkg {missing}}"
+          "Missing package requirements: {specs[unavailable]}"
         )
         cli::cli_inform(format_dependency_install_hint(missing))
         invisible(FALSE)
@@ -83,6 +84,18 @@ check_glysmith_deps <- function(
       }
     }
   )
+}
+
+# Use the same minimum versions during preflight and node execution as the
+# package declares in DESCRIPTION. Custom steps may require other packages.
+.dependency_specs <- function(pkgs) {
+  if (!length(pkgs)) {
+    return(character())
+  }
+  desc <- utils::packageDescription("glysmith", fields = "Suggests")
+  specs <- trimws(strsplit(desc, ",", fixed = TRUE)[[1L]])
+  matches <- match(pkgs, sub(" .*", "", specs))
+  ifelse(is.na(matches), pkgs, specs[matches])
 }
 
 #' Collect packages required by a blueprint
@@ -99,6 +112,10 @@ collect_blueprint_packages <- function(blueprint) {
     ))
   }
 
+  blueprint <- purrr::map(
+    .compile_blueprint(blueprint)$nodes,
+    "step"
+  )
   blueprint |>
     purrr::map("packages", .default = character(0)) |>
     unlist(use.names = FALSE) |>

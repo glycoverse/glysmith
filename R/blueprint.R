@@ -1,25 +1,46 @@
-#' Create a Blueprint
+#' Compose a tree of analytical steps
 #'
-#' A blueprint is a list of steps that are executed in order.
-#' Type `step_` and TAB in RStudio to see all available steps.
+#' Connect a producer to its consumer with `%=>%`. Routes separated by
+#' commas in `blueprint()` start independently from the original experiment.
+#' Use [fork()] to share an intermediate output and [br()] for a side route
+#' that leaves the outer connection available. See `vignette("blueprint")`.
 #'
-#' @param ... One or more step objects.
-#'
-#' @returns A blueprint object.
+#' @param ... One or more routes, optionally named. A trailing comma is allowed.
+#' @param lhs,rhs Steps, routes, forks, side branches or reusable blueprints.
+#' @returns `blueprint()` returns a validated blueprint. Printing it draws each
+#'   step beneath its producer and shows its result ID. `%=>%` returns an
+#'   ordered route for use in a blueprint. Neither constructor runs the analysis.
 #' @examples
 #' blueprint(
-#'   step_preprocess(),
-#'   step_pca(),
-#'   step_dea_limma(),  # this comma is ok
+#'   step_preprocess() %=>% step_dea_limma() %=>% fork(
+#'     step_volcano(),
+#'     step_filter_sig_vars() %=>% step_heatmap()
+#'   )
 #' )
+#' blueprint(scores = step_pca(), differential = step_dea_limma())
 #' @export
 blueprint <- function(...) {
-  steps <- as.list(rlang::list2(...))
-  steps <- .expand_branches(steps)
-  names(steps) <- purrr::map_chr(steps, "id")
-  bp <- new_blueprint(steps)
-  bp <- validate_blueprint(bp)
+  routes <- rlang::list2(...)
+  if (!length(routes)) {
+    cli::cli_abort("A blueprint needs at least one route.")
+  }
+  bp <- structure(routes, class = "glysmith_blueprint", format_version = 3L)
+  .compile_blueprint(bp)
   bp
+}
+
+#' @rdname blueprint
+#' @export
+`%=>%` <- function(lhs, rhs) {
+  items <- function(x) {
+    if (!.connected_route(x)) {
+      cli::cli_abort("Both operands of %=>% must be analytical routes.")
+    }
+    if (inherits(x, "glysmith_sequence")) unclass(x) else list(x)
+  }
+  route <- structure(c(items(lhs), items(rhs)), class = "glysmith_sequence")
+  .compile_route(route, c("exp", "filtered_exp", "contrast", "omnibus"))
+  route
 }
 
 #' Save or Load a Blueprint
@@ -33,13 +54,13 @@ blueprint <- function(...) {
 #' @returns Invisibly returns the blueprint object.
 #' @examples
 #' bp <- blueprint(
-#'   step_preprocess(),
-#'   step_pca(),
-#'   step_dea_limma(),
+#'   step_preprocess() %=>%
+#'     fork(step_pca(), step_dea_limma()),
 #' )
 #' write_blueprint(bp, tempfile(fileext = ".rds"))
 #' @export
 write_blueprint <- function(bp, file) {
+  .assert_blueprint(bp)
   saveRDS(bp, file)
 }
 
@@ -47,517 +68,18 @@ write_blueprint <- function(bp, file) {
 #' @export
 read_blueprint <- function(file) {
   x <- readRDS(file)
-  if (!inherits(x, "glysmith_blueprint")) {
-    cli::cli_abort(c(
-      "Must be of type {.cls glysmith_blueprint}.",
-      "x" = "Got {.cls {class(x)}}"
-    ))
-  }
+  .assert_blueprint(x)
   x
 }
 
-new_blueprint <- function(steps) {
-  structure(steps, class = "glysmith_blueprint")
-}
-
-#' Validate a blueprint's ctx$data dependencies
-#'
-#' This is a static check based on each step's declared `require` and `generate`
-#' fields (keys under `ctx$data`).
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#'
-#' @returns Invisibly returns TRUE if the blueprint is valid.
-#' @noRd
-validate_blueprint <- function(blueprint) {
-  if (!inherits(blueprint, "glysmith_blueprint")) {
-    cli::cli_abort("Invalid blueprint object.")
-  }
-
-  .validate_blueprint_duplicates(blueprint)
-  .validate_blueprint_dependencies(blueprint)
-  .validate_blueprint_overwrite(blueprint)
-  invisible(blueprint)
-}
-
-#' Check any duplicated steps in the blueprint.
-#'
-#' Repeatable steps (with `repeatable = TRUE`) are allowed to have duplicate IDs.
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#'
-#' @returns NULL. Raises an error if the blueprint is not valid.
-#' @noRd
-.validate_blueprint_duplicates <- function(blueprint) {
-  step_ids <- names(blueprint)
-  step_counts <- table(step_ids)
-
-  # Find IDs that appear more than once
-  duplicated_ids <- names(step_counts)[step_counts > 1]
-
-  if (length(duplicated_ids) > 0) {
-    # For each duplicated ID, check if all steps with that ID are repeatable
-    for (id in duplicated_ids) {
-      dup_steps <- blueprint[names(blueprint) == id]
-      all_repeatable <- purrr::every(dup_steps, ~ isTRUE(.x$repeatable))
-
-      if (!all_repeatable) {
-        # Find signatures of non-repeatable duplicated steps
-        non_repeatable_dups <- purrr::keep(dup_steps, ~ isFALSE(.x$repeatable))
-        duplicated_sigs <- purrr::map_chr(non_repeatable_dups, ~ .x$signature)
-        cli::cli_abort(c(
-          "Blueprint cannot contain duplicated steps.",
-          "x" = "{.code {duplicated_sigs}} {?is/are} duplicated."
-        ))
-      }
-    }
-  }
-}
-
-#' Check any missing dependencies in the blueprint.
-#'
-#' A missing dependency means that a step requires data that is not present in the context.
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#'
-#' @returns NULL. Raises an error if the blueprint is not valid.
-#' @noRd
-.validate_blueprint_dependencies <- function(blueprint) {
-  missing_keys <- .collect_missing_keys(blueprint)
-
-  if (length(missing_keys) == 0) {
-    return(invisible())
-  }
-
-  .abort_dependency_error(blueprint, missing_keys)
-}
-
-#' Collect missing data keys for all steps in a blueprint.
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#'
-#' @returns A list where names are step IDs and values are character vectors of missing keys.
-#' @noRd
-.collect_missing_keys <- function(blueprint) {
-  known <- character(0)
-  missing_keys <- list()
-
-  for (s in blueprint) {
-    if (!inherits(s, "glysmith_step")) {
-      cli::cli_abort("Invalid step object.")
-    }
-
-    require <- s$require %||% character(0)
-    generate <- s$generate %||% character(0)
-
-    checkmate::assert_character(require, any.missing = FALSE, null.ok = TRUE)
-    checkmate::assert_character(generate, any.missing = FALSE, null.ok = TRUE)
-
-    if (length(require) > 0) {
-      missing <- setdiff(require, known)
-      missing <- setdiff(missing, "exp") # exp is always present
-
-      # If the step is in a branch, check if missing keys can be resolved from global data.
-      # This allows branches to "inherit" dependencies from the main flow.
-      if (!is.null(s$branch) && length(missing) > 0) {
-        missing <- .resolve_branch_dependencies(missing, known, s$branch)
-      }
-
-      if (length(missing) > 0) {
-        missing_keys[[s$id]] <- missing
-      }
-    }
-
-    if (length(generate) > 0) {
-      known <- unique(c(known, generate))
-    }
-  }
-
-  missing_keys
-}
-
-#' Resolve branch-prefixed dependencies that may exist globally.
-#'
-#' @param missing Character vector of missing keys.
-#' @param known Character vector of known/available keys.
-#' @param branch Branch name.
-#'
-#' @returns A character vector of still-missing keys.
-#' @noRd
-.resolve_branch_dependencies <- function(missing, known, branch) {
-  prefix <- paste0(branch, "__")
-  prefixed_missing <- missing[startsWith(missing, prefix)]
-
-  if (length(prefixed_missing) == 0) {
-    return(missing)
-  }
-
-  # Strip prefix to get the "global" key
-  unprefixed <- substr(
-    prefixed_missing,
-    nchar(prefix) + 1,
-    nchar(prefixed_missing)
-  )
-  # Check if the global key is known
-  found_globally <- unprefixed %in% known
-  # Remove resolved keys from missing list
-  resolved <- prefixed_missing[found_globally]
-
-  setdiff(missing, resolved)
-}
-
-#' Format and abort with a dependency error message.
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#' @param missing_keys A list of missing keys per step.
-#'
-#' @returns Does not return.
-#' @noRd
-.abort_dependency_error <- function(blueprint, missing_keys) {
-  unique_missing_keys <- unique(unlist(missing_keys))
-  key_map <- .build_key_map(blueprint, unique_missing_keys)
-  lookup_keys <- unique(unlist(key_map))
-
-  msg <- "Blueprint is not valid due to missing step dependencies."
-  steps_with_missing <- character(0)
-
-  for (s in blueprint) {
-    if (length(missing_keys[[s$id]]) == 0) {
-      next
-    }
-
-    step_sig <- .get_step_display_name(s)
-    steps_with_missing <- c(steps_with_missing, step_sig)
-    display_keys <- purrr::map_chr(
-      missing_keys[[s$id]],
-      ~ key_map[[.x]] %||% .x
+.assert_blueprint <- function(x) {
+  if (
+    !inherits(x, "glysmith_blueprint") ||
+      !identical(attr(x, "format_version"), 3L)
+  ) {
+    cli::cli_abort(
+      "Incompatible blueprint. Rebuild it with blueprint() and %=>%."
     )
-
-    if (!is.null(s$branch)) {
-      part <- paste0(
-        "Step {.code ",
-        step_sig,
-        "} in the {.val ",
-        s$branch,
-        "} branch requires missing data: {.field {display_keys}}."
-      )
-    } else {
-      part <- paste0(
-        "Step {.code ",
-        step_sig,
-        "} requires missing data: {.field {display_keys}}."
-      )
-    }
-    msg <- c(msg, "x" = part)
-  }
-
-  key_steps <- .get_key_steps(lookup_keys)
-  extract_signatures <- function(steps) purrr::map_chr(steps, "signature")
-  sigs <- purrr::map(key_steps, extract_signatures)
-
-  for (k in lookup_keys) {
-    if (k %in% names(sigs)) {
-      part <- paste0(
-        "Data {.field ",
-        k,
-        "} can be generated by {.code {sigs[['",
-        k,
-        "']]}}."
-      )
-      msg <- c(msg, "i" = part)
-    }
-  }
-
-  # Add placement hint
-  if (length(steps_with_missing) == 1) {
-    msg <- c(
-      msg,
-      "i" = paste0(
-        "The required step should be placed before {.code ",
-        steps_with_missing,
-        "}, either inside or outside the branch."
-      )
-    )
-  } else {
-    msg <- c(
-      msg,
-      "i" = "The required step should be placed before these steps, either inside or outside the branch."
-    )
-  }
-
-  cli::cli_abort(msg)
-}
-
-#' Get the display name for a step in error messages.
-#'
-#' For steps inside branches, returns the original step signature without branch wrapper.
-#'
-#' @param step A step object.
-#'
-#' @returns A character string for display.
-#' @noRd
-.get_step_display_name <- function(step) {
-  if (!is.null(step$branch_signature)) {
-    step$branch_signature
-  } else {
-    step$signature
-  }
-}
-
-#' Build a map from prefixed to unprefixed keys for display.
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#' @param keys Character vector of keys to map.
-#'
-#' @returns A named list where names are original keys and values are display keys.
-#' @noRd
-.build_key_map <- function(blueprint, keys) {
-  key_map <- list()
-
-  for (k in keys) {
-    mapped <- FALSE
-    for (s in blueprint) {
-      if (k %in% (s$require %||% character(0)) && !is.null(s$branch)) {
-        prefix <- paste0(s$branch, "__")
-        if (startsWith(k, prefix)) {
-          key_map[[k]] <- substr(k, nchar(prefix) + 1, nchar(k))
-          mapped <- TRUE
-          break
-        }
-      }
-    }
-    if (!mapped) {
-      key_map[[k]] <- k
-    }
-  }
-
-  key_map
-}
-
-#' Check any overwrite of existing data in the blueprint.
-#'
-#' An overwrite means that a step generates data that already exists in the context.
-#' It is not fatal, but when it happens, a warning should be raised.
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#'
-#' @returns NULL. Raises a warning if the blueprint is not valid.
-#' @noRd
-.validate_blueprint_overwrite <- function(blueprint) {
-  generated_map <- list()
-  overwrite_msgs <- character(0)
-
-  for (s in blueprint) {
-    generate <- s$generate %||% character(0)
-    current_step_sig <- s$signature
-
-    for (key in generate) {
-      if (key %in% names(generated_map)) {
-        if (key %in% s$initialize) {
-          next
-        }
-        previous_step_sig <- generated_map[[key]]
-        msg <- paste0(
-          "{.code ",
-          current_step_sig,
-          "} overwrites data {.field ",
-          key,
-          "} generated by {.code ",
-          previous_step_sig,
-          "}."
-        )
-        overwrite_msgs <- c(overwrite_msgs, msg)
-      }
-      generated_map[[key]] <- current_step_sig
-    }
-  }
-
-  if (length(overwrite_msgs) > 0) {
-    msgs <- c("Blueprint contains data overwrites:", overwrite_msgs)
-    names(msgs) <- c("", rep("*", length(overwrite_msgs)))
-    msgs <- c(msgs, "i" = "You can ignore this if this is your intention.")
-    cli::cli_warn(msgs)
-  }
-}
-
-#' Get the steps that generate the missing keys
-#'
-#' @param missing_keys Character vector of missing keys.
-#'
-#' @returns
-#'   A list of key steps. Names are the missing keys, and values are the steps that generate them.
-#'   For example, if `missing_keys` is `c("x", "y")`, then `key_steps[["x"]]` is a list of steps that generate `x`,
-#'   and `key_steps[["y"]]` is a list of steps that generate `y`.
-#' @noRd
-.get_key_steps <- function(missing_keys) {
-  key_steps <- list()
-  steps <- all_steps()
-  for (k in missing_keys) {
-    key_steps[[k]] <- steps[purrr::map_lgl(steps, ~ k %in% .x$generate)]
-  }
-  key_steps
-}
-
-#' @export
-print.glysmith_blueprint <- function(x, ...) {
-  cli::cli_h2("Blueprint ({.val {length(x)}} steps)")
-  top_id <- cli::cli_ul(.close = FALSE)
-  branch_id <- NULL
-  current_branch <- NULL
-
-  for (s in x) {
-    if (!is.null(s$branch)) {
-      if (!identical(current_branch, s$branch)) {
-        if (!is.null(branch_id)) {
-          cli::cli_end(branch_id)
-        }
-        current_branch <- s$branch
-        cli::cli_li(paste0("br(\"", current_branch, "\")"))
-        branch_id <- cli::cli_ul(.close = FALSE)
-      }
-      cli::cli_li(s$branch_signature %||% s$signature)
-      next
-    }
-
-    if (!is.null(branch_id)) {
-      cli::cli_end(branch_id)
-      branch_id <- NULL
-      current_branch <- NULL
-    }
-    cli::cli_li(s$signature)
-  }
-
-  if (!is.null(branch_id)) {
-    cli::cli_end(branch_id)
-  }
-  cli::cli_end(top_id)
-}
-
-#' Run a list of steps
-#'
-#' @param blueprint A `glysmith_blueprint` object.
-#' @param ctx Context list.
-#' @param quiet Whether to suppress progress output.
-#'
-#' @returns Updated context.
-#' @noRd
-run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
-  ctx <- .run_blueprint_ensure_ctx(ctx)
-
-  for (step in blueprint) {
-    if (.run_blueprint_should_skip(step, ctx, quiet = quiet)) {
-      next
-    }
-
-    step_run <- .run_blueprint_run_with_retry(step, ctx, quiet = quiet)
-    ctx <- step_run$ctx
-  }
-
-  ctx
-}
-
-.run_blueprint_ensure_ctx <- function(ctx) {
-  ctx$meta <- ctx$meta %||% list()
-  ctx$meta$steps <- ctx$meta$steps %||% character(0)
-  ctx$meta$logs <- ctx$meta$logs %||% list()
-
-  ctx$data <- ctx$data %||% list()
-  ctx
-}
-
-.run_blueprint_should_skip <- function(step, ctx, quiet = FALSE) {
-  if (!is.null(step$condition)) {
-    condition_res <- step$condition(ctx)
-    if (isFALSE(condition_res$check)) {
-      if (!quiet) {
-        cli::cli_alert_info(
-          "Skipping `{step$signature}` because {condition_res$reason}."
-        )
-      }
-      return(TRUE)
-    }
-  }
-
-  required <- step$require %||% character(0)
-  if (length(required) == 0) {
-    return(FALSE)
-  }
-
-  missing_deps <- setdiff(required, names(ctx$data))
-
-  # Allow branches to inherit dependencies from the main flow
-  if (!is.null(step$branch) && length(missing_deps) > 0) {
-    prefix <- paste0(step$branch, "__")
-    prefixed_missing <- missing_deps[startsWith(missing_deps, prefix)]
-
-    if (length(prefixed_missing) > 0) {
-      unprefixed <- substr(
-        prefixed_missing,
-        nchar(prefix) + 1,
-        nchar(prefixed_missing)
-      )
-      found_globally <- unprefixed %in% names(ctx$data)
-      resolved <- prefixed_missing[found_globally]
-      missing_deps <- setdiff(missing_deps, resolved)
-    }
-  }
-
-  if (length(missing_deps) == 0) {
-    return(FALSE)
-  }
-
-  if (!quiet) {
-    cli::cli_alert_warning(
-      "Skipping `{step$signature}` due to missing ctx$data keys: {.field {missing_deps}}."
-    )
-  }
-  TRUE
-}
-
-.run_blueprint_run_with_retry <- function(step, ctx, quiet = FALSE) {
-  retries_left <- as.integer(step$retry %||% 0L)
-
-  while (TRUE) {
-    step_id <- NULL
-    if (!quiet) {
-      step_id <- cli::cli_progress_step(step$label)
-    }
-
-    attempt <- .run_blueprint_run_once(step, ctx)
-
-    if (attempt$status == "success") {
-      ctx <- .run_blueprint_ensure_ctx(attempt$new_ctx)
-      ctx$meta$logs[[step$id]] <- attempt$logs
-      ctx$meta$steps <- c(ctx$meta$steps, step$id)
-      if (!quiet && !is.null(step_id)) {
-        cli::cli_progress_done(id = step_id)
-      }
-      return(list(ctx = ctx))
-    }
-
-    e <- attempt$error
-    if (retries_left > 0) {
-      retries_left <- retries_left - 1
-      if (!quiet) {
-        cli::cli_progress_done(id = step_id, result = "clear")
-        cli::cli_alert_warning(
-          "`{step$signature}` failed. Retrying... ({retries_left + 1} attempts left)"
-        )
-      }
-      next
-    }
-
-    if (!quiet) {
-      cli::cli_progress_done(id = step_id, result = "failed")
-    }
-    if (isTRUE(step$stop_on_error)) {
-      cli::cli_abort("{.code {step$signature}} failed.", parent = e)
-    }
-    if (!quiet) {
-      cli::cli_alert_warning("`{step$signature}` failed. Error: {e$message}")
-    }
-    ctx$meta$logs[[step$id]] <- list(error = e$message)
-    return(list(ctx = ctx))
   }
 }
 
@@ -598,4 +120,308 @@ run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
       list(status = "error", error = e)
     }
   )
+}
+
+#' Fan out from the current blueprint output
+#'
+#' Each argument is a sibling route that receives the same input. Pass a step
+#' for a one-step route, a `%=>%` sequence or a reusable blueprint.
+#'
+#' @param ... One or more routes. Argument names can label routes.
+#' @returns A fork specification to use in a blueprint.
+#' @export
+fork <- function(...) {
+  routes <- rlang::list2(...)
+  if (
+    !length(routes) ||
+      !all(vapply(routes, .connected_route, logical(1)))
+  ) {
+    stop(
+      "fork() needs one or more analytical routes.",
+      call. = FALSE
+    )
+  }
+  structure(routes, class = "glysmith_fork")
+}
+
+.connected_route <- function(x) {
+  inherits(
+    x,
+    c(
+      "glysmith_step",
+      "glysmith_sequence",
+      "glysmith_blueprint",
+      "glysmith_fork",
+      "glysmith_branch"
+    )
+  )
+}
+
+.compile_blueprint <- function(blueprint) {
+  .assert_blueprint(blueprint)
+  .compile_route(blueprint, "exp")
+}
+
+# A reusable sequence can start at a fit. Its siblings must all accept the
+# same inlet. A complete blueprint binds that inlet to the original experiment.
+.compile_route <- function(route, inlet) {
+  nodes <- list()
+  visit <- function(item, wire, labels) {
+    if (!length(wire$type)) {
+      cli::cli_abort(
+        "No output follows a terminal step or fork at this position."
+      )
+    }
+    if (inherits(item, "glysmith_sequence")) {
+      for (child in item) {
+        wire <- visit(child, wire, labels)
+      }
+      return(wire)
+    }
+    if (inherits(item, "glysmith_branch")) {
+      visit(item$route, wire, c(labels, item$name))
+      return(wire)
+    }
+    if (inherits(item, c("glysmith_blueprint", "glysmith_fork"))) {
+      blueprint <- inherits(item, "glysmith_blueprint")
+      if (blueprint) {
+        .assert_blueprint(item)
+      }
+      for (j in seq_along(item)) {
+        tail <- visit(item[[j]], wire, c(labels, names(item)[j]))
+      }
+      if (blueprint && length(item) == 1L) {
+        return(tail)
+      }
+      # Forks and multi-entry blueprints expose no single branch output.
+      wire$type <- character()
+      return(wire)
+    }
+    if (!inherits(item, "glysmith_step") || is.null(item$connected)) {
+      cli::cli_abort(
+        "Each route must contain steps with declared inputs and outputs."
+      )
+    }
+    contract <- item$connected
+    available <- if (wire$parent == "root") inlet else wire$type
+    accepted <- intersect(available, contract$accepts)
+    if (!length(accepted)) {
+      cli::cli_abort(
+        "{item$signature} requires {contract$accepts}, received {available} from {wire$parent}."
+      )
+    }
+    if (wire$parent == "root") {
+      inlet <<- accepted
+    }
+    id <- paste0("node_", length(nodes) + 1L)
+    nodes[[id]] <<- list(
+      id = id,
+      parent = wire$parent,
+      step = item,
+      route = paste(labels[nzchar(labels)], collapse = "/")
+    )
+    wire$parent <- id
+    wire$type <- contract$produces
+    if (length(wire$type) && wire$type %in% c("exp", "filtered_exp")) {
+      wire$main_exp <- id
+    }
+    wire
+  }
+  root <- list(parent = "root", type = inlet, main_exp = "root")
+  tail <- visit(route, root, character())
+  list(nodes = nodes, accepts = inlet, main_exp = tail$main_exp)
+}
+
+#' @export
+print.glysmith_blueprint <- function(x, ...) {
+  plan <- .compile_blueprint(x)
+  ids <- c("root", names(plan$nodes))
+  parents <- purrr::map_chr(plan$nodes, "parent")
+  root_label <- sprintf(
+    "%s (root accepts %s)",
+    cli::style_bold("Blueprint"),
+    paste(plan$accepts, collapse = " or ")
+  )
+  labels <- purrr::map_chr(plan$nodes, function(n) {
+    label <- if (nzchar(n$route)) {
+      cli::col_yellow(paste0(" [", n$route, "]"))
+    } else {
+      ""
+    }
+    type <- n$step$connected$produces %||% "terminal"
+    outlet <- switch(
+      type,
+      contrast = ,
+      omnibus = cli::col_magenta(type),
+      terminal = cli::style_dim(type),
+      cli::col_green(type)
+    )
+    sprintf(
+      " %s  %s%s (%s)",
+      cli::style_dim(n$id),
+      cli::col_cyan(paste(n$step$signature, collapse = "\n")),
+      label,
+      outlet
+    )
+  })
+  tree <- tibble::tibble(
+    id = ids,
+    children = split(names(plan$nodes), factor(parents, levels = ids)),
+    label = c(root_label, labels)
+  )
+  print(cli::tree(tree, width = .Machine$integer.max))
+  invisible(x)
+}
+
+# The key names below are local to a single invocation of a step. They adapt
+# the existing analysis code to a single wire without sharing mutable context.
+.exp_port <- function(output = NULL) {
+  list(
+    accepts = c("exp", "filtered_exp"),
+    produces = if (!is.null(output)) "exp",
+    key = output
+  )
+}
+
+.fit_port <- function(
+  produces = NULL,
+  key = NULL,
+  accepts = c("contrast", "omnibus")
+) {
+  list(accepts = accepts, produces = produces, key = key)
+}
+
+.connected_node <- function(node, wire, group_col) {
+  step <- node$step
+  port <- step$connected
+  ctx <- new_ctx(wire$exp, group_col)
+  if (!is.null(wire$fit)) {
+    ctx$data$dea_res <- wire$fit
+  }
+  ctx$filter_args <- wire$filter_args
+  specs <- .dependency_specs(step$packages)
+  missing <- specs[!vapply(specs, rlang::is_installed, logical(1))]
+  if (length(missing)) {
+    cli::cli_abort("Missing step dependencies: {missing}.")
+  }
+  if (!nrow(wire$exp)) {
+    return(list(
+      status = "skipped",
+      reason = "input experiment has zero variables"
+    ))
+  }
+  if (!is.null(step$condition)) {
+    cond <- step$condition(ctx)
+    if (!cond$check) return(list(status = "skipped", reason = cond$reason))
+  }
+  for (i in seq_len(1L + step$retry)) {
+    attempt <- .run_blueprint_run_once(step, ctx)
+    if (attempt$status == "success") break
+  }
+  if (attempt$status != "success") {
+    stop(attempt$error)
+  }
+  local <- attempt$new_ctx
+  local$exp <- wire$exp
+  local$meta$logs[[step$id]] <- attempt$logs
+  output <- NULL
+  if (!is.null(port$key)) {
+    value <- ctx_get_data(local, port$key)
+    output <- switch(
+      port$produces,
+      contrast = ,
+      omnibus = list(
+        exp = wire$exp,
+        fit = value,
+        filter_args = port$filter_args
+      ),
+      filtered_exp = list(exp = value, fit = wire$fit),
+      exp = list(exp = value)
+    )
+  }
+  content <- if (is.function(step$report)) {
+    tryCatch(step$report(local), error = function(e) {
+      paste("Report generation failed:", conditionMessage(e))
+    })
+  }
+  list(
+    status = "success",
+    output = output,
+    plots = local$plots,
+    tables = local$tables,
+    internal = local$data[setdiff(
+      names(local$data),
+      c(names(ctx$data), port$key)
+    )],
+    explanation = local$meta$explanation,
+    logs = attempt$logs,
+    report = content
+  )
+}
+
+run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
+  plan <- .compile_blueprint(blueprint)
+  ctx$data$root <- ctx$data$exp
+  wires <- list(root = list(exp = ctx$data$root))
+  for (node in plan$nodes) {
+    id <- node$id
+    upstream <- wires[[node$parent]]
+    if (is.null(upstream)) {
+      res <- list(
+        status = "blocked",
+        reason = ctx$meta$nodes[[node$parent]]$reason
+      )
+    } else {
+      res <- tryCatch(
+        .connected_node(node, upstream, ctx$group_col),
+        error = function(e) {
+          list(status = "failed", reason = conditionMessage(e))
+        }
+      )
+    }
+    ctx$meta$nodes[[id]] <- list(
+      step = node$step$signature,
+      label = node$step$label,
+      parent = node$parent,
+      route = node$route,
+      status = res$status,
+      reason = res$reason
+    )
+    if (res$status != "success") {
+      if (!quiet) {
+        cli::cli_alert_info(
+          "{id} {node$step$signature} {res$status}: {res$reason}"
+        )
+      }
+      next
+    }
+    wires[[id]] <- res$output
+    if (!is.null(res$output)) {
+      ctx$data[[id]] <- if (
+        node$step$connected$produces %in% c("contrast", "omnibus")
+      ) {
+        res$output$fit
+      } else {
+        res$output$exp
+      }
+    }
+    prefix <- paste0(id, "__")
+    for (kind in c("plots", "tables", "internal")) {
+      field <- if (kind == "internal") "data" else kind
+      for (key in names(res[[kind]])) {
+        name <- paste0(prefix, key)
+        ctx[[field]][[name]] <- res[[kind]][[key]]
+        ctx$meta$explanation[[paste0(
+          field,
+          "$",
+          name
+        )]] <- res$explanation[[paste0(field, "$", key)]]
+      }
+    }
+    ctx$meta$steps <- c(ctx$meta$steps, id)
+    ctx$meta$logs[[id]] <- res$logs
+    ctx$meta$reports[[id]] <- res$report
+  }
+  ctx$data["exp"] <- list(wires[[plan$main_exp]]$exp)
+  ctx
 }

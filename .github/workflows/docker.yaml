@@ -51,7 +51,7 @@ jobs:
           PACKAGE_REF: ${{ inputs.package_ref || 'glysmith' }}
           PUBLISH: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.publish) }}
         run: |
-          if [ "$GITHUB_EVENT_NAME" = release ]; then
+          if [ "$GITHUB_EVENT_NAME" = release ] || [ "$GITHUB_EVENT_NAME" = pull_request ]; then
             PACKAGE_REF="$GITHUB_REPOSITORY@$GITHUB_SHA"
           fi
           echo "package-ref=$PACKAGE_REF" >> "$GITHUB_OUTPUT"

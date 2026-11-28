@@ -1,5 +1,12 @@
 # glysmith (development version)
 
+## Breaking changes
+
+* `blueprint()` now connects steps by type. Rebuild saved blueprints and replace the `on` step input selector with direct connections. Join successive steps with `%=>%`. Commas in `blueprint()` start independent routes on the original experiment. Use `fork()` to share an intermediate output and `br()` for a single side route. (#40)
+* Differential steps now emit their fit. Use `step_filter_sig_vars()` for the selected experiment. Result names identify the producing node shown by `print()`. (#40)
+
+## New features
+
 * New `step_plot_glycosite_profile()` plots the distributions of distinct glycans per site and glycosylation sites per protein in one blueprint step. (#39)
 * New `step_remove()`, `step_normalize()`, `step_impute()`, and related preprocessing steps let you select glyclean methods and their order in a blueprint. (#38)
 * `step_plot_qc()` gains a `method` argument to select one QC plot and pass its plotting options at any preprocessing stage. (#38)

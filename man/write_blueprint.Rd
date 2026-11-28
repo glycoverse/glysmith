@@ -25,9 +25,8 @@ Invisibly returns the blueprint object.
 }
 \examples{
 bp <- blueprint(
-  step_preprocess(),
-  step_pca(),
-  step_dea_limma(),
+  step_preprocess() \%=>\%
+    fork(step_pca(), step_dea_limma()),
 )
 write_blueprint(bp, tempfile(fileext = ".rds"))
 }

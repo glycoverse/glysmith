@@ -2,10 +2,9 @@
 % Please edit documentation in R/step-dea.R
 \name{step_dea_limma}
 \alias{step_dea_limma}
-\title{Step: Differential Expression Analysis (DEA) using Limma}
+\title{Differential analysis using limma}
 \usage{
 step_dea_limma(
-  on = "exp",
   p_adj_method = "BH",
   covariate_cols = NULL,
   subject_col = NULL,
@@ -18,12 +17,6 @@ step_dea_limma(
 )
 }
 \arguments{
-\item{on}{Name of the experiment data in \code{ctx$data} to run analysis on.
-Default is \code{"exp"} for differential expression analysis.
-Use \code{"trait_exp"} for differential trait analysis.
-Use \code{"dynamic_motif_exp"} for differential dynamic motif analysis.
-Use \code{"branch_motif_exp"} for differential branch motif analysis.}
-
 \item{p_adj_method}{A character string specifying the method for multiple testing correction.
 Must be one of the methods supported by \code{stats::p.adjust()}. Default is "BH" (Benjamini-Hochberg).
 Set to NULL to skip p-value adjustment.}
@@ -45,67 +38,18 @@ Supports two formats: "group1-group2" or "group1_vs_group2".
 Use the second format if group names contain hyphens.
 "group1" will be used as the reference group.}
 
-\item{filter_p_adj_cutoff}{Adjusted p-value cutoff for filtering.}
+\item{filter_p_adj_cutoff, filter_p_val_cutoff, filter_fc_cutoff}{Default
+adjusted p-value, raw p-value and fold-change cutoffs for downstream filters.}
 
-\item{filter_p_val_cutoff}{Raw p-value cutoff for filtering.}
-
-\item{filter_fc_cutoff}{Fold change cutoff for filtering.}
-
-\item{...}{Additional arguments passed to \code{limma::lmFit()}.}
+\item{...}{Additional arguments passed to \code{\link[glystats:gly_limma]{glystats::gly_limma()}}.}
 }
 \value{
-A \code{glysmith_step} object.
+A step producing a fitted differential result.
 }
 \description{
-Run differential analysis using linear model-based analysis via \code{glystats::gly_limma()},
-then filter the experiment to keep only the differentially expressed variables using \code{glystats::filter_sig_vars()}.
-By default, this runs DEA on the main experiment (\code{exp}), but can be configured
-to run on derived traits (\code{trait_exp}) or other experiment objects.
-This step is the recommended DEA method for all experiments,
-for both two-group and multi-group experiments.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-}
-}
-\details{
-Data required:
-\itemize{
-\item \code{exp} (if \code{on = "exp"}): The experiment to run DEA on
-\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run DEA on
-\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to run DEA on
-\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to run DEA on
-}
-
-Data generated:
-\itemize{
-\item \code{dea_res}: The DEA (differential expression analysis) results (if \code{on = "exp"}, default)
-\item \code{dta_res}: The DTA (differential trait analysis) results (if \code{on = "trait_exp"})
-\item \code{dynamic_dma_res}: The DMA results (if \code{on = "dynamic_motif_exp"})
-\item \code{branch_dma_res}: The DMA results (if \code{on = "branch_motif_exp"})
-\item \code{sig_exp}: The filtered experiment (if \code{on = "exp"}, default)
-\item \code{sig_trait_exp}: The filtered trait experiment (if \code{on = "trait_exp"})
-\item \code{sig_dynamic_motif_exp}: The filtered dynamic motif experiment (if \code{on = "dynamic_motif_exp"})
-\item \code{sig_branch_motif_exp}: The filtered branch motif experiment (if \code{on = "branch_motif_exp"})
-}
-
-Tables generated:
-\itemize{
-\item \code{dea}: A table containing the DEA (differential expression analysis) result (if \code{on = "exp"}, default)
-\item \code{dta}: A table containing the DTA (differential trait analysis) result (if \code{on = "trait_exp"})
-\item \code{dynamic_dma}: A table containing the DMA result (if \code{on = "dynamic_motif_exp"})
-\item \code{branch_dma}: A table containing the DMA result (if \code{on = "branch_motif_exp"})
-}
+Fit \code{\link[glystats:gly_limma]{glystats::gly_limma()}} to the incoming experiment. Connect
+\code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} to select variables or attach a compatible plot.
 }
 \examples{
-step_dea_limma()
-step_dea_limma(on = "trait_exp")  # Differential trait analysis
-step_dea_limma(p_adj_method = "BH")
-}
-\seealso{
-\code{\link[glystats:gly_limma]{glystats::gly_limma()}}
+blueprint(step_dea_limma() \%=>\% step_filter_sig_vars())
 }

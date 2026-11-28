@@ -1,44 +1,10 @@
 #' Step: Cox Proportional Hazards Model
 #'
-#' @description
 #' Perform survival analysis by fitting a Cox proportional hazards model
 #' using `glystats::gly_cox()` for each variable.
 #' This step identifies variables associated with survival outcomes.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to run Cox regression on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run Cox regression on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run Cox regression on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run Cox regression on
-#'
-#' The experiment must contain survival data with `time_col` and `event_col` columns
-#' in the sample information.
-#'
-#' Tables generated (with suffixes):
-#' - `cox`: A table containing Cox regression results with columns:
-#'   - `.variable` (or `variable` for older results): Variable identifier
-#'   - `coefficient`: Regression coefficient (log hazard ratio)
-#'   - `std.error`: Standard error of the coefficient
-#'   - `statistic`: Wald test statistic
-#'   - `p_val`: Raw p-value from Wald test
-#'   - `hr`: Hazard ratio (exp(coefficient))
-#'   - `p_adj`: Adjusted p-value (if p_adj_method is not NULL)
-#'
-#' @param on Name of the experiment to run Cox regression on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".
 #' @param time_col Column name in sample information containing survival time.
 #'   Default is "time".
 #' @param event_col Column name in sample information containing event indicator
@@ -51,43 +17,40 @@
 #' @examples
 #' step_cox()
 #' step_cox(time_col = "survival_time", event_col = "death")
-#' step_cox(on = "sig_exp", p_adj_method = "bonferroni")
 #' @seealso [glystats::gly_cox()], [survival::coxph()]
 #' @export
 step_cox <- function(
-  on = "exp",
   time_col = "time",
   event_col = "event",
   p_adj_method = "BH",
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   cox_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("cox", on_meta$id_suffix)
+  id <- "cox"
 
   step(
     id = id,
-    label = paste0("Cox proportional hazards model", on_meta$label_suffix),
+    connected = .exp_port(),
+    label = "Cox proportional hazards model",
     run = function(ctx) {
       .run_cox(
         ctx,
         id = id,
-        on = on,
         time_col = time_col,
         event_col = event_col,
         p_adj_method = p_adj_method,
         cox_args = cox_args
       )
     },
-    require = on,
     packages = c("glystats", "survival"),
     signature = signature,
     report = function(x) {
-      .report_cox(x, id = id, on = on)
+      .report_cox(x, id = id)
     },
     condition = function(ctx) {
-      .condition_cox(ctx, on = on, time_col = time_col, event_col = event_col)
+      .condition_cox(ctx, time_col = time_col, event_col = event_col)
     }
   )
 }
@@ -96,7 +59,6 @@ step_cox <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param time_col Survival time column.
 #' @param event_col Event indicator column.
 #' @param p_adj_method P-value adjustment method.
@@ -107,13 +69,12 @@ step_cox <- function(
 .run_cox <- function(
   ctx,
   id,
-  on,
   time_col,
   event_col,
   p_adj_method,
   cox_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   cox_res <- rlang::exec(
     glystats::gly_cox,
     exp,
@@ -128,7 +89,7 @@ step_cox <- function(
     ctx,
     id,
     tidy_result,
-    paste0("Cox regression results for ", on, ".")
+    paste0("Cox regression results for the input experiment.")
   )
   ctx_add_data(ctx, paste0(id, "_raw_res"), cox_res$raw_result)
 }
@@ -137,11 +98,10 @@ step_cox <- function(
 #'
 #' @param x Analysis context after running Cox analysis.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #'
 #' @returns A summary string for the report.
 #' @noRd
-.report_cox <- function(x, id, on) {
+.report_cox <- function(x, id) {
   cox_tbl <- x$tables[[id]]
   if (is.null(cox_tbl) || nrow(cox_tbl) == 0) {
     return("No Cox regression results available.")
@@ -159,7 +119,9 @@ step_cox <- function(
   top_p_adj <- top_row$p_adj
 
   lines <- c(
-    paste0("Cox proportional hazards model was performed on ", on, "."),
+    paste0(
+      "Cox proportional hazards model was performed on the input experiment."
+    ),
     paste0("Number of variables analyzed: ", n_total, "."),
     paste0(
       "Number of significant variables (adjusted p < 0.05): ",
@@ -182,14 +144,13 @@ step_cox <- function(
 #' Check whether Cox analysis should run
 #'
 #' @param ctx Analysis context.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @param time_col Survival time column.
 #' @param event_col Event indicator column.
 #'
 #' @returns A list with `check` and `reason`.
 #' @noRd
-.condition_cox <- function(ctx, on, time_col, event_col) {
-  exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
+.condition_cox <- function(ctx, time_col, event_col) {
+  exp <- tryCatch(ctx$data$exp, error = function(e) NULL)
   if (is.null(exp)) {
     return(list(check = FALSE, reason = "Experiment not found."))
   }

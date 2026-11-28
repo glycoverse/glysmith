@@ -2,7 +2,7 @@
 % Please edit documentation in R/blueprint-default.R
 \name{blueprint_default}
 \alias{blueprint_default}
-\title{Default blueprint}
+\title{Default group-comparison blueprint}
 \usage{
 blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 }
@@ -13,29 +13,15 @@ blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 i.e. \code{\link[=step_sig_enrich_go]{step_sig_enrich_go()}}, \code{\link[=step_sig_enrich_kegg]{step_sig_enrich_kegg()}}, and \code{\link[=step_sig_enrich_reactome]{step_sig_enrich_reactome()}}.}
 
 \item{traits}{Whether to include the derived trait analysis steps,
-i.e. \code{\link[=step_derive_traits]{step_derive_traits()}} and \code{step_dea_limma(on = "trait_exp")}.}
+including \code{\link[=step_derive_traits]{step_derive_traits()}} and \code{\link[=step_dea_limma]{step_dea_limma()}}.}
 }
 \value{
 A \code{glysmith_blueprint} object.
 }
 \description{
-This blueprint contains the following steps:
-\itemize{
-\item step_ident_overview(): Summarize the experiment using \code{glyexp::summarize_experiment()}.
-\item step_preprocess(): Preprocess the data using \code{glyclean::auto_clean()}.
-\item step_plot_qc(when = "post"): Plot QC plots using \code{glyclean::plot_qc()}.
-\item step_pca(): Principal component analysis using \code{glystats::gly_pca()},
-and plot the PCA using \code{glyvis::plot_pca()}.
-\item step_dea_limma(): Differential analysis using \code{glystats::gly_limma()}.
-\item step_volcano(): Plot a volcano plot using \code{glyvis::plot_volcano()}.
-\item step_heatmap(on = "sig_exp"): Plot a heatmap using \code{glyvis::plot_heatmap()}.
-\item step_sig_enrich_go(): Perform GO enrichment analysis using \code{glyfun::enrich_ora_go()}.
-\item step_sig_enrich_kegg(): Perform KEGG enrichment analysis using \code{glyfun::enrich_ora_kegg()}.
-\item step_sig_enrich_reactome(): Perform Reactome enrichment analysis using \code{glyfun::enrich_ora_reactome()}.
-\item step_derive_traits(): Derive traits using \code{glydet::derive_traits()}.
-\item step_dea_limma(on = "trait_exp"): Differential trait analysis using \code{glystats::gly_limma()}.
-\item step_heatmap(on = "sig_trait_exp"): Plot a heatmap using \code{glyvis::plot_heatmap()}.
-}
+Summarize the input and analyze preprocessed abundances with QC, PCA and
+limma. Downstream routes visualize the fit and the significant variables.
+Optional trait analysis fits a separate model to the derived experiment.
 }
 \examples{
 blueprint_default()

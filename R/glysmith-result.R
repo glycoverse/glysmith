@@ -29,9 +29,11 @@ print.glysmith_result <- function(x, ...) {
 #' @param name The name of the plot or table to get. If not specified, return available names.
 #'
 #' @returns
-#'   - `cast_exp()`: a processed [glyexp::GlycomicSE()] or
-#'     [glyexp::GlycoproteomicSE()] object for new-container inputs. Legacy
-#'     inputs retain their container class.
+#'   - `cast_exp()`: the input experiment for multiple entry routes. For a single
+#'     route, the last experiment on the main route, or the input
+#'     experiment if that route produces no experiment. Trait and motif steps
+#'     can return a derived SummarizedExperiment. Returns NULL if the producer
+#'     of the main-route experiment failed, was skipped or was blocked.
 #'   - `cast_plot()`: a [ggplot2::ggplot()].
 #'   - `cast_table()`: a [tibble::tibble()].
 #'   - `cast_data()`: can be any R object.
@@ -42,7 +44,7 @@ print.glysmith_result <- function(x, ...) {
 #' result <- forge_analysis(exp)
 #' cast_exp(result)
 #' cast_table(result)
-#' cast_table(result, "summary")
+#' cast_table(result, "node_1__summary")
 #' }
 #'
 #' @export

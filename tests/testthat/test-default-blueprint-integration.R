@@ -10,18 +10,9 @@ test_that("default blueprint workflow forges, quenches, and polishes results", {
   expect_s3_class(result, "glysmith_result")
   expect_identical(result$blueprint, bp)
   expect_true("exp" %in% names(result$data))
-  expect_true(all(
-    c(
-      "ident_overview",
-      "preprocess",
-      "pca",
-      "dea_limma",
-      "derive_traits"
-    ) %in%
-      result$meta$steps
-  ))
-  expect_true("summary" %in% names(result$tables))
-  expect_true("pca_scores" %in% names(result$plots))
+  expect_true(all(paste0("node_", c(1, 2, 4, 5, 12)) %in% result$meta$steps))
+  expect_true("node_1__summary" %in% names(result$tables))
+  expect_true("node_4__pca_scores" %in% names(result$plots))
 
   output_dir <- fs::path(withr::local_tempdir(), "default-blueprint-result")
   suppressWarnings(suppressMessages(

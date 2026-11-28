@@ -48,7 +48,7 @@ run_sig_enrich_step <- function(step_fun, kind) {
   )
 
   step_obj <- step_fun()
-  expect_equal(step_obj$require, c("exp", "dea_res"))
+  expect_equal(step_obj$connected$accepts, c("contrast", "omnibus"))
   expect_true(step_obj$condition(ctx)$check)
   ctx <- step_obj$run(ctx)
   expect_identical(called$dea_res, dea_res)

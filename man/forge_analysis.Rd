@@ -17,15 +17,18 @@ Used for various analyses. Default is "group".}
 \value{
 A \code{glysmith_result} object, with the following components:
 \itemize{
-\item \code{exp}: the glyco data container after preprocessing.
+\item \code{exp}: the input experiment for multiple entry routes. A single route returns its last main-route experiment, or NULL if its producer did not succeed.
+\item \code{data}: main outputs and auxiliary objects. Node IDs
+identify main outputs and prefix auxiliary object, plot and table names.
 \item \code{plots}: a named list of ggplot objects.
 \item \code{tables}: a named list of tibbles.
 \item \code{meta}: a named list of metadata, containing:
 \itemize{
 \item \code{explanation}: a named character vector or list of explanations for each plot and table,
-with keys like \code{tables$summary} and \code{plots$pca}.
+with keys like \code{tables$node_1__summary}.
 \item \code{steps}: a character vector of the steps of the analysis.
-\item \code{log}: the messages and outputs from each step.
+\item \code{nodes}: each step's producer, route, status and reason.
+\item \code{logs}: the messages and outputs from each step.
 }
 \item \code{blueprint}: the blueprint used for the analysis.
 }

@@ -46,6 +46,7 @@ modify_blueprint <- function(
   base_url = getOption("glysmith.ai_base_url", NULL)
 ) {
   checkmate::assert_class(bp, "glysmith_blueprint")
+  .assert_blueprint(bp)
   checkmate::assert_string(description)
   checkmate::assert_character(qa_history, null.ok = TRUE)
   if (!is.null(exp)) {
@@ -168,14 +169,11 @@ modify_blueprint <- function(
   prompt <- paste(
     "You are a professional omics data scientist and glycobiologist.",
     "Your job is to modify an existing blueprint for glycomics or glycoproteomics data analysis.",
-    "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
+    "A blueprint is a tree of analytical routes.",
     "You will receive a current blueprint and a modification request.",
     "Return a full updated blueprint, not a diff or patch.",
     "If no changes are needed, return the original blueprint.",
-    "Use `br(\"name\", step_..., step_...)` ONLY for creating parallel analysis branches that represent alternative approaches (e.g., comparing two methods).",
-    "Do NOT use `br()` for grouping sequential steps or organizing the workflow. Prefer a single linear sequence of steps.",
-    "Use step arguments with caution: prefer default values unless they are necessary.",
-    "The only exception is the `on` argument, which is stable and controls data flow; set it when needed.",
+    .tree_prompt(),
     "\n",
     "IMPORTANT: The user has already answered questions about their experiment (shown in PREVIOUS Q&A CONTEXT).",
     "Do NOT ask questions that have already been answered in that context!",
@@ -206,25 +204,45 @@ modify_blueprint <- function(
     "Return format:",
     "Return ONLY a JSON object with:",
     "- `explanation`: a BRIEF description (1-3 sentences) of the updated blueprint.",
-    "- `steps`: an array of strings, each being a `step_...()` call or `br(...)` branch.",
+    "- `steps`: an array of independent entry routes. Within each string use %=>% for sequential steps.",
     "Do not include any extra text outside JSON.",
     "Example output:",
-    "{\"explanation\":\"Add a heatmap after PCA.\",\"steps\":[\"step_preprocess()\",\"step_pca()\",\"step_heatmap()\"]}",
+    "{\"explanation\":\"Plot PCA and a heatmap after preprocessing.\",\"steps\":[\"step_preprocess() %=>% fork(step_pca(), step_heatmap())\"]}",
     sep = "\n"
   )
   prompt
 }
 
 .format_blueprint_for_prompt <- function(bp) {
-  checkmate::assert_class(bp, "glysmith_blueprint")
-  if (length(bp) == 0) {
-    return("(empty)")
+  .assert_blueprint(bp)
+  render <- function(x) {
+    if (inherits(x, "glysmith_step")) {
+      return(paste(x$signature, collapse = " "))
+    }
+    if (inherits(x, "glysmith_branch")) {
+      return(paste0(
+        "br(",
+        encodeString(x$name, quote = '"'),
+        ", ",
+        render(x$route),
+        ")"
+      ))
+    }
+    children <- vapply(x, render, "")
+    if (inherits(x, "glysmith_sequence")) {
+      return(paste(children, collapse = " %=>% "))
+    }
+    labels <- names(x)
+    if (!is.null(labels)) {
+      labelled <- nzchar(labels)
+      children[labelled] <- paste0(
+        encodeString(labels[labelled], quote = '"'),
+        " = ",
+        children[labelled]
+      )
+    }
+    name <- if (inherits(x, "glysmith_fork")) "fork" else "blueprint"
+    paste0(name, "(", paste(children, collapse = ", "), ")")
   }
-
-  steps <- purrr::map_chr(bp, function(step) {
-    signature <- step$signature %||% paste0("step_", step$id, "()")
-    stringr::str_trim(signature)
-  })
-
-  paste(steps, collapse = ";")
+  render(bp)
 }

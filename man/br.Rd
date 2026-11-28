@@ -2,32 +2,22 @@
 % Please edit documentation in R/branch.R
 \name{br}
 \alias{br}
-\title{Create a Branch in a Blueprint}
+\title{Run a single side route}
 \usage{
-br(name, ...)
+br(name, route)
 }
 \arguments{
-\item{name}{Branch name used as a prefix for outputs.}
+\item{name}{A label for the branch.}
 
-\item{...}{One or more step objects.}
+\item{route}{One step, sequence, fork or reusable blueprint.}
 }
 \value{
-A branch object used inside \code{\link[=blueprint]{blueprint()}}.
+A branch for use inside \code{\link[=blueprint]{blueprint()}}.
 }
 \description{
-Use \code{br()} to group steps that should run as an isolated branch with
-namespaced outputs prefixed by \verb{<name>__}.
+The branch starts at the current output. The next outer step also receives
+that output. Use \code{\link[=fork]{fork()}} to end a route with multiple siblings.
 }
 \examples{
-blueprint(
-  step_preprocess(),
-  br("limma",
-    step_dea_limma(),
-    step_volcano()
-  ),
-  br("ttest",
-    step_dea_ttest(),
-    step_volcano()
-  )
-)
+blueprint(br("scores", step_pca()) \%=>\% step_dea_limma())
 }

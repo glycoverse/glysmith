@@ -360,6 +360,7 @@ step_sig_enrich <- function(
 
   step(
     id = step_id,
+    connected = .fit_port(),
     label = label,
     condition = function(ctx) {
       .condition_sig_enrich(ctx)
@@ -378,7 +379,6 @@ step_sig_enrich <- function(
     report = function(x) {
       .report_sig_enrich(x, kind = kind)
     },
-    require = c("exp", "dea_res"),
     packages = c("glyfun", "enrichplot"),
     retry = retry,
     signature = signature

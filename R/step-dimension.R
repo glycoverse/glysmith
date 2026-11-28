@@ -1,42 +1,10 @@
 #' Step: Principal Component Analysis (PCA)
 #'
-#' @description
 #' Run PCA using `glystats::gly_pca()` and plot it with `glyvis::plot_pca()`.
 #' Loading plot for glycoproteomics data can be crowded with too many variables.
 #' Ignore the resulting plot if it is not informative.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to run PCA on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PCA on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run PCA on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run PCA on
-#'
-#' Tables generated (with suffixes):
-#' - `pca_samples`: A table containing the PCA scores for each sample
-#' - `pca_variables`: A table containing the PCA loadings for each variable
-#' - `pca_eigenvalues`: A table containing the PCA eigenvalues
-#'
-#' Plots generated (with suffixes):
-#' - `pca_scores`: A PCA score plot colored by group (always generated)
-#' - `pca_loadings`: A PCA loading plot (if `loadings = TRUE`)
-#' - `pca_screeplot`: A PCA screeplot (if `screeplot = TRUE`)
-#'
-#' @param on Name of the experiment to run PCA on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
-#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param plot_width Width of plots in inches. Default is 5.
 #' @param plot_height Height of plots in inches. Default is 5.
 #' @param loadings Logical indicating whether to generate the loading plot.
@@ -51,7 +19,6 @@
 #' @seealso [glystats::gly_pca()], [glyvis::plot_pca()]
 #' @export
 step_pca <- function(
-  on = "exp",
   center = TRUE,
   scale = TRUE,
   loadings = FALSE,
@@ -60,18 +27,18 @@ step_pca <- function(
   plot_height = 5,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   pca_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("pca", on_meta$id_suffix)
+  id <- "pca"
   step(
     id = id,
-    label = paste0("Principal component analysis", on_meta$label_suffix),
+    connected = .exp_port(),
+    label = "Principal component analysis",
     run = function(ctx) {
       .run_pca(
         ctx,
         id = id,
-        on = on,
         center = center,
         scale = scale,
         loadings = loadings,
@@ -81,7 +48,6 @@ step_pca <- function(
         pca_args = pca_args
       )
     },
-    require = on,
     packages = c("glystats", "glyvis"),
     signature = signature
   )
@@ -91,7 +57,6 @@ step_pca <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @inheritParams step_pca
 #' @param pca_args Additional arguments passed to `glystats::gly_pca()`.
 #'
@@ -100,7 +65,6 @@ step_pca <- function(
 .run_pca <- function(
   ctx,
   id,
-  on,
   center,
   scale,
   loadings,
@@ -109,7 +73,7 @@ step_pca <- function(
   plot_height,
   pca_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   pca_res <- rlang::exec(
     glystats::gly_pca,
     exp,
@@ -121,26 +85,26 @@ step_pca <- function(
     ctx,
     paste0(id, "_samples"),
     glystats::get_tidy_result(pca_res, "samples"),
-    paste0("PCA scores for each sample of ", on, ".")
+    paste0("PCA scores for each sample of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_variables"),
     glystats::get_tidy_result(pca_res, "variables"),
-    paste0("PCA loadings for each variable of ", on, ".")
+    paste0("PCA loadings for each variable of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_eigenvalues"),
     glystats::get_tidy_result(pca_res, "eigenvalues"),
-    paste0("PCA eigenvalues of ", on, ".")
+    paste0("PCA eigenvalues of the input experiment.")
   )
   p_scores <- glyvis::plot_pca(pca_res, type = "individual")
   ctx <- ctx_add_plot(
     ctx,
     paste0(id, "_scores"),
     p_scores,
-    paste0("PCA score plot colored by group of ", on, "."),
+    paste0("PCA score plot colored by group of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -150,7 +114,7 @@ step_pca <- function(
       ctx,
       paste0(id, "_loadings"),
       p_loadings,
-      paste0("PCA loading plot of ", on, "."),
+      paste0("PCA loading plot of the input experiment."),
       width = plot_width,
       height = plot_height
     )
@@ -161,7 +125,7 @@ step_pca <- function(
       ctx,
       paste0(id, "_screeplot"),
       p_screeplot,
-      paste0("PCA screeplot of ", on, "."),
+      paste0("PCA screeplot of the input experiment."),
       width = plot_width,
       height = plot_height
     )
@@ -171,7 +135,6 @@ step_pca <- function(
 
 #' Step: t-SNE
 #'
-#' @description
 #' Perform t-SNE analysis using `glystats::gly_tsne()` and
 #' plot a t-SNE plot using `glyvis::plot_tsne()`.
 #' Note that the result of t-SNE largely depends on the `perplexity` parameter.
@@ -179,35 +142,8 @@ step_pca <- function(
 #' If you are not satisfied with the result,
 #' manually call `glyvis::plot_tsne()` with different `perplexity` values
 #' to find the best one.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to perform t-SNE on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform t-SNE on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to perform t-SNE on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to perform t-SNE on
-#'
-#' Data generated (with suffixes):
-#' - `tsne`: The t-SNE result
-#'
-#' Plots generated (with suffixes):
-#' - `tsne`: The t-SNE plot
-#'
-#' @param on Name of the experiment to run t-SNE on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
-#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_tsne
@@ -219,26 +155,25 @@ step_pca <- function(
 #' @seealso [glystats::gly_tsne()], [glyvis::plot_tsne()]
 #' @export
 step_tsne <- function(
-  on = "exp",
   dims = 2,
   perplexity = 30,
   plot_width = 5,
   plot_height = 5,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   tsne_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("tsne", on_meta$id_suffix)
+  id <- "tsne"
 
   step(
     id = id,
+    connected = .exp_port(),
     label = "t-SNE",
     run = function(ctx) {
       .run_tsne(
         ctx,
         id = id,
-        on = on,
         dims = dims,
         perplexity = perplexity,
         plot_width = plot_width,
@@ -246,7 +181,6 @@ step_tsne <- function(
         tsne_args = tsne_args
       )
     },
-    require = on,
     packages = c("glystats", "glyvis", "Rtsne"),
     signature = signature
   )
@@ -256,7 +190,6 @@ step_tsne <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @inheritParams step_tsne
 #' @param tsne_args Additional arguments passed to `glystats::gly_tsne()`.
 #'
@@ -265,14 +198,13 @@ step_tsne <- function(
 .run_tsne <- function(
   ctx,
   id,
-  on,
   dims,
   perplexity,
   plot_width,
   plot_height,
   tsne_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   tsne <- rlang::exec(
     glystats::gly_tsne,
     exp,
@@ -284,14 +216,14 @@ step_tsne <- function(
     ctx,
     id,
     glystats::get_tidy_result(tsne),
-    paste0("t-SNE result of ", on, ".")
+    paste0("t-SNE result of the input experiment.")
   )
   p <- glyvis::plot_tsne(tsne)
   ctx_add_plot(
     ctx,
     id,
     p,
-    paste0("t-SNE plot of ", on, "."),
+    paste0("t-SNE plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -299,7 +231,6 @@ step_tsne <- function(
 
 #' Step: UMAP
 #'
-#' @description
 #' Perform UMAP analysis using `glystats::gly_umap()` and
 #' plot a UMAP plot using `glyvis::plot_umap()`.
 #' Note that the result of UMAP largely depends on the `n_neighbors` parameter.
@@ -307,35 +238,8 @@ step_tsne <- function(
 #' If you are not satisfied with the result,
 #' manually call `glyvis::plot_umap()` with different `n_neighbors` values
 #' to find the best one.
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to perform UMAP on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to perform UMAP on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to perform UMAP on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to perform UMAP on
-#'
-#' Data generated (with suffixes):
-#' - `umap`: The UMAP result
-#'
-#' Plots generated (with suffixes):
-#' - `umap`: The UMAP plot
-#'
-#' @param on Name of the experiment to run UMAP on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
-#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param plot_width Width of the plot in inches. Default is 5.
 #' @param plot_height Height of the plot in inches. Default is 5.
 #' @inheritParams glystats::gly_umap
@@ -347,26 +251,25 @@ step_tsne <- function(
 #' @seealso [glystats::gly_umap()], [glyvis::plot_umap()]
 #' @export
 step_umap <- function(
-  on = "exp",
   n_neighbors = 15,
   n_components = 2,
   plot_width = 5,
   plot_height = 5,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   umap_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("umap", on_meta$id_suffix)
+  id <- "umap"
 
   step(
     id = id,
+    connected = .exp_port(),
     label = "UMAP",
     run = function(ctx) {
       .run_umap(
         ctx,
         id = id,
-        on = on,
         n_neighbors = n_neighbors,
         n_components = n_components,
         plot_width = plot_width,
@@ -374,7 +277,6 @@ step_umap <- function(
         umap_args = umap_args
       )
     },
-    require = on,
     packages = c("glystats", "glyvis", "uwot"),
     signature = signature
   )
@@ -384,7 +286,6 @@ step_umap <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @inheritParams step_umap
 #' @param umap_args Additional arguments passed to `glystats::gly_umap()`.
 #'
@@ -393,14 +294,13 @@ step_umap <- function(
 .run_umap <- function(
   ctx,
   id,
-  on,
   n_neighbors,
   n_components,
   plot_width,
   plot_height,
   umap_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   umap <- rlang::exec(
     glystats::gly_umap,
     exp,
@@ -412,14 +312,14 @@ step_umap <- function(
     ctx,
     id,
     glystats::get_tidy_result(umap),
-    paste0("UMAP result of ", on, ".")
+    paste0("UMAP result of the input experiment.")
   )
   p <- glyvis::plot_umap(umap)
   ctx_add_plot(
     ctx,
     id,
     p,
-    paste0("UMAP plot of ", on, "."),
+    paste0("UMAP plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -427,46 +327,11 @@ step_umap <- function(
 
 #' Step: Partial Least Squares Discriminant Analysis (PLS-DA)
 #'
-#' @description
 #' Perform PLS-DA using `glystats::gly_plsda()` and plot it with `glyvis::plot_plsda()`.
 #' PLS-DA is a supervised method that finds components maximizing covariance between
 #' predictors and the response variable (group membership).
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to run PLS-DA on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run PLS-DA on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run PLS-DA on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run PLS-DA on
-#'
-#' Tables generated (with suffixes):
-#' - `plsda_samples`: A table containing the PLS-DA scores for each sample
-#' - `plsda_variables`: A table containing the PLS-DA loadings for each variable
-#' - `plsda_variance`: A table containing the explained variance for each component
-#' - `plsda_vip`: A table containing the Variable Importance in Projection (VIP) scores
-#' - `plsda_perm_test`: A table containing permutation test results
-#'
-#' Plots generated (with suffixes):
-#' - `plsda_scores`: A PLS-DA score plot colored by group
-#' - `plsda_loadings`: A PLS-DA loading plot
-#' - `plsda_variance`: A PLS-DA variance (scree) plot
-#' - `plsda_vip`: A PLS-DA VIP score plot
-#'
-#' @param on Name of the experiment to run PLS-DA on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
-#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param ncomp Number of components to include. Default is 2.
 #' @param scale Logical indicating whether to scale the data. Default is TRUE.
 #' @param plot_width Width of plots in inches. Default is 5.
@@ -480,29 +345,25 @@ step_umap <- function(
 #' @seealso [glystats::gly_plsda()], [glyvis::plot_plsda()]
 #' @export
 step_plsda <- function(
-  on = "exp",
   ncomp = 2,
   scale = TRUE,
   plot_width = 5,
   plot_height = 5,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   plsda_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("plsda", on_meta$id_suffix)
+  id <- "plsda"
 
   step(
     id = id,
-    label = paste0(
-      "Partial least squares discriminant analysis",
-      on_meta$label_suffix
-    ),
+    connected = .exp_port(),
+    label = "Partial least squares discriminant analysis",
     run = function(ctx) {
       .run_plsda(
         ctx,
         id = id,
-        on = on,
         ncomp = ncomp,
         scale = scale,
         plot_width = plot_width,
@@ -510,7 +371,6 @@ step_plsda <- function(
         plsda_args = plsda_args
       )
     },
-    require = on,
     packages = c("glystats", "glyvis", "ropls"),
     signature = signature,
     report = function(x) {
@@ -523,7 +383,6 @@ step_plsda <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @inheritParams step_plsda
 #' @param plsda_args Additional arguments passed to `glystats::gly_plsda()`.
 #'
@@ -532,14 +391,13 @@ step_plsda <- function(
 .run_plsda <- function(
   ctx,
   id,
-  on,
   ncomp,
   scale,
   plot_width,
   plot_height,
   plsda_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   plsda_res <- rlang::exec(
     glystats::gly_plsda,
     exp,
@@ -559,31 +417,31 @@ step_plsda <- function(
     ctx,
     paste0(id, "_samples"),
     tidy_res$samples,
-    paste0("PLS-DA scores for each sample of ", on, ".")
+    paste0("PLS-DA scores for each sample of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_variables"),
     tidy_res$variables,
-    paste0("PLS-DA loadings for each variable of ", on, ".")
+    paste0("PLS-DA loadings for each variable of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_variance"),
     tidy_res$variance,
-    paste0("PLS-DA explained variance of ", on, ".")
+    paste0("PLS-DA explained variance of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_vip"),
     tidy_res$vip,
-    paste0("PLS-DA VIP scores of ", on, ".")
+    paste0("PLS-DA VIP scores of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_perm_test"),
     tidy_res$perm_test,
-    paste0("PLS-DA permutation test results of ", on, ".")
+    paste0("PLS-DA permutation test results of the input experiment.")
   )
 
   p_scores <- glyvis::plot_plsda(plsda_res, type = "scores")
@@ -591,7 +449,7 @@ step_plsda <- function(
     ctx,
     paste0(id, "_scores"),
     p_scores,
-    paste0("PLS-DA score plot colored by group of ", on, "."),
+    paste0("PLS-DA score plot colored by group of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -600,7 +458,7 @@ step_plsda <- function(
     ctx,
     paste0(id, "_loadings"),
     p_loadings,
-    paste0("PLS-DA loading plot of ", on, "."),
+    paste0("PLS-DA loading plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -609,7 +467,7 @@ step_plsda <- function(
     ctx,
     paste0(id, "_variance"),
     p_variance,
-    paste0("PLS-DA variance plot of ", on, "."),
+    paste0("PLS-DA variance plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -618,7 +476,7 @@ step_plsda <- function(
     ctx,
     paste0(id, "_vip"),
     p_vip,
-    paste0("PLS-DA VIP score plot of ", on, "."),
+    paste0("PLS-DA VIP score plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -675,46 +533,11 @@ step_plsda <- function(
 
 #' Step: Orthogonal Partial Least Squares Discriminant Analysis (OPLS-DA)
 #'
-#' @description
 #' Perform OPLS-DA using `glystats::gly_oplsda()` and plot it with `glyvis::plot_oplsda()`.
 #' OPLS-DA separates variation into predictive (related to group) and orthogonal (unrelated) components.
 #' This step only works with binary classification (exactly 2 groups).
+#' The upstream step supplies the experiment.
 #'
-#' This step depends on the `on` parameter (default: `exp`).
-#' - When `on = "exp"`, requires `exp` (usually after [step_preprocess()]).
-#' - When `on = "sig_exp"`, requires `sig_exp` from one of [step_dea_limma()],
-#'   [step_dea_ttest()], [step_dea_wilcox()], [step_dea_anova()], or [step_dea_kruskal()].
-#' - When `on = "trait_exp"`, requires `trait_exp` from [step_derive_traits()].
-#' - When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on traits.
-#' - When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from [step_quantify_dynamic_motifs()].
-#' - When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp` from DEA on motifs.
-#' - When `on = "branch_motif_exp"`, requires `branch_motif_exp` from [step_quantify_branch_motifs()].
-#' - When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp` from DEA on motifs.
-#'
-#' @details
-#' Data required:
-#' - `exp` (if `on = "exp"`): The experiment to run OPLS-DA on
-#' - `trait_exp` (if `on = "trait_exp"`): The trait experiment to run OPLS-DA on
-#' - `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif experiment to run OPLS-DA on
-#' - `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif experiment to run OPLS-DA on
-#'
-#' Tables generated (with suffixes):
-#' - `oplsda_samples`: A table containing the OPLS-DA scores for each sample
-#' - `oplsda_variables`: A table containing the OPLS-DA loadings for each variable
-#' - `oplsda_variance`: A table containing the explained variance for each component
-#' - `oplsda_vip`: A table containing the Variable Importance in Projection (VIP) scores
-#' - `oplsda_perm_test`: A table containing permutation test results
-#'
-#' Plots generated (with suffixes):
-#' - `oplsda_scores`: An OPLS-DA score plot colored by group
-#' - `oplsda_loadings`: An OPLS-DA loading plot
-#' - `oplsda_variance`: An OPLS-DA variance (scree) plot
-#' - `oplsda_vip`: An OPLS-DA VIP score plot
-#'
-#' @param on Name of the experiment to run OPLS-DA on.
-#'   Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-#'   "dynamic_motif_exp", "sig_dynamic_motif_exp",
-#'   "branch_motif_exp", "sig_branch_motif_exp".
 #' @param pred_i Number of predictive components to include. Default is 1.
 #' @param ortho_i Number of orthogonal components to include. Default is NA (automatic).
 #' @param scale Logical indicating whether to scale the data. Default is TRUE.
@@ -729,7 +552,6 @@ step_plsda <- function(
 #' @seealso [glystats::gly_oplsda()], [glyvis::plot_oplsda()]
 #' @export
 step_oplsda <- function(
-  on = "exp",
   pred_i = 1,
   ortho_i = NA,
   scale = TRUE,
@@ -737,22 +559,19 @@ step_oplsda <- function(
   plot_height = 5,
   ...
 ) {
+  .check_step_dots(sys.call())
   signature <- rlang::expr_deparse(match.call())
   oplsda_args <- rlang::list2(...)
-  on_meta <- .resolve_on(on)
-  id <- paste0("oplsda", on_meta$id_suffix)
+  id <- "oplsda"
 
   step(
     id = id,
-    label = paste0(
-      "Orthogonal partial least squares discriminant analysis",
-      on_meta$label_suffix
-    ),
+    connected = .exp_port(),
+    label = "Orthogonal partial least squares discriminant analysis",
     run = function(ctx) {
       .run_oplsda(
         ctx,
         id = id,
-        on = on,
         pred_i = pred_i,
         ortho_i = ortho_i,
         scale = scale,
@@ -761,14 +580,13 @@ step_oplsda <- function(
         oplsda_args = oplsda_args
       )
     },
-    require = on,
     packages = c("glystats", "glyvis", "ropls"),
     signature = signature,
     report = function(x) {
       .report_oplsda(x, id = id)
     },
     condition = function(ctx) {
-      .condition_oplsda(ctx, on = on)
+      .condition_oplsda(ctx)
     }
   )
 }
@@ -777,7 +595,6 @@ step_oplsda <- function(
 #'
 #' @param ctx Analysis context.
 #' @param id Step identifier.
-#' @param on Name of the experiment data in `ctx$data`.
 #' @inheritParams step_oplsda
 #' @param oplsda_args Additional arguments passed to `glystats::gly_oplsda()`.
 #'
@@ -786,7 +603,6 @@ step_oplsda <- function(
 .run_oplsda <- function(
   ctx,
   id,
-  on,
   pred_i,
   ortho_i,
   scale,
@@ -794,7 +610,7 @@ step_oplsda <- function(
   plot_height,
   oplsda_args
 ) {
-  exp <- ctx_get_data(ctx, on)
+  exp <- ctx$data$exp
   oplsda_res <- rlang::exec(
     glystats::gly_oplsda,
     exp,
@@ -815,31 +631,31 @@ step_oplsda <- function(
     ctx,
     paste0(id, "_samples"),
     tidy_res$samples,
-    paste0("OPLS-DA scores for each sample of ", on, ".")
+    paste0("OPLS-DA scores for each sample of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_variables"),
     tidy_res$variables,
-    paste0("OPLS-DA loadings for each variable of ", on, ".")
+    paste0("OPLS-DA loadings for each variable of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_variance"),
     tidy_res$variance,
-    paste0("OPLS-DA explained variance of ", on, ".")
+    paste0("OPLS-DA explained variance of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_vip"),
     tidy_res$vip,
-    paste0("OPLS-DA VIP scores of ", on, ".")
+    paste0("OPLS-DA VIP scores of the input experiment.")
   )
   ctx <- ctx_add_table(
     ctx,
     paste0(id, "_perm_test"),
     tidy_res$perm_test,
-    paste0("OPLS-DA permutation test results of ", on, ".")
+    paste0("OPLS-DA permutation test results of the input experiment.")
   )
 
   p_scores <- glyvis::plot_oplsda(oplsda_res, type = "scores")
@@ -847,7 +663,7 @@ step_oplsda <- function(
     ctx,
     paste0(id, "_scores"),
     p_scores,
-    paste0("OPLS-DA score plot colored by group of ", on, "."),
+    paste0("OPLS-DA score plot colored by group of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -856,7 +672,7 @@ step_oplsda <- function(
     ctx,
     paste0(id, "_loadings"),
     p_loadings,
-    paste0("OPLS-DA loading plot of ", on, "."),
+    paste0("OPLS-DA loading plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -865,7 +681,7 @@ step_oplsda <- function(
     ctx,
     paste0(id, "_variance"),
     p_variance,
-    paste0("OPLS-DA variance plot of ", on, "."),
+    paste0("OPLS-DA variance plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -874,7 +690,7 @@ step_oplsda <- function(
     ctx,
     paste0(id, "_vip"),
     p_vip,
-    paste0("OPLS-DA VIP score plot of ", on, "."),
+    paste0("OPLS-DA VIP score plot of the input experiment."),
     width = plot_width,
     height = plot_height
   )
@@ -932,12 +748,11 @@ step_oplsda <- function(
 #' Check whether OPLS-DA should run
 #'
 #' @param ctx Analysis context.
-#' @param on Name of the experiment data in `ctx$data`.
 #'
 #' @returns A list with `check` and `reason`.
 #' @noRd
-.condition_oplsda <- function(ctx, on) {
-  exp <- tryCatch(ctx_get_data(ctx, on), error = function(e) NULL)
+.condition_oplsda <- function(ctx) {
+  exp <- tryCatch(ctx$data$exp, error = function(e) NULL)
   if (is.null(exp)) {
     return(list(check = FALSE, reason = "Experiment not found."))
   }

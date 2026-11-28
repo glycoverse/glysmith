@@ -4,21 +4,9 @@
 \alias{step_tsne}
 \title{Step: t-SNE}
 \usage{
-step_tsne(
-  on = "exp",
-  dims = 2,
-  perplexity = 30,
-  plot_width = 5,
-  plot_height = 5,
-  ...
-)
+step_tsne(dims = 2, perplexity = 30, plot_width = 5, plot_height = 5, ...)
 }
 \arguments{
-\item{on}{Name of the experiment to run t-SNE on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp",
-"branch_motif_exp", "sig_branch_motif_exp".}
-
 \item{dims}{Number of output dimensions. Default is 2.}
 
 \item{perplexity}{Perplexity parameter for t-SNE. Default is 30.}
@@ -40,38 +28,7 @@ Usually it's a trial-and-error process to find the best value iteratively.
 If you are not satisfied with the result,
 manually call \code{glyvis::plot_tsne()} with different \code{perplexity} values
 to find the best one.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-}
-\details{
-Data required:
-\itemize{
-\item \code{exp} (if \code{on = "exp"}): The experiment to perform t-SNE on
-\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to perform t-SNE on
-\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to perform t-SNE on
-\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to perform t-SNE on
-}
-
-Data generated (with suffixes):
-\itemize{
-\item \code{tsne}: The t-SNE result
-}
-
-Plots generated (with suffixes):
-\itemize{
-\item \code{tsne}: The t-SNE plot
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_tsne()

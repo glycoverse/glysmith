@@ -5,7 +5,6 @@
 \title{Step: UMAP}
 \usage{
 step_umap(
-  on = "exp",
   n_neighbors = 15,
   n_components = 2,
   plot_width = 5,
@@ -14,11 +13,6 @@ step_umap(
 )
 }
 \arguments{
-\item{on}{Name of the experiment to run UMAP on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp",
-"branch_motif_exp", "sig_branch_motif_exp".}
-
 \item{n_neighbors}{Number of neighbors to consider for each point. Default is 15.}
 
 \item{n_components}{Number of output dimensions. Default is 2.}
@@ -40,38 +34,7 @@ Usually it's a trial-and-error process to find the best value iteratively.
 If you are not satisfied with the result,
 manually call \code{glyvis::plot_umap()} with different \code{n_neighbors} values
 to find the best one.
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-}
-\details{
-Data required:
-\itemize{
-\item \code{exp} (if \code{on = "exp"}): The experiment to perform UMAP on
-\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to perform UMAP on
-\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to perform UMAP on
-\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to perform UMAP on
-}
-
-Data generated (with suffixes):
-\itemize{
-\item \code{umap}: The UMAP result
-}
-
-Plots generated (with suffixes):
-\itemize{
-\item \code{umap}: The UMAP plot
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_umap()

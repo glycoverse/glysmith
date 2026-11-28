@@ -8,14 +8,17 @@
 #'   Used for various analyses. Default is "group".
 #'
 #' @returns A `glysmith_result` object, with the following components:
-#'   - `exp`: the glyco data container after preprocessing.
+#'   - `exp`: the input experiment for multiple entry routes. A single route returns its last main-route experiment, or NULL if its producer did not succeed.
+#'   - `data`: main outputs and auxiliary objects. Node IDs
+#'     identify main outputs and prefix auxiliary object, plot and table names.
 #'   - `plots`: a named list of ggplot objects.
 #'   - `tables`: a named list of tibbles.
 #'   - `meta`: a named list of metadata, containing:
 #'     - `explanation`: a named character vector or list of explanations for each plot and table,
-#'        with keys like `tables$summary` and `plots$pca`.
+#'        with keys like `tables$node_1__summary`.
 #'     - `steps`: a character vector of the steps of the analysis.
-#'     - `log`: the messages and outputs from each step.
+#'     - `nodes`: each step's producer, route, status and reason.
+#'     - `logs`: the messages and outputs from each step.
 #'   - `blueprint`: the blueprint used for the analysis.
 #'
 #' @examples
@@ -31,7 +34,7 @@ forge_analysis <- function(
   blueprint = blueprint_default(),
   group_col = "group"
 ) {
-  check_glysmith_deps(blueprint = blueprint, action = "error")
+  .assert_blueprint(blueprint)
   .assert_data_container(exp)
   checkmate::assert_string(group_col)
   legacy <- inherits(exp, "glyexp_experiment")

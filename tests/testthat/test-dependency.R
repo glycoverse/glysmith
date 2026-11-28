@@ -1,7 +1,7 @@
 test_that("step package dependencies are collected from a blueprint", {
   bp <- blueprint(
-    step_ident_overview(),
-    step_infer_structure()
+    br("overview", step_ident_overview()) %=>%
+      step_infer_structure()
   )
 
   pkgs <- collect_blueprint_packages(bp)
@@ -114,5 +114,12 @@ test_that("branch steps retain dependencies for blueprint preflight checks", {
   expect_error(
     check_glysmith_deps(blueprint = bp, action = "error"),
     "not installed"
+  )
+})
+
+test_that("runtime dependency checks include released version requirements", {
+  expect_equal(
+    .dependency_specs(c("glyvis", "glystats", "custom")),
+    c("glyvis (>= 0.9.0)", "glystats (>= 0.15.0)", "custom")
   )
 })

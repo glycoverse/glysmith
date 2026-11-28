@@ -14,5 +14,5 @@ Apply \code{\link[glyclean:zero_to_na]{glyclean::zero_to_na()}} to the active ex
 or imputing measurements encoded as zero.
 }
 \examples{
-blueprint(step_zero_to_na(), step_remove("rare"), step_impute("min_prob"))
+blueprint(step_zero_to_na() \%=>\% step_remove("rare") \%=>\% step_impute("min_prob"))
 }

@@ -64,7 +64,7 @@ Data required:
 
 Data generated:
 \itemize{
-\item \code{raw_exp}: The input to the first preprocessing step
+\item \code{raw_exp}: The input to this preprocessing step
 }
 
 Subsequent steps read the processed experiment from \code{exp}.

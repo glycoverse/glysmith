@@ -4,21 +4,9 @@
 \alias{step_plsda}
 \title{Step: Partial Least Squares Discriminant Analysis (PLS-DA)}
 \usage{
-step_plsda(
-  on = "exp",
-  ncomp = 2,
-  scale = TRUE,
-  plot_width = 5,
-  plot_height = 5,
-  ...
-)
+step_plsda(ncomp = 2, scale = TRUE, plot_width = 5, plot_height = 5, ...)
 }
 \arguments{
-\item{on}{Name of the experiment to run PLS-DA on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp",
-"branch_motif_exp", "sig_branch_motif_exp".}
-
 \item{ncomp}{Number of components to include. Default is 2.}
 
 \item{scale}{Logical indicating whether to scale the data. Default is TRUE.}
@@ -36,45 +24,7 @@ A \code{glysmith_step} object.
 Perform PLS-DA using \code{glystats::gly_plsda()} and plot it with \code{glyvis::plot_plsda()}.
 PLS-DA is a supervised method that finds components maximizing covariance between
 predictors and the response variable (group membership).
-
-This step depends on the \code{on} parameter (default: \code{exp}).
-\itemize{
-\item When \code{on = "exp"}, requires \code{exp} (usually after \code{\link[=step_preprocess]{step_preprocess()}}).
-\item When \code{on = "sig_exp"}, requires \code{sig_exp} from one of \code{\link[=step_dea_limma]{step_dea_limma()}},
-\code{\link[=step_dea_ttest]{step_dea_ttest()}}, \code{\link[=step_dea_wilcox]{step_dea_wilcox()}}, \code{\link[=step_dea_anova]{step_dea_anova()}}, or \code{\link[=step_dea_kruskal]{step_dea_kruskal()}}.
-\item When \code{on = "trait_exp"}, requires \code{trait_exp} from \code{\link[=step_derive_traits]{step_derive_traits()}}.
-\item When \code{on = "sig_trait_exp"}, requires \code{sig_trait_exp} from DEA on traits.
-\item When \code{on = "dynamic_motif_exp"}, requires \code{dynamic_motif_exp} from \code{\link[=step_quantify_dynamic_motifs]{step_quantify_dynamic_motifs()}}.
-\item When \code{on = "sig_dynamic_motif_exp"}, requires \code{sig_dynamic_motif_exp} from DEA on motifs.
-\item When \code{on = "branch_motif_exp"}, requires \code{branch_motif_exp} from \code{\link[=step_quantify_branch_motifs]{step_quantify_branch_motifs()}}.
-\item When \code{on = "sig_branch_motif_exp"}, requires \code{sig_branch_motif_exp} from DEA on motifs.
-}
-}
-\details{
-Data required:
-\itemize{
-\item \code{exp} (if \code{on = "exp"}): The experiment to run PLS-DA on
-\item \code{trait_exp} (if \code{on = "trait_exp"}): The trait experiment to run PLS-DA on
-\item \code{dynamic_motif_exp} (if \code{on = "dynamic_motif_exp"}): The dynamic motif experiment to run PLS-DA on
-\item \code{branch_motif_exp} (if \code{on = "branch_motif_exp"}): The branch motif experiment to run PLS-DA on
-}
-
-Tables generated (with suffixes):
-\itemize{
-\item \code{plsda_samples}: A table containing the PLS-DA scores for each sample
-\item \code{plsda_variables}: A table containing the PLS-DA loadings for each variable
-\item \code{plsda_variance}: A table containing the explained variance for each component
-\item \code{plsda_vip}: A table containing the Variable Importance in Projection (VIP) scores
-\item \code{plsda_perm_test}: A table containing permutation test results
-}
-
-Plots generated (with suffixes):
-\itemize{
-\item \code{plsda_scores}: A PLS-DA score plot colored by group
-\item \code{plsda_loadings}: A PLS-DA loading plot
-\item \code{plsda_variance}: A PLS-DA variance (scree) plot
-\item \code{plsda_vip}: A PLS-DA VIP score plot
-}
+The upstream step supplies the experiment.
 }
 \examples{
 step_plsda()
