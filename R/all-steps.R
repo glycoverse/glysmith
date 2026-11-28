@@ -44,6 +44,7 @@ all_steps <- function() {
     step_sig_enrich_do(),
     step_infer_structure(),
     step_derive_traits(),
+    step_quantify_motifs(),
     step_quantify_dynamic_motifs(),
     step_quantify_branch_motifs(),
     step_roc()

@@ -7,6 +7,7 @@
 
 ## New features
 
+* New `step_quantify_motifs()` quantifies custom glycan motif sets from known motif names, glycan structure strings, or structure vectors. (#41)
 * New `step_plot_glycosite_profile()` plots the distributions of distinct glycans per site and glycosylation sites per protein in one blueprint step. (#39)
 * New `step_remove()`, `step_normalize()`, `step_impute()`, and related preprocessing steps let you select glyclean methods and their order in a blueprint. (#38)
 * `step_plot_qc()` gains a `method` argument to select one QC plot and pass its plotting options at any preprocessing stage. (#38)

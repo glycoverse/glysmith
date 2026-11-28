@@ -155,6 +155,7 @@ test_that("site-wise CoDA runs downstream tests and skips fold-change consumers"
   expect_false(step_volcano()$condition(ctx)$check)
   expect_false(step_sig_enrich_go()$condition(ctx)$check)
   expect_false(step_derive_traits()$condition(ctx)$check)
+  expect_false(step_quantify_motifs(motifs = "HexNAc(??-")$condition(ctx)$check)
   expect_false(step_quantify_dynamic_motifs()$condition(ctx)$check)
   expect_false(step_quantify_branch_motifs()$condition(ctx)$check)
   expect_error(step_coda("alr")$run(new_ctx(exp, "group")), "glycoproteomics")

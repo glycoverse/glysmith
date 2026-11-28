@@ -141,30 +141,171 @@ test_that("step_derive_traits generates trait_exp and tables", {
   expect_true("node_1__derived_traits" %in% names(res$tables))
 })
 
+# ----- step_quantify_motifs -----
+test_that("step_quantify_motifs quantifies custom named motifs and reports count", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_row(10) |>
+      glyclean::auto_clean()
+  )
+  motifs <- c(
+    HexNAc = "HexNAc(??-",
+    dHex = "dHex(??-"
+  )
+  bp <- blueprint(
+    step_quantify_motifs(
+      motifs = motifs,
+      method = "absolute",
+      alignments = c("terminal", "substructure"),
+      ignore_linkages = TRUE
+    )
+  )
+  expect_true("quantify_motifs" %in% names(glysmith:::all_steps()))
+
+  suppressMessages(res <- forge_analysis_se(exp, bp))
+
+  expected <- glydet::quantify_motifs(
+    as_test_glyco_se(exp),
+    motifs = motifs,
+    method = "absolute",
+    alignments = c("terminal", "substructure"),
+    ignore_linkages = TRUE
+  )
+  actual <- res$data$node_1
+  expect_equal(
+    SummarizedExperiment::assay(actual),
+    SummarizedExperiment::assay(expected)
+  )
+  expect_equal(
+    SummarizedExperiment::colData(actual),
+    SummarizedExperiment::colData(expected)
+  )
+  expect_equal(
+    SummarizedExperiment::rowData(actual)$trait,
+    SummarizedExperiment::rowData(expected)$trait
+  )
+  expect_equal(
+    as.character(SummarizedExperiment::rowData(actual)$motif_structure),
+    as.character(SummarizedExperiment::rowData(expected)$motif_structure)
+  )
+  expect_true("node_1__motifs" %in% names(res$tables))
+  expect_setequal(unique(res$tables$node_1__motifs$trait), names(motifs))
+  expect_match(
+    res$meta$reports$node_1,
+    "Number of quantified motifs: 2\\."
+  )
+})
+
+test_that("step_quantify_motifs supports glyrepr_structure motifs and downstream DEA", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_row(10) |>
+      glyclean::auto_clean()
+  )
+  motifs <- glyrepr::as_glycan_structure(c("HexNAc(??-", "Hex(??-?)HexNAc(??-"))
+  bp <- blueprint(step_quantify_motifs(motifs = motifs) %=>% step_dea_limma())
+
+  suppressMessages(res <- forge_analysis_se(exp, bp))
+
+  expect_identical(res$meta$nodes$node_1$status, "success")
+  expect_identical(res$meta$nodes$node_2$status, "success")
+  expect_true("node_1__motifs" %in% names(res$tables))
+  expect_true("node_2__dea" %in% names(res$tables))
+})
+
+test_that("step_quantify_motifs skips when motifs are NULL or structures are absent", {
+  suppressMessages(
+    exp <- glyexp::real_experiment |>
+      glyexp::slice_head_row(10) |>
+      glyclean::auto_clean()
+  )
+  expect_message(
+    res_null <- forge_analysis_se(exp, blueprint(step_quantify_motifs())),
+    "skipped.*motifs are not provided"
+  )
+  expect_identical(res_null$meta$nodes$node_1$status, "skipped")
+
+  exp_no_struc <- as_test_glyco_se(exp)
+  SummarizedExperiment::rowData(exp_no_struc)$glycan_structure <- NULL
+  expect_message(
+    res_no_struc <- forge_analysis_se(
+      exp_no_struc,
+      blueprint(step_quantify_motifs(motifs = "HexNAc(??-"))
+    ),
+    "skipped.*glycan structures are not available in the experiment"
+  )
+  expect_identical(res_no_struc$meta$nodes$node_1$status, "skipped")
+})
+
+test_that("step_quantify_motifs validates inputs", {
+  expect_error(step_quantify_motifs(motifs = character(0)))
+  expect_error(step_quantify_motifs(motifs = ""))
+  expect_error(step_quantify_motifs(motifs = NA_character_))
+  expect_error(step_quantify_motifs(motifs = 123))
+  expect_error(step_quantify_motifs(motifs = "HexNAc(??-", method = "invalid"))
+  expect_error(step_quantify_motifs(
+    motifs = "HexNAc(??-",
+    alignments = "invalid"
+  ))
+  expect_error(step_quantify_motifs(
+    motifs = "HexNAc(??-",
+    ignore_linkages = "yes"
+  ))
+})
+
+test_that("AI blueprint parsing handles step_quantify_motifs with custom motifs", {
+  res <- glysmith:::.process_blueprint_response(
+    '{"explanation":"Quantify custom motifs then run DEA.","steps":["step_quantify_motifs(motifs = c(Lx = \\"Hex(??-?)[dHex(??-?)]HexNAc(??-\\")) %=>% step_dea_limma()"]}'
+  )
+  expect_true(res$valid)
+  nodes <- .compile_blueprint(res$blueprint)$nodes
+  expect_identical(
+    unname(vapply(nodes, function(n) n$step$id, "")),
+    c("quantify_motifs", "dea_limma")
+  )
+})
+
 # ----- step_quantify_dynamic_motifs -----
 test_that("step_quantify_dynamic_motifs generates dynamic_motif_exp and tables", {
   suppressMessages(
     exp <- glyexp::real_experiment |>
-      glyexp::slice_head_var(10) |>
+      glyexp::slice_head_row(10) |>
       glyclean::auto_clean()
   )
   bp <- blueprint(step_quantify_dynamic_motifs())
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_1" %in% names(res$data))
   expect_true("node_1__dynamic_motifs" %in% names(res$tables))
+  expect_match(
+    res$meta$reports$node_1,
+    "Dynamic motif quantification was performed\\. All motifs were extracted\\. Number of quantified motifs:"
+  )
+})
+
+test_that("step_quantify_dynamic_motifs validates inputs", {
+  expect_error(step_quantify_dynamic_motifs(max_size = 0))
+  expect_error(step_quantify_dynamic_motifs(method = "invalid"))
 })
 
 # ----- step_quantify_branch_motifs -----
 test_that("step_quantify_branch_motifs generates branch_motif_exp and tables", {
   suppressMessages(
     exp <- glyexp::real_experiment |>
-      glyexp::slice_head_var(10) |>
+      glyexp::slice_head_row(10) |>
       glyclean::auto_clean()
   )
   bp <- blueprint(step_quantify_branch_motifs())
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_1" %in% names(res$data))
   expect_true("node_1__branch_motifs" %in% names(res$tables))
+  expect_match(
+    res$meta$reports$node_1,
+    "Branch motif quantification was performed\\. Branching motifs for N-glycans were extracted\\. Number of quantified motifs:"
+  )
+})
+
+test_that("step_quantify_branch_motifs validates inputs", {
+  expect_error(step_quantify_branch_motifs(method = "invalid"))
 })
 
 test_that("step_quantify_branch_motifs skips for non-N-glycans", {
