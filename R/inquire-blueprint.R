@@ -350,7 +350,7 @@ inquire_blueprint <- function(
   paste(
     "Steps consume the preceding output. Use fork(step_a(), blueprint(step_b(), step_c())) for sibling routes from one producer.",
     "Use br('label', ...) for a side route that leaves the outer connection in place. Forks and terminal plots end their route.",
-    "DEA produces a fit. Use step_filter_sig_vars() to obtain an experiment for a heatmap. Use step_plot_main_test() for ANOVA and Kruskal-Wallis fits."
+    "DEA produces a fit. Use step_filter_sig_vars() to obtain an experiment for a heatmap."
   )
 }
 

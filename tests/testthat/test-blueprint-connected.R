@@ -11,17 +11,19 @@ test_that("construction checks every link, including independent sub-blueprints"
     "fork"
   )
   expect_error(blueprint(step_dea_anova(), step_volcano()), "requires")
-  expect_error(blueprint(step_dea_ttest(), step_plot_main_test()), "requires")
   expect_error(blueprint(fork(step_pca(), step_filter_sig_vars())), "requires")
   expect_error(blueprint(step_heatmap(on = "trait_exp")), "argument")
   bp <- blueprint(
     step_derive_traits(),
     fork(
       scores = step_pca(),
-      tests = blueprint(step_dea_anova(), fork(step_plot_main_test(), selected))
+      tests = blueprint(
+        step_dea_anova(),
+        fork(step_filter_sig_vars(0.01), selected)
+      )
     )
   )
-  expect_output(print(bp), "node_3 -> node_4.*step_plot_main_test.*tests")
+  expect_output(print(bp), "node_3 -> node_4.*step_filter_sig_vars.*tests")
   expect_output(print(bp), "node_3 -> node_5.*step_filter_sig_vars")
   path <- tempfile()
   write_blueprint(bp, path)
@@ -40,7 +42,7 @@ test_that("real traits feed PCA and one omnibus fit with independent consumers",
       blueprint(
         step_dea_anova(),
         fork(
-          step_plot_main_test(),
+          step_filter_sig_vars(0.01),
           blueprint(step_filter_sig_vars(), step_heatmap())
         )
       )
@@ -59,7 +61,15 @@ test_that("real traits feed PCA and one omnibus fit with independent consumers",
     cast_data(x, "node_6"),
     glystats::filter_sig_vars(traits, fit, fc_cutoff = NULL)
   )
-  expect_s3_class(cast_plot(x, "node_5__main_test"), "ggplot")
+  expect_equal(
+    cast_data(x, "node_5"),
+    glystats::filter_sig_vars(
+      traits,
+      fit,
+      p_adj_cutoff = 0.01,
+      fc_cutoff = NULL
+    )
+  )
   expect_s3_class(cast_plot(x, "node_7__heatmap"), "ggplot")
   expect_equal(
     cast_table(x, "node_4__dea_main_test"),

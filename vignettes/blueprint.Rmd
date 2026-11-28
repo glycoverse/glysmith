@@ -41,7 +41,7 @@ receive the derived traits. The two ANOVA consumers share the same fit.
 inspect_fit <- blueprint(
   step_dea_anova(),
   fork(
-    significance = step_plot_main_test(),
+    strict = step_filter_sig_vars(0.01),
     selected = blueprint(step_filter_sig_vars(), step_heatmap())
   )
 )
@@ -62,7 +62,6 @@ step_dea_limma())` connects both steps to the inlet.
 | Limma, t-test, Wilcoxon | Experiment | Contrast fit |
 | ANOVA, Kruskal–Wallis | Experiment | Omnibus fit |
 | `step_filter_sig_vars()` | Either fit | Filtered experiment |
-| `step_plot_main_test()` | Omnibus fit | Terminal dot chart from glyvis 0.9.0 |
 | `step_volcano()` | Contrast fit with abundance fold changes | Terminal plot |
 | Enrichment | Fit and its bound experiment | Terminal analysis |
 | `step_sig_boxplot()` | Filtered experiment from `step_filter_sig_vars()` | Terminal plot |
@@ -80,8 +79,9 @@ its descendants, and independent branches continue.
 result <- forge_analysis(glyexp::real_experiment2, bp)
 result$meta$nodes        # step, producer, route, status and reason
 cast_data(result)        # node outputs and auxiliary objects
-cast_plot(result)        # e.g. node_3__main_test
+cast_plot(result)        # e.g. node_5__heatmap
 cast_table(result)
+glyvis::autoplot(cast_data(result, "node_2"))  # abundance ANOVA main test
 quench_result(result, "connected-results")
 polish_report(result, "connected-report.html", open = FALSE)
 ```
@@ -124,7 +124,6 @@ Here's the full lineup of available step functions:
 | `step_dea_kruskal()` | Differential expression analysis using Kruskal-Wallis test | No | GP/G |
 | `step_filter_sig_vars()` | Filter the fitted experiment by significance | No | GP/G |
 | **Visualization** | | | |
-| `step_plot_main_test()` | Plot omnibus main-test significance | No | GP/G |
 | `step_volcano()` | Create volcano plot from DEA results | No | GP/G |
 | `step_heatmap()` | Create heatmap plot | No | GP/G |
 | `step_logo()` | Create logo plot for glycosylation sites | No | GP |

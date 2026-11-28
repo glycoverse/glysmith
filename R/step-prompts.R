@@ -27,7 +27,6 @@
     step_dea_wilcox = "Include this step only if the user explicitly asks for Wilcoxon test. If the experiment has more than 2 groups, ask which two groups to compare and include `step_subset_groups(groups = c(\"A\", \"B\"))` before this step.",
     step_derive_traits = "Include this step by default if the experiment has glycan structures. After this step, it should be followed by the DEA and visualization steps.",
     step_filter_sig_vars = "Connect to a differential fit to emit a filtered experiment.",
-    step_plot_main_test = "Plot the incoming ANOVA or Kruskal-Wallis fit.",
     step_heatmap = "Include this step if needed. It is recommended to use this step after step_filter_sig_vars().",
     step_ident_overview = "Always include this step by default unless the user explicitly excludes it. Use it as a side branch at the start in the blueprint.",
     step_infer_structure = "Include this step when the user requests structure-aware analysis but the experiment has glycan compositions and no glycan structures. This step should be placed before `step_derive_traits()`, `step_quantify_dynamic_motifs()`, or `step_quantify_branch_motifs()`. Mention that variables without inferred structures are removed. Always ask for species restriction to improve inference accuracy, but allow users to skip it if they want.",

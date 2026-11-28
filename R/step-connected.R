@@ -50,29 +50,3 @@ step_filter_sig_vars <- function(
     signature = rlang::expr_deparse(match.call())
   )
 }
-
-#' Plot the main test from an ANOVA or Kruskal-Wallis fit
-#'
-#' Connect this terminal step to [step_dea_anova()] or [step_dea_kruskal()].
-#' The dot chart shows the negative log10 p-value for each variable.
-#'
-#' @param ... Arguments passed to the glyvis method for [ggplot2::autoplot()],
-#'   such as `p_col`, `p_cutoff` and `top_n`.
-#' @returns A terminal plotting step.
-#' @examples
-#' blueprint(step_dea_anova(), step_plot_main_test())
-#' @export
-step_plot_main_test <- function(...) {
-  args <- rlang::list2(...)
-  step(
-    id = "plot_main_test",
-    label = "Main test dot chart",
-    packages = "glyvis",
-    connected = .fit_port(accepts = "omnibus"),
-    run = function(ctx) {
-      p <- rlang::exec(glyvis::autoplot, ctx$data$dea_res, !!!args)
-      ctx_add_plot(ctx, "main_test", p, "Main-test significance by variable.")
-    },
-    signature = rlang::expr_deparse(match.call())
-  )
-}
