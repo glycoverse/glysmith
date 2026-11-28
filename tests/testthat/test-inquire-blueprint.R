@@ -5,7 +5,7 @@ test_that("inquire_blueprint works with valid AI output", {
 
   # Mock `ellmer::chat_deepseek` to return a chat object with a mocked `chat` method
   mock_chat_fun <- function(...) {
-    '{"explanation":"Preprocess then run PCA.","steps":["step_preprocess()","step_pca()"]}'
+    '{"explanation":"Preprocess then run PCA.","steps":["step_preprocess() %=>% step_pca()"]}'
   }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
@@ -18,8 +18,8 @@ test_that("inquire_blueprint works with valid AI output", {
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(.compile_blueprint(bp)$nodes, 2)
-  expect_equal(bp[[1]]$id, "preprocess")
-  expect_equal(bp[[2]]$id, "pca")
+  expect_equal(.compile_blueprint(bp)$nodes[[1]]$step$id, "preprocess")
+  expect_equal(.compile_blueprint(bp)$nodes[[2]]$step$id, "pca")
 })
 
 test_that("inquire_blueprint accepts new and legacy glyco containers", {
@@ -55,7 +55,7 @@ test_that("inquire_blueprint supports branches", {
 
   mock_chat_fun <- function(...) {
     paste0(
-      '{"explanation":"Compare limma and PCA.","steps":["br(\\"limma\\", step_dea_limma(), step_volcano())",',
+      '{"explanation":"Compare limma and PCA.","steps":["br(\\"limma\\", step_dea_limma() %=>% step_volcano())",',
       '"step_pca()"]}'
     )
   }
@@ -96,7 +96,7 @@ test_that("inquire_blueprint handles single step", {
 
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 1)
-  expect_equal(bp[[1]]$id, "tsne")
+  expect_equal(.compile_blueprint(bp)$nodes[[1]]$step$id, "tsne")
 })
 
 test_that("inquire_blueprint cleans AI output (code fences)", {
@@ -117,7 +117,7 @@ test_that("inquire_blueprint cleans AI output (code fences)", {
   suppressMessages(bp <- inquire_blueprint("dummy description"))
   expect_s3_class(bp, "glysmith_blueprint")
   expect_length(bp, 1)
-  expect_equal(bp[[1]]$id, "preprocess")
+  expect_equal(.compile_blueprint(bp)$nodes[[1]]$step$id, "preprocess")
 })
 
 test_that("inquire_blueprint raises error on invalid format", {
@@ -396,7 +396,7 @@ test_that("inquire_blueprint reflects full error details back to LLM", {
       )
     }
     prompt_received <<- prompt
-    "{\"explanation\":\"DEA then volcano.\",\"steps\":[\"step_dea_ttest()\",\"step_volcano()\"]}"
+    "{\"explanation\":\"DEA then volcano.\",\"steps\":[\"step_dea_ttest() %=>% step_volcano()\"]}"
   }
 
   local_mocked_bindings(
@@ -459,8 +459,7 @@ test_that("inquire_blueprint handles single clarification question from LLM", {
       '{"explanation":"Adjust proteins then PCA.","steps":[',
       '"step_adjust_protein(pro_expr_path = \'',
       pro_expr_path,
-      '\')",',
-      '"step_pca()"]}'
+      '\') %=>% step_pca()"]}'
     )
   }
 
@@ -495,7 +494,7 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
   mock_chat_fun <- function(prompt) {
     call_count <<- call_count + 1
     prompt_received <<- prompt
-    "{\"explanation\":\"Adjust proteins then PCA.\",\"steps\":[\"step_adjust_protein()\",\"step_pca()\"]}"
+    "{\"explanation\":\"Adjust proteins then PCA.\",\"steps\":[\"step_adjust_protein() %=>% step_pca()\"]}"
   }
 
   local_mocked_bindings(
@@ -517,8 +516,8 @@ test_that("inquire_blueprint does not auto-ask missing step arguments", {
   expect_s3_class(bp, "glysmith_blueprint")
   expect_equal(call_count, 1)
   expect_true(nzchar(prompt_received))
-  expect_equal(bp[[1]]$id, "adjust_protein")
-  expect_equal(bp[[2]]$id, "pca")
+  expect_equal(.compile_blueprint(bp)$nodes[[1]]$step$id, "adjust_protein")
+  expect_equal(.compile_blueprint(bp)$nodes[[2]]$step$id, "pca")
 })
 
 test_that("system prompt uses single-question format", {
@@ -872,22 +871,11 @@ test_that(".process_blueprint_response handles JSON with explanation", {
   expect_s3_class(bp, "glysmith_blueprint")
 })
 
-test_that(".process_blueprint_response handles semicolon-separated steps", {
-  local_mock_glycan_fact()
-
-  mock_chat_fun <- function(...) {
-    '{"explanation":"Multiple steps.","steps":["step_preprocess(); step_pca()"]}'
-  }
-  local_mocked_bindings(
-    chat_deepseek = function(...) list(chat = mock_chat_fun),
-    .package = "ellmer"
+test_that("each AI entry must be a single route expression", {
+  result <- .process_blueprint_response(
+    '{"steps":["step_preprocess(); step_pca()"]}'
   )
-
-  withr::local_envvar(c(DEEPSEEK_API_KEY = "test_key"))
-
-  suppressMessages(bp <- inquire_blueprint("dummy"))
-  expect_s3_class(bp, "glysmith_blueprint")
-  expect_length(.compile_blueprint(bp)$nodes, 2)
+  expect_false(result$valid)
 })
 
 test_that(".process_blueprint_response handles semicolon at end", {
@@ -934,14 +922,14 @@ test_that(".process_blueprint_response handles quoted steps", {
 
   suppressMessages(bp <- inquire_blueprint("dummy"))
   expect_s3_class(bp, "glysmith_blueprint")
-  expect_equal(bp[[1]]$id, "preprocess")
+  expect_equal(.compile_blueprint(bp)$nodes[[1]]$step$id, "preprocess")
 })
 
 test_that(".process_blueprint_response handles step with quoted arguments", {
   local_mock_glycan_fact()
 
   mock_chat_fun <- function(...) {
-    '```json\n{"explanation":"DEA then heatmap.","steps":["step_dea_limma()","step_filter_sig_vars()","step_heatmap()"]}\n```'
+    '```json\n{"explanation":"DEA then heatmap.","steps":["step_dea_limma() %=>% step_filter_sig_vars() %=>% step_heatmap()"]}\n```'
   }
   local_mocked_bindings(
     chat_deepseek = function(...) list(chat = mock_chat_fun),
@@ -957,7 +945,6 @@ test_that(".process_blueprint_response handles step with quoted arguments", {
 
 test_that(".process_blueprint_response rejects non-array steps", {
   # When JSON parses but steps is not an array, it may still be valid if it's a string
-  # The function converts semicolon-separated strings to arrays
   result <- glysmith:::.process_blueprint_response('{"steps":123}')
   expect_false(result$valid)
 })
@@ -1094,4 +1081,26 @@ test_that(".get_rd_arguments extracts argument descriptions", {
   args <- glysmith:::.get_rd_arguments(rd)
   # Arguments section returns a named list
   expect_true(is.list(args))
+})
+
+test_that("AI entry routes use the same operator, commas and inlet checks as R", {
+  response <- function(routes) {
+    .process_blueprint_response(jsonlite::toJSON(list(steps = routes)))
+  }
+  routes <- c("step_preprocess() %=>% step_dea_limma()", "step_pca()")
+  plan <- response(routes)
+  expect_true(plan$valid)
+  nodes <- .compile_blueprint(plan$blueprint)$nodes
+  expect_identical(
+    unname(vapply(nodes, "[[", "", "parent")),
+    c("root", "node_1", "root")
+  )
+  plan <- response("blueprint(step_pca(), step_dea_limma(),)")
+  expect_true(plan$valid)
+  expect_identical(
+    .format_blueprint_for_prompt(plan$blueprint),
+    "blueprint(step_pca(), step_dea_limma())"
+  )
+  expect_false(response("blueprint(step_pca(),,step_dea_limma())")$valid)
+  expect_false(response(c("step_dea_limma()", "step_volcano()"))$valid)
 })

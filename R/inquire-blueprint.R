@@ -224,16 +224,9 @@ inquire_blueprint <- function(
       error = "Invalid JSON output. `steps` must be an array of strings."
     ))
   }
-  steps <- stringr::str_remove_all(steps, "`")
   steps <- stringr::str_trim(steps)
-  if (length(steps) == 1 && stringr::str_detect(steps, ";")) {
-    steps <- stringr::str_split_1(steps, ";")
-    steps <- stringr::str_trim(steps)
-  }
-  steps <- stringr::str_remove(steps, ";$")
-  steps <- steps[steps != ""]
 
-  if (length(steps) == 0) {
+  if (!length(steps) || anyNA(steps) || any(!nzchar(steps))) {
     return(list(
       valid = FALSE,
       error = "The output is empty. Please provide steps in the JSON `steps` array."
@@ -254,8 +247,14 @@ inquire_blueprint <- function(
         .build_ai_route(expr)
       })
 
-      bp <- do.call(blueprint, step_objects)
-      .compile_blueprint(bp, "exp")
+      bp <- if (
+        length(step_objects) == 1L &&
+          inherits(step_objects[[1L]], "glysmith_blueprint")
+      ) {
+        step_objects[[1L]]
+      } else {
+        do.call(blueprint, step_objects)
+      }
 
       # If we get here, everything is valid
       list(valid = TRUE, blueprint = bp, explanation = explanation)
@@ -296,6 +295,10 @@ inquire_blueprint <- function(
 }
 
 .build_ai_route <- function(expr) {
+  # Let the constructors apply their usual rules for trailing and empty entries.
+  if (rlang::is_missing(expr)) {
+    return(rlang::missing_arg())
+  }
   if (!is.call(expr) || !is.symbol(expr[[1L]])) {
     cli::cli_abort(
       "Invalid format. Expected a step, blueprint, fork or br call."
@@ -303,7 +306,10 @@ inquire_blueprint <- function(
   }
   name <- as.character(expr[[1L]])
   args <- as.list(expr)[-1L]
-  if (name %in% c("blueprint", "fork", "br")) {
+  if (name == "(" && length(args) == 1L) {
+    return(.build_ai_route(args[[1L]]))
+  }
+  if (name %in% c("%=>%", "blueprint", "fork", "br")) {
     if (name == "br") {
       if (!length(args) || !is.character(args[[1L]])) {
         cli::cli_abort("A side branch needs a literal name.")
@@ -348,8 +354,8 @@ inquire_blueprint <- function(
 
 .tree_prompt <- function() {
   paste(
-    "Steps consume the preceding output. Use fork(step_a(), blueprint(step_b(), step_c())) for sibling routes from one producer.",
-    "Use br('label', ...) for a side route that leaves the outer connection in place. Forks and terminal plots end their route.",
+    "Connect steps in one route with %=>%. Commas in blueprint() start independent routes on the original experiment. Use a %=>% fork(b, c %=>% d) to share the output of a.",
+    "Use br('label', route) for a single side route that leaves the outer connection in place. Forks and terminal plots end their route.",
     "DEA produces a fit. Use step_filter_sig_vars() to obtain an experiment for a heatmap."
   )
 }
@@ -407,7 +413,7 @@ inquire_blueprint <- function(
     "You are a professional omics data scientist and glycobiologist.",
     "Your job is to create a blueprint for glycomics or glycoproteomics data analysis.",
     "\n",
-    "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
+    "A blueprint is a tree of analytical routes.",
     "A step is a function call with arguments.",
     "Use step arguments with caution: prefer default values unless they are necessary.",
     .tree_prompt(),
@@ -449,14 +455,14 @@ inquire_blueprint <- function(
     "\n",
     "If you think all information is provided, return a JSON object with:",
     "- `explanation`: a BRIEF description (1-3 sentences).",
-    "- `steps`: an array of strings, each being a step, fork, br or blueprint call.",
+    "- `steps`: an array of independent entry routes. Within each string use %=>% for sequential steps.",
     "Do not include any extra text outside JSON.",
     "\n",
     "Example output 1:",
-    "{\"explanation\":\"Preprocess, then run PCA and DEA.\",\"steps\":[\"step_preprocess()\",\"fork(step_pca(), blueprint(step_dea_limma(), step_filter_sig_vars(), step_heatmap()))\"]}",
+    "{\"explanation\":\"Preprocess, then run PCA and DEA.\",\"steps\":[\"step_preprocess() %=>% fork(step_pca(), step_dea_limma() %=>% step_filter_sig_vars() %=>% step_heatmap())\"]}",
     "",
     "Example output 2 (Branching):",
-    "{\"explanation\":\"Compare two DEA methods after preprocessing.\",\"steps\":[\"step_preprocess()\",\"br('limma', step_dea_limma(), step_volcano())\",\"br('ttest', step_dea_ttest(), step_volcano())\"]}",
+    "{\"explanation\":\"Compare two DEA methods after preprocessing.\",\"steps\":[\"step_preprocess() %=>% br('limma', step_dea_limma() %=>% step_volcano()) %=>% br('ttest', step_dea_ttest() %=>% step_volcano())\"]}",
     "",
     "Example output 3 (Single question):",
     "{\"question\":\"What is your group column?\"}",

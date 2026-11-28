@@ -169,7 +169,7 @@ modify_blueprint <- function(
   prompt <- paste(
     "You are a professional omics data scientist and glycobiologist.",
     "Your job is to modify an existing blueprint for glycomics or glycoproteomics data analysis.",
-    "A blueprint is a list of analytical steps and parameters to be used in the analysis.",
+    "A blueprint is a tree of analytical routes.",
     "You will receive a current blueprint and a modification request.",
     "Return a full updated blueprint, not a diff or patch.",
     "If no changes are needed, return the original blueprint.",
@@ -204,10 +204,10 @@ modify_blueprint <- function(
     "Return format:",
     "Return ONLY a JSON object with:",
     "- `explanation`: a BRIEF description (1-3 sentences) of the updated blueprint.",
-    "- `steps`: an array of strings, each being a step, fork, br or blueprint call.",
+    "- `steps`: an array of independent entry routes. Within each string use %=>% for sequential steps.",
     "Do not include any extra text outside JSON.",
     "Example output:",
-    "{\"explanation\":\"Plot PCA and a heatmap after preprocessing.\",\"steps\":[\"step_preprocess()\",\"fork(step_pca(), step_heatmap())\"]}",
+    "{\"explanation\":\"Plot PCA and a heatmap after preprocessing.\",\"steps\":[\"step_preprocess() %=>% fork(step_pca(), step_heatmap())\"]}",
     sep = "\n"
   )
   prompt
@@ -217,19 +217,21 @@ modify_blueprint <- function(
   .assert_blueprint(bp)
   render <- function(x) {
     if (inherits(x, "glysmith_step")) {
-      return(x$signature)
+      return(paste(x$signature, collapse = " "))
     }
     if (inherits(x, "glysmith_branch")) {
       return(paste0(
         "br(",
-        paste(
-          c(encodeString(x$name, quote = '"'), vapply(x$steps, render, "")),
-          collapse = ", "
-        ),
+        encodeString(x$name, quote = '"'),
+        ", ",
+        render(x$route),
         ")"
       ))
     }
     children <- vapply(x, render, "")
+    if (inherits(x, "glysmith_sequence")) {
+      return(paste(children, collapse = " %=>% "))
+    }
     labels <- names(x)
     if (!is.null(labels)) {
       labelled <- nzchar(labels)
