@@ -3,13 +3,15 @@
 #' The branch starts at the current output. The next outer step also receives
 #' that output. Use [fork()] to end a route with multiple siblings.
 #' @param name A label for the branch.
-#' @param ... Steps, branches, forks or sub-blueprints.
+#' @param route One step, sequence, fork or reusable blueprint.
 #' @returns A branch for use inside [blueprint()].
 #' @examples
-#' blueprint(br("scores", step_pca()), step_dea_limma())
+#' blueprint(br("scores", step_pca()) %=>% step_dea_limma())
 #' @export
-br <- function(name, ...) {
+br <- function(name, route) {
   checkmate::assert_string(name, min.chars = 1)
-  steps <- as.list(rlang::list2(...))
-  structure(list(name = name, steps = steps), class = "glysmith_branch")
+  if (missing(route) || !.connected_route(route)) {
+    cli::cli_abort("br() needs a single analytical route.")
+  }
+  structure(list(name = name, route = route), class = "glysmith_branch")
 }

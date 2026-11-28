@@ -1,13 +1,13 @@
 test_that("nested side routes resume at their original producer", {
   bp <- blueprint(
-    step_preprocess(),
-    br(
-      "side",
-      step_derive_traits(),
-      br("nested", step_pca()),
-      step_dea_limma()
-    ),
-    step_dea_ttest()
+    step_preprocess() %=>%
+      br(
+        "side",
+        step_derive_traits() %=>%
+          br("nested", step_pca()) %=>%
+          step_dea_limma()
+      ) %=>%
+      step_dea_ttest()
   )
   nodes <- .compile_blueprint(bp)$nodes
   expect_equal(

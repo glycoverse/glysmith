@@ -3,7 +3,7 @@
     Code
       print(bp)
     Output
-      Blueprint (root accepts exp or filtered_exp)
+      Blueprint (root accepts exp)
       +- node_1  step_ident_overview() [overview] (terminal)
       \- node_2  step_derive_traits() (exp)
         +- node_3  step_dea_anova() [tests] (omnibus)

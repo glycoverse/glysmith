@@ -8,7 +8,7 @@
 #'   Used for various analyses. Default is "group".
 #'
 #' @returns A `glysmith_result` object, with the following components:
-#'   - `exp`: the last main-route experiment, or NULL if its producer did not succeed.
+#'   - `exp`: the input experiment for multiple entry routes. A single route returns its last main-route experiment, or NULL if its producer did not succeed.
 #'   - `data`: main outputs and auxiliary objects. Node IDs
 #'     identify main outputs and prefix auxiliary object, plot and table names.
 #'   - `plots`: a named list of ggplot objects.

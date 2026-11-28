@@ -4,12 +4,12 @@
 \alias{br}
 \title{Run a single side route}
 \usage{
-br(name, ...)
+br(name, route)
 }
 \arguments{
 \item{name}{A label for the branch.}
 
-\item{...}{Steps, branches, forks or sub-blueprints.}
+\item{route}{One step, sequence, fork or reusable blueprint.}
 }
 \value{
 A branch for use inside \code{\link[=blueprint]{blueprint()}}.
@@ -19,5 +19,5 @@ The branch starts at the current output. The next outer step also receives
 that output. Use \code{\link[=fork]{fork()}} to end a route with multiple siblings.
 }
 \examples{
-blueprint(br("scores", step_pca()), step_dea_limma())
+blueprint(br("scores", step_pca()) \%=>\% step_dea_limma())
 }

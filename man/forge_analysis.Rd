@@ -17,7 +17,7 @@ Used for various analyses. Default is "group".}
 \value{
 A \code{glysmith_result} object, with the following components:
 \itemize{
-\item \code{exp}: the last main-route experiment, or NULL if its producer did not succeed.
+\item \code{exp}: the input experiment for multiple entry routes. A single route returns its last main-route experiment, or NULL if its producer did not succeed.
 \item \code{data}: main outputs and auxiliary objects. Node IDs
 identify main outputs and prefix auxiliary object, plot and table names.
 \item \code{plots}: a named list of ggplot objects.

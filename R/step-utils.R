@@ -17,7 +17,7 @@
 .check_step_dots <- function(call) {
   if ("on" %in% names(call)) {
     cli::cli_abort(
-      "Unknown step argument `on`. Connect the input with blueprint(), br() or fork()."
+      "Unknown step argument `on`. Connect the input with %=>%."
     )
   }
 }

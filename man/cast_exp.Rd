@@ -22,7 +22,8 @@ cast_data(x, name = NULL)
 }
 \value{
 \itemize{
-\item \code{cast_exp()}: the last experiment on the main route, or the input
+\item \code{cast_exp()}: the input experiment for multiple entry routes. For a single
+route, the last experiment on the main route, or the input
 experiment if that route produces no experiment. Trait and motif steps
 can return a derived SummarizedExperiment. Returns NULL if the producer
 of the main-route experiment failed, was skipped or was blocked.

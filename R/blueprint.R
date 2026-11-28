@@ -1,27 +1,46 @@
 #' Compose a tree of analytical steps
 #'
-#' A step receives its predecessor's experiment or fitted result. A terminal
-#' step emits only reporting artifacts. Use [fork()] for siblings and [br()]
-#' for a side route that leaves the current connection available.
-#' See `vignette("blueprint")` for a complete analysis.
-#' @param ... Steps, side branches, forks or reusable blueprints.
-#' @returns A validated blueprint. Printing it draws a tree with each step
-#'   beneath the node that supplies its input. Node IDs identify results in
-#'   [cast_data()], [cast_plot()] and [cast_table()].
+#' Connect a producer to its consumer with `%=>%`. Routes separated by
+#' commas in `blueprint()` start independently from the original experiment.
+#' Use [fork()] to share an intermediate output and [br()] for a side route
+#' that leaves the outer connection available. See `vignette("blueprint")`.
+#'
+#' @param ... One or more routes, optionally named. A trailing comma is allowed.
+#' @param lhs,rhs Steps, routes, forks, side branches or reusable blueprints.
+#' @returns `blueprint()` returns a validated blueprint. Printing it draws each
+#'   step beneath its producer and shows its result ID. `%=>%` returns an
+#'   ordered route for use in a blueprint. Neither constructor runs the analysis.
 #' @examples
-#' blueprint(step_preprocess(), fork(step_pca(), step_dea_limma()))
+#' blueprint(
+#'   step_preprocess() %=>% step_dea_limma() %=>% fork(
+#'     step_volcano(),
+#'     step_filter_sig_vars() %=>% step_heatmap()
+#'   )
+#' )
+#' blueprint(scores = step_pca(), differential = step_dea_limma())
 #' @export
 blueprint <- function(...) {
-  bp <- structure(
-    rlang::list2(...),
-    class = "glysmith_blueprint",
-    format_version = 2L
-  )
-  if (!length(bp)) {
-    cli::cli_abort("A blueprint needs at least one step.")
+  routes <- rlang::list2(...)
+  if (!length(routes)) {
+    cli::cli_abort("A blueprint needs at least one route.")
   }
+  bp <- structure(routes, class = "glysmith_blueprint", format_version = 3L)
   .compile_blueprint(bp)
   bp
+}
+
+#' @rdname blueprint
+#' @export
+`%=>%` <- function(lhs, rhs) {
+  items <- function(x) {
+    if (!.connected_route(x)) {
+      cli::cli_abort("Both operands of %=>% must be analytical routes.")
+    }
+    if (inherits(x, "glysmith_sequence")) unclass(x) else list(x)
+  }
+  route <- structure(c(items(lhs), items(rhs)), class = "glysmith_sequence")
+  .compile_route(route, c("exp", "filtered_exp", "contrast", "omnibus"))
+  route
 }
 
 #' Save or Load a Blueprint
@@ -35,8 +54,8 @@ blueprint <- function(...) {
 #' @returns Invisibly returns the blueprint object.
 #' @examples
 #' bp <- blueprint(
-#'   step_preprocess(),
-#'   fork(step_pca(), step_dea_limma()),
+#'   step_preprocess() %=>%
+#'     fork(step_pca(), step_dea_limma()),
 #' )
 #' write_blueprint(bp, tempfile(fileext = ".rds"))
 #' @export
@@ -56,10 +75,10 @@ read_blueprint <- function(file) {
 .assert_blueprint <- function(x) {
   if (
     !inherits(x, "glysmith_blueprint") ||
-      !identical(attr(x, "format_version"), 2L)
+      !identical(attr(x, "format_version"), 3L)
   ) {
     cli::cli_abort(
-      "Incompatible blueprint. Rebuild it with blueprint(), br() and fork()."
+      "Incompatible blueprint. Rebuild it with blueprint() and %=>%."
     )
   }
 }
@@ -106,19 +125,19 @@ read_blueprint <- function(file) {
 #' Fan out from the current blueprint output
 #'
 #' Each argument is a sibling route that receives the same input. Pass a step
-#' for a one-step route or a blueprint for an ordered route.
+#' for a one-step route, a `%=>%` sequence or a reusable blueprint.
 #'
-#' @param ... Two or more routes. Argument names can label routes.
+#' @param ... One or more routes. Argument names can label routes.
 #' @returns A fork specification to use in a blueprint.
 #' @export
 fork <- function(...) {
   routes <- rlang::list2(...)
   if (
-    length(routes) < 2L ||
+    !length(routes) ||
       !all(vapply(routes, .connected_route, logical(1)))
   ) {
     stop(
-      "fork() needs at least two sibling routes.",
+      "fork() needs one or more analytical routes.",
       call. = FALSE
     )
   }
@@ -128,78 +147,88 @@ fork <- function(...) {
 .connected_route <- function(x) {
   inherits(
     x,
-    c("glysmith_step", "glysmith_blueprint", "glysmith_fork")
+    c(
+      "glysmith_step",
+      "glysmith_sequence",
+      "glysmith_blueprint",
+      "glysmith_fork",
+      "glysmith_branch"
+    )
   )
 }
 
-.connected_branch <- function(x) {
-  inherits(x, "glysmith_branch")
+.compile_blueprint <- function(blueprint) {
+  .assert_blueprint(blueprint)
+  .compile_route(blueprint, "exp")
 }
 
-# An unbound sub-blueprint may start at any compatible outlet. All routes
-# leaving its inlet must accept the same type. forge_analysis binds it to exp.
-.compile_blueprint <- function(blueprint, input_type = NULL) {
-  .assert_blueprint(blueprint)
+# A reusable sequence can start at a fit. Its siblings must all accept the
+# same inlet. A complete blueprint binds that inlet to the original experiment.
+.compile_route <- function(route, inlet) {
   nodes <- list()
-  inlet <- input_type %||% c("exp", "filtered_exp", "contrast", "omnibus")
-  walk <- function(items, parent, type, labels, main_exp) {
-    for (item in items) {
-      if (!length(type)) {
-        cli::cli_abort(
-          "No output follows a terminal step or fork at this position."
-        )
-      }
-      if (inherits(item, "glysmith_fork")) {
-        for (j in seq_along(item)) {
-          route <- item[[j]]
-          label <- names(item)[j]
-          walk(list(route), parent, type, c(labels, label), main_exp)
-        }
-        type <- character()
-      } else if (.connected_branch(item)) {
-        if (!length(item$steps)) {
-          cli::cli_abort("A side branch cannot be empty.")
-        }
-        walk(item$steps, parent, type, c(labels, item$name), main_exp)
-      } else if (inherits(item, "glysmith_blueprint")) {
-        .assert_blueprint(item)
-        tail <- walk(item, parent, type, labels, main_exp)
-        parent <- tail$parent
-        type <- tail$type
-        main_exp <- tail$main_exp
-      } else {
-        if (!inherits(item, "glysmith_step") || is.null(item$connected)) {
-          cli::cli_abort(
-            "Each connected step must declare its input and output."
-          )
-        }
-        contract <- item$connected
-        available <- if (parent == "root") inlet else type
-        accepted <- intersect(available, contract$accepts)
-        if (!length(accepted)) {
-          cli::cli_abort(
-            "{item$signature} requires {contract$accepts}, received {available} from {parent}."
-          )
-        }
-        if (parent == "root") {
-          inlet <<- accepted
-        }
-        id <- paste0("node_", length(nodes) + 1L)
-        nodes[[id]] <<- list(
-          id = id,
-          parent = parent,
-          step = item,
-          route = paste(labels[nzchar(labels)], collapse = "/")
-        )
-        parent <- id
-        type <- contract$produces
-        if (length(type) && type %in% c("exp", "filtered_exp")) main_exp <- id
-      }
+  visit <- function(item, wire, labels) {
+    if (!length(wire$type)) {
+      cli::cli_abort(
+        "No output follows a terminal step or fork at this position."
+      )
     }
-    list(parent = parent, type = type, main_exp = main_exp)
+    if (inherits(item, "glysmith_sequence")) {
+      for (child in item) {
+        wire <- visit(child, wire, labels)
+      }
+      return(wire)
+    }
+    if (inherits(item, "glysmith_branch")) {
+      visit(item$route, wire, c(labels, item$name))
+      return(wire)
+    }
+    if (inherits(item, c("glysmith_blueprint", "glysmith_fork"))) {
+      blueprint <- inherits(item, "glysmith_blueprint")
+      if (blueprint) {
+        .assert_blueprint(item)
+      }
+      for (j in seq_along(item)) {
+        tail <- visit(item[[j]], wire, c(labels, names(item)[j]))
+      }
+      if (blueprint && length(item) == 1L) {
+        return(tail)
+      }
+      # Forks and multi-entry blueprints expose no single branch output.
+      wire$type <- character()
+      return(wire)
+    }
+    if (!inherits(item, "glysmith_step") || is.null(item$connected)) {
+      cli::cli_abort(
+        "Each route must contain steps with declared inputs and outputs."
+      )
+    }
+    contract <- item$connected
+    available <- if (wire$parent == "root") inlet else wire$type
+    accepted <- intersect(available, contract$accepts)
+    if (!length(accepted)) {
+      cli::cli_abort(
+        "{item$signature} requires {contract$accepts}, received {available} from {wire$parent}."
+      )
+    }
+    if (wire$parent == "root") {
+      inlet <<- accepted
+    }
+    id <- paste0("node_", length(nodes) + 1L)
+    nodes[[id]] <<- list(
+      id = id,
+      parent = wire$parent,
+      step = item,
+      route = paste(labels[nzchar(labels)], collapse = "/")
+    )
+    wire$parent <- id
+    wire$type <- contract$produces
+    if (length(wire$type) && wire$type %in% c("exp", "filtered_exp")) {
+      wire$main_exp <- id
+    }
+    wire
   }
-
-  tail <- walk(blueprint, "root", inlet, character(), "root")
+  root <- list(parent = "root", type = inlet, main_exp = "root")
+  tail <- visit(route, root, character())
   list(nodes = nodes, accepts = inlet, main_exp = tail$main_exp)
 }
 
@@ -319,7 +348,7 @@ print.glysmith_blueprint <- function(x, ...) {
 }
 
 run_blueprint <- function(blueprint, ctx, quiet = FALSE) {
-  plan <- .compile_blueprint(blueprint, "exp")
+  plan <- .compile_blueprint(blueprint)
   ctx$data$root <- ctx$data$exp
   wires <- list(root = list(exp = ctx$data$root))
   for (node in plan$nodes) {
