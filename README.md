@@ -110,27 +110,3 @@ Open `report.html` from your analysis directory in your browser.
 ![](man/figures/report.png)
 
 *The report shown above was generated with `use_ai = TRUE`.*
-
-### Share a fit across analyses
-
-The development version connects steps through their outputs. Here PCA
-and ANOVA receive the same preprocessed experiment. The main-test plot
-and the filter share one ANOVA fit.
-
-``` r
-bp <- blueprint(
-  step_preprocess(),
-  fork(
-    step_pca(),
-    blueprint(step_dea_anova(), fork(
-      step_plot_main_test(),
-      blueprint(step_filter_sig_vars(), step_heatmap())
-    ))
-  )
-)
-print(bp)
-result <- forge_analysis(exp, bp)
-```
-
-Rebuild previously saved flat blueprints before running them with this
-version.
