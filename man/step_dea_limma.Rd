@@ -51,5 +51,5 @@ Fit \code{\link[glystats:gly_limma]{glystats::gly_limma()}} to the incoming expe
 \code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} to select variables or attach a compatible plot.
 }
 \examples{
-blueprint(step_dea_limma(), step_filter_sig_vars())
+blueprint(step_dea_limma() \%=>\% step_filter_sig_vars())
 }

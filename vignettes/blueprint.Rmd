@@ -34,27 +34,56 @@ for the details.
 
 ## Connect steps by their outputs
 
-Each step receives the output of its immediate upstream step. In this example preprocessing runs once. PCA and ANOVA both
-receive the derived traits. The two ANOVA consumers share the same fit.
+Use `%=>%` to pass the output of one step to the next. Each comma-separated
+argument to `blueprint()` starts a route on the original experiment.
+Glysmith reserves `%=>%` for blueprint composition. Ordinary R and magrittr data pipelines keep their own operators.
+The following routes each fit one model and give its result to two consumers.
+Use a two-group experiment for the t-test.
 
 ```{r}
-inspect_fit <- blueprint(
-  step_dea_anova(),
-  fork(
-    strict = step_filter_sig_vars(0.01),
-    selected = blueprint(step_filter_sig_vars(), step_heatmap())
+dea_bp1 <- blueprint(
+  step_dea_limma() %=>% fork(
+    step_volcano(),
+    step_filter_sig_vars() %=>% step_heatmap()
+  )
+)
+dea_bp2 <- blueprint(
+  step_dea_ttest() %=>% fork(
+    step_volcano(),
+    step_filter_sig_vars() %=>% step_heatmap()
   )
 )
 
-traits <- blueprint(step_derive_traits(), fork(step_pca(), inspect_fit))
-bp <- blueprint(step_preprocess(), fork(abundances = inspect_fit, traits = traits))
-print(bp)
+# Two independent entry routes run preprocessing twice.
+independent <- blueprint(
+  limma = step_preprocess() %=>% dea_bp1,
+  ttest = step_preprocess() %=>% dea_bp2,
+)
+
+# One preprocessing step supplies both saved analysis routes.
+shared <- blueprint(step_preprocess() %=>% fork(limma = dea_bp1, ttest = dea_bp2))
+print(shared)
 ```
 
-`fork()` ends its route. Each argument is a sibling and can itself contain
-another fork. To continue the main route after running a side analysis,
-use `br("name", ...)`. For example, `blueprint(br("scores", step_pca()),
-step_dea_limma())` connects both steps to the inlet.
+Each argument of `fork()` receives the current output. A fork can be nested or
+start at the inlet, and ends its route. A side route preserves that output for
+the next step. For example, `br("scores", step_pca()) %=>% step_dea_limma()`
+supplies the same experiment to PCA and limma.
+
+This blueprint derives traits once and fits ANOVA to both the abundance and
+trait experiments. PCA receives the same traits as the second ANOVA.
+
+```{r}
+inspect_fit <- blueprint(
+  step_dea_anova() %=>% fork(
+    strict = step_filter_sig_vars(0.01),
+    selected = step_filter_sig_vars() %=>% step_heatmap()
+  )
+)
+traits <- step_derive_traits() %=>% fork(step_pca(), inspect_fit)
+bp <- blueprint(step_preprocess() %=>% fork(abundances = inspect_fit, traits = traits))
+print(bp)
+```
 
 | Step | Input | Main output |
 |:-----|:------|:------------|
@@ -69,7 +98,7 @@ step_dea_limma())` connects both steps to the inlet.
 
 DEA steps fit the experiment on their incoming wire. Set cutoffs on
 `step_filter_sig_vars()`. A fit's `filter_*` arguments supply defaults that each filter can override. To compare thresholds, use
-`blueprint(step_dea_anova(), fork(step_filter_sig_vars(0.01), step_filter_sig_vars(0.05)))`.
+`blueprint(step_dea_anova() %=>% fork(step_filter_sig_vars(0.01), step_filter_sig_vars(0.05)))`.
 Each filter uses the exact experiment that produced the fit. A filter that
 selects zero variables succeeds and returns a zero-row experiment.
 Downstream analyses skip an empty input. A skipped or failed step blocks
@@ -92,7 +121,7 @@ with the producing node ID and two underscores. The prepared input is available 
 `cast_data(result, "root")`. For each fit, its parent ID retrieves the experiment
 used to fit the model. `cast_exp()` returns the last
 experiment on the main route, or the input if that route only fits or plots.
-If its producer failed or was skipped, the main experiment is `NULL`.
+With multiple top-level routes, `cast_exp()` returns the original input. If the single main-route producer failed or was skipped, the main experiment is `NULL`.
 Significant-variable boxplots with more than 25 retained rows require unique fitted variable names for ranking.
 
 ## Available steps
@@ -164,10 +193,10 @@ each sample to its total abundance.
 
 ```{r}
 bp <- blueprint(
-  step_zero_to_na(),
-  step_remove("rare", prop = 0.5, by = "group"),
-  step_impute("min_prob", seed = 42),
-  step_normalize("total_area"),
+  step_zero_to_na() %=>%
+  step_remove("rare", prop = 0.5, by = "group") %=>%
+  step_impute("min_prob", seed = 42) %=>%
+  step_normalize("total_area") %=>%
   step_plot_qc(when = "post", method = "rle", by = "group")
 )
 ```

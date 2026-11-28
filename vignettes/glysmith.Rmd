@@ -133,15 +133,13 @@ You can inspect it via `blueprint_default()`.
 blueprint_default()
 ```
 
-A blueprint connects steps through their main outputs. Use `fork()` when several analyses share one input.
+The `%=>%` operator connects steps through their main outputs. Use `fork()` when several analyses share one input.
 You can use `blueprint()` with `step_` functions to create your own custom blueprint.
 For instance, if you'd just like to perform differential expression analysis and plot the volcano plot, you could do:
 
 ```{r, eval = has_glysmith_deps, message = FALSE}
 bp <- blueprint(
-  step_preprocess(),
-  step_dea_limma(),
-  step_volcano(),
+  step_preprocess() %=>% step_dea_limma() %=>% step_volcano()
 )
 result <- forge_analysis(real_experiment, bp)
 result

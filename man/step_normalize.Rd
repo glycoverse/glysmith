@@ -29,5 +29,5 @@ its suffix. The step updates the active experiment (\code{exp}). Each
 cleaning step saves its input with its node ID and the suffix \verb{__raw_exp}.
 }
 \examples{
-blueprint(step_normalize("median_quotient", by = "group"), step_pca())
+blueprint(step_normalize("median_quotient", by = "group") \%=>\% step_pca())
 }

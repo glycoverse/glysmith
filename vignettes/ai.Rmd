@@ -76,7 +76,7 @@ library(glysmith)
 
 Instead of manually browsing and selecting various `step_xxx` functions and manage the parameters,
 you can describe your analysis goals in plain English (or your language).
-`inquire_blueprint()` will translate your requirements into a tree of analytical steps. The builder and editor validate its connections, including nested `fork()`, `br()` and `blueprint()` calls.
+`inquire_blueprint()` will translate your requirements into a tree of analytical steps. The builder and editor validate its connections, including routes connected by `%=>%`, parallel entry routes, nested forks and side branches.
 
 ```r
 # Describe your goals in natural language

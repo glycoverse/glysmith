@@ -27,5 +27,5 @@ Use \code{\link[glyclean:auto_remove]{glyclean::auto_remove()}} or select a \ver
 suffix. Chain filters in the order in which their criteria should apply.
 }
 \examples{
-blueprint(step_remove("rare", prop = 0.4), step_remove("constant"))
+blueprint(step_remove("rare", prop = 0.4) \%=>\% step_remove("constant"))
 }

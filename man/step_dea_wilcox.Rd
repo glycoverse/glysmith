@@ -34,5 +34,5 @@ Fit \code{\link[glystats:gly_wilcox]{glystats::gly_wilcox()}} to the incoming ex
 \code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} to select variables or attach a compatible plot.
 }
 \examples{
-blueprint(step_dea_wilcox(), step_filter_sig_vars())
+blueprint(step_dea_wilcox() \%=>\% step_filter_sig_vars())
 }

@@ -9,7 +9,7 @@
 #'   such as `on = "post_hoc_test"` and `comparison` for ANOVA.
 #' @return A connected step with a filtered experiment as its main output.
 #' @examples
-#' blueprint(step_dea_anova(), step_filter_sig_vars())
+#' blueprint(step_dea_anova() %=>% step_filter_sig_vars())
 #' @export
 step_filter_sig_vars <- function(
   p_adj_cutoff = 0.05,

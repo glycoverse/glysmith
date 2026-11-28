@@ -37,5 +37,5 @@ Fit \code{\link[glystats:gly_kruskal]{glystats::gly_kruskal()}} to the incoming 
 \code{\link[=step_filter_sig_vars]{step_filter_sig_vars()}} to select variables or attach a compatible plot.
 }
 \examples{
-blueprint(step_dea_kruskal(), step_filter_sig_vars())
+blueprint(step_dea_kruskal() \%=>\% step_filter_sig_vars())
 }

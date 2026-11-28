@@ -2,7 +2,7 @@
 
 ## Breaking changes
 
-* `blueprint()` now connects steps by type. Rebuild saved blueprints and replace the `on` step input selector with direct connections. Use `fork()` for sibling analyses and `br()` for a single side route. (#40)
+* `blueprint()` now connects steps by type. Rebuild saved blueprints and replace the `on` step input selector with direct connections. Join successive steps with `%=>%`. Commas in `blueprint()` start independent routes on the original experiment. Use `fork()` to share an intermediate output and `br()` for a single side route. (#40)
 * Differential steps now emit their fit. Use `step_filter_sig_vars()` for the selected experiment. Result names identify the producing node shown by `print()`. (#40)
 
 ## New features

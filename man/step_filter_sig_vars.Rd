@@ -38,5 +38,5 @@ Multiple filters can consume one fit with different cutoffs. A successful
 filter can return an experiment with zero rows.
 }
 \examples{
-blueprint(step_dea_anova(), step_filter_sig_vars())
+blueprint(step_dea_anova() \%=>\% step_filter_sig_vars())
 }

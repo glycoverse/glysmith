@@ -42,9 +42,9 @@ A \code{glysmith_step} object.
 Analyze the experiment supplied by the upstream step.
 }
 \examples{
-blueprint(step_coda(by = "group", gamma = 0), fork(step_pca(), step_dea_limma()))
+blueprint(step_coda(by = "group", gamma = 0) \%=>\% fork(step_pca(), step_dea_limma()))
 step_coda(method = "clr", gamma = 0)
 blueprint(
-  step_quantify_branch_motifs(), step_coda(), step_dea_limma()
+  step_quantify_branch_motifs() \%=>\% step_coda() \%=>\% step_dea_limma()
 )
 }

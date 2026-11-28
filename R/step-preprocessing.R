@@ -380,7 +380,7 @@ step_preprocess <- function(
 #'   within groups, and [glyclean::normalize_rlrmacyc()] accepts `n_iter`.
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_normalize("median_quotient", by = "group"), step_pca())
+#' blueprint(step_normalize("median_quotient", by = "group") %=>% step_pca())
 #' @export
 step_normalize <- function(
   method = c(
@@ -478,7 +478,7 @@ step_impute <- function(
 #'   `strict`. [glyclean::auto_remove()] takes `preset` and `group_col`.
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_remove("rare", prop = 0.4), step_remove("constant"))
+#' blueprint(step_remove("rare", prop = 0.4) %=>% step_remove("constant"))
 #' @export
 step_remove <- function(
   method = c("auto", "rare", "constant", "low_var", "low_cv", "low_expr"),
@@ -499,7 +499,7 @@ step_remove <- function(
 #'
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_zero_to_na(), step_remove("rare"), step_impute("min_prob"))
+#' blueprint(step_zero_to_na() %=>% step_remove("rare") %=>% step_impute("min_prob"))
 #' @export
 step_zero_to_na <- function() {
   .clean_step("zero_to_na", "Convert zeros to missing values")
@@ -671,10 +671,10 @@ step_transform_log <- function(base = 2) {
 #'   Glycoproteomics supports `"auto"` and `"clr"`.
 #' @returns A `glysmith_step` object.
 #' @examples
-#' blueprint(step_coda(by = "group", gamma = 0), fork(step_pca(), step_dea_limma()))
+#' blueprint(step_coda(by = "group", gamma = 0) %=>% fork(step_pca(), step_dea_limma()))
 #' step_coda(method = "clr", gamma = 0)
 #' blueprint(
-#'   step_quantify_branch_motifs(), step_coda(), step_dea_limma()
+#'   step_quantify_branch_motifs() %=>% step_coda() %=>% step_dea_limma()
 #' )
 #' @export
 step_coda <- function(

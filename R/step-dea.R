@@ -8,7 +8,7 @@
 #' @param ... Additional arguments passed to [glystats::gly_limma()].
 #' @returns A step producing a fitted differential result.
 #' @examples
-#' blueprint(step_dea_limma(), step_filter_sig_vars())
+#' blueprint(step_dea_limma() %=>% step_filter_sig_vars())
 #' @export
 step_dea_limma <- function(
   p_adj_method = "BH",
@@ -55,7 +55,7 @@ step_dea_limma <- function(
 #' @param ... Additional arguments passed to [glystats::gly_ttest()].
 #' @returns A step producing a fitted differential result.
 #' @examples
-#' blueprint(step_dea_ttest(), step_filter_sig_vars())
+#' blueprint(step_dea_ttest() %=>% step_filter_sig_vars())
 #' @export
 step_dea_ttest <- function(
   p_adj_method = "BH",
@@ -99,7 +99,7 @@ step_dea_ttest <- function(
 #' @param filter_comparison Default comparison for the post-hoc filter.
 #' @returns A step producing a fitted differential result.
 #' @examples
-#' blueprint(step_dea_anova(), step_filter_sig_vars())
+#' blueprint(step_dea_anova() %=>% step_filter_sig_vars())
 #' @export
 step_dea_anova <- function(
   p_adj_method = "BH",
@@ -139,7 +139,7 @@ step_dea_anova <- function(
 #' @param ... Additional arguments passed to [glystats::gly_wilcox()].
 #' @returns A step producing a fitted differential result.
 #' @examples
-#' blueprint(step_dea_wilcox(), step_filter_sig_vars())
+#' blueprint(step_dea_wilcox() %=>% step_filter_sig_vars())
 #' @export
 step_dea_wilcox <- function(
   p_adj_method = "BH",
@@ -183,7 +183,7 @@ step_dea_wilcox <- function(
 #' @param filter_comparison Default comparison for the post-hoc filter.
 #' @returns A step producing a fitted differential result.
 #' @examples
-#' blueprint(step_dea_kruskal(), step_filter_sig_vars())
+#' blueprint(step_dea_kruskal() %=>% step_filter_sig_vars())
 #' @export
 step_dea_kruskal <- function(
   p_adj_method = "BH",
