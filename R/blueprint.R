@@ -5,7 +5,9 @@
 #' for a side route that leaves the current connection available.
 #' See `vignette("blueprint")` for a complete analysis.
 #' @param ... Steps, side branches, forks or reusable blueprints.
-#' @returns A validated blueprint. Printing it shows each producer and consumer.
+#' @returns A validated blueprint. Printing it draws a tree with each step
+#'   beneath the node that supplies its input. Node IDs identify results in
+#'   [cast_data()], [cast_plot()] and [cast_table()].
 #' @examples
 #' blueprint(step_preprocess(), fork(step_pca(), step_dea_limma()))
 #' @export
@@ -204,24 +206,29 @@ fork <- function(...) {
 #' @export
 print.glysmith_blueprint <- function(x, ...) {
   plan <- .compile_blueprint(x)
-  cat(
-    "Blueprint (root accepts ",
-    paste(plan$accepts, collapse = " or "),
-    ")\n",
-    sep = ""
+  ids <- c("root", names(plan$nodes))
+  parents <- purrr::map_chr(plan$nodes, "parent")
+  root_label <- sprintf(
+    "Blueprint (root accepts %s)",
+    paste(plan$accepts, collapse = " or ")
   )
-  for (n in plan$nodes) {
+  labels <- purrr::map_chr(plan$nodes, function(n) {
     label <- if (nzchar(n$route)) paste0(" [", n$route, "]") else ""
     outlet <- n$step$connected$produces %||% "terminal"
-    cat(sprintf(
-      "  %s -> %s  %s%s (%s)\n",
-      n$parent,
+    sprintf(
+      " %s  %s%s (%s)",
       n$id,
-      n$step$signature,
+      paste(n$step$signature, collapse = "\n"),
       label,
       outlet
-    ))
-  }
+    )
+  })
+  tree <- tibble::tibble(
+    id = ids,
+    children = split(names(plan$nodes), factor(parents, levels = ids)),
+    label = c(root_label, labels)
+  )
+  print(cli::tree(tree, width = .Machine$integer.max))
   invisible(x)
 }
 

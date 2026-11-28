@@ -14,17 +14,17 @@ test_that("construction checks every link, including independent sub-blueprints"
   expect_error(blueprint(fork(step_pca(), step_filter_sig_vars())), "requires")
   expect_error(blueprint(step_heatmap(on = "trait_exp")), "argument")
   bp <- blueprint(
+    br("overview", step_ident_overview()),
     step_derive_traits(),
     fork(
-      scores = step_pca(),
       tests = blueprint(
         step_dea_anova(),
         fork(step_filter_sig_vars(0.01), selected)
-      )
+      ),
+      scores = step_pca()
     )
   )
-  expect_output(print(bp), "node_3 -> node_4.*step_filter_sig_vars.*tests")
-  expect_output(print(bp), "node_3 -> node_5.*step_filter_sig_vars")
+  expect_snapshot(print(bp))
   path <- tempfile()
   write_blueprint(bp, path)
   expect_equal(

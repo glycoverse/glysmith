@@ -10,7 +10,9 @@ blueprint(...)
 \item{...}{Steps, side branches, forks or reusable blueprints.}
 }
 \value{
-A validated blueprint. Printing it shows each producer and consumer.
+A validated blueprint. Printing it draws a tree with each step
+beneath the node that supplies its input. Node IDs identify results in
+\code{\link[=cast_data]{cast_data()}}, \code{\link[=cast_plot]{cast_plot()}} and \code{\link[=cast_table]{cast_table()}}.
 }
 \description{
 A step receives its predecessor's experiment or fitted result. A terminal
