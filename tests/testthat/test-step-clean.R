@@ -42,12 +42,12 @@ test_that("custom preprocessing composes in order and retains the raw data", {
   SummarizedExperiment::assay(exp)[1, 1:11] <- 0
   SummarizedExperiment::assay(exp)[2, 2] <- NA_real_
   bp <- blueprint(
-    step_zero_to_na(),
-    step_remove("rare", prop = 0.5, by = "group"),
-    step_impute("min_prob", by = "group", q = 0.03, seed = 73),
-    step_normalize("median_quotient", by = "plate"),
-    step_remove("constant"),
-    step_transform_log(base = 10)
+    step_zero_to_na() %=>%
+      step_remove("rare", prop = 0.5, by = "group") %=>%
+      step_impute("min_prob", by = "group", q = 0.03, seed = 73) %=>%
+      step_normalize("median_quotient", by = "plate") %=>%
+      step_remove("constant") %=>%
+      step_transform_log(base = 10)
   )
   result <- suppressMessages(forge_analysis(exp, bp))
   expected <- suppressMessages(
@@ -136,7 +136,7 @@ test_that("saved blueprints retain preprocessing parameters inside branches", {
   exp <- clean_input()
   base <- 10
   bp <- blueprint(
-    br("logged", step_transform_log(base = base), step_remove("constant"))
+    br("logged", step_transform_log(base = base) %=>% step_remove("constant"))
   )
   base <- 2
   file <- withr::local_tempfile()
@@ -159,10 +159,10 @@ test_that("granular and automatic preprocessing share the first input", {
   res <- suppressMessages(forge_analysis(
     exp,
     blueprint(
-      step_normalize("median"),
-      step_preprocess(standardize_variable = FALSE, seed = 19),
-      step_remove("constant"),
-      step_remove("constant")
+      step_normalize("median") %=>%
+        step_preprocess(standardize_variable = FALSE, seed = 19) %=>%
+        step_remove("constant") %=>%
+        step_remove("constant")
     )
   ))
   expect_identical(res$data$root, exp)
@@ -183,8 +183,8 @@ test_that("invalid preprocessing stops dependent analysis and legacy inputs keep
   exp <- clean_input()
   invalid <- blueprint(br(
     "bad",
-    step_transform_log(base = 3),
-    step_normalize()
+    step_transform_log(base = 3) %=>%
+      step_normalize()
   ))
   failed <- suppressMessages(forge_analysis(exp, invalid))
   expect_match(failed$meta$nodes$node_1$reason, "base")
@@ -213,13 +213,13 @@ test_that("a selected QC plot uses its arguments and its requested stage", {
   }
   exp <- clean_input()
   bp <- blueprint(
-    br("pre", step_plot_qc("pre", method = "rle", by = "plate")),
-    step_plot_qc(
-      "post",
-      method = "missing_bar",
-      on = "variables",
-      plot_width = 9
-    )
+    br("pre", step_plot_qc("pre", method = "rle", by = "plate")) %=>%
+      step_plot_qc(
+        "post",
+        method = "missing_bar",
+        on = "variables",
+        plot_width = 9
+      )
   )
   result <- suppressMessages(forge_analysis(exp, bp))
   expect_named(

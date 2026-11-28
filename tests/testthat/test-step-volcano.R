@@ -6,8 +6,8 @@ test_that("step_volcano generates plot", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_limma(),
-    step_volcano()
+    step_dea_limma() %=>%
+      step_volcano()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   # Should generate one plot per contrast or just one if single contrast?

@@ -55,14 +55,14 @@ test_that("step_coda dispatches each method and forwards its parameters", {
 test_that("PCA and DEA analyze CoDA coordinates and preserve native effects", {
   exp <- coda_input()
   bp <- blueprint(
-    step_coda(gamma = 0),
-    fork(
-      step_pca(),
-      blueprint(
-        step_dea_limma(filter_fc_cutoff = 100),
-        fork(step_volcano(), blueprint(step_filter_sig_vars(), step_heatmap()))
+    step_coda(gamma = 0) %=>%
+      fork(
+        step_pca(),
+        blueprint(
+          step_dea_limma(filter_fc_cutoff = 100) %=>%
+            fork(step_volcano(), step_filter_sig_vars() %=>% step_heatmap())
+        )
       )
-    )
   )
   res <- suppressMessages(forge_analysis_se(exp, bp))
   expect_identical(res$meta$steps, paste0("node_", c(1, 2, 3, 5, 6)))
@@ -93,7 +93,7 @@ test_that("PCA and DEA analyze CoDA coordinates and preserve native effects", {
 
 test_that("ALR differential tests only use the retained coordinates", {
   exp <- coda_input(51)
-  bp <- blueprint(step_coda(by = "group", gamma = 0), step_dea_ttest())
+  bp <- blueprint(step_coda(by = "group", gamma = 0) %=>% step_dea_ttest())
   res <- suppressMessages(forge_analysis_se(exp, bp))
   expect_identical(rownames(res$exp), rownames(exp)[-1])
   expect_setequal(
@@ -109,12 +109,12 @@ test_that("ALR differential tests only use the retained coordinates", {
 test_that("a motif branch transforms quantified motifs independently", {
   exp <- coda_input()
   bp <- blueprint(
-    step_quantify_branch_motifs(),
-    br(
-      "motifs",
-      step_coda("clr", gamma = 0),
-      step_dea_limma()
-    )
+    step_quantify_branch_motifs() %=>%
+      br(
+        "motifs",
+        step_coda("clr", gamma = 0) %=>%
+          step_dea_limma()
+      )
   )
   res <- suppressMessages(forge_analysis_se(exp, bp))
   input <- res$data$node_1
@@ -163,11 +163,11 @@ test_that("site-wise CoDA runs downstream tests and skips fold-change consumers"
 test_that("a failed CoDA step stops downstream tests on the original scale", {
   exp <- coda_input()
   SummarizedExperiment::assay(exp)[1, 1] <- 0
-  bp <- blueprint(step_coda(), step_dea_limma())
+  bp <- blueprint(step_coda() %=>% step_dea_limma())
   x <- suppressMessages(forge_analysis_se(exp, bp))
   expect_match(x$meta$nodes$node_1$reason, "Zero values")
   expect_identical(x$meta$nodes$node_2$status, "blocked")
-  bp <- blueprint(br("ratios", step_coda(), step_dea_limma()))
+  bp <- blueprint(br("ratios", step_coda() %=>% step_dea_limma()))
   x <- suppressMessages(forge_analysis_se(exp, bp))
   expect_match(x$meta$nodes$node_1$reason, "Zero values")
   expect_identical(x$meta$nodes$node_2$status, "blocked")

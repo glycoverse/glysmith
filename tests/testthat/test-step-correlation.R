@@ -99,8 +99,8 @@ test_that("step_correlation on trait_exp works", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_derive_traits(),
-    step_correlation()
+    step_derive_traits() %=>%
+      step_correlation()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
@@ -114,8 +114,8 @@ test_that("step_correlation on dynamic_motif_exp works", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_quantify_dynamic_motifs(),
-    step_correlation()
+    step_quantify_dynamic_motifs() %=>%
+      step_correlation()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_2__correlation" %in% names(res$tables))

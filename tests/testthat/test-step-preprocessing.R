@@ -132,13 +132,14 @@ test_that("step_plot_qc can appear twice in a blueprint", {
   exp <- as_test_glyco_se(exp)
 
   bp <- blueprint(
-    br("before", step_plot_qc(when = "pre")),
-    step_preprocess(),
-    step_plot_qc(when = "post")
+    br("before", step_plot_qc(when = "pre")) %=>%
+      step_preprocess() %=>%
+      step_plot_qc(when = "post")
   )
-  expect_equal(length(bp), 3)
-  expect_equal(bp[[1]]$steps[[1]]$id, "plot_qc_pre")
-  expect_equal(bp[[3]]$id, "plot_qc_post")
+  nodes <- .compile_blueprint(bp)$nodes
+  expect_length(nodes, 3)
+  expect_equal(nodes[[1]]$step$id, "plot_qc_pre")
+  expect_equal(nodes[[3]]$step$id, "plot_qc_post")
 
   suppressMessages(res <- forge_analysis_se(exp, bp))
   # Pre-QC has pre_ prefix for all plots including common ones

@@ -38,9 +38,9 @@ test_that("step_pca works on sig_exp", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_limma(),
-    step_filter_sig_vars(),
-    step_pca(loadings = TRUE)
+    step_dea_limma() %=>%
+      step_filter_sig_vars() %=>%
+      step_pca(loadings = TRUE)
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__pca_samples" %in% names(res$tables))
@@ -143,7 +143,9 @@ test_that("step_plsda works on sig_exp", {
       glyexp::slice_head_var(100) |>
       glyclean::auto_clean()
   )
-  bp <- blueprint(step_dea_limma(), step_filter_sig_vars(), step_plsda())
+  bp <- blueprint(
+    step_dea_limma() %=>% step_filter_sig_vars() %=>% step_plsda()
+  )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__plsda_samples" %in% names(res$tables))
   expect_true("node_3__plsda_variables" %in% names(res$tables))

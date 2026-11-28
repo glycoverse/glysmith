@@ -4,7 +4,7 @@ result_for_test <- function() {
   tables <- list(table1 = "table1")
   meta <- list()
   data <- list(data1 = "data1", data2 = "data2")
-  blueprint <- blueprint(step_preprocess(), step_pca())
+  blueprint <- blueprint(step_preprocess() %=>% step_pca())
   glysmith_result(exp, data, plots, tables, meta, blueprint)
 }
 
@@ -19,7 +19,7 @@ test_that("print.glysmith_result handles empty plots and tables", {
   tables <- list()
   meta <- list()
   data <- list()
-  blueprint <- blueprint(step_preprocess(), step_pca())
+  blueprint <- blueprint(step_preprocess() %=>% step_pca())
   result <- glysmith_result(exp, data, plots, tables, meta, blueprint)
 
   expect_snapshot(print(result))
@@ -31,7 +31,7 @@ test_that("print.glysmith_result handles NULL plots and tables", {
   tables <- NULL
   meta <- list()
   data <- list()
-  blueprint <- blueprint(step_preprocess(), step_pca())
+  blueprint <- blueprint(step_preprocess() %=>% step_pca())
   result <- glysmith_result(exp, data, plots, tables, meta, blueprint)
 
   expect_snapshot(print(result))

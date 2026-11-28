@@ -1,7 +1,7 @@
 test_that("step package dependencies are collected from a blueprint", {
   bp <- blueprint(
-    br("overview", step_ident_overview()),
-    step_infer_structure()
+    br("overview", step_ident_overview()) %=>%
+      step_infer_structure()
   )
 
   pkgs <- collect_blueprint_packages(bp)

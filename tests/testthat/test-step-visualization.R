@@ -18,9 +18,9 @@ test_that("step_heatmap works on sig_exp", {
   )
   # We need DEA to get sig_exp
   bp <- blueprint(
-    step_dea_limma(),
-    step_filter_sig_vars(),
-    step_heatmap()
+    step_dea_limma() %=>%
+      step_filter_sig_vars() %=>%
+      step_heatmap()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__heatmap" %in% names(res$plots))
@@ -78,9 +78,9 @@ test_that("step_sig_boxplot generates plot", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_limma(),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_limma() %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -93,9 +93,9 @@ test_that("step_sig_boxplot with n_top limit", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_limma(),
-    step_filter_sig_vars(),
-    step_sig_boxplot(n_top = 10)
+    step_dea_limma() %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot(n_top = 10)
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -114,9 +114,9 @@ test_that("step_sig_boxplot works with step_dea_limma", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_limma(),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_limma() %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -131,9 +131,9 @@ test_that("step_sig_boxplot works with step_dea_ttest", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_ttest(filter_p_adj_cutoff = 1),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_ttest(filter_p_adj_cutoff = 1) %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -148,9 +148,9 @@ test_that("step_sig_boxplot works with step_dea_wilcox", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_wilcox(filter_p_adj_cutoff = 1),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_wilcox(filter_p_adj_cutoff = 1) %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -163,9 +163,9 @@ test_that("step_sig_boxplot works with step_dea_anova", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_anova(),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_anova() %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -178,9 +178,9 @@ test_that("step_sig_boxplot ranks top variables after step_dea_anova", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_anova(filter_p_adj_cutoff = 1),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_anova(filter_p_adj_cutoff = 1) %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true(nrow(res$data$node_2) > 25)
@@ -195,9 +195,9 @@ test_that("step_sig_boxplot works with step_dea_kruskal", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_kruskal(filter_p_adj_cutoff = 1),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_kruskal(filter_p_adj_cutoff = 1) %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_3__sig_boxplot" %in% names(res$plots))
@@ -211,9 +211,9 @@ test_that("step_sig_boxplot ranks top variables after step_dea_kruskal", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_dea_kruskal(filter_p_adj_cutoff = 1),
-    step_filter_sig_vars(),
-    step_sig_boxplot()
+    step_dea_kruskal(filter_p_adj_cutoff = 1) %=>%
+      step_filter_sig_vars() %=>%
+      step_sig_boxplot()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true(nrow(res$data$node_2) > 25)

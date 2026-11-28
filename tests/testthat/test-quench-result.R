@@ -27,7 +27,7 @@ test_that("quench_result writes README.md based on meta", {
     ),
     steps = c("preprocessing", "pca")
   )
-  blueprint <- blueprint(step_preprocess(), step_pca())
+  blueprint <- blueprint(step_preprocess() %=>% step_pca())
   data <- list()
 
   x <- glysmith_result(

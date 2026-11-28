@@ -5,7 +5,7 @@ test_that("step_dea_limma generates results and tables", {
       glyexp::slice_head_var(50) |>
       glyclean::auto_clean()
   )
-  bp <- blueprint(step_dea_limma(), step_filter_sig_vars())
+  bp <- blueprint(step_dea_limma() %=>% step_filter_sig_vars())
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
   expect_true("node_1" %in% names(res$data))
@@ -20,9 +20,9 @@ test_that("step_dea_limma works on trait_exp", {
       glyclean::auto_clean()
   )
   bp <- blueprint(
-    step_derive_traits(),
-    step_dea_limma(),
-    step_filter_sig_vars()
+    step_derive_traits() %=>%
+      step_dea_limma() %=>%
+      step_filter_sig_vars()
   )
   suppressMessages(res <- forge_analysis_se(exp, bp))
 
@@ -67,7 +67,7 @@ test_that("step_dea_wilcox generates results", {
       glyexp::slice_head_var(10) |>
       glyclean::auto_clean()
   )
-  bp <- blueprint(step_dea_wilcox(), step_filter_sig_vars())
+  bp <- blueprint(step_dea_wilcox() %=>% step_filter_sig_vars())
   suppressMessages(res <- forge_analysis_se(exp, bp))
   expect_true("node_1" %in% names(res$data))
   expect_true("node_2" %in% names(res$data))
