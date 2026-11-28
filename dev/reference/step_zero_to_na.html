@@ -56,13 +56,11 @@ or imputing measurements encoded as zero.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="blueprint.html">blueprint</a></span><span class="op">(</span><span class="fu">step_zero_to_na</span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="step_remove.html">step_remove</a></span><span class="op">(</span><span class="st">"rare"</span><span class="op">)</span>, <span class="fu"><a href="step_impute.html">step_impute</a></span><span class="op">(</span><span class="st">"min_prob"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">3</span><span style="font-weight: bold;"> steps)</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • step_zero_to_na()</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • step_remove("rare")</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • step_impute("min_prob")</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="blueprint.html">blueprint</a></span><span class="op">(</span><span class="fu">step_zero_to_na</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="step_remove.html">step_remove</a></span><span class="op">(</span><span class="st">"rare"</span><span class="op">)</span> <span class="op"><a href="blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="step_impute.html">step_impute</a></span><span class="op">(</span><span class="st">"min_prob"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Blueprint</span> (root accepts exp)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> └─ <span style="font-weight: 100;">node_1</span>  <span style="color: #00BBBB;">step_zero_to_na()</span> (<span style="color: #00BB00;">exp</span>)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   └─ <span style="font-weight: 100;">node_2</span>  <span style="color: #00BBBB;">step_remove("rare")</span> (<span style="color: #00BB00;">exp</span>)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     └─ <span style="font-weight: 100;">node_3</span>  <span style="color: #00BBBB;">step_impute("min_prob")</span> (<span style="color: #00BB00;">exp</span>)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

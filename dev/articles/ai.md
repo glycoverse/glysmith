@@ -78,7 +78,9 @@ Instead of manually browsing and selecting various `step_xxx` functions
 and manage the parameters, you can describe your analysis goals in plain
 English (or your language).
 [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
-will translate your requirements into a structured analytical blueprint.
+will translate your requirements into a tree of analytical steps. The
+builder and editor validate its connections, including routes connected
+by `%=>%`, parallel entry routes, nested forks and side branches.
 
 ``` r
 

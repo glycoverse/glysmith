@@ -38,10 +38,8 @@ A `glysmith_step` object.
 ## Examples
 
 ``` r
-blueprint(step_remove("rare", prop = 0.4), step_remove("constant"))
-#> 
-#> ── Blueprint (2 steps) ──
-#> 
-#> • step_remove("rare", prop = 0.4)
-#> • step_remove("constant")
+blueprint(step_remove("rare", prop = 0.4) %=>% step_remove("constant"))
+#> Blueprint (root accepts exp)
+#> └─ node_1  step_remove("rare", prop = 0.4) (exp)
+#>   └─ node_2  step_remove("constant") (exp)
 ```

@@ -3,8 +3,8 @@
 Use
 [`glyclean::auto_normalize()`](https://glycoverse.github.io/glyclean/reference/auto_normalize.html)
 or select a `normalize_*` function by its suffix. The step updates the
-active experiment (`exp`). The first cleaning step saves its input in
-`raw_exp`.
+active experiment (`exp`). Each cleaning step saves its input with its
+node ID and the suffix `__raw_exp`.
 
 ## Usage
 
@@ -39,10 +39,8 @@ A `glysmith_step` object.
 ## Examples
 
 ``` r
-blueprint(step_normalize("median_quotient", by = "group"), step_pca())
-#> 
-#> ── Blueprint (2 steps) ──
-#> 
-#> • step_normalize("median_quotient", by = "group")
-#> • step_pca()
+blueprint(step_normalize("median_quotient", by = "group") %=>% step_pca())
+#> Blueprint (root accepts exp)
+#> └─ node_1  step_normalize("median_quotient", by = "group") (exp)
+#>   └─ node_2  step_pca() (terminal)
 ```

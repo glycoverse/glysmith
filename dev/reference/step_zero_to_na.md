@@ -18,11 +18,9 @@ A `glysmith_step` object.
 ## Examples
 
 ``` r
-blueprint(step_zero_to_na(), step_remove("rare"), step_impute("min_prob"))
-#> 
-#> ── Blueprint (3 steps) ──
-#> 
-#> • step_zero_to_na()
-#> • step_remove("rare")
-#> • step_impute("min_prob")
+blueprint(step_zero_to_na() %=>% step_remove("rare") %=>% step_impute("min_prob"))
+#> Blueprint (root accepts exp)
+#> └─ node_1  step_zero_to_na() (exp)
+#>   └─ node_2  step_remove("rare") (exp)
+#>     └─ node_3  step_impute("min_prob") (exp)
 ```

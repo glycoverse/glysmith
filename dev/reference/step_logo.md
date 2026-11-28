@@ -4,39 +4,15 @@ Create a logo plot for glycosylation sites using
 [`glyvis::plot_logo()`](https://glycoverse.github.io/glyvis/reference/plot_logo.html).
 The logo plot visualizes the amino acid sequence patterns around
 glycosylation sites. This step is only applicable for glycoproteomics
-experiments.
-
-This step depends on the `on` parameter (default: `exp`).
-
-- When `on = "exp"`, requires `exp` (experiment data).
-
-- When `on = "sig_exp"`, requires `sig_exp` from one of
-  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md),
-  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_ttest.md),
-  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.md),
-  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.md),
-  or
-  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md).
+experiments. The upstream step supplies the experiment.
 
 ## Usage
 
 ``` r
-step_logo(
-  on = "exp",
-  n_aa = 5L,
-  fasta = NULL,
-  plot_width = 5,
-  plot_height = 3,
-  ...
-)
+step_logo(n_aa = 5L, fasta = NULL, plot_width = 5, plot_height = 3, ...)
 ```
 
 ## Arguments
-
-- on:
-
-  Name of the experiment data in `ctx$data` to plot. One of "exp",
-  "sig_exp". Default is "exp".
 
 - n_aa:
 
@@ -62,24 +38,11 @@ step_logo(
 
 - ...:
 
-  Additional arguments passed to
-  [`ggseqlogo::ggseqlogo()`](https://rdrr.io/pkg/ggseqlogo/man/ggseqlogo.html).
+  Must be empty. Supply plotting controls by their full argument names.
 
 ## Value
 
 A `glysmith_step` object.
-
-## Details
-
-Data required:
-
-- Depends on `on` parameter (default: `exp`)
-
-Plots generated:
-
-- `logo`: A logo plot (if `on = "exp"`)
-
-- `sig_logo`: A logo plot (if `on = "sig_exp"`)
 
 ## See also
 
@@ -92,6 +55,4 @@ step_logo()
 #> <step "step_logo()"> Logo plot
 step_logo(fasta = "proteins.fasta")
 #> <step "step_logo(fasta = \"proteins.fasta\")"> Logo plot
-step_logo(on = "sig_exp")
-#> <step "step_logo(on = \"sig_exp\")"> Logo plot of significant variables
 ```

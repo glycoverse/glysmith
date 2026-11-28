@@ -38,12 +38,21 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="glysmith-development-version">glysmith (development version)<a class="anchor" aria-label="anchor" href="#glysmith-development-version"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/blueprint.html">blueprint()</a></code> now connects steps by type. Rebuild saved blueprints and replace the <code>on</code> step input selector with direct connections. Join successive steps with <code>%=&gt;%</code>. Commas in <code><a href="../reference/blueprint.html">blueprint()</a></code> start independent routes on the original experiment. Use <code><a href="../reference/fork.html">fork()</a></code> to share an intermediate output and <code><a href="../reference/br.html">br()</a></code> for a single side route. (#40)</li>
+<li>Differential steps now emit their fit. Use <code><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars()</a></code> for the selected experiment. Result names identify the producing node shown by <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>. (#40)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>New <code><a href="../reference/step_plot_glycosite_profile.html">step_plot_glycosite_profile()</a></code> plots the distributions of distinct glycans per site and glycosylation sites per protein in one blueprint step. (#39)</li>
 <li>New <code><a href="../reference/step_remove.html">step_remove()</a></code>, <code><a href="../reference/step_normalize.html">step_normalize()</a></code>, <code><a href="../reference/step_impute.html">step_impute()</a></code>, and related preprocessing steps let you select glyclean methods and their order in a blueprint. (#38)</li>
 <li>
 <code><a href="../reference/step_plot_qc.html">step_plot_qc()</a></code> gains a <code>method</code> argument to select one QC plot and pass its plotting options at any preprocessing stage. (#38)</li>
 <li>New <code><a href="../reference/step_coda.html">step_coda()</a></code> transforms an experiment or quantified motifs for statistical analysis on log-ratio coordinates. It uses <code><a href="https://glycoverse.github.io/glyclean/reference/auto_coda.html" class="external-link">glyclean::auto_coda()</a></code> by default and supports explicit CLR and ALR methods. (#37)</li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.13.0" id="glysmith-0130">glysmith 0.13.0<a class="anchor" aria-label="anchor" href="#glysmith-0130"></a></h2>
 <div class="section level3">

@@ -160,25 +160,27 @@ via
 ``` r
 
 blueprint_default()
-#> 
-#> ── Blueprint (13 steps) ──
-#> 
-#> • step_ident_overview()
-#> • step_preprocess()
-#> • step_plot_qc(when = "post")
-#> • step_pca()
-#> • step_dea_limma()
-#> • step_volcano()
-#> • step_heatmap(on = "sig_exp")
-#> • step_sig_enrich_go()
-#> • step_sig_enrich_kegg()
-#> • step_sig_enrich_reactome()
-#> • step_derive_traits()
-#> • step_dea_limma(on = "trait_exp")
-#> • step_heatmap(on = "sig_trait_exp")
+#> Blueprint (root accepts exp)
+#> ├─ node_1  step_ident_overview() [overview] (terminal)
+#> └─ node_2  step_preprocess() (exp)
+#>   ├─ node_3  step_plot_qc(when = "post") [qc] (terminal)
+#>   ├─ node_4  step_pca() [scores] (terminal)
+#>   ├─ node_5  step_dea_limma() [abundances] (contrast)
+#>   │ ├─ node_6  step_volcano() [abundances] (terminal)
+#>   │ ├─ node_7  step_filter_sig_vars() [abundances] (filtered_exp)
+#>   │ │ └─ node_8  step_heatmap() [abundances] (terminal)
+#>   │ ├─ node_9  step_sig_enrich_go() [abundances] (terminal)
+#>   │ ├─ node_10  step_sig_enrich_kegg() [abundances] (terminal)
+#>   │ └─ node_11  step_sig_enrich_reactome() [abundances] (terminal)
+#>   └─ node_12  step_derive_traits() [traits] (exp)
+#>     └─ node_13  step_dea_limma() [traits] (contrast)
+#>       └─ node_14  step_filter_sig_vars() [traits] (filtered_exp)
+#>         └─ node_15  step_heatmap() [traits] (terminal)
 ```
 
-A blueprint is a list of steps executed sequentially. You can use
+The `%=>%` operator connects steps through their main outputs. Use
+[`fork()`](https://glycoverse.github.io/glysmith/dev/reference/fork.md)
+when several analyses share one input. You can use
 [`blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md)
 with `step_` functions to create your own custom blueprint. For
 instance, if you’d just like to perform differential expression analysis
@@ -187,9 +189,7 @@ and plot the volcano plot, you could do:
 ``` r
 
 bp <- blueprint(
-  step_preprocess(),
-  step_dea_limma(),
-  step_volcano(),
+  step_preprocess() %=>% step_dea_limma() %=>% step_volcano()
 )
 result <- forge_analysis(real_experiment, bp)
 result

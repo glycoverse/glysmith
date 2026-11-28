@@ -5,35 +5,12 @@ using
 [`glyvis::plot_boxplot()`](https://glycoverse.github.io/glyvis/reference/plot_boxplot.html).
 The function selects the top `n_top` variables with the lowest adjusted
 p-values from the DEA results and plots their expression values grouped
-by sample groups.
-
-This step depends on the `on` parameter (default: `sig_exp`).
-
-- When `on = "sig_exp"`, requires `sig_exp` from one of
-  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md),
-  [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_ttest.md),
-  [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.md),
-  [`step_dea_anova()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.md),
-  or
-  [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md).
-
-- When `on = "sig_trait_exp"`, requires `sig_trait_exp` from DEA on
-  traits.
-
-- When `on = "sig_dynamic_motif_exp"`, requires `sig_dynamic_motif_exp`
-  from DEA on motifs.
-
-- When `on = "sig_branch_motif_exp"`, requires `sig_branch_motif_exp`
-  from DEA on motifs.
-
-The number of variables is limited to a maximum of 25, as enforced by
-[`glyvis::plot_boxplot()`](https://glycoverse.github.io/glyvis/reference/plot_boxplot.html).
+by sample groups. The upstream step supplies the experiment.
 
 ## Usage
 
 ``` r
 step_sig_boxplot(
-  on = "sig_exp",
   n_top = 25,
   panel_width = 1.5,
   panel_height = 1.2,
@@ -46,12 +23,6 @@ step_sig_boxplot(
 ```
 
 ## Arguments
-
-- on:
-
-  Name of the experiment data in `ctx$data` to plot. One of "sig_exp",
-  "sig_trait_exp", "sig_dynamic_motif_exp", "sig_branch_motif_exp".
-  Default is "sig_exp".
 
 - n_top:
 
@@ -91,35 +62,6 @@ step_sig_boxplot(
 
 A `glysmith_step` object.
 
-## Details
-
-Data required:
-
-- Depends on `on` parameter:
-
-  - `sig_exp` (default): Significant experiment from DEA
-
-  - `sig_trait_exp`: Significant trait experiment from DTA
-
-  - `sig_dynamic_motif_exp`: Significant dynamic motif experiment from
-    DMA
-
-  - `sig_branch_motif_exp`: Significant branch motif experiment from DMA
-
-Plots generated:
-
-- `sig_boxplot`: A boxplot of significant variables (if
-  `on = "sig_exp"`)
-
-- `sig_trait_boxplot`: A boxplot of significant traits (if
-  `on = "sig_trait_exp"`)
-
-- `sig_dynamic_motif_boxplot`: A boxplot of significant dynamic motifs
-  (if `on = "sig_dynamic_motif_exp"`)
-
-- `sig_branch_motif_boxplot`: A boxplot of significant branch motifs (if
-  `on = "sig_branch_motif_exp"`)
-
 ## See also
 
 [`glyvis::plot_boxplot()`](https://glycoverse.github.io/glyvis/reference/plot_boxplot.html)
@@ -128,12 +70,7 @@ Plots generated:
 
 ``` r
 step_sig_boxplot()
-#> <step "step_sig_boxplot()"> Significant variables boxplot of significant
-#> variables
+#> <step "step_sig_boxplot()"> Significant variables boxplot
 step_sig_boxplot(n_top = 12)
-#> <step "step_sig_boxplot(n_top = 12)"> Significant variables boxplot of
-#> significant variables
-step_sig_boxplot(on = "sig_trait_exp")
-#> <step "step_sig_boxplot(on = \"sig_trait_exp\")"> Significant variables boxplot
-#> of significant traits
+#> <step "step_sig_boxplot(n_top = 12)"> Significant variables boxplot
 ```

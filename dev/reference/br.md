@@ -1,51 +1,36 @@
-# Create a Branch in a Blueprint
+# Run a single side route
 
-Use `br()` to group steps that should run as an isolated branch with
-namespaced outputs prefixed by `<name>__`.
+The branch starts at the current output. The next outer step also
+receives that output. Use
+[`fork()`](https://glycoverse.github.io/glysmith/dev/reference/fork.md)
+to end a route with multiple siblings.
 
 ## Usage
 
 ``` r
-br(name, ...)
+br(name, route)
 ```
 
 ## Arguments
 
 - name:
 
-  Branch name used as a prefix for outputs.
+  A label for the branch.
 
-- ...:
+- route:
 
-  One or more step objects.
+  One step, sequence, fork or reusable blueprint.
 
 ## Value
 
-A branch object used inside
+A branch for use inside
 [`blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md).
 
 ## Examples
 
 ``` r
-blueprint(
-  step_preprocess(),
-  br("limma",
-    step_dea_limma(),
-    step_volcano()
-  ),
-  br("ttest",
-    step_dea_ttest(),
-    step_volcano()
-  )
-)
-#> 
-#> ── Blueprint (5 steps) ──
-#> 
-#> • step_preprocess()
-#> • br("limma")
-#>   • step_dea_limma()
-#>   • step_volcano()
-#> • br("ttest")
-#>   • step_dea_ttest()
-#>   • step_volcano()
+blueprint(br("scores", step_pca()) %=>% step_dea_limma())
+#> Blueprint (root accepts exp)
+#> ├─ node_1  step_pca() [scores] (terminal)
+#> └─ node_2  step_dea_limma() (contrast)
 ```

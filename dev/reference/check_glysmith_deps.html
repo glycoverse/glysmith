@@ -85,8 +85,7 @@ user declines.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Check dependencies required by a custom blueprint</span></span></span>
 <span class="r-in"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="blueprint.html">blueprint</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="step_ident_overview.html">step_ident_overview</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="fu"><a href="step_pca.html">step_pca</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="fork.html">fork</a></span><span class="op">(</span><span class="fu"><a href="step_ident_overview.html">step_ident_overview</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="step_pca.html">step_pca</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">check_glysmith_deps</span><span class="op">(</span><span class="va">bp</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>

@@ -1,47 +1,9 @@
-# Default blueprint
+# Default group-comparison blueprint
 
-This blueprint contains the following steps:
-
-- step_ident_overview(): Summarize the experiment using
-  [`glyexp::summarize_experiment()`](https://glycoverse.github.io/glyexp/reference/summarize_experiment.html).
-
-- step_preprocess(): Preprocess the data using
-  [`glyclean::auto_clean()`](https://glycoverse.github.io/glyclean/reference/auto_clean.html).
-
-- step_plot_qc(when = "post"): Plot QC plots using
-  `glyclean::plot_qc()`.
-
-- step_pca(): Principal component analysis using
-  [`glystats::gly_pca()`](https://glycoverse.github.io/glystats/reference/gly_pca.html),
-  and plot the PCA using
-  [`glyvis::plot_pca()`](https://glycoverse.github.io/glyvis/reference/plot_pca.html).
-
-- step_dea_limma(): Differential analysis using
-  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
-
-- step_volcano(): Plot a volcano plot using
-  [`glyvis::plot_volcano()`](https://glycoverse.github.io/glyvis/reference/plot_volcano.html).
-
-- step_heatmap(on = "sig_exp"): Plot a heatmap using
-  [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
-
-- step_sig_enrich_go(): Perform GO enrichment analysis using
-  [`glyfun::enrich_ora_go()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_go.html).
-
-- step_sig_enrich_kegg(): Perform KEGG enrichment analysis using
-  [`glyfun::enrich_ora_kegg()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_kegg.html).
-
-- step_sig_enrich_reactome(): Perform Reactome enrichment analysis using
-  [`glyfun::enrich_ora_reactome()`](https://glycoverse.github.io/glyfun/reference/enrich_ora_reactome.html).
-
-- step_derive_traits(): Derive traits using
-  [`glydet::derive_traits()`](https://glycoverse.github.io/glydet/reference/derive_traits.html).
-
-- step_dea_limma(on = "trait_exp"): Differential trait analysis using
-  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
-
-- step_heatmap(on = "sig_trait_exp"): Plot a heatmap using
-  [`glyvis::plot_heatmap()`](https://glycoverse.github.io/glyvis/reference/plot_heatmap.html).
+Summarize the input and analyze preprocessed abundances with QC, PCA and
+limma. Downstream routes visualize the fit and the significant
+variables. Optional trait analysis fits a separate model to the derived
+experiment.
 
 ## Usage
 
@@ -66,9 +28,10 @@ blueprint_default(preprocess = TRUE, enrich = TRUE, traits = TRUE)
 
 - traits:
 
-  Whether to include the derived trait analysis steps, i.e.
+  Whether to include the derived trait analysis steps, including
   [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md)
-  and `step_dea_limma(on = "trait_exp")`.
+  and
+  [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md).
 
 ## Value
 
@@ -78,20 +41,20 @@ A `glysmith_blueprint` object.
 
 ``` r
 blueprint_default()
-#> 
-#> ── Blueprint (13 steps) ──
-#> 
-#> • step_ident_overview()
-#> • step_preprocess()
-#> • step_plot_qc(when = "post")
-#> • step_pca()
-#> • step_dea_limma()
-#> • step_volcano()
-#> • step_heatmap(on = "sig_exp")
-#> • step_sig_enrich_go()
-#> • step_sig_enrich_kegg()
-#> • step_sig_enrich_reactome()
-#> • step_derive_traits()
-#> • step_dea_limma(on = "trait_exp")
-#> • step_heatmap(on = "sig_trait_exp")
+#> Blueprint (root accepts exp)
+#> ├─ node_1  step_ident_overview() [overview] (terminal)
+#> └─ node_2  step_preprocess() (exp)
+#>   ├─ node_3  step_plot_qc(when = "post") [qc] (terminal)
+#>   ├─ node_4  step_pca() [scores] (terminal)
+#>   ├─ node_5  step_dea_limma() [abundances] (contrast)
+#>   │ ├─ node_6  step_volcano() [abundances] (terminal)
+#>   │ ├─ node_7  step_filter_sig_vars() [abundances] (filtered_exp)
+#>   │ │ └─ node_8  step_heatmap() [abundances] (terminal)
+#>   │ ├─ node_9  step_sig_enrich_go() [abundances] (terminal)
+#>   │ ├─ node_10  step_sig_enrich_kegg() [abundances] (terminal)
+#>   │ └─ node_11  step_sig_enrich_reactome() [abundances] (terminal)
+#>   └─ node_12  step_derive_traits() [traits] (exp)
+#>     └─ node_13  step_dea_limma() [traits] (contrast)
+#>       └─ node_14  step_filter_sig_vars() [traits] (filtered_exp)
+#>         └─ node_15  step_heatmap() [traits] (terminal)
 ```

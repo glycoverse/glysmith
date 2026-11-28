@@ -17,6 +17,7 @@
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/cast_exp.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/check_glysmith_deps.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/fork.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/glysmith-package.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/index.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.html</loc></url>
@@ -36,6 +37,7 @@
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_detect_batch_effect.html</loc></url>
+<url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_filter_sig_vars.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_heatmap.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.html</loc></url>
 <url><loc>https://glycoverse.github.io/glysmith/dev/reference/step_impute.html</loc></url>

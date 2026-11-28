@@ -45,10 +45,7 @@ A `glysmith_step` object.
 bp <- blueprint(step_plot_glycosite_profile())
 if (requireNamespace("glyvis", quietly = TRUE)) {
   result <- forge_analysis(glyexp::real_experiment, bp)
-  cast_plot(result, "glycans_per_site")
-  cast_plot(result, "sites_per_protein")
+  cast_plot(result, "node_1__glycans_per_site")
+  cast_plot(result, "node_1__sites_per_protein")
 }
-#> ℹ Glycosite profile
-#> ✔ Glycosite profile [510ms]
-#> 
 ```

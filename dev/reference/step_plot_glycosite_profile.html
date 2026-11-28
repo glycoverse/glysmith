@@ -83,12 +83,9 @@ sites observed on each protein, using <code><a href="https://glycoverse.github.i
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="blueprint.html">blueprint</a></span><span class="op">(</span><span class="fu">step_plot_glycosite_profile</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"glyvis"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/real_experiment.html" class="external-link">real_experiment</a></span>, <span class="va">bp</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="cast_exp.html">cast_plot</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"glycans_per_site"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="cast_exp.html">cast_plot</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"sites_per_protein"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="cast_exp.html">cast_plot</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"node_1__glycans_per_site"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="cast_exp.html">cast_plot</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"node_1__sites_per_protein"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Glycosite profile</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Glycosite profile <span style="color: #B2B2B2;">[510ms]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-plt img"><img src="step_plot_glycosite_profile-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

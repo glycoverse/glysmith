@@ -1,33 +1,15 @@
-# Step: Differential Expression Analysis (DEA) using t-test
+# Differential analysis using a t-test
 
-Run differential analysis using t-test via
-[`glystats::gly_ttest()`](https://glycoverse.github.io/glystats/reference/gly_ttest.html),
-then filter the experiment to keep only the differentially expressed
-variables using
-[`glystats::filter_sig_vars()`](https://glycoverse.github.io/glystats/reference/filter_sig_vars.html).
-By default, this runs DEA on the main experiment (`exp`), but can be
-configured to run on derived traits (`trait_exp`) or other experiment
-objects. Only use this method for experiments with 2 groups.
-
-This step depends on the `on` parameter (default: `exp`).
-
-- When `on = "exp"`, requires `exp` (usually after
-  [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)).
-
-- When `on = "trait_exp"`, requires `trait_exp` from
-  [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md).
-
-- When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from
-  [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.md).
-
-- When `on = "branch_motif_exp"`, requires `branch_motif_exp` from
-  [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_branch_motifs.md).
+Fit
+[`glystats::gly_ttest()`](https://glycoverse.github.io/glystats/reference/gly_ttest.html)
+to the incoming experiment. Connect
+[`step_filter_sig_vars()`](https://glycoverse.github.io/glysmith/dev/reference/step_filter_sig_vars.md)
+to select variables or attach a compatible plot.
 
 ## Usage
 
 ``` r
 step_dea_ttest(
-  on = "exp",
   p_adj_method = "BH",
   ref_group = NULL,
   filter_p_adj_cutoff = 0.05,
@@ -38,14 +20,6 @@ step_dea_ttest(
 ```
 
 ## Arguments
-
-- on:
-
-  Name of the experiment data in `ctx$data` to run analysis on. Default
-  is `"exp"` for differential expression analysis. Use `"trait_exp"` for
-  differential trait analysis. Use `"dynamic_motif_exp"` for
-  differential dynamic motif analysis. Use `"branch_motif_exp"` for
-  differential branch motif analysis.
 
 - p_adj_method:
 
@@ -58,74 +32,25 @@ step_dea_ttest(
   A character string specifying the reference group. If NULL (default),
   the first level of the group factor is used as the reference.
 
-- filter_p_adj_cutoff:
+- filter_p_adj_cutoff, filter_p_val_cutoff, filter_fc_cutoff:
 
-  Adjusted p-value cutoff for filtering.
-
-- filter_p_val_cutoff:
-
-  Raw p-value cutoff for filtering.
-
-- filter_fc_cutoff:
-
-  Fold change cutoff for filtering.
+  Default adjusted p-value, raw p-value and fold-change cutoffs for
+  downstream filters.
 
 - ...:
 
   Additional arguments passed to
-  [`stats::t.test()`](https://rdrr.io/r/stats/t.test.html).
+  [`glystats::gly_ttest()`](https://glycoverse.github.io/glystats/reference/gly_ttest.html).
 
 ## Value
 
-A `glysmith_step` object.
-
-## Details
-
-Data required:
-
-- Depends on `on` parameter (default: `exp`)
-
-Data generated:
-
-- `dea_res`: The DEA results (if `on = "exp"`, default)
-
-- `dta_res`: The DTA results (if `on = "trait_exp"`)
-
-- `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-
-- `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-
-- `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-
-- `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-
-- `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if
-  `on = "dynamic_motif_exp"`)
-
-- `sig_branch_motif_exp`: The filtered branch motif experiment (if
-  `on = "branch_motif_exp"`)
-
-Tables generated:
-
-- `dea`: A table containing the DEA result (if `on = "exp"`, default)
-
-- `dta`: A table containing the DTA result (if `on = "trait_exp"`)
-
-- `dynamic_dma`: A table containing the DMA result (if
-  `on = "dynamic_motif_exp"`)
-
-- `branch_dma`: A table containing the DMA result (if
-  `on = "branch_motif_exp"`)
-
-## See also
-
-[`glystats::gly_ttest()`](https://glycoverse.github.io/glystats/reference/gly_ttest.html)
+A step producing a fitted differential result.
 
 ## Examples
 
 ``` r
-step_dea_ttest()
-#> <step "step_dea_ttest()"> Differential expression analysis (ttest)
-step_dea_ttest(on = "trait_exp")  # Differential trait analysis
-#> <step "step_dea_ttest(on = \"trait_exp\")"> Differential trait analysis (ttest)
+blueprint(step_dea_ttest() %=>% step_filter_sig_vars())
+#> Blueprint (root accepts exp)
+#> └─ node_1  step_dea_ttest() (contrast)
+#>   └─ node_2  step_filter_sig_vars() (filtered_exp)
 ```

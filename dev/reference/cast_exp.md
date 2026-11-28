@@ -28,12 +28,12 @@ cast_data(x, name = NULL)
 
 ## Value
 
-- `cast_exp()`: a processed
-  [`glyexp::GlycomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycomicSE.html)
-  or
-  [`glyexp::GlycoproteomicSE()`](https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html)
-  object for new-container inputs. Legacy inputs retain their container
-  class.
+- `cast_exp()`: the input experiment for multiple entry routes. For a
+  single route, the last experiment on the main route, or the input
+  experiment if that route produces no experiment. Trait and motif steps
+  can return a derived SummarizedExperiment. Returns NULL if the
+  producer of the main-route experiment failed, was skipped or was
+  blocked.
 
 - `cast_plot()`: a
   [`ggplot2::ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html).
@@ -52,6 +52,6 @@ exp <- real_experiment2
 result <- forge_analysis(exp)
 cast_exp(result)
 cast_table(result)
-cast_table(result, "summary")
+cast_table(result, "node_1__summary")
 } # }
 ```

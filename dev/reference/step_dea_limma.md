@@ -1,34 +1,15 @@
-# Step: Differential Expression Analysis (DEA) using Limma
+# Differential analysis using limma
 
-Run differential analysis using linear model-based analysis via
-[`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html),
-then filter the experiment to keep only the differentially expressed
-variables using
-[`glystats::filter_sig_vars()`](https://glycoverse.github.io/glystats/reference/filter_sig_vars.html).
-By default, this runs DEA on the main experiment (`exp`), but can be
-configured to run on derived traits (`trait_exp`) or other experiment
-objects. This step is the recommended DEA method for all experiments,
-for both two-group and multi-group experiments.
-
-This step depends on the `on` parameter (default: `exp`).
-
-- When `on = "exp"`, requires `exp` (usually after
-  [`step_preprocess()`](https://glycoverse.github.io/glysmith/dev/reference/step_preprocess.md)).
-
-- When `on = "trait_exp"`, requires `trait_exp` from
-  [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md).
-
-- When `on = "dynamic_motif_exp"`, requires `dynamic_motif_exp` from
-  [`step_quantify_dynamic_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_dynamic_motifs.md).
-
-- When `on = "branch_motif_exp"`, requires `branch_motif_exp` from
-  [`step_quantify_branch_motifs()`](https://glycoverse.github.io/glysmith/dev/reference/step_quantify_branch_motifs.md).
+Fit
+[`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
+to the incoming experiment. Connect
+[`step_filter_sig_vars()`](https://glycoverse.github.io/glysmith/dev/reference/step_filter_sig_vars.md)
+to select variables or attach a compatible plot.
 
 ## Usage
 
 ``` r
 step_dea_limma(
-  on = "exp",
   p_adj_method = "BH",
   covariate_cols = NULL,
   subject_col = NULL,
@@ -42,14 +23,6 @@ step_dea_limma(
 ```
 
 ## Arguments
-
-- on:
-
-  Name of the experiment data in `ctx$data` to run analysis on. Default
-  is `"exp"` for differential expression analysis. Use `"trait_exp"` for
-  differential trait analysis. Use `"dynamic_motif_exp"` for
-  differential dynamic motif analysis. Use `"branch_motif_exp"` for
-  differential branch motif analysis.
 
 - p_adj_method:
 
@@ -84,90 +57,25 @@ step_dea_limma(
   second format if group names contain hyphens. "group1" will be used as
   the reference group.
 
-- filter_p_adj_cutoff:
+- filter_p_adj_cutoff, filter_p_val_cutoff, filter_fc_cutoff:
 
-  Adjusted p-value cutoff for filtering.
-
-- filter_p_val_cutoff:
-
-  Raw p-value cutoff for filtering.
-
-- filter_fc_cutoff:
-
-  Fold change cutoff for filtering.
+  Default adjusted p-value, raw p-value and fold-change cutoffs for
+  downstream filters.
 
 - ...:
 
   Additional arguments passed to
-  [`limma::lmFit()`](https://rdrr.io/pkg/limma/man/lmFit.html).
+  [`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html).
 
 ## Value
 
-A `glysmith_step` object.
-
-## Details
-
-Data required:
-
-- `exp` (if `on = "exp"`): The experiment to run DEA on
-
-- `trait_exp` (if `on = "trait_exp"`): The trait experiment to run DEA
-  on
-
-- `dynamic_motif_exp` (if `on = "dynamic_motif_exp"`): The dynamic motif
-  experiment to run DEA on
-
-- `branch_motif_exp` (if `on = "branch_motif_exp"`): The branch motif
-  experiment to run DEA on
-
-Data generated:
-
-- `dea_res`: The DEA (differential expression analysis) results (if
-  `on = "exp"`, default)
-
-- `dta_res`: The DTA (differential trait analysis) results (if
-  `on = "trait_exp"`)
-
-- `dynamic_dma_res`: The DMA results (if `on = "dynamic_motif_exp"`)
-
-- `branch_dma_res`: The DMA results (if `on = "branch_motif_exp"`)
-
-- `sig_exp`: The filtered experiment (if `on = "exp"`, default)
-
-- `sig_trait_exp`: The filtered trait experiment (if `on = "trait_exp"`)
-
-- `sig_dynamic_motif_exp`: The filtered dynamic motif experiment (if
-  `on = "dynamic_motif_exp"`)
-
-- `sig_branch_motif_exp`: The filtered branch motif experiment (if
-  `on = "branch_motif_exp"`)
-
-Tables generated:
-
-- `dea`: A table containing the DEA (differential expression analysis)
-  result (if `on = "exp"`, default)
-
-- `dta`: A table containing the DTA (differential trait analysis) result
-  (if `on = "trait_exp"`)
-
-- `dynamic_dma`: A table containing the DMA result (if
-  `on = "dynamic_motif_exp"`)
-
-- `branch_dma`: A table containing the DMA result (if
-  `on = "branch_motif_exp"`)
-
-## See also
-
-[`glystats::gly_limma()`](https://glycoverse.github.io/glystats/reference/gly_limma.html)
+A step producing a fitted differential result.
 
 ## Examples
 
 ``` r
-step_dea_limma()
-#> <step "step_dea_limma()"> Differential expression analysis (limma)
-step_dea_limma(on = "trait_exp")  # Differential trait analysis
-#> <step "step_dea_limma(on = \"trait_exp\")"> Differential trait analysis (limma)
-step_dea_limma(p_adj_method = "BH")
-#> <step "step_dea_limma(p_adj_method = \"BH\")"> Differential expression analysis
-#> (limma)
+blueprint(step_dea_limma() %=>% step_filter_sig_vars())
+#> Blueprint (root accepts exp)
+#> └─ node_1  step_dea_limma() (contrast)
+#>   └─ node_2  step_filter_sig_vars() (filtered_exp)
 ```

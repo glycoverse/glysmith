@@ -94,7 +94,7 @@ Data required:
 
 Data generated:
 
-- `raw_exp`: The input to the first preprocessing step
+- `raw_exp`: The input to this preprocessing step
 
 Subsequent steps read the processed experiment from `exp`.
 

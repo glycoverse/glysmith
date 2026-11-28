@@ -115,8 +115,7 @@ Defaults to <code>getOption("glysmith.ai_base_url")</code>.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>LLMs can be unstable. If you get an error, try again with another description.
 Make sure to examine the returned blueprint carefully to ensure it's what you want.
-You can also create parallel analysis branches with <code>br("name", step_..., step_...)</code>,
-which will namespace outputs with the branch prefix.
+Generated plans can include sibling routes with <code><a href="fork.html">fork()</a></code> and side routes with <code><a href="br.html">br()</a></code>.
 If the LLM needs required information to proceed, it may ask clarifying questions
 interactively and then retry with your answers.
 After a blueprint is generated, the description is printed and, in interactive

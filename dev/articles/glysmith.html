@@ -197,32 +197,31 @@ the analysis pipeline. You can inspect it via
 <code><a href="../reference/blueprint_default.html">blueprint_default()</a></code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint_default.html">blueprint_default</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">13</span><span style="font-weight: bold;"> steps)</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • step_ident_overview()</span></span>
-<span><span class="co">#&gt; • step_preprocess()</span></span>
-<span><span class="co">#&gt; • step_plot_qc(when = "post")</span></span>
-<span><span class="co">#&gt; • step_pca()</span></span>
-<span><span class="co">#&gt; • step_dea_limma()</span></span>
-<span><span class="co">#&gt; • step_volcano()</span></span>
-<span><span class="co">#&gt; • step_heatmap(on = "sig_exp")</span></span>
-<span><span class="co">#&gt; • step_sig_enrich_go()</span></span>
-<span><span class="co">#&gt; • step_sig_enrich_kegg()</span></span>
-<span><span class="co">#&gt; • step_sig_enrich_reactome()</span></span>
-<span><span class="co">#&gt; • step_derive_traits()</span></span>
-<span><span class="co">#&gt; • step_dea_limma(on = "trait_exp")</span></span>
-<span><span class="co">#&gt; • step_heatmap(on = "sig_trait_exp")</span></span></code></pre></div>
-<p>A blueprint is a list of steps executed sequentially. You can use
-<code><a href="../reference/blueprint.html">blueprint()</a></code> with <code>step_</code> functions to create
-your own custom blueprint. For instance, if you’d just like to perform
-differential expression analysis and plot the volcano plot, you could
-do:</p>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Blueprint</span> (root accepts exp)</span></span>
+<span><span class="co">#&gt; ├─ <span style="font-weight: 100;">node_1</span>  <span style="color: #00BBBB;">step_ident_overview()</span><span style="color: #BBBB00;"> [overview]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt; └─ <span style="font-weight: 100;">node_2</span>  <span style="color: #00BBBB;">step_preprocess()</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_3</span>  <span style="color: #00BBBB;">step_plot_qc(when = "post")</span><span style="color: #BBBB00;"> [qc]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_4</span>  <span style="color: #00BBBB;">step_pca()</span><span style="color: #BBBB00;"> [scores]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_5</span>  <span style="color: #00BBBB;">step_dea_limma()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="color: #BB00BB;">contrast</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_6</span>  <span style="color: #00BBBB;">step_volcano()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_7</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;   │ │ └─ <span style="font-weight: 100;">node_8</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_9</span>  <span style="color: #00BBBB;">step_sig_enrich_go()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_10</span>  <span style="color: #00BBBB;">step_sig_enrich_kegg()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ └─ <span style="font-weight: 100;">node_11</span>  <span style="color: #00BBBB;">step_sig_enrich_reactome()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   └─ <span style="font-weight: 100;">node_12</span>  <span style="color: #00BBBB;">step_derive_traits()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;     └─ <span style="font-weight: 100;">node_13</span>  <span style="color: #00BBBB;">step_dea_limma()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #BB00BB;">contrast</span>)</span></span>
+<span><span class="co">#&gt;       └─ <span style="font-weight: 100;">node_14</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;         └─ <span style="font-weight: 100;">node_15</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="font-weight: 100;">terminal</span>)</span></span></code></pre></div>
+<p>The <code>%=&gt;%</code> operator connects steps through their main
+outputs. Use <code><a href="../reference/fork.html">fork()</a></code> when several analyses share one input.
+You can use <code><a href="../reference/blueprint.html">blueprint()</a></code> with <code>step_</code> functions
+to create your own custom blueprint. For instance, if you’d just like to
+perform differential expression analysis and plot the volcano plot, you
+could do:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">real_experiment</span>, <span class="va">bp</span><span class="op">)</span></span>
 <span><span class="va">result</span></span></code></pre></div>

@@ -67,9 +67,11 @@
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
 
-<ul><li><p><code>cast_exp()</code>: a processed <code><a href="https://glycoverse.github.io/glyexp/reference/GlycomicSE.html" class="external-link">glyexp::GlycomicSE()</a></code> or
-<code><a href="https://glycoverse.github.io/glyexp/reference/GlycoproteomicSE.html" class="external-link">glyexp::GlycoproteomicSE()</a></code> object for new-container inputs. Legacy
-inputs retain their container class.</p></li>
+<ul><li><p><code>cast_exp()</code>: the input experiment for multiple entry routes. For a single
+route, the last experiment on the main route, or the input
+experiment if that route produces no experiment. Trait and motif steps
+can return a derived SummarizedExperiment. Returns NULL if the producer
+of the main-route experiment failed, was skipped or was blocked.</p></li>
 <li><p><code>cast_plot()</code>: a <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot()</a></code>.</p></li>
 <li><p><code>cast_table()</code>: a <code><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble::tibble()</a></code>.</p></li>
 <li><p><code>cast_data()</code>: can be any R object.</p></li>
@@ -83,7 +85,7 @@ inputs retain their container class.</p></li>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">exp</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">cast_exp</span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">cast_table</span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">cast_table</span><span class="op">(</span><span class="va">result</span>, <span class="st">"summary"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cast_table</span><span class="op">(</span><span class="va">result</span>, <span class="st">"node_1__summary"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -3,33 +3,11 @@
 visualize the correlation matrix using glyvis::plot_corrplot().
 This step calculates correlation coefficients and p-values for all pairs
 of variables or samples.
-This step depends on the on parameter (default: exp).
-When on = &quot;exp&quot;, requires exp (usually after step_preprocess()).
-When on = &quot;sig_exp&quot;, requires sig_exp from one of step_dea_limma(),
-step_dea_ttest(), step_dea_wilcox(), step_dea_anova(), or step_dea_kruskal().
-When on = &quot;trait_exp&quot;, requires trait_exp from step_derive_traits().
-When on = &quot;sig_trait_exp&quot;, requires sig_trait_exp from DEA on traits.
-When on = &quot;dynamic_motif_exp&quot;, requires dynamic_motif_exp from step_quantify_dynamic_motifs().
-When on = &quot;sig_dynamic_motif_exp&quot;, requires sig_dynamic_motif_exp from DEA on motifs.
-When on = &quot;branch_motif_exp&quot;, requires branch_motif_exp from step_quantify_branch_motifs().
-When on = &quot;sig_branch_motif_exp&quot;, requires sig_branch_motif_exp from DEA on motifs.
-
-"><meta property="og:description" content="Perform pairwise correlation analysis using glystats::gly_cor() and
+The upstream step supplies the experiment."><meta property="og:description" content="Perform pairwise correlation analysis using glystats::gly_cor() and
 visualize the correlation matrix using glyvis::plot_corrplot().
 This step calculates correlation coefficients and p-values for all pairs
 of variables or samples.
-This step depends on the on parameter (default: exp).
-When on = &quot;exp&quot;, requires exp (usually after step_preprocess()).
-When on = &quot;sig_exp&quot;, requires sig_exp from one of step_dea_limma(),
-step_dea_ttest(), step_dea_wilcox(), step_dea_anova(), or step_dea_kruskal().
-When on = &quot;trait_exp&quot;, requires trait_exp from step_derive_traits().
-When on = &quot;sig_trait_exp&quot;, requires sig_trait_exp from DEA on traits.
-When on = &quot;dynamic_motif_exp&quot;, requires dynamic_motif_exp from step_quantify_dynamic_motifs().
-When on = &quot;sig_dynamic_motif_exp&quot;, requires sig_dynamic_motif_exp from DEA on motifs.
-When on = &quot;branch_motif_exp&quot;, requires branch_motif_exp from step_quantify_branch_motifs().
-When on = &quot;sig_branch_motif_exp&quot;, requires sig_branch_motif_exp from DEA on motifs.
-
-"><meta property="og:image" content="https://glycoverse.github.io/glysmith/logo.png"><meta name="robots" content="noindex"></head><body>
+The upstream step supplies the experiment."><meta property="og:image" content="https://glycoverse.github.io/glysmith/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -71,22 +49,13 @@ When on = &quot;sig_branch_motif_exp&quot;, requires sig_branch_motif_exp from D
     <p>Perform pairwise correlation analysis using <code><a href="https://glycoverse.github.io/glystats/reference/gly_cor.html" class="external-link">glystats::gly_cor()</a></code> and
 visualize the correlation matrix using <code><a href="https://glycoverse.github.io/glyvis/reference/plot_corrplot.html" class="external-link">glyvis::plot_corrplot()</a></code>.
 This step calculates correlation coefficients and p-values for all pairs
-of variables or samples.</p>
-<p>This step depends on the <code>on</code> parameter (default: <code>exp</code>).</p><ul><li><p>When <code>on = "exp"</code>, requires <code>exp</code> (usually after <code><a href="step_preprocess.html">step_preprocess()</a></code>).</p></li>
-<li><p>When <code>on = "sig_exp"</code>, requires <code>sig_exp</code> from one of <code><a href="step_dea_limma.html">step_dea_limma()</a></code>,
-<code><a href="step_dea_ttest.html">step_dea_ttest()</a></code>, <code><a href="step_dea_wilcox.html">step_dea_wilcox()</a></code>, <code><a href="step_dea_anova.html">step_dea_anova()</a></code>, or <code><a href="step_dea_kruskal.html">step_dea_kruskal()</a></code>.</p></li>
-<li><p>When <code>on = "trait_exp"</code>, requires <code>trait_exp</code> from <code><a href="step_derive_traits.html">step_derive_traits()</a></code>.</p></li>
-<li><p>When <code>on = "sig_trait_exp"</code>, requires <code>sig_trait_exp</code> from DEA on traits.</p></li>
-<li><p>When <code>on = "dynamic_motif_exp"</code>, requires <code>dynamic_motif_exp</code> from <code><a href="step_quantify_dynamic_motifs.html">step_quantify_dynamic_motifs()</a></code>.</p></li>
-<li><p>When <code>on = "sig_dynamic_motif_exp"</code>, requires <code>sig_dynamic_motif_exp</code> from DEA on motifs.</p></li>
-<li><p>When <code>on = "branch_motif_exp"</code>, requires <code>branch_motif_exp</code> from <code><a href="step_quantify_branch_motifs.html">step_quantify_branch_motifs()</a></code>.</p></li>
-<li><p>When <code>on = "sig_branch_motif_exp"</code>, requires <code>sig_branch_motif_exp</code> from DEA on motifs.</p></li>
-</ul></div>
+of variables or samples.
+The upstream step supplies the experiment.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_correlation</span><span class="op">(</span></span>
-<span>  on <span class="op">=</span> <span class="st">"exp"</span>,</span>
 <span>  on_cor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"sample"</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pearson"</span>, <span class="st">"spearman"</span><span class="op">)</span>,</span>
 <span>  p_adj_method <span class="op">=</span> <span class="st">"BH"</span>,</span>
@@ -100,13 +69,7 @@ of variables or samples.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-on">on<a class="anchor" aria-label="anchor" href="#arg-on"></a></dt>
-<dd><p>Name of the experiment to run correlation analysis on.
-Can be "exp", "sig_exp", "trait_exp", "sig_trait_exp",
-"dynamic_motif_exp", "sig_dynamic_motif_exp", "branch_motif_exp", "sig_branch_motif_exp".</p></dd>
-
-
-<dt id="arg-on-cor">on_cor<a class="anchor" aria-label="anchor" href="#arg-on-cor"></a></dt>
+<dl><dt id="arg-on-cor">on_cor<a class="anchor" aria-label="anchor" href="#arg-on-cor"></a></dt>
 <dd><p>A character string specifying what to correlate.
 Either "variable" (default) to correlate variables/features, or "sample" to correlate samples.</p></dd>
 
@@ -139,19 +102,6 @@ If NULL, no adjustment is performed.</p></dd>
     <p>A <code>glysmith_step</code> object.</p>
     </div>
     <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Data required:</p><ul><li><p><code>exp</code> (if <code>on = "exp"</code>): The experiment to run correlation analysis on</p></li>
-<li><p><code>trait_exp</code> (if <code>on = "trait_exp"</code>): The trait experiment to run correlation analysis on</p></li>
-<li><p><code>dynamic_motif_exp</code> (if <code>on = "dynamic_motif_exp"</code>): The dynamic motif experiment to run correlation analysis on</p></li>
-<li><p><code>branch_motif_exp</code> (if <code>on = "branch_motif_exp"</code>): The branch motif experiment to run correlation analysis on</p></li>
-</ul><p>Tables generated (with suffixes):</p><ul><li><p><code>correlation</code>: A table containing pairwise correlation results with columns:</p><ul><li><p><code>variable1</code>, <code>variable2</code> (or <code>sample1</code>, <code>sample2</code> if <code>on = "sample"</code>)</p></li>
-<li><p><code>cor</code>: Correlation coefficient</p></li>
-<li><p><code>p_val</code>: P-value from correlation test</p></li>
-<li><p><code>p_adj</code>: Adjusted p-value (if p_adj_method is not NULL)</p></li>
-</ul></li>
-</ul><p>Plots generated (with suffixes):</p><ul><li><p><code>correlation</code>: A correlation matrix heatmap</p></li>
-</ul></div>
-    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="https://glycoverse.github.io/glystats/reference/gly_cor.html" class="external-link">glystats::gly_cor()</a></code>, <code><a href="https://glycoverse.github.io/glyvis/reference/plot_corrplot.html" class="external-link">glyvis::plot_corrplot()</a></code></p></div>
     </div>
@@ -160,9 +110,6 @@ If NULL, no adjustment is performed.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">step_correlation</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_correlation()"</span>&gt; <span style="font-style: italic;">Correlation analysis</span></span>
-<span class="r-in"><span><span class="fu">step_correlation</span><span class="op">(</span>on <span class="op">=</span> <span class="st">"sig_exp"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_correlation(on = \"sig_exp\")"</span>&gt; <span style="font-style: italic;">Correlation analysis of significant</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-style: italic;">variables</span></span>
 <span class="r-in"><span><span class="fu">step_correlation</span><span class="op">(</span>on_cor <span class="op">=</span> <span class="st">"sample"</span>, method <span class="op">=</span> <span class="st">"spearman"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;step <span style="color: #0000BB;">"step_correlation(on_cor = \"sample\", method = \"spearman\")"</span>&gt;</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-style: italic;">Correlation analysis</span></span>

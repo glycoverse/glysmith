@@ -2,6 +2,25 @@
 
 ## glysmith (development version)
 
+### Breaking changes
+
+- [`blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md)
+  now connects steps by type. Rebuild saved blueprints and replace the
+  `on` step input selector with direct connections. Join successive
+  steps with `%=>%`. Commas in
+  [`blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md)
+  start independent routes on the original experiment. Use
+  [`fork()`](https://glycoverse.github.io/glysmith/dev/reference/fork.md)
+  to share an intermediate output and
+  [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md)
+  for a single side route. (#40)
+- Differential steps now emit their fit. Use
+  [`step_filter_sig_vars()`](https://glycoverse.github.io/glysmith/dev/reference/step_filter_sig_vars.md)
+  for the selected experiment. Result names identify the producing node
+  shown by [`print()`](https://rdrr.io/r/base/print.html). (#40)
+
+### New features
+
 - New
   [`step_plot_glycosite_profile()`](https://glycoverse.github.io/glysmith/dev/reference/step_plot_glycosite_profile.md)
   plots the distributions of distinct glycans per site and glycosylation

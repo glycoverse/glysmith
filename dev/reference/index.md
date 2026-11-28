@@ -3,11 +3,12 @@
 ## All functions
 
 - [`blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md)
-  : Create a Blueprint
+  [`` `%=>%` ``](https://glycoverse.github.io/glysmith/dev/reference/blueprint.md)
+  : Compose a tree of analytical steps
 - [`blueprint_default()`](https://glycoverse.github.io/glysmith/dev/reference/blueprint_default.md)
-  : Default blueprint
+  : Default group-comparison blueprint
 - [`br()`](https://glycoverse.github.io/glysmith/dev/reference/br.md) :
-  Create a Branch in a Blueprint
+  Run a single side route
 - [`cast_exp()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
   [`cast_plot()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
   [`cast_table()`](https://glycoverse.github.io/glysmith/dev/reference/cast_exp.md)
@@ -17,6 +18,8 @@
   : Check glysmith dependencies for a blueprint
 - [`forge_analysis()`](https://glycoverse.github.io/glysmith/dev/reference/forge_analysis.md)
   : Perform the Whole Analysis Pipeline
+- [`fork()`](https://glycoverse.github.io/glysmith/dev/reference/fork.md)
+  : Fan out from the current blueprint output
 - [`inquire_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/inquire_blueprint.md)
   **\[experimental\]** : Create a Blueprint using Natural Language
 - [`modify_blueprint()`](https://glycoverse.github.io/glysmith/dev/reference/modify_blueprint.md)
@@ -38,20 +41,21 @@
 - [`step_cox()`](https://glycoverse.github.io/glysmith/dev/reference/step_cox.md)
   : Step: Cox Proportional Hazards Model
 - [`step_dea_anova()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_anova.md)
-  : Step: Differential Expression Analysis (DEA) using ANOVA
+  : Differential analysis using ANOVA
 - [`step_dea_kruskal()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_kruskal.md)
-  : Step: Differential Expression Analysis (DEA) using Kruskal-Wallis
-  test
+  : Differential analysis using the Kruskal-Wallis test
 - [`step_dea_limma()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_limma.md)
-  : Step: Differential Expression Analysis (DEA) using Limma
+  : Differential analysis using limma
 - [`step_dea_ttest()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_ttest.md)
-  : Step: Differential Expression Analysis (DEA) using t-test
+  : Differential analysis using a t-test
 - [`step_dea_wilcox()`](https://glycoverse.github.io/glysmith/dev/reference/step_dea_wilcox.md)
-  : Step: Differential Expression Analysis (DEA) using Wilcoxon test
+  : Differential analysis using the Wilcoxon test
 - [`step_derive_traits()`](https://glycoverse.github.io/glysmith/dev/reference/step_derive_traits.md)
   : Step: Derived Trait Calculation
 - [`step_detect_batch_effect()`](https://glycoverse.github.io/glysmith/dev/reference/step_detect_batch_effect.md)
   : Test for batch effects in each feature
+- [`step_filter_sig_vars()`](https://glycoverse.github.io/glysmith/dev/reference/step_filter_sig_vars.md)
+  : Filter the experiment used for a differential fit
 - [`step_heatmap()`](https://glycoverse.github.io/glysmith/dev/reference/step_heatmap.md)
   : Step: Heatmap
 - [`step_ident_overview()`](https://glycoverse.github.io/glysmith/dev/reference/step_ident_overview.md)

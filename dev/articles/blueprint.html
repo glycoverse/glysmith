@@ -72,22 +72,22 @@
 <code><a href="../reference/forge_analysis.html">forge_analysis()</a></code> runs a default blueprint:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint_default.html">blueprint_default</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Blueprint (</span><span style="color: #0000BB; font-weight: bold;">13</span><span style="font-weight: bold;"> steps)</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • step_ident_overview()</span></span>
-<span><span class="co">#&gt; • step_preprocess()</span></span>
-<span><span class="co">#&gt; • step_plot_qc(when = "post")</span></span>
-<span><span class="co">#&gt; • step_pca()</span></span>
-<span><span class="co">#&gt; • step_dea_limma()</span></span>
-<span><span class="co">#&gt; • step_volcano()</span></span>
-<span><span class="co">#&gt; • step_heatmap(on = "sig_exp")</span></span>
-<span><span class="co">#&gt; • step_sig_enrich_go()</span></span>
-<span><span class="co">#&gt; • step_sig_enrich_kegg()</span></span>
-<span><span class="co">#&gt; • step_sig_enrich_reactome()</span></span>
-<span><span class="co">#&gt; • step_derive_traits()</span></span>
-<span><span class="co">#&gt; • step_dea_limma(on = "trait_exp")</span></span>
-<span><span class="co">#&gt; • step_heatmap(on = "sig_trait_exp")</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Blueprint</span> (root accepts exp)</span></span>
+<span><span class="co">#&gt; ├─ <span style="font-weight: 100;">node_1</span>  <span style="color: #00BBBB;">step_ident_overview()</span><span style="color: #BBBB00;"> [overview]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt; └─ <span style="font-weight: 100;">node_2</span>  <span style="color: #00BBBB;">step_preprocess()</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_3</span>  <span style="color: #00BBBB;">step_plot_qc(when = "post")</span><span style="color: #BBBB00;"> [qc]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_4</span>  <span style="color: #00BBBB;">step_pca()</span><span style="color: #BBBB00;"> [scores]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_5</span>  <span style="color: #00BBBB;">step_dea_limma()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="color: #BB00BB;">contrast</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_6</span>  <span style="color: #00BBBB;">step_volcano()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_7</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;   │ │ └─ <span style="font-weight: 100;">node_8</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_9</span>  <span style="color: #00BBBB;">step_sig_enrich_go()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_10</span>  <span style="color: #00BBBB;">step_sig_enrich_kegg()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ └─ <span style="font-weight: 100;">node_11</span>  <span style="color: #00BBBB;">step_sig_enrich_reactome()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   └─ <span style="font-weight: 100;">node_12</span>  <span style="color: #00BBBB;">step_derive_traits()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;     └─ <span style="font-weight: 100;">node_13</span>  <span style="color: #00BBBB;">step_dea_limma()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #BB00BB;">contrast</span>)</span></span>
+<span><span class="co">#&gt;       └─ <span style="font-weight: 100;">node_14</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;         └─ <span style="font-weight: 100;">node_15</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="font-weight: 100;">terminal</span>)</span></span></code></pre></div>
 <p>This vignette shows you how to build your own blueprint for custom
 analyses.</p>
 <p><strong>Heads up:</strong> Before diving into the details of manual
@@ -95,22 +95,169 @@ blueprint creation, you might want to try having an LLM generate one for
 you with <code><a href="../reference/inquire_blueprint.html">inquire_blueprint()</a></code>. Check out <a href="https://glycoverse.github.io/glysmith/articles/ai.html">this
 vignette</a> for the details.</p>
 <div class="section level2">
-<h2 id="step-functions">Step functions<a class="anchor" aria-label="anchor" href="#step-functions"></a>
+<h2 id="connect-steps-by-their-outputs">Connect steps by their outputs<a class="anchor" aria-label="anchor" href="#connect-steps-by-their-outputs"></a>
 </h2>
-<p><code>glysmith</code> comes with various step functions (anything
-starting with <code>step_</code>), each handling a specific analytical
-task. Chain them together with <code><a href="../reference/blueprint.html">blueprint()</a></code>:</p>
+<p>Use <code>%=&gt;%</code> to pass the output of one step to the next.
+Each comma-separated argument to <code><a href="../reference/blueprint.html">blueprint()</a></code> starts a route
+on the original experiment. Glysmith reserves <code>%=&gt;%</code> for
+blueprint composition. Ordinary R and magrittr data pipelines keep their
+own operators. The following routes each fit one model and give its
+result to two consumers. Use a two-group experiment for the t-test.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_ident_overview.html">step_ident_overview</a></span><span class="op">(</span><span class="op">)</span>,  <span class="co"># Identification overview</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># DEA with limma</span></span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Volcano plot</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Now <code>bp</code> is ready to go — just pass it as the second
-argument to <code><a href="../reference/forge_analysis.html">forge_analysis()</a></code>:</p>
+<code class="sourceCode R"><span><span class="va">dea_bp1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/fork.html">fork</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">dea_bp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/fork.html">fork</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Two independent entry routes run preprocessing twice.</span></span>
+<span><span class="va">independent</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
+<span>  limma <span class="op">=</span> <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="va">dea_bp1</span>,</span>
+<span>  ttest <span class="op">=</span> <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="va">dea_bp2</span>,</span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># One preprocessing step supplies both saved analysis routes.</span></span>
+<span><span class="va">shared</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span><span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/fork.html">fork</a></span><span class="op">(</span>limma <span class="op">=</span> <span class="va">dea_bp1</span>, ttest <span class="op">=</span> <span class="va">dea_bp2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">shared</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Blueprint</span> (root accepts exp)</span></span>
+<span><span class="co">#&gt; └─ <span style="font-weight: 100;">node_1</span>  <span style="color: #00BBBB;">step_preprocess()</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_2</span>  <span style="color: #00BBBB;">step_dea_limma()</span><span style="color: #BBBB00;"> [limma]</span> (<span style="color: #BB00BB;">contrast</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_3</span>  <span style="color: #00BBBB;">step_volcano()</span><span style="color: #BBBB00;"> [limma]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   │ └─ <span style="font-weight: 100;">node_4</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [limma]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;   │   └─ <span style="font-weight: 100;">node_5</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [limma]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   └─ <span style="font-weight: 100;">node_6</span>  <span style="color: #00BBBB;">step_dea_ttest()</span><span style="color: #BBBB00;"> [ttest]</span> (<span style="color: #BB00BB;">contrast</span>)</span></span>
+<span><span class="co">#&gt;     ├─ <span style="font-weight: 100;">node_7</span>  <span style="color: #00BBBB;">step_volcano()</span><span style="color: #BBBB00;"> [ttest]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;     └─ <span style="font-weight: 100;">node_8</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [ttest]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;       └─ <span style="font-weight: 100;">node_9</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [ttest]</span> (<span style="font-weight: 100;">terminal</span>)</span></span></code></pre></div>
+<p>Each argument of <code><a href="../reference/fork.html">fork()</a></code> receives the current output. A
+fork can be nested or start at the inlet, and ends its route. A side
+route preserves that output for the next step. For example,
+<code>br("scores", step_pca()) %=&gt;% step_dea_limma()</code> supplies
+the same experiment to PCA and limma.</p>
+<p>This blueprint derives traits once and fits ANOVA to both the
+abundance and trait experiments. PCA receives the same traits as the
+second ANOVA.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="va">exp</span>, <span class="va">bp</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">inspect_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/step_dea_anova.html">step_dea_anova</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/fork.html">fork</a></span><span class="op">(</span></span>
+<span>    strict <span class="op">=</span> <span class="fu"><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars</a></span><span class="op">(</span><span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>    selected <span class="op">=</span> <span class="fu"><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/step_derive_traits.html">step_derive_traits</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/fork.html">fork</a></span><span class="op">(</span><span class="fu"><a href="../reference/step_pca.html">step_pca</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">inspect_fit</span><span class="op">)</span></span>
+<span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span><span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span> <span class="fu"><a href="../reference/fork.html">fork</a></span><span class="op">(</span>abundances <span class="op">=</span> <span class="va">inspect_fit</span>, traits <span class="op">=</span> <span class="va">traits</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Blueprint</span> (root accepts exp)</span></span>
+<span><span class="co">#&gt; └─ <span style="font-weight: 100;">node_1</span>  <span style="color: #00BBBB;">step_preprocess()</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;   ├─ <span style="font-weight: 100;">node_2</span>  <span style="color: #00BBBB;">step_dea_anova()</span><span style="color: #BBBB00;"> [abundances]</span> (<span style="color: #BB00BB;">omnibus</span>)</span></span>
+<span><span class="co">#&gt;   │ ├─ <span style="font-weight: 100;">node_3</span>  <span style="color: #00BBBB;">step_filter_sig_vars(p_adj_cutoff = 0.01)</span><span style="color: #BBBB00;"> [abundances/strict]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;   │ └─ <span style="font-weight: 100;">node_4</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [abundances/selected]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;   │   └─ <span style="font-weight: 100;">node_5</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [abundances/selected]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;   └─ <span style="font-weight: 100;">node_6</span>  <span style="color: #00BBBB;">step_derive_traits()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #00BB00;">exp</span>)</span></span>
+<span><span class="co">#&gt;     ├─ <span style="font-weight: 100;">node_7</span>  <span style="color: #00BBBB;">step_pca()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="font-weight: 100;">terminal</span>)</span></span>
+<span><span class="co">#&gt;     └─ <span style="font-weight: 100;">node_8</span>  <span style="color: #00BBBB;">step_dea_anova()</span><span style="color: #BBBB00;"> [traits]</span> (<span style="color: #BB00BB;">omnibus</span>)</span></span>
+<span><span class="co">#&gt;       ├─ <span style="font-weight: 100;">node_9</span>  <span style="color: #00BBBB;">step_filter_sig_vars(p_adj_cutoff = 0.01)</span><span style="color: #BBBB00;"> [traits/strict]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;       └─ <span style="font-weight: 100;">node_10</span>  <span style="color: #00BBBB;">step_filter_sig_vars()</span><span style="color: #BBBB00;"> [traits/selected]</span> (<span style="color: #00BB00;">filtered_exp</span>)</span></span>
+<span><span class="co">#&gt;         └─ <span style="font-weight: 100;">node_11</span>  <span style="color: #00BBBB;">step_heatmap()</span><span style="color: #BBBB00;"> [traits/selected]</span> (<span style="font-weight: 100;">terminal</span>)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="23%">
+<col width="26%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Step</th>
+<th align="left">Input</th>
+<th align="left">Main output</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Preprocessing, group subsetting, structure inference,
+traits, motifs</td>
+<td align="left">Experiment</td>
+<td align="left">Transformed experiment</td>
+</tr>
+<tr class="even">
+<td align="left">Limma, t-test, Wilcoxon</td>
+<td align="left">Experiment</td>
+<td align="left">Contrast fit</td>
+</tr>
+<tr class="odd">
+<td align="left">ANOVA, Kruskal–Wallis</td>
+<td align="left">Experiment</td>
+<td align="left">Omnibus fit</td>
+</tr>
+<tr class="even">
+<td align="left"><code><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars()</a></code></td>
+<td align="left">Either fit</td>
+<td align="left">Filtered experiment</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/step_volcano.html">step_volcano()</a></code></td>
+<td align="left">Contrast fit with abundance fold changes</td>
+<td align="left">Terminal plot</td>
+</tr>
+<tr class="even">
+<td align="left">Enrichment</td>
+<td align="left">Fit and its bound experiment</td>
+<td align="left">Terminal analysis</td>
+</tr>
+<tr class="odd">
+<td align="left"><code><a href="../reference/step_sig_boxplot.html">step_sig_boxplot()</a></code></td>
+<td align="left">Filtered experiment from
+<code><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars()</a></code>
+</td>
+<td align="left">Terminal plot</td>
+</tr>
+<tr class="even">
+<td align="left">QC, PCA and other dimension reduction, heatmap, ROC,
+correlation, Cox and other summaries</td>
+<td align="left">Experiment (including filtered)</td>
+<td align="left">Terminal analysis</td>
+</tr>
+</tbody>
+</table>
+<p>DEA steps fit the experiment on their incoming wire. Set cutoffs on
+<code><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars()</a></code>. A fit’s <code>filter_*</code>
+arguments supply defaults that each filter can override. To compare
+thresholds, use
+<code>blueprint(step_dea_anova() %=&gt;% fork(step_filter_sig_vars(0.01), step_filter_sig_vars(0.05)))</code>.
+Each filter uses the exact experiment that produced the fit. A filter
+that selects zero variables succeeds and returns a zero-row experiment.
+Downstream analyses skip an empty input. A skipped or failed step blocks
+its descendants, and independent branches continue.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/forge_analysis.html">forge_analysis</a></span><span class="op">(</span><span class="fu">glyexp</span><span class="fu">::</span><span class="va"><a href="https://glycoverse.github.io/glyexp/reference/real_experiment2.html" class="external-link">real_experiment2</a></span>, <span class="va">bp</span><span class="op">)</span></span>
+<span><span class="va">result</span><span class="op">$</span><span class="va">meta</span><span class="op">$</span><span class="va">nodes</span>        <span class="co"># step, producer, route, status and reason</span></span>
+<span><span class="fu"><a href="../reference/cast_exp.html">cast_data</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span>        <span class="co"># node outputs and auxiliary objects</span></span>
+<span><span class="fu"><a href="../reference/cast_exp.html">cast_plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span>        <span class="co"># e.g. node_5__heatmap</span></span>
+<span><span class="fu"><a href="../reference/cast_exp.html">cast_table</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<span><span class="fu">glyvis</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="../reference/cast_exp.html">cast_data</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"node_2"</span><span class="op">)</span><span class="op">)</span>  <span class="co"># abundance ANOVA main test</span></span>
+<span><span class="fu"><a href="../reference/quench_result.html">quench_result</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"connected-results"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/polish_report.html">polish_report</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"connected-report.html"</span>, open <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Use the printed node ID to retrieve its main output, e.g.
+<code>cast_data(result, "node_2")</code>. Plot, table and auxiliary
+object names start with the producing node ID and two underscores. The
+prepared input is available as <code>cast_data(result, "root")</code>.
+For each fit, its parent ID retrieves the experiment used to fit the
+model. <code><a href="../reference/cast_exp.html">cast_exp()</a></code> returns the last experiment on the main
+route, or the input if that route only fits or plots. With multiple
+top-level routes, <code><a href="../reference/cast_exp.html">cast_exp()</a></code> returns the original input. If
+the single main-route producer failed or was skipped, the main
+experiment is <code>NULL</code>. Significant-variable boxplots with more
+than 25 retained rows require unique fitted variable names for
+ranking.</p>
+</div>
+<div class="section level2">
+<h2 id="available-steps">Available steps<a class="anchor" aria-label="anchor" href="#available-steps"></a>
+</h2>
 <p>Here’s the full lineup of available step functions:</p>
 <table class="table">
 <colgroup>
@@ -261,171 +408,177 @@ test</td>
 <td align="center">GP/G</td>
 </tr>
 <tr class="even">
+<td align="left"><code><a href="../reference/step_filter_sig_vars.html">step_filter_sig_vars()</a></code></td>
+<td align="left">Filter the fitted experiment by significance</td>
+<td align="center">No</td>
+<td align="center">GP/G</td>
+</tr>
+<tr class="odd">
 <td align="left"><strong>Visualization</strong></td>
 <td align="left"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_volcano.html">step_volcano()</a></code></td>
 <td align="left">Create volcano plot from DEA results</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_heatmap.html">step_heatmap()</a></code></td>
 <td align="left">Create heatmap plot</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_logo.html">step_logo()</a></code></td>
 <td align="left">Create logo plot for glycosylation sites</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_plot_glycosite_profile.html">step_plot_glycosite_profile()</a></code></td>
 <td align="left">Plot distinct glycans per site and glycosylation sites
 per protein</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_sig_boxplot.html">step_sig_boxplot()</a></code></td>
 <td align="left">Boxplots for significant variables from DEA</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>Dimension Reduction</strong></td>
 <td align="left"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_pca.html">step_pca()</a></code></td>
 <td align="left">Principal Component Analysis</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_tsne.html">step_tsne()</a></code></td>
 <td align="left">t-SNE analysis</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_umap.html">step_umap()</a></code></td>
 <td align="left">UMAP analysis</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_plsda.html">step_plsda()</a></code></td>
 <td align="left">Partial Least Squares Discriminant Analysis</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_oplsda.html">step_oplsda()</a></code></td>
 <td align="left">Orthogonal Partial Least Squares Discriminant
 Analysis</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>Correlation &amp; Enrichment</strong></td>
 <td align="left"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_correlation.html">step_correlation()</a></code></td>
 <td align="left">Pairwise correlation analysis</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_sig_enrich_go.html">step_sig_enrich_go()</a></code></td>
 <td align="left">GO enrichment analysis on DE variables</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_sig_enrich_kegg.html">step_sig_enrich_kegg()</a></code></td>
 <td align="left">KEGG enrichment analysis on DE variables</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_sig_enrich_reactome.html">step_sig_enrich_reactome()</a></code></td>
 <td align="left">Reactome enrichment analysis on DE variables</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_sig_enrich_ncg.html">step_sig_enrich_ncg()</a></code></td>
 <td align="left">NCG enrichment analysis on DE variables</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_sig_enrich_wp.html">step_sig_enrich_wp()</a></code></td>
 <td align="left">WikiPathways enrichment analysis on DE variables</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_sig_enrich_do.html">step_sig_enrich_do()</a></code></td>
 <td align="left">Disease Ontology enrichment analysis on DE
 variables</td>
 <td align="center">No</td>
 <td align="center">GP</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>Advanced Analysis</strong></td>
 <td align="left"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_infer_structure.html">step_infer_structure()</a></code></td>
 <td align="left">Infer glycan structures from glycan compositions</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_derive_traits.html">step_derive_traits()</a></code></td>
 <td align="left">Calculate glycan derived traits</td>
 <td align="center"><strong>Yes</strong></td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_quantify_dynamic_motifs.html">step_quantify_dynamic_motifs()</a></code></td>
 <td align="left">Quantify dynamic glycan motifs</td>
 <td align="center"><strong>Yes</strong></td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><code><a href="../reference/step_quantify_branch_motifs.html">step_quantify_branch_motifs()</a></code></td>
 <td align="left">Quantify N-glycan branch motifs</td>
 <td align="center"><strong>Yes</strong></td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_roc.html">step_roc()</a></code></td>
 <td align="left">ROC analysis for biomarker discovery</td>
 <td align="center">No</td>
 <td align="center">GP/G</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><strong>Survival Analysis</strong></td>
 <td align="left"></td>
 <td align="center"></td>
 <td align="center"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><code><a href="../reference/step_cox.html">step_cox()</a></code></td>
 <td align="left">Cox proportional hazards model</td>
 <td align="center">No</td>
@@ -444,192 +597,21 @@ directly in the blueprint. For example, when zeros encode missing
 measurements, you can filter by missingness within each group, impute
 the retained features, and normalize each sample to its total
 abundance.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_zero_to_na.html">step_zero_to_na</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_remove.html">step_remove</a></span><span class="op">(</span><span class="st">"rare"</span>, prop <span class="op">=</span> <span class="fl">0.5</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_impute.html">step_impute</a></span><span class="op">(</span><span class="st">"min_prob"</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_normalize.html">step_normalize</a></span><span class="op">(</span><span class="st">"total_area"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="../reference/step_zero_to_na.html">step_zero_to_na</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/step_remove.html">step_remove</a></span><span class="op">(</span><span class="st">"rare"</span>, prop <span class="op">=</span> <span class="fl">0.5</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/step_impute.html">step_impute</a></span><span class="op">(</span><span class="st">"min_prob"</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/step_normalize.html">step_normalize</a></span><span class="op">(</span><span class="st">"total_area"</span><span class="op">)</span> <span class="op"><a href="../reference/blueprint.html">%=&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/step_plot_qc.html">step_plot_qc</a></span><span class="op">(</span>when <span class="op">=</span> <span class="st">"post"</span>, method <span class="op">=</span> <span class="st">"rle"</span>, by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Each cleaning step reads the current <code>exp</code>. The first
-saves its input in <code>raw_exp</code>, and later steps use the output
-of the preceding step. Use <code>method = "auto"</code> for automatic
+<p>Each cleaning step reads the experiment on its incoming connection.
+The root input and intermediate experiments are available through
+<code><a href="../reference/cast_exp.html">cast_data()</a></code>. Use <code>method = "auto"</code> for automatic
 selection within a single operation, such as imputation. For an explicit
 method, supply the arguments of the matching glyclean function. For
 example, <code>step_impute("fw_knn", k = 3)</code> calls
 <code><a href="https://glycoverse.github.io/glyclean/reference/impute_fw_knn.html" class="external-link">glyclean::impute_fw_knn()</a></code> with three neighbors.</p>
-</div>
-<div class="section level2">
-<h2 id="step-dependencies">Step dependencies<a class="anchor" aria-label="anchor" href="#step-dependencies"></a>
-</h2>
-<p>Some steps need data that other steps produce. For instance,
-<code><a href="../reference/step_volcano.html">step_volcano()</a></code> needs results from a DEA step like
-<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>. So this blueprint won’t work:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span>  <span class="co"># this will error</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Volcano plot</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The easiest way to figure out dependencies is to check the
-documentation for each step. For example, <code>?step_volcano()</code>
-tells you it “requires one of the DEA steps to be run:
-<code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>, <code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code>,
-<code><a href="../reference/step_dea_wilcox.html">step_dea_wilcox()</a></code>”. So as long as you run one of these DEA
-steps before <code><a href="../reference/step_volcano.html">step_volcano()</a></code>, you’re good to go:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
-<span>  <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># DEA with t-test</span></span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Volcano plot</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Steps and their dependencies don’t need to be right next to each
-other — all intermediate data gets stored along the way, so the
-blueprint is valid as long as the required data exists somewhere
-upstream:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,      <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
-<span>  <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span>,       <span class="co"># DEA with t-test (generates data required by `step_volcano()`)</span></span>
-<span>  <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Heatmap</span></span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,         <span class="co"># Volcano plot (requires data generated by `step_dea_ttest()`)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="the-on-parameter">The <code>on</code> parameter<a class="anchor" aria-label="anchor" href="#the-on-parameter"></a>
-</h2>
-<p>Many step functions have an <code>on</code> parameter that controls
-their dependencies. For example, <code><a href="../reference/step_heatmap.html">step_heatmap()</a></code> defaults to
-<code>on = "exp"</code>, which plots a heatmap from the experiment
-(after preprocessing, if you did that). But you can point it at other
-data like “sig_exp” instead — just remember you’ll need to run a DEA
-step first:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,             <span class="co"># Preprocess (normalization, imputation, etc.)</span></span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,              <span class="co"># DEA with limma</span></span>
-<span>  <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"sig_exp"</span><span class="op">)</span>,  <span class="co"># Heatmap on significantly expressed variables</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Check <code>?step_dea_limma()</code> and you’ll see it generates a
-field called exactly “sig_exp”. This is how data flows in
-<code>glysmith</code>: each step stores its results in a shared context
-object, where downstream steps can grab what they need.</p>
-<p>Let’s see another example:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="co"># Data required: `exp`</span></span>
-<span>  <span class="co"># Data generated: `exp` (overwrite)</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span></span>
-<span>  <span class="co"># Data required: `exp`</span></span>
-<span>  <span class="co"># Data generated: `trait_exp` (trait experiment)</span></span>
-<span>  <span class="fu"><a href="../reference/step_derive_traits.html">step_derive_traits</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span></span>
-<span>  <span class="co"># Data required: `trait_exp` (specified by `on`)</span></span>
-<span>  <span class="co"># Data generated: `sig_trait_exp` (significantly different trait experiment)</span></span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"trait_exp"</span><span class="op">)</span>,</span>
-<span></span>
-<span>  <span class="co"># Data required: `sig_trait_exp`</span></span>
-<span>  <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"sig_trait_exp"</span><span class="op">)</span>,</span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Preprocessing steps can update the active experiment and keep their
-inputs. For example, <code><a href="../reference/step_preprocess.html">step_preprocess()</a></code> saves its input in
-<code>raw_exp</code>. To analyze relative changes in composition, add
-<code><a href="../reference/step_coda.html">step_coda()</a></code> after preprocessing and abundance QC. It saves
-the input in <code>pre_coda_exp</code>. PCA and differential analysis
-then use the log-ratio coordinates directly. The default
-<code>method = "auto"</code> delegates to
-<code><a href="https://glycoverse.github.io/glyclean/reference/auto_coda.html" class="external-link">glyclean::auto_coda()</a></code>. Use <code>method = "clr"</code> or
-<code>method = "alr"</code> to call the corresponding transformation
-directly.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_coda.html">step_coda</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_pca.html">step_pca</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>For this analysis, limma reports the estimated change in log-ratio
-units in <code>estimate</code>. Select significant features by p-value.
-Volcano plots and fold-change-based enrichment require abundance fold
-changes and are skipped. For a motif analysis, quantify motifs on linear
-abundances first, then use the motif experiment as <code>on</code> in
-both <code><a href="../reference/step_coda.html">step_coda()</a></code> and the statistical step.</p>
-<p>To build valid blueprints, you’ll need to know what each step needs
-and what it produces. Let’s look at a more complex example to cement
-this. Try tracing through the dataflow yourself:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_ident_overview.html">step_ident_overview</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_pca.html">step_pca</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  </span>
-<span>  <span class="co"># DEA</span></span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"sig_exp"</span><span class="op">)</span>,</span>
-<span></span>
-<span>  <span class="co"># Derived trait analysis</span></span>
-<span>  <span class="fu"><a href="../reference/step_derive_traits.html">step_derive_traits</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"trait_exp"</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"sig_trait_exp"</span><span class="op">)</span>,</span>
-<span></span>
-<span>  <span class="co"># Branch motif analysis</span></span>
-<span>  <span class="fu"><a href="../reference/step_quantify_branch_motifs.html">step_quantify_branch_motifs</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"branch_motif_exp"</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_heatmap.html">step_heatmap</a></span><span class="op">(</span>on <span class="op">=</span> <span class="st">"sig_branch_motif_exp"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="branches">Branches<a class="anchor" aria-label="anchor" href="#branches"></a>
-</h2>
-<p>As we mentioned, steps can’t overwrite data from earlier steps. But
-what if you want to compare different DEA methods? You might try
-something like this:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>This won’t fly for two reasons:</p>
-<ol style="list-style-type: decimal">
-<li>
-<code><a href="../reference/step_dea_ttest.html">step_dea_ttest()</a></code> would overwrite the
-<code>sig_exp</code> from <code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code>.</li>
-<li>
-<code><a href="../reference/step_volcano.html">step_volcano()</a></code> shows up twice, which isn’t
-allowed.</li>
-</ol>
-<p>These rules keep table and plot names unambiguous.</p>
-<p>To pull this off, use <strong>branches</strong>. So far our
-blueprints have been linear — steps run one after another. To branch
-out, just wrap related steps in <code><a href="../reference/br.html">br()</a></code>:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/blueprint.html">blueprint</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/step_preprocess.html">step_preprocess</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/br.html">br</a></span><span class="op">(</span><span class="st">"limma"</span>, <span class="fu"><a href="../reference/step_dea_limma.html">step_dea_limma</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="../reference/br.html">br</a></span><span class="op">(</span><span class="st">"t-test"</span>, <span class="fu"><a href="../reference/step_dea_ttest.html">step_dea_ttest</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/step_volcano.html">step_volcano</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>The first argument names the branch, and the rest are the steps to
-run inside it. Each branch gets its own isolated context, so the
-<code><a href="../reference/step_volcano.html">step_volcano()</a></code> in the “limma” branch naturally picks up the
-<code>sig_exp</code> from the <code><a href="../reference/step_dea_limma.html">step_dea_limma()</a></code> in that same
-branch. Branches can also access data from before the branch point — so
-both branches here can use the preprocessed <code>exp</code> from
-<code><a href="../reference/step_preprocess.html">step_preprocess()</a></code>.</p>
-</div>
-<div class="section level2">
-<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
-</h2>
-<p>In this vignette, we covered how to build custom blueprints, how the
-<code>on</code> parameter and step dependencies work, and how to use
-branches.</p>
-<p>All of this takes some practice, so if you’d rather not dive deep
-into the details, remember you can always <a href="https://glycoverse.github.io/glysmith/articles/ai.html">have AI
-generate blueprints</a> for you.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
