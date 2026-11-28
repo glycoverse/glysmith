@@ -238,16 +238,28 @@ print.glysmith_blueprint <- function(x, ...) {
   ids <- c("root", names(plan$nodes))
   parents <- purrr::map_chr(plan$nodes, "parent")
   root_label <- sprintf(
-    "Blueprint (root accepts %s)",
+    "%s (root accepts %s)",
+    cli::style_bold("Blueprint"),
     paste(plan$accepts, collapse = " or ")
   )
   labels <- purrr::map_chr(plan$nodes, function(n) {
-    label <- if (nzchar(n$route)) paste0(" [", n$route, "]") else ""
-    outlet <- n$step$connected$produces %||% "terminal"
+    label <- if (nzchar(n$route)) {
+      cli::col_yellow(paste0(" [", n$route, "]"))
+    } else {
+      ""
+    }
+    type <- n$step$connected$produces %||% "terminal"
+    outlet <- switch(
+      type,
+      contrast = ,
+      omnibus = cli::col_magenta(type),
+      terminal = cli::style_dim(type),
+      cli::col_green(type)
+    )
     sprintf(
       " %s  %s%s (%s)",
-      n$id,
-      paste(n$step$signature, collapse = "\n"),
+      cli::style_dim(n$id),
+      cli::col_cyan(paste(n$step$signature, collapse = "\n")),
       label,
       outlet
     )

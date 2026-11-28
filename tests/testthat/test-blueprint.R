@@ -54,3 +54,21 @@ test_that("RDS with the earlier comma-sequence format is rejected", {
   expect_error(read_blueprint(file), "Incompatible blueprint")
   expect_error(blueprint(step_preprocess() %=>% old), "Incompatible blueprint")
 })
+
+test_that("tree colors distinguish steps, routes and output types without changing the text", {
+  bp <- blueprint(
+    br("scores", step_pca()) %=>% step_dea_limma() %=>% step_filter_sig_vars()
+  )
+  withr::local_options(list(cli.num_colors = 1L))
+  plain <- capture.output(print(bp))
+  expect_false(any(cli::ansi_has_any(plain)))
+
+  withr::local_options(list(cli.num_colors = 256L))
+  colored <- capture.output(print(bp))
+  expect_identical(as.character(cli::ansi_strip(colored)), plain)
+  expect_true(any(cli::ansi_has_any(colored)))
+  expect_match(colored[2], cli::col_cyan("step_pca()"), fixed = TRUE)
+  expect_match(colored[2], cli::col_yellow(" [scores]"), fixed = TRUE)
+  expect_match(colored[3], cli::col_magenta("contrast"), fixed = TRUE)
+  expect_match(colored[4], cli::col_green("filtered_exp"), fixed = TRUE)
+})
